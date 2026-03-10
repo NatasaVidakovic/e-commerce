@@ -1,0 +1,47 @@
+<div>
+  <mat-tab-group [(selectedIndex)]="activeTabIndex" (selectedTabChange)="onTabChange($event)">
+    <mat-tab [label]="'ADMIN.ORDERS' | translate">
+      <app-order-management></app-order-management>
+    </mat-tab>
+
+    <mat-tab [label]="'ADMIN.CATALOG' | translate">
+      <catalog></catalog>
+    </mat-tab>
+
+    <mat-tab [label]="'ADMIN.PRODUCT_TYPES' | translate">
+      <app-product-type-management></app-product-type-management>
+    </mat-tab>
+
+    <mat-tab [label]="'ADMIN.BEST_REVIEWED_PRODUCTS' | translate">
+      <best-reviewed-products></best-reviewed-products>
+    </mat-tab>
+
+    <mat-tab [label]="'ADMIN.BEST_SELLING_PRODUCTS' | translate">
+      <best-selling-products></best-selling-products>
+    </mat-tab>
+
+    <mat-tab [label]="'ADMIN.SUGGESTED_PRODUCTS' | translate">
+      <suggested-products></suggested-products>
+    </mat-tab>
+
+    <mat-tab [label]="'ADMIN.MANAGE_DISCOUNTS_VOUCHERS' | translate">
+      <discounts-tab></discounts-tab>
+    </mat-tab>
+
+    <mat-tab [label]="'ADMIN.THEME_SETTINGS' | translate">
+      <app-theme-settings></app-theme-settings>
+    </mat-tab>
+
+    <mat-tab [label]="'ADMIN.SITE_SETTINGS' | translate">
+      <app-site-settings></app-site-settings>
+    </mat-tab>
+
+    <mat-tab [label]="'ADMIN.SHOP_LOCATION' | translate">
+      <app-shop-location></app-shop-location>
+    </mat-tab>
+
+    <mat-tab label="Users">
+      <app-users-tab></app-users-tab>
+    </mat-tab>
+  </mat-tab-group>
+</div>

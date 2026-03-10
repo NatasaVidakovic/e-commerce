@@ -1,0 +1,159 @@
+<div class="container mx-auto px-4 py-10">
+  <div class="max-w-5xl mx-auto">
+    <div class="mb-8">
+      <button mat-button color="primary" (click)="goBack()" class="mb-4">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'COMMON.BACK' | translate }}
+      </button>
+
+      <h1 class="text-3xl font-semibold tracking-tight">
+        {{ isEditMode ? ('DISCOUNT.EDIT_DISCOUNT' | translate) : ('DISCOUNT.ADD_DISCOUNT' | translate) }}
+      </h1>
+    </div>
+
+    <div *ngIf="loadingDiscount" class="text-center py-8">
+      <p>{{ 'COMMON.LOADING' | translate }}</p>
+    </div>
+
+    <mat-card *ngIf="!loadingDiscount" class="p-8 rounded-2xl shadow-xl" style="background-color: var(--color-surface); border: 1px solid var(--color-border-primary);">
+      <form [formGroup]="discountForm" (ngSubmit)="onSubmit()">
+        <div *ngIf="!canEditDiscount" class="error-banner mb-6">
+          <mat-icon>block</mat-icon>
+          <div class="error-text">
+            <strong>{{ 'DISCOUNT.ERRORS.CANNOT_EDIT' | translate }}:</strong> {{ editRestrictionMessage }}
+          </div>
+        </div>
+
+        <div *ngIf="discountAlreadyStarted && canEditDiscount" class="warning-banner">
+          <mat-icon>warning</mat-icon>
+          <div class="warning-text">
+            {{ 'DISCOUNT.ERRORS.ALREADY_STARTED' | translate }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'DISCOUNT.NAME' | translate }}</mat-label>
+              <input matInput formControlName="name" required />
+              <mat-error *ngIf="discountForm.get('name')?.hasError('required')">
+                {{ 'VALIDATION.REQUIRED' | translate }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'DISCOUNT.VALUE' | translate }}</mat-label>
+              <input matInput type="number" formControlName="value" required />
+              <mat-error *ngIf="discountForm.get('value')?.hasError('required')">
+                {{ 'VALIDATION.REQUIRED' | translate }}
+              </mat-error>
+              <mat-error *ngIf="discountForm.get('value')?.hasError('min')">
+                {{ 'VALIDATION.MIN_VALUE' | translate }}
+              </mat-error>
+            </mat-form-field>
+
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center">
+                <mat-checkbox formControlName="isPercentage">
+                  {{ 'DISCOUNT.IS_PERCENTAGE' | translate }}
+                </mat-checkbox>
+              </div>
+              
+              <div class="flex items-center">
+                <mat-checkbox formControlName="isActive">
+                  {{ 'DISCOUNT.IS_ACTIVE' | translate }}
+                </mat-checkbox>
+              </div>
+            </div>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'DISCOUNT.DATE_FROM' | translate }}</mat-label>
+              <input matInput [matDatepicker]="pickerFrom" formControlName="dateFrom" [min]="minDate" required />
+              <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFrom></mat-datepicker>
+              <mat-error *ngIf="discountForm.get('dateFrom')?.hasError('required')">
+                {{ 'VALIDATION.REQUIRED' | translate }}
+              </mat-error>
+              <mat-error *ngIf="discountForm.get('dateFrom')?.hasError('pastDate')">
+                {{ 'DISCOUNT.ERRORS.START_DATE_PAST' | translate }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'DISCOUNT.DATE_TO' | translate }}</mat-label>
+              <input matInput [matDatepicker]="pickerTo" formControlName="dateTo" [min]="minEndDate" required />
+              <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+              <mat-datepicker #pickerTo></mat-datepicker>
+              <mat-error *ngIf="discountForm.get('dateTo')?.hasError('required')">
+                {{ 'VALIDATION.REQUIRED' | translate }}
+              </mat-error>
+              <mat-error *ngIf="discountForm.get('dateTo')?.hasError('pastDate')">
+                {{ 'DISCOUNT.ERRORS.END_DATE_PAST' | translate }}
+              </mat-error>
+              <mat-error *ngIf="discountForm.hasError('invalidDateRange')">
+                {{ 'DISCOUNT.ERRORS.END_DATE_BEFORE_START' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="space-y-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'DISCOUNT.DESCRIPTION' | translate }}</mat-label>
+              <textarea matInput formControlName="description" rows="6" required></textarea>
+              <mat-error *ngIf="discountForm.get('description')?.hasError('required')">
+                {{ 'VALIDATION.REQUIRED' | translate }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full" style="background: transparent;">
+              <mat-label>{{ 'DISCOUNT.SELECT_PRODUCTS' | translate }}</mat-label>
+              <mat-select 
+                formControlName="productIds" 
+                [value]="selectedProductIds"
+                multiple
+                panelClass="modern-select-panel"
+                (selectionChange)="onProductSelectionChange($event)">
+                <mat-option *ngFor="let product of availableProducts" [value]="product.id">
+                  {{ product.name }} ({{ product.brand }})
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div *ngIf="selectedProductIds.length > 0" class="mt-3">
+              <div class="text-xs font-medium mb-1" style="color: var(--color-text-secondary);">
+                {{ 'DISCOUNT.SELECTED_PRODUCTS' | translate }} ({{ selectedProductIds.length }})
+              </div>
+              <div class="max-h-32 overflow-y-auto rounded" style="border: 1px solid var(--color-border-secondary); background-color: var(--color-surface);">
+                <div *ngFor="let productId of selectedProductIds" 
+                     class="flex items-center justify-between px-3 py-2 themed-list-item">
+                  <span class="text-sm" style="color: var(--color-text-secondary);">{{ getProductName(productId) }}</span>
+                  <button 
+                    type="button" 
+                    (click)="removeProduct(productId)"
+                    class="themed-remove-btn rounded px-1 transition-colors"
+                    [title]="'BUTTONS.REMOVE' | translate">
+                    ×
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 mt-8">
+          <button mat-stroked-button type="button" (click)="goBack()">
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+          <button 
+            mat-flat-button 
+            color="primary" 
+            type="submit" 
+            [disabled]="discountForm.invalid || loading || !canEditDiscount">
+            <mat-icon>save</mat-icon>
+            {{ 'COMMON.SAVE' | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card>
+  </div>
+</div>

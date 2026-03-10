@@ -1,0 +1,166 @@
+// Product Edit Form - Dark Theme Styling
+[data-theme="dark"] {
+  .container {
+    .mat-card {
+      background: var(--color-surface) !important;
+      border: 1px solid var(--color-border-primary) !important;
+      backdrop-filter: none !important;
+      
+      // Form field styling in dark theme
+      .mat-mdc-form-field {
+        .mat-mdc-text-field-wrapper {
+          .mdc-notched-outline {
+            .mdc-notched-outline__leading,
+            .mdc-notched-outline__notch,
+            .mdc-notched-outline__trailing {
+              border-color: var(--color-input-border) !important;
+            }
+          }
+          
+          &.mdc-text-field--focused .mdc-notched-outline {
+            .mdc-notched-outline__leading,
+            .mdc-notched-outline__notch,
+            .mdc-notched-outline__trailing {
+              border-color: var(--color-input-border-focus) !important;
+              border-width: 2px !important;
+            }
+          }
+          
+          .mdc-text-field__input {
+            color: var(--color-input-text) !important;
+          }
+          
+          .mat-mdc-form-field-focus-overlay {
+            background-color: var(--color-input-bg) !important;
+          }
+          
+          .mat-mdc-form-field-underline {
+            background-color: var(--color-input-border) !important;
+          }
+          
+          &.mat-focused .mat-mdc-form-field-underline {
+            background-color: var(--color-input-border-focus) !important;
+          }
+        }
+        
+        .mat-mdc-form-field-label {
+          color: var(--color-text-secondary) !important;
+          
+          &.mat-mdc-form-field-empty {
+            color: var(--color-input-placeholder) !important;
+          }
+        }
+        
+        .mat-mdc-select-value {
+          color: var(--color-input-text) !important;
+        }
+        
+        .mat-mdc-select-arrow {
+          color: var(--color-text-secondary) !important;
+        }
+        
+        .mat-mdc-select-placeholder {
+          color: var(--color-input-placeholder) !important;
+        }
+      }
+      
+      // Textarea styling
+      textarea {
+        background-color: var(--color-input-bg) !important;
+        color: var(--color-input-text) !important;
+        border-color: var(--color-input-border) !important;
+        
+        &::placeholder {
+          color: var(--color-input-placeholder) !important;
+        }
+        
+        &:focus {
+          border-color: var(--color-input-border-focus) !important;
+        }
+      }
+      
+      // Image container styling
+      .border {
+        border-color: var(--color-border-primary) !important;
+        background-color: var(--color-bg-secondary) !important;
+      }
+      
+      // Button styling
+      .mat-mdc-raised-button,
+      .mat-mdc-unelevated-button {
+        background-color: var(--color-primary) !important;
+        color: var(--color-text-inverse) !important;
+        
+        &:hover {
+          background-color: var(--color-primary-hover) !important;
+        }
+      }
+      
+      .mat-mdc-stroked-button,
+      .mat-mdc-outlined-button {
+        border-color: var(--color-border-secondary) !important;
+        color: var(--color-text-primary) !important;
+        
+        &:hover {
+          background-color: var(--color-bg-hover) !important;
+        }
+      }
+    }
+  }
+}
+
+// Form container styling
+.container {
+  .mat-card {
+    transition: all 0.3s ease;
+    
+    // Better contrast for form sections
+    .space-y-4 > * {
+      background: transparent;
+    }
+    
+    // Enhanced input styling
+    .mat-mdc-form-field {
+      .mat-mdc-text-field-wrapper {
+        background-color: var(--color-input-bg);
+        border-radius: 8px;
+        
+        .mdc-notched-outline {
+          border-radius: 8px;
+        }
+      }
+    }
+  }
+}
+
+// Smaller image buttons styling
+.image-button {
+  height: 36px !important;
+  padding: 0 12px !important;
+  font-size: 0.75rem !important;
+  min-width: auto !important;
+  
+  .button-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 4px !important;
+  }
+  
+  .button-text {
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+  }
+  
+  // Material Design adjustments
+  ::ng-deep .mat-mdc-button-touch-target {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  ::ng-deep .mdc-button__label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}

@@ -1,0 +1,164 @@
+@import '../../../../styles/breakpoints';
+@import '../../../../styles/spacing';
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: $spacing-4;
+  
+  @include md {
+    padding: $spacing-8;
+    align-items: center;
+    min-height: calc(100vh - 8rem);
+  }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 28rem;
+  padding: $spacing-6;
+  
+  @include md {
+    padding: $spacing-8;
+  }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  
+  @include md {
+    gap: $spacing-5;
+  }
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: $spacing-4;
+  
+  h1 {
+    font-size: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+}
+
+.form-field {
+  width: 100%;
+  
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      min-height: 3.5rem;
+    }
+    
+    .mat-mdc-form-field-infix {
+      min-height: 3.5rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+  }
+}
+
+.forgot-password-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -$spacing-2;
+}
+
+.forgot-password-link {
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.85rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}
+
+.submit-btn {
+  width: 100%;
+  min-height: 2.75rem;
+  font-size: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);
+  font-weight: 600;
+  
+  @include md {
+    min-height: 3rem;
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: $spacing-1 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-border, #e0e0e0);
+  }
+
+  span {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary, #888);
+    text-transform: lowercase;
+    white-space: nowrap;
+  }
+}
+
+.google-btn {
+  width: 100%;
+  min-height: 2.75rem;
+  font-size: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  @include md {
+    min-height: 3rem;
+  }
+}
+
+// Override browser autofill styles for dark mode
+.form-field {
+  ::ng-deep {
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px var(--color-input-bg) inset !important;
+      -webkit-text-fill-color: var(--color-input-text) !important;
+      caret-color: var(--color-input-text) !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+  }
+}

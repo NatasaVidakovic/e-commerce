@@ -1,0 +1,16 @@
+@import "tailwindcss" important;
+
+.container {
+    @apply mx-auto max-w-screen-2xl
+}
+
+.text-primary {
+    color: var(--color-primary);
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,8 @@
+<div class="flex-shrink-0 w-[calc((100%-3rem)/3)] h-[300px] rounded-2xl shadow-lg overflow-hidden" style="background-color: var(--color-surface);">
+    <img [src]="" alt="{{discount.name}}" class="w-full h-48 object-cover">
+    <div class="p-4 flex flex-col justify-between h-full">
+        <h3 class="text-xl font-bold mb-2">{{ discount.name }}</h3>
+        <p class="mb-2" style="color: var(--color-text-secondary);">{{ discount.description }}</p>
+        <span class="text-lg font-semibold text-red-600">-{{ discount.value }}%</span>
+    </div>
+</div>

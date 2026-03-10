@@ -1,0 +1,306 @@
+// Progressive Enhancement & Feature Detection
+// Provides fallbacks and modern CSS feature detection
+
+// ============================================
+// Container Queries Support
+// ============================================
+
+// Container query mixin with fallback
+@mixin container-query($min-width, $property, $value, $fallback-value) {
+  // Fallback for browsers without container query support
+  #{$property}: $fallback-value;
+  
+  // Modern browsers with container query support
+  @supports (container-type: inline-size) {
+    @container (min-width: #{$min-width}) {
+      #{$property}: $value;
+    }
+  }
+}
+
+// Enable container queries on a component
+@mixin enable-container {
+  @supports (container-type: inline-size) {
+    container-type: inline-size;
+    container-name: component;
+  }
+}
+
+// ============================================
+// CSS Grid Support
+// ============================================
+
+@mixin grid-with-fallback($columns, $gap) {
+  // Fallback: Flexbox
+  display: flex;
+  flex-wrap: wrap;
+  margin: calc(-#{$gap} / 2);
+  
+  > * {
+    flex: 0 0 calc(#{100% / $columns} - #{$gap});
+    margin: calc(#{$gap} / 2);
+  }
+  
+  // Modern: CSS Grid
+  @supports (display: grid) {
+    display: grid;
+    grid-template-columns: repeat($columns, 1fr);
+    gap: $gap;
+    margin: 0;
+    
+    > * {
+      flex: none;
+      margin: 0;
+    }
+  }
+}
+
+// ============================================
+// Aspect Ratio Support
+// ============================================
+
+@mixin aspect-ratio($width, $height) {
+  // Fallback: Padding trick
+  position: relative;
+  
+  &::before {
+    content: '';
+    display: block;
+    padding-top: calc(#{$height} / #{$width} * 100%);
+  }
+  
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  // Modern: aspect-ratio property
+  @supports (aspect-ratio: 1 / 1) {
+    aspect-ratio: #{$width} / #{$height};
+    
+    &::before {
+      display: none;
+    }
+    
+    > * {
+      position: static;
+    }
+  }
+}
+
+// ============================================
+// Flexbox Gap Support
+// ============================================
+
+@mixin flex-gap($gap) {
+  // Fallback: Negative margins
+  margin: calc(-#{$gap} / 2);
+  
+  > * {
+    margin: calc(#{$gap} / 2);
+  }
+  
+  // Modern: gap property
+  @supports (gap: #{$gap}) {
+    gap: $gap;
+    margin: 0;
+    
+    > * {
+      margin: 0;
+    }
+  }
+}
+
+// ============================================
+// Clamp Support
+// ============================================
+
+@mixin fluid-size($property, $min, $preferred, $max) {
+  // Fallback: Use preferred value
+  #{$property}: $preferred;
+  
+  // Modern: clamp()
+  @supports (#{$property}: clamp(#{$min}, #{$preferred}, #{$max})) {
+    #{$property}: clamp(#{$min}, #{$preferred}, #{$max});
+  }
+}
+
+// ============================================
+// Sticky Position Support
+// ============================================
+
+@mixin sticky-position($top: 0) {
+  // Fallback: Relative positioning
+  position: relative;
+  
+  // Modern: Sticky positioning
+  @supports (position: sticky) {
+    position: sticky;
+    top: $top;
+  }
+}
+
+// ============================================
+// Custom Properties (CSS Variables) Support
+// ============================================
+
+@mixin custom-property($property, $var-name, $fallback) {
+  // Fallback value
+  #{$property}: $fallback;
+  
+  // Modern: CSS variable
+  @supports (#{$property}: var(--#{$var-name})) {
+    #{$property}: var(--#{$var-name}, #{$fallback});
+  }
+}
+
+// ============================================
+// Object Fit Support
+// ============================================
+
+@mixin object-fit($value: cover) {
+  // Fallback: Background image approach
+  background-size: $value;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  // Modern: object-fit
+  @supports (object-fit: $value) {
+    object-fit: $value;
+    object-position: center;
+  }
+}
+
+// ============================================
+// Backdrop Filter Support
+// ============================================
+
+@mixin backdrop-filter($value) {
+  // Fallback: Semi-transparent background
+  background-color: rgba(255, 255, 255, 0.8);
+  
+  // Modern: backdrop-filter
+  @supports (backdrop-filter: $value) or (-webkit-backdrop-filter: $value) {
+    -webkit-backdrop-filter: $value;
+    backdrop-filter: $value;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+// ============================================
+// Scroll Snap Support
+// ============================================
+
+@mixin scroll-snap-container($type: x mandatory) {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  
+  @supports (scroll-snap-type: $type) {
+    scroll-snap-type: $type;
+  }
+}
+
+@mixin scroll-snap-item($align: start) {
+  @supports (scroll-snap-align: $align) {
+    scroll-snap-align: $align;
+    scroll-snap-stop: normal;
+  }
+}
+
+// ============================================
+// Feature Detection Utilities
+// ============================================
+
+// Check if browser supports a feature
+@mixin if-supports($property, $value) {
+  @supports (#{$property}: #{$value}) {
+    @content;
+  }
+}
+
+// Check if browser does NOT support a feature
+@mixin if-not-supports($property, $value) {
+  @supports not (#{$property}: #{$value}) {
+    @content;
+  }
+}
+
+// ============================================
+// Usage Examples
+// ============================================
+
+/*
+// Container Query Example
+.component {
+  @include enable-container;
+  
+  .child {
+    @include container-query(400px, font-size, 1.5rem, 1rem);
+  }
+}
+
+// Grid with Fallback Example
+.product-grid {
+  @include grid-with-fallback(4, 1rem);
+}
+
+// Aspect Ratio Example
+.image-container {
+  @include aspect-ratio(16, 9);
+}
+
+// Flex Gap Example
+.flex-container {
+  display: flex;
+  @include flex-gap(1rem);
+}
+
+// Fluid Size Example
+.heading {
+  @include fluid-size(font-size, 1.5rem, 2vw + 1rem, 3rem);
+}
+
+// Sticky Position Example
+.header {
+  @include sticky-position(0);
+}
+
+// Custom Property Example
+.element {
+  @include custom-property(color, primary-color, #007bff);
+}
+
+// Object Fit Example
+.image {
+  @include object-fit(cover);
+}
+
+// Backdrop Filter Example
+.modal-overlay {
+  @include backdrop-filter(blur(10px));
+}
+
+// Scroll Snap Example
+.carousel {
+  @include scroll-snap-container(x mandatory);
+  
+  .item {
+    @include scroll-snap-item(start);
+  }
+}
+
+// Feature Detection Example
+.element {
+  @include if-supports(display, grid) {
+    display: grid;
+  }
+  
+  @include if-not-supports(display, grid) {
+    display: flex;
+  }
+}
+*/

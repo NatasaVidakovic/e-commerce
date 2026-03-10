@@ -1,0 +1,210 @@
+<header class="header-themed shadow-md w-full fixed top-0 z-50">
+  <div class="header-container">
+    <!-- Logo -->
+    <img routerLink="/" [src]="logoSrc()" [alt]="'COMMON.APP_LOGO_ALT' | translate" class="logo-image cursor-pointer" (click)="closeMobileMenu()">
+    
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ 'NAVIGATION.HOME' | translate }}</a>
+      <a routerLink="/shop" routerLinkActive="active">{{ 'NAVIGATION.SHOP' | translate }}</a>
+      <a routerLink="/about" routerLinkActive="active">{{ 'NAVIGATION.ABOUT_US' | translate }}</a>
+      @if (accountService.currentUser() && !accountService.isAdmin()) {
+      <a routerLink="/favourites" routerLinkActive="active">{{ 'NAVIGATION.FAVOURITES' | translate }}</a>
+      }
+      @if (accountService.isAdmin()) {
+      <a routerLink="/admin/statistics" routerLinkActive="active">{{ 'NAVIGATION.STATISTICS' | translate }}</a>
+      <a routerLink="/admin/reports" routerLinkActive="active">{{ 'NAVIGATION.REPORTS' | translate }}</a>
+      }
+      <a *appIsAdmin routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ 'NAVIGATION.ADMIN' | translate }}</a>
+    </nav>
+    
+    <!-- Desktop Actions -->
+    <div class="desktop-actions">
+      @if (!accountService.isAdmin()) {
+      <a [matBadge]="cartService.itemCount()" [matBadgeHidden]="cartService.itemCount() === 0" routerLink="/cart" routerLinkActive="active" matBadgeSize="large"
+        class="custom-badge">
+        <mat-icon>shopping_cart</mat-icon>
+      </a>
+      }
+      @if (accountService.currentUser()) {
+      <div>
+        <button mat-button [matMenuTriggerFor]="menu" [attr.aria-label]="'COMMON.USER_MENU' | translate">
+          <mat-icon>arrow_drop_down</mat-icon>
+          <span class="user-email">{{accountService.currentUser()?.email}}</span>
+        </button>
+        <mat-menu #menu="matMenu" class="px-3">
+          @if (accountService.currentUser() && !accountService.isAdmin()) {
+          <button mat-menu-item routerLink="/cart">
+            <mat-icon>shopping_cart</mat-icon>
+            {{ 'NAVIGATION.CART' | translate }}
+          </button>
+          <button mat-menu-item routerLink="/orders">
+            <mat-icon>history</mat-icon>
+            {{ 'NAVIGATION.ORDERS' | translate }}
+          </button>
+          <mat-divider></mat-divider>
+          }
+          <div class="px-4 py-2">
+            <div class="text-xs mb-1" style="color: var(--color-text-secondary);">{{ 'COMMON.LANGUAGE' | translate }}</div>
+            <div class="flex gap-2">
+              <button (click)="switchLanguage('en')" [class.active]="currentLang === 'en'"
+                class="px-2 py-1 rounded text-sm lang-btn">
+                {{ 'COMMON.ENGLISH' | translate }}
+              </button>
+              <button (click)="switchLanguage('sr')" [class.active]="currentLang === 'sr'"
+                class="px-2 py-1 rounded text-sm lang-btn">
+                {{ 'COMMON.SERBIAN' | translate }}
+              </button>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            {{ 'NAVIGATION.LOG_OUT' | translate }}
+          </button>
+        </mat-menu>
+      </div>
+      } @else {
+        <div>
+        <button mat-button [matMenuTriggerFor]="menu" [attr.aria-label]="'COMMON.USER_MENU' | translate">
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu" class="px-3">
+          <div class="px-4 py-2">
+            <div class="text-xs mb-1" style="color: var(--color-text-secondary);">{{ 'COMMON.LANGUAGE' | translate }}</div>
+            <div class="flex gap-2">
+              <button (click)="switchLanguage('en')" [class.active]="currentLang === 'en'"
+                class="px-2 py-1 rounded text-sm lang-btn">
+                {{ 'COMMON.ENGLISH' | translate }}
+              </button>
+              <button (click)="switchLanguage('sr')" [class.active]="currentLang === 'sr'"
+                class="px-2 py-1 rounded text-sm lang-btn">
+                {{ 'COMMON.SERBIAN' | translate }}
+              </button>
+            </div>
+          </div>    
+        </mat-menu>
+      </div>
+      <button mat-stroked-button routerLink="/account/login" class="auth-btn">{{ 'NAVIGATION.LOG_IN' | translate }}</button>
+      <button mat-stroked-button routerLink="/account/register" class="auth-btn">{{ 'NAVIGATION.REGISTER' | translate }}</button>
+      }
+    </div>
+    
+    <!-- Mobile Actions -->
+    <div class="mobile-actions">
+      @if (!accountService.isAdmin()) {
+      <a [matBadge]="cartService.itemCount()" [matBadgeHidden]="cartService.itemCount() === 0" routerLink="/cart" routerLinkActive="active" matBadgeSize="large"
+        class="custom-badge mobile-cart">
+        <mat-icon>shopping_cart</mat-icon>
+      </a>
+      }
+      
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" [attr.aria-label]="'Toggle menu'">
+        <mat-icon>{{ mobileMenuOpen ? 'close' : 'menu' }}</mat-icon>
+      </button>
+    </div>
+    
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" [class.open]="mobileMenuOpen" (click)="closeMobileMenu()"></div>
+    
+    <!-- Mobile Navigation Menu -->
+    <nav class="mobile-nav" [class.open]="mobileMenuOpen">
+      <div class="mobile-nav-content">
+        <!-- Navigation Links -->
+        <div class="mobile-nav-links">
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">
+            <mat-icon>home</mat-icon>
+            <span>{{ 'NAVIGATION.HOME' | translate }}</span>
+          </a>
+          <a routerLink="/shop" routerLinkActive="active" (click)="closeMobileMenu()">
+            <mat-icon>store</mat-icon>
+            <span>{{ 'NAVIGATION.SHOP' | translate }}</span>
+          </a>
+          <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">
+            <mat-icon>info</mat-icon>
+            <span>{{ 'NAVIGATION.ABOUT_US' | translate }}</span>
+          </a>
+          @if (accountService.currentUser() && !accountService.isAdmin()) {
+          <a routerLink="/favourites" routerLinkActive="active" (click)="closeMobileMenu()">
+            <mat-icon>favorite</mat-icon>
+            <span>{{ 'NAVIGATION.FAVOURITES' | translate }}</span>
+          </a>
+          <a routerLink="/cart" routerLinkActive="active" (click)="closeMobileMenu()">
+            <mat-icon [matBadge]="cartService.itemCount()" [matBadgeHidden]="cartService.itemCount() === 0">shopping_cart</mat-icon>
+            <span>{{ 'NAVIGATION.CART' | translate }}</span>
+          </a>
+          <a routerLink="/orders" routerLinkActive="active" (click)="closeMobileMenu()">
+            <mat-icon>history</mat-icon>
+            <span>{{ 'NAVIGATION.ORDERS' | translate }}</span>
+          </a>
+          }
+          @if (accountService.isAdmin()) {
+          <a routerLink="/admin/statistics" routerLinkActive="active" (click)="closeMobileMenu()">
+            <mat-icon>analytics</mat-icon>
+            <span>{{ 'NAVIGATION.STATISTICS' | translate }}</span>
+          </a>
+          <a routerLink="/admin/reports" routerLinkActive="active" (click)="closeMobileMenu()">
+            <mat-icon>description</mat-icon>
+            <span>{{ 'NAVIGATION.REPORTS' | translate }}</span>
+          </a>
+          }
+          <a *appIsAdmin routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span>{{ 'NAVIGATION.ADMIN' | translate }}</span>
+          </a>
+        </div>
+        
+        <!-- Language Selector -->
+        <div class="mobile-language-selector">
+          <div class="language-label">{{ 'COMMON.LANGUAGE' | translate }}</div>
+          <div class="language-buttons">
+            <button (click)="switchLanguage('en')" [class.active]="currentLang === 'en'">
+              {{ 'COMMON.ENGLISH' | translate }}
+            </button>
+            <button (click)="switchLanguage('sr')" [class.active]="currentLang === 'sr'">
+              {{ 'COMMON.SERBIAN' | translate }}
+            </button>
+          </div>
+        </div>
+        
+        <!-- Auth Buttons -->
+        @if (accountService.currentUser()) {
+        <div class="mobile-user-info">
+          <mat-icon>account_circle</mat-icon>
+          <span>{{accountService.currentUser()?.email}}</span>
+        </div>
+        <button mat-flat-button color="primary" class="mobile-logout-btn" (click)="logout(); closeMobileMenu()">
+          <mat-icon>logout</mat-icon>
+          {{ 'NAVIGATION.LOG_OUT' | translate }}
+        </button>
+        } @else {
+        <div class="mobile-auth-buttons">
+          <button mat-flat-button color="primary" routerLink="/account/login" (click)="closeMobileMenu()">
+            {{ 'NAVIGATION.LOG_IN' | translate }}
+          </button>
+          <button mat-stroked-button routerLink="/account/register" (click)="closeMobileMenu()">
+            {{ 'NAVIGATION.REGISTER' | translate }}
+          </button>
+        </div>
+        }
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .mobile-cart {
+    position: relative;
+  }
+  .mobile-cart mat-icon {
+    font-size: 24px;
+  }
+  .mobile-cart mat-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+  }
+</style>
+
+<mat-progress-bar *ngIf="busyService.loading" class="fixed top-20 z-50" mode="indeterminate"></mat-progress-bar>

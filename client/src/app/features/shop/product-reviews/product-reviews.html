@@ -1,0 +1,92 @@
+<h2 class="text-xl font-semibold mb-4" style="color: var(--color-text-primary);">{{ 'PRODUCT.REVIEWS.TITLE' | translate }}</h2>
+
+<div *ngIf="error" class="border px-4 py-3 rounded mb-4" role="alert" style="background-color: var(--color-error-light); border-color: var(--color-error); color: var(--color-error);">
+  <span class="block sm:inline">{{ error }}</span>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+  <div *ngIf="loggedIn && !accountService.isAdmin()" class="flex flex-col border rounded-lg" style="background-color: var(--color-surface); border-color: var(--color-border-primary);">
+    <div *ngIf="loading" class="p-4 text-center">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+      <p class="mt-2 text-sm" style="color: var(--color-text-secondary);">{{ 'PRODUCT.REVIEWS.LOADING_REVIEWS' | translate }}</p>
+    </div>
+
+    <div class="p-4 flex flex-col space-y-4">
+      <h3 class="font-medium text-lg" style="color: var(--color-text-primary);">{{ 'PRODUCT.REVIEWS.LEAVE_REVIEW' | translate }}</h3>
+
+      <!-- Rating Select -->
+      <mat-form-field appearance="outline" class="w-40">
+        <mat-label>{{ 'PRODUCT.REVIEWS.YOUR_RATING' | translate }}</mat-label>
+        <mat-select [(ngModel)]="newCommentRating" style="color: var(--color-text-primary);">
+          <mat-option *ngFor="let r of [5,4,3,2,1]" [value]="r">
+            {{ r === 1 ? ('PRODUCT.REVIEWS.STAR' | translate:{count: r}) : r < 5 ? ('PRODUCT.REVIEWS.STARS_2_4' | translate:{count: r}) : ('PRODUCT.REVIEWS.STARS_5' | translate:{count: r}) }} 
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Comment Textarea -->
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>{{ 'PRODUCT.REVIEWS.YOUR_REVIEW' | translate }}</mat-label>
+        <textarea matInput rows="5" [(ngModel)]="newCommentText" style="color: var(--color-text-primary);"
+          [placeholder]="'PRODUCT.REVIEWS.SHARE_EXPERIENCE' | translate"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="p-4 border-t" style="background-color: var(--color-bg-secondary); border-color: var(--color-border-primary);">
+      <button mat-flat-button color="primary" class="w-full" (click)="addComment()"
+        [disabled]="loading">
+        <span *ngIf="!loading">{{ 'PRODUCT.REVIEWS.SUBMIT_REVIEW' | translate }}</span>
+        <span *ngIf="loading" class="flex items-center justify-center">
+          <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+          {{ 'PRODUCT.REVIEWS.SUBMITTING' | translate }}
+        </span>
+      </button>
+    </div>
+
+  </div>
+
+  <div *ngIf="accountService.isAdmin()" class="p-4 border rounded-lg" style="background-color: var(--color-warning-light); border-color: var(--color-warning);">
+    <p class="text-sm" style="color: var(--color-warning);">{{ 'PRODUCT.REVIEWS.ADMIN_NO_REVIEWS' | translate }}</p>
+  </div>
+
+  <!-- RIGHT SIDE - Scrollable comment list -->
+  <div class="flex flex-col border rounded-lg" style="background-color: var(--color-surface); border-color: var(--color-border-primary);">
+
+    <div class="p-4 space-y-4">
+
+      <p class="text-xs italic" style="color: var(--color-text-secondary); opacity: 0.7;">
+        {{ 'PRODUCT.REVIEWS.STAR_ONLY_INFO' | translate }}
+      </p>
+
+      <p *ngIf="!loading && reviewsWithComments.length === 0" class="text-sm text-center p-4" style="color: var(--color-text-secondary);">
+        {{ 'PRODUCT.REVIEWS.NO_REVIEWS' | translate }}
+      </p>
+
+      <div *ngIf="loading && (!reviews || reviews.length === 0)" class="p-4 text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+        <p class="mt-2 text-sm" style="color: var(--color-text-secondary);">{{ 'PRODUCT.REVIEWS.LOADING_REVIEWS' | translate }}</p>
+      </div>
+
+      <div *ngIf="!loading && reviewsWithComments.length > 0" class="overflow-y-auto" [style.max-height.px]="400">
+        <div *ngFor="let review of reviewsWithComments" class="border p-3 rounded-lg mb-2 last:mb-0" style="background-color: var(--color-bg-secondary); border-color: var(--color-border-primary);">
+          <div class="flex items-center text-yellow-400 text-sm mb-1">
+            <ng-container *ngFor="let star of [1,2,3,4,5]">
+              <mat-icon class="!text-[14px] leading-none p-0 m-0 -mr-1">
+                {{ review.rating >= star ? 'star' : 'star_border' }}
+              </mat-icon>
+            </ng-container>
+            <span class="ml-2 text-xs" style="color: var(--color-text-secondary);">{{ (review.createdAt || review.reviewDate) | date:'dd.MM.yyyy'
+              }}</span>
+          </div>
+
+          <p class="text-sm break-words" style="color: var(--color-text-primary);">{{ review.description }}</p>
+          <p class="text-xs mt-1" style="color: var(--color-text-secondary);">— {{ review.appUsername || ('PRODUCT.REVIEWS.ANONYMOUS_USER' | translate) }}</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

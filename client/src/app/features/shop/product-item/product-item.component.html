@@ -1,0 +1,59 @@
+@if (product) {
+<mat-card appearance="raised" routerLink="/shop/{{product.id}}" class="product-card">
+  <div class="relative">
+    @if (product.hasActiveDiscount && product.discountPercentage) {
+      <div class="product-badges">
+        <span class="product-badge product-badge--discount">{{product.discountPercentage | number:'1.0-0'}}</span>
+      </div>
+    }
+    <img src="{{product.pictureUrl}}" class="rounded-t-lg" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: product.name }" loading="lazy">
+  </div>
+  <mat-card-content class="mt-2">
+    <div class="flex justify-between items-center">
+      <div class="flex-1">
+        <h2 class="text-sm font-semibold uppercase">{{product.name}}</h2>
+        
+        @if (product.hasActiveDiscount && product.originalPrice) {
+          <!-- Discount Name Badge -->
+          @if (product.discountName) {
+            <div class="inline-block px-2 py-0.5 rounded text-xs font-semibold mt-1 mb-1" style="background-color: var(--color-badge-discount); color: var(--color-badge-text);">
+              {{product.discountName}}
+            </div>
+          }
+          
+          <!-- Price Display with Discount -->
+          <div class="product-price mt-1">
+            <div class="product-price__original">
+              {{product.originalPrice | currency}}
+            </div>
+            <div class="product-price__current">
+              {{product.price | currency}}
+            </div>
+            <div class="product-price__save">
+              {{product.originalPrice! - product.price | currency}}
+            </div>
+          </div>
+        } @else {
+          <div class="product-price mt-2">
+            <div class="product-price__regular">{{product.price | currency}}</div>
+          </div>
+        }
+      </div>
+      
+      <button mat-icon-button *ngIf="loggedIn && !accountService.isAdmin()" 
+        [class.text-favorite]="isFavourite" 
+        [class.text-gray-400]="!isFavourite"
+        (click)="$event.stopPropagation(); toggleFavorite()">
+        <mat-icon>{{isFavourite ? 'favorite' : 'favorite_border'}}</mat-icon>
+      </button>
+    </div>
+  </mat-card-content>
+  <mat-card-actions (click)="$event.stopPropagation()">
+    <button *ngIf="!accountService.isAdmin()" mat-stroked-button class="w-full" 
+      (click)="cartService.addItemToCart(product)">
+      <mat-icon>add_shopping_cart</mat-icon>
+      {{ 'BUTTONS.ADD_TO_CART' | translate }}
+    </button>
+  </mat-card-actions>
+</mat-card>
+}

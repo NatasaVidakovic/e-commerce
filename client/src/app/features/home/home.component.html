@@ -1,0 +1,167 @@
+<div class="home-page">
+
+    <!-- HERO SECTION — WITH IMAGE -->
+    <section *ngIf="showWelcomeImage()" class="hero hero--image">
+        <img class="hero__bg" [src]="welcomeImageSrc()" [alt]="'HOME.HERO_IMAGE' | translate">
+        <div class="hero__overlay"></div>
+        <div class="hero__content">
+            <h1 class="hero__title">{{ heroTitle() || ('WELCOME' | translate) }}</h1>
+            <p class="hero__subtitle">{{ heroSubtitle() || ('TITLE' | translate) }}</p>
+            <button routerLink="/shop" class="hero__cta">
+                {{ 'GO_TO_SHOP' | translate }}
+            </button>
+        </div>
+    </section>
+
+    <!-- HERO SECTION — NO IMAGE (gradient) -->
+    <section *ngIf="!showWelcomeImage()" class="hero hero--gradient">
+        <div class="hero__content">
+            <h1 class="hero__title">{{ heroTitle() || ('WELCOME' | translate) }}</h1>
+            <p class="hero__subtitle">{{ heroSubtitle() || ('TITLE' | translate) }}</p>
+            <button routerLink="/shop" class="hero__cta">
+                {{ 'GO_TO_SHOP' | translate }}
+            </button>
+        </div>
+    </section>
+
+</div>
+
+<div class="home-content">
+        <!-- ACTIVE DISCOUNTS -->
+        <section *ngIf="discounts && discounts.length > 0" class="section-spacing relative">
+            <h2 class="section-title">{{ 'HOME.ACTIVE_DISCOUNTS' | translate }}</h2>
+
+            <!-- Swiper Discount Carousel -->
+            <div class="swiper discount-swiper" 
+                 swiper
+                 [navigation]="true"
+                 [pagination]="false"
+                 [spaceBetween]="20"
+                 [slidesPerView]="1"
+                 [loop]="true"
+                 [config]="discountSwiperConfig">
+                <div class="swiper-wrapper">
+                    <div *ngFor="let discount of discounts" class="swiper-slide">
+                        <div class="discount-card">
+                            <div class="discount-header">
+                                <div class="discount-overlay"></div>
+                                <div class="discount-value-container">
+                                    <div class="discount-value-text">
+                                        {{ discount.isPercentage ? discount.value + '%' : '$' + discount.value }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="discount-content">
+                                <h3 class="discount-title">{{ discount.name }}</h3>
+                                <div class="discount-timer" *ngIf="!countdowns[discount.id]?.expired">
+                                    <div class="countdown-units">
+                                        <div class="countdown-unit">
+                                            <div class="countdown-value">{{ countdowns[discount.id]?.days || 0 }}</div>
+                                            <div class="countdown-label">d</div>
+                                        </div>
+                                        <div class="countdown-separator">:</div>
+                                        <div class="countdown-unit">
+                                            <div class="countdown-value">{{ countdowns[discount.id]?.hours || 0 }}</div>
+                                            <div class="countdown-label">h</div>
+                                        </div>
+                                        <div class="countdown-separator">:</div>
+                                        <div class="countdown-unit">
+                                            <div class="countdown-value">{{ countdowns[discount.id]?.minutes || 0 }}</div>
+                                            <div class="countdown-label">m</div>
+                                        </div>
+                                        <div class="countdown-separator">:</div>
+                                        <div class="countdown-unit">
+                                            <div class="countdown-value">{{ countdowns[discount.id]?.seconds || 0 }}</div>
+                                            <div class="countdown-label">s</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="discount-expired" *ngIf="countdowns[discount.id]?.expired">
+                                    <span class="expired-text">{{ 'HOME.DISCOUNT_EXPIRED' | translate }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation buttons -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <!-- BEST REVIEWED -->
+        <section *ngIf="bestReviewedProducts && bestReviewedProducts.length > 0" class="product-carousel-section">
+            <h2 class="section-title">{{ 'HOME.BEST_REVIEWED' | translate }}</h2>
+
+            <!-- Swiper Product Carousel -->
+            <div class="swiper product-carousel-swiper" 
+                 swiper
+                 [navigation]="true"
+                 [pagination]="false"
+                 [spaceBetween]="20"
+                 [slidesPerView]="'auto'"
+                 [loop]="true"
+                 [config]="productSwiperConfig">
+                <div class="swiper-wrapper product-carousel">
+                    <app-product-item *ngFor="let product of bestReviewedProducts" [product]="product"
+                        [isFavourite]="product.isFavourite" class="swiper-slide product-carousel-item">
+                    </app-product-item>
+                </div>
+                
+                <!-- Navigation buttons -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <!-- BEST SELLING PRODUCTS -->
+        <section *ngIf="favouriteProducts && favouriteProducts.length > 0" class="product-carousel-section">
+            <h2 class="section-title">{{ 'HOME.BEST_SELLING_PRODUCTS' | translate }}</h2>
+
+            <!-- Swiper Product Carousel -->
+            <div class="swiper product-carousel-swiper" 
+                 swiper
+                 [navigation]="true"
+                 [pagination]="false"
+                 [spaceBetween]="20"
+                 [slidesPerView]="'auto'"
+                 [loop]="true"
+                 [config]="productSwiperConfig">
+                <div class="swiper-wrapper product-carousel">
+                    <app-product-item *ngFor="let product of favouriteProducts" [product]="product"
+                        [isFavourite]="product.isFavourite" class="swiper-slide product-carousel-item">
+                    </app-product-item>
+                </div>
+                
+                <!-- Navigation buttons -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <!-- SUGGESTED PRODUCTS -->
+        <section *ngIf="suggestedProducts && suggestedProducts.length > 0" class="product-carousel-section">
+            <h2 class="section-title">{{ 'HOME.SUGGESTED_PRODUCTS' | translate }}</h2>
+
+            <!-- Swiper Product Carousel -->
+            <div class="swiper product-carousel-swiper" 
+                 swiper
+                 [navigation]="true"
+                 [pagination]="false"
+                 [spaceBetween]="20"
+                 [slidesPerView]="'auto'"
+                 [loop]="true"
+                 [config]="productSwiperConfig">
+                <div class="swiper-wrapper product-carousel">
+                    <app-product-item *ngFor="let product of suggestedProducts" [product]="product"
+                        [isFavourite]="product.isFavourite" class="swiper-slide product-carousel-item">
+                    </app-product-item>
+                </div>
+                
+                <!-- Navigation buttons -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+    </div>

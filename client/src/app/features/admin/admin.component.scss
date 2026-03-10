@@ -1,0 +1,204 @@
+@import '../../../styles/breakpoints';
+@import '../../../styles/spacing';
+
+.admin-container {
+  padding: $spacing-3;
+  
+  @include sm {
+    padding: $spacing-4;
+  }
+  
+  @include md {
+    padding: $spacing-6;
+  }
+}
+
+::ng-deep {
+  .mat-mdc-tab-group {
+    .mat-mdc-tab-labels {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      background-color: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border-primary);
+      width: 100% !important;
+      
+      @include md {
+        overflow-x: visible;
+      }
+    }
+    
+    .mat-mdc-tab-label {
+      min-width: auto;
+      padding: $spacing-2 $spacing-3;
+      font-size: 0.875rem;
+      color: var(--color-text-secondary) !important;
+      opacity: 1 !important;
+      font-weight: 500;
+      
+      @include md {
+        padding: $spacing-3 $spacing-4;
+        font-size: 1rem;
+      }
+      
+      &:hover {
+        background-color: var(--color-bg-hover);
+        color: var(--color-text-primary) !important;
+      }
+      
+      &.mdc-tab--active {
+        color: var(--color-primary) !important;
+        font-weight: 600;
+      }
+    }
+    
+    .mat-mdc-tab-label-content {
+      color: inherit !important;
+    }
+    
+    .mdc-tab-indicator__content--underline {
+      border-color: var(--color-primary) !important;
+      border-width: 3px !important;
+    }
+    
+    .mat-mdc-tab-body-wrapper {
+      background-color: var(--color-bg-primary);
+    }
+    
+    // Fix tab arrows visibility in dark theme - seamless without borders
+    .mat-mdc-tab-header-pagination {
+      background-color: var(--color-bg-primary) !important;
+      border: none !important;
+      box-shadow: none !important;
+      
+      .mat-mdc-tab-header-pagination-chevron {
+        border-color: var(--color-text-primary) !important;
+      }
+      
+      &.mat-mdc-tab-header-pagination-disabled {
+        .mat-mdc-tab-header-pagination-chevron {
+          border-color: var(--color-text-disabled) !important;
+        }
+      }
+    }
+    
+    // Ensure tab group uses full width
+    .mat-mdc-tab-header {
+      width: 100% !important;
+    }
+    
+    .mat-mdc-tab-label-container {
+      width: 100% !important;
+    }
+  }
+  
+  // Table container — allow horizontal scroll on small screens
+  .mat-elevation-z8 {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  // Table responsive
+  table.mat-mdc-table {
+    width: 100%;
+    
+    // Mobile: Compact table with smaller columns
+    @media (max-width: 767px) {
+      font-size: 0.75rem;
+      
+      th.mat-mdc-header-cell {
+        padding: $spacing-1 $spacing-2;
+        font-size: 0.7rem;
+      }
+      
+      td.mat-mdc-cell {
+        padding: $spacing-1 $spacing-2;
+        font-size: 0.75rem;
+        word-break: break-word;
+      }
+      
+      // Hide less important columns on mobile
+      .mat-column-id {
+        display: none;
+      }
+      
+      .mat-column-orderDate {
+        display: none;
+      }
+      
+      // Make action buttons smaller
+      .mat-mdc-icon-button {
+        min-width: 2rem;
+        min-height: 2rem;
+        padding: 0;
+        
+        mat-icon {
+          font-size: 1rem;
+          width: 1rem;
+          height: 1rem;
+        }
+      }
+    }
+    
+    // Desktop: Normal table
+    @include md {
+      display: table;
+      
+      th.mat-mdc-header-cell {
+        font-size: 0.875rem;
+        padding: $spacing-3;
+      }
+      
+      td.mat-mdc-cell {
+        font-size: 0.875rem;
+        padding: $spacing-3;
+      }
+    }
+  }
+  
+  // mat-mdc-paginator is replaced by custom app-pagination; keep visible
+  .mat-mdc-paginator {
+    display: block;
+  }
+  
+  // Form field responsive
+  .mat-mdc-form-field {
+    width: 100%;
+    max-width: 100%;
+    
+    @include sm {
+      width: auto;
+      max-width: 300px;
+    }
+  }
+}
+
+// Header section responsive
+.flex.justify-between {
+  flex-direction: column;
+  gap: $spacing-3;
+  
+  @include sm {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+    
+    @include md {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+// Action buttons responsive
+.mat-mdc-icon-button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  
+  mat-icon {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}

@@ -1,0 +1,87 @@
+@if (product) {
+<section class="py-4 sm:py-8">
+    <div class="max-w-screen-2xl px-3 sm:px-4 mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <div class="max-w-xl mx-auto product-gallery">
+                <div class="gallery-main">
+                    <button *ngIf="allImages.length > 1" class="gallery-nav gallery-nav--left" (click)="prevImage()" aria-label="Previous image">
+                        <mat-icon>chevron_left</mat-icon>
+                    </button>
+                    <img class="w-full gallery-main-img" [src]="currentImage" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: product.name }" loading="lazy" />
+                    <button *ngIf="allImages.length > 1" class="gallery-nav gallery-nav--right" (click)="nextImage()" aria-label="Next image">
+                        <mat-icon>chevron_right</mat-icon>
+                    </button>
+                    <div *ngIf="allImages.length > 1" class="gallery-counter">
+                        {{ currentImageIndex + 1 }} / {{ allImages.length }}
+                    </div>
+                </div>
+                <div *ngIf="allImages.length > 1" class="gallery-thumbnails">
+                    <img *ngFor="let img of allImages; let i = index"
+                         [src]="img"
+                         [class.active]="i === currentImageIndex"
+                         (click)="selectImage(i)"
+                         class="gallery-thumb"
+                         [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: product.name }"
+                         loading="lazy" />
+                </div>
+            </div>
+
+            <div class="mt-6 sm:mt-8 lg:mt-0">
+                <h1 class="text-2xl font-semibold product-title">
+                    {{product.name}}
+                </h1>
+
+                <div class="flex items-center text-yellow-400 text-sm mt-1">
+                    <ng-container *ngFor="let star of [1,2,3,4,5]">
+                        <mat-icon class="!text-[18px]">{{ (product.rating || 0) >= star ? 'star' : (product.rating || 0) >= star - 0.5 ? 'star_half' : 'star_border' }}</mat-icon>
+                    </ng-container>
+                    <span *ngIf="product.rating" class="ml-1 text-xs product-meta">({{ product.rating | number:'1.1-1' }})</span>
+                </div>
+
+                <p *ngIf="!accountService.isAdmin()" class="text-sm product-meta">
+                    {{ 'PRODUCT.IN_CART_LABEL' | translate: { quantity: quantityInCart } }}
+                </p>
+
+                <div class="mt-4 items-center gap-4 flex">
+                    <p class="text-3xl font-extrabold product-price">
+                        {{product.price | currency}}
+                    </p>
+                </div>
+
+                <div class="flex gap-4 mt-6" *ngIf="!accountService.isAdmin()">
+                    <button (click)="updateCart()" mat-flat-button 
+                        [disabled]="quantity === quantityInCart || accountService.isAdmin()"
+                        class="match-input-height">
+                        <mat-icon>shopping_cart</mat-icon>
+                        {{ getButtonText() | translate }}
+                    </button>
+
+                    <mat-form-field appearance="outline" class="flex flex-row">
+                        <mat-label>{{ 'PRODUCT.QUANTITY' | translate }}</mat-label>
+                        <input matInput min="0" type="number" [(ngModel)]="quantity" type="number"
+                            [disabled]="accountService.isAdmin()">
+                    </mat-form-field>
+                </div>
+
+                <mat-divider class="my-6"></mat-divider>
+
+                <p class="mt-6 product-description">
+                    {{product.description}}
+                </p>
+
+    
+
+
+            </div>
+        </div>
+           <product-reviews 
+               [reviews]="product.reviews || []"
+               [productId]="product.id"
+               [loggedIn]="accountService.isLoggedIn()"
+               (reviewsChanged)="onReviewsChanged($event)"
+               class="mt-12">
+           </product-reviews>
+    </div>
+</section>
+
+}

@@ -1,0 +1,97 @@
+<div class="container mx-auto p-6">
+  <div class="mb-6">
+    <button mat-button color="primary" (click)="goBack()" class="mb-4">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'COMMON.BACK' | translate }}
+    </button>
+
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-bold">{{ 'PRODUCT.DETAILS' | translate }}</h1>
+      <div class="flex gap-2">
+        <button mat-raised-button color="primary" (click)="editProduct()" [disabled]="!product">
+          <mat-icon>edit</mat-icon>
+          {{ 'COMMON.EDIT' | translate }}
+        </button>
+        <button mat-raised-button color="warn" (click)="deleteProduct()" [disabled]="!product">
+          <mat-icon>delete</mat-icon>
+          {{ 'COMMON.DELETE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" *ngIf="product; else loadingTemplate">
+    <mat-card class="p-6">
+      <h2 class="text-xl font-semibold mb-4">{{ 'PRODUCT.IMAGE' | translate }}</h2>
+
+      <div class="flex justify-center" *ngIf="!imageError && product.pictureUrl; else noImageTemplate">
+        <img
+          [src]="product.pictureUrl"
+          [alt]="product.name"
+          class="max-w-full h-auto rounded-lg shadow-md"
+          style="max-height: 400px;"
+          (error)="onImageError()"
+        />
+      </div>
+
+      <ng-template #noImageTemplate>
+        <div class="flex flex-col items-center justify-center" style="height: 200px; color: var(--color-text-secondary);">
+          <mat-icon class="mb-2">image_not_supported</mat-icon>
+          <span>{{ 'PRODUCT.IMAGE' | translate }}</span>
+        </div>
+      </ng-template>
+    </mat-card>
+
+    <mat-card class="p-6">
+      <h2 class="text-xl font-semibold mb-4">{{ 'PRODUCT.INFORMATION' | translate }}</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="font-medium" style="color: var(--color-text-secondary);">{{ 'PRODUCT.NAME' | translate }}:</label>
+          <p class="text-lg">{{ product.name }}</p>
+        </div>
+
+        <div>
+          <label class="font-medium" style="color: var(--color-text-secondary);">{{ 'PRODUCT.BRAND' | translate }}:</label>
+          <p class="text-lg">{{ product.brand }}</p>
+        </div>
+
+        <div>
+          <label class="font-medium" style="color: var(--color-text-secondary);">{{ 'PRODUCT.TYPE' | translate }}:</label>
+          <p class="text-lg">{{ product.productType?.name || product.type }}</p>
+        </div>
+
+        <div>
+          <label class="font-medium" style="color: var(--color-text-secondary);">{{ 'COMMON.PRICE' | translate }}:</label>
+          <p class="text-lg font-semibold">{{ product.price | currency }}</p>
+        </div>
+
+        <div>
+          <label class="font-medium" style="color: var(--color-text-secondary);">{{ 'PRODUCT.QUANTITY_IN_STOCK' | translate }}:</label>
+          <p class="text-lg">{{ product.quantityInStock }}</p>
+        </div>
+
+        <div>
+          <label class="font-medium" style="color: var(--color-text-secondary);">{{ 'PRODUCT.IN_STOCK' | translate }}:</label>
+          <mat-chip-listbox>
+            <mat-chip-option [selected]="product.quantityInStock > 0" color="primary">
+              {{ product.quantityInStock > 0 ? ('COMMON.YES' | translate) : ('COMMON.NO' | translate) }}
+            </mat-chip-option>
+          </mat-chip-listbox>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <mat-card class="p-6 mt-6" *ngIf="product?.description">
+    <h2 class="text-xl font-semibold mb-4">{{ 'PRODUCT.DESCRIPTION' | translate }}</h2>
+    <p class="whitespace-pre-wrap" style="color: var(--color-text-secondary);">{{ product?.description }}</p>
+  </mat-card>
+
+  <ng-template #loadingTemplate>
+    <mat-card class="p-6">
+      <div class="text-center">
+        <p>{{ 'COMMON.LOADING' | translate }}...</p>
+      </div>
+    </mat-card>
+  </ng-template>
+</div>

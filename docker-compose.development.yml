@@ -1,0 +1,66 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: dockerfile.api
+    ports:
+      - "5001:80"
+    environment:
+      - "ConnectionStrings__DefaultConnection=Server=sql;Database=WebShop;User Id=sa;Password=Password@1;TrustServerCertificate=true;MultipleActiveResultSets=true"
+      - "ConnectionStrings__Redis=redis:6379,password=devredis123"
+      - "ASPNETCORE_ENVIRONMENT=Development"  # Swagger radi!
+      - "ASPNETCORE_URLS=http://+:80"        # HTTPS off
+      - "DEFAULT_USER_PASSWORD=Pa$$w0rd"
+      - "Cors__AllowedOrigins__0=http://localhost:4200"
+      - "Cors__AllowedOrigins__1=https://localhost:4200"
+      - "Cors__AllowedOrigins__2=http://localhost:8080"
+      - "Cors__AllowedOrigins__3=http://localhost:80"
+      - "Cors__AllowedOrigins__4=https://localhost:8080"
+      - "Cors__AllowedOrigins__5=https://localhost:80"
+    depends_on:
+      - sql
+      - redis
+    networks:
+      - webshop-network
+
+  frontend:
+    image: webshopdejanacr.azurecr.io/webshop-frontend:latest
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+    networks:
+      - webshop-network
+
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Password@1"
+      MSSQL_PID: "Express"
+    platform: linux/amd64
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+    networks:
+      - webshop-network
+
+  redis:
+    build:
+      context: .
+      dockerfile: dockerfile.development.redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - webshop-network
+
+networks:
+  webshop-network:
+    driver: bridge
+
+volumes:
+  sql-data:
+  redis-data:

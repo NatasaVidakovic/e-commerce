@@ -1,0 +1,203 @@
+<h2 mat-dialog-title>
+  Order #{{ order?.orderNumber || order?.id }}
+</h2>
+
+<mat-dialog-content>
+  <div *ngIf="loading" class="state-row">Loading...</div>
+  <div *ngIf="!loading && error" class="state-row error">{{ error }}</div>
+
+  <ng-container *ngIf="!loading && order">
+    <!-- Enhanced Header with Customer Info -->
+    <div class="header-row">
+      <div class="header-main">
+        <div class="customer">{{ order.buyerEmail }}</div>
+        <div class="updated">Updated: {{ order.updatedAt | date: 'short' }}</div>
+      </div>
+    </div>
+
+    <!-- Enhanced Status Cards Header -->
+    <div class="status-header">
+      <div class="status-card order-status">
+        <div class="status-icon">
+          <mat-icon>local_shipping</mat-icon>
+        </div>
+        <div class="status-content">
+          <div class="status-title">Order Status</div>
+          <div class="status-value">{{ order.status }}</div>
+        </div>
+      </div>
+      
+      <div class="status-card payment-status">
+        <div class="status-icon">
+          <mat-icon>payments</mat-icon>
+        </div>
+        <div class="status-content">
+          <div class="status-title">Payment Status</div>
+          <div class="status-value">{{ order.paymentStatus }}</div>
+        </div>
+      </div>
+      
+      <div class="status-card delivery-status">
+        <div class="status-icon">
+          <mat-icon>route</mat-icon>
+        </div>
+        <div class="status-content">
+          <div class="status-title">Delivery Status</div>
+          <div class="status-value">{{ order.deliveryStatus }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation for Status History -->
+    <div class="section-title">Status History</div>
+
+    <div class="tab-container">
+      <mat-tab-group [(selectedIndex)]="selectedTab" (selectedIndexChange)="onTabChange($event)" class="status-tabs">
+        <!-- Order Status Tab -->
+        <mat-tab label="Order Status">
+          <ng-template matTabContent>
+            <div class="tab-content">
+              <div *ngIf="orderStatusLogs.length === 0" class="no-history">
+                <mat-icon class="no-history-icon">history</mat-icon>
+                <span>No order status history available</span>
+              </div>
+
+              <div class="history-list" *ngIf="orderStatusLogs.length > 0">
+                <div *ngFor="let log of orderStatusLogs" class="history-item">
+                  <div class="history-time">
+                    <div class="time-badge">
+                      <mat-icon class="time-icon">schedule</mat-icon>
+                      {{ log.timestamp | date: 'MMM dd, yyyy' }}
+                    </div>
+                    <div class="time-detail">{{ log.timestamp | date: 'HH:mm' }}</div>
+                  </div>
+                  
+                  <div class="history-content">
+                    <div class="status-change">
+                      <div class="old-status">
+                        {{ log.oldValue || '—' }}
+                        <mat-icon>arrow_forward</mat-icon>
+                      </div>
+                      <div class="new-status">
+                        {{ log.newValue || '—' }}
+                      </div>
+                    </div>
+                    
+                    <div class="history-details">
+                      <div class="user-info">
+                        <mat-icon class="user-icon">person</mat-icon>
+                        {{ log.userEmail }}
+                      </div>
+                      <div class="comment-info" *ngIf="log.comment">
+                        <mat-icon class="comment-icon">comment</mat-icon>
+                        {{ log.comment }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </mat-tab>
+
+        <!-- Payment Status Tab -->
+        <mat-tab label="Payment Status">
+          <ng-template matTabContent>
+            <div class="tab-content">
+              <div *ngIf="paymentStatusLogs.length === 0" class="no-history">
+                <mat-icon class="no-history-icon">payments</mat-icon>
+                <span>No payment status history available</span>
+              </div>
+
+              <div class="history-list" *ngIf="paymentStatusLogs.length > 0">
+                <div *ngFor="let log of paymentStatusLogs" class="history-item payment-item">
+                  <div class="history-time">
+                    <div class="time-badge payment-time">
+                      <mat-icon class="time-icon">schedule</mat-icon>
+                      {{ log.timestamp | date: 'MMM dd, yyyy' }}
+                    </div>
+                    <div class="time-detail">{{ log.timestamp | date: 'HH:mm' }}</div>
+                  </div>
+                  
+                  <div class="history-content">
+                    <div class="status-change payment-change">
+                      <div class="old-status">
+                        {{ log.oldValue || '—' }}
+                        <mat-icon>arrow_forward</mat-icon>
+                      </div>
+                      <div class="new-status">
+                        {{ log.newValue || '—' }}
+                      </div>
+                    </div>
+                    
+                    <div class="history-details">
+                      <div class="user-info">
+                        <mat-icon class="user-icon">person</mat-icon>
+                        {{ log.userEmail }}
+                      </div>
+                      <div class="comment-info" *ngIf="log.comment">
+                        <mat-icon class="comment-icon">comment</mat-icon>
+                        {{ log.comment }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </mat-tab>
+
+        <!-- Delivery Status Tab -->
+        <mat-tab label="Delivery Status">
+          <ng-template matTabContent>
+            <div class="tab-content">
+              <div *ngIf="deliveryStatusLogs.length === 0" class="no-history">
+                <mat-icon class="no-history-icon">route</mat-icon>
+                <span>No delivery status history available</span>
+              </div>
+
+              <div class="history-list" *ngIf="deliveryStatusLogs.length > 0">
+                <div *ngFor="let log of deliveryStatusLogs" class="history-item delivery-item">
+                  <div class="history-time">
+                    <div class="time-badge delivery-time">
+                      <mat-icon class="time-icon">schedule</mat-icon>
+                      {{ log.timestamp | date: 'MMM dd, yyyy' }}
+                    </div>
+                    <div class="time-detail">{{ log.timestamp | date: 'HH:mm' }}</div>
+                  </div>
+                  
+                  <div class="history-content">
+                    <div class="status-change delivery-change">
+                      <div class="old-status">
+                        {{ log.oldValue || '—' }}
+                        <mat-icon>arrow_forward</mat-icon>
+                      </div>
+                      <div class="new-status">
+                        {{ log.newValue || '—' }}
+                      </div>
+                    </div>
+                    
+                    <div class="history-details">
+                      <div class="user-info">
+                        <mat-icon class="user-icon">person</mat-icon>
+                        {{ log.userEmail }}
+                      </div>
+                      <div class="comment-info" *ngIf="log.comment">
+                        <mat-icon class="comment-icon">comment</mat-icon>
+                        {{ log.comment }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>

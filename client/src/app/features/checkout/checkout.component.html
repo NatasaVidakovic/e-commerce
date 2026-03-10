@@ -1,0 +1,164 @@
+<div class="flex flex-col lg:flex-row mt-0 sm:mt-4 gap-6 px-3 sm:px-4">
+    <div class="w-full lg:w-3/4">
+        <mat-stepper (selectionChange)="onStepChange($event)" [linear]="true"
+            #stepper class="border shadow-sm" style="background-color: var(--color-surface); border-color: var(--color-border-primary);">
+            <mat-step [label]="'CHECKOUT.ADDRESS' | translate" [completed]="completionStatus().address">
+                <div class="space-y-4">
+                    <mat-form-field appearance="fill" class="w-full custom-floating-label">
+                        <mat-label>{{ 'FORM.FULL_NAME' | translate }}</mat-label>
+                        <input matInput [(ngModel)]="addressForm.name" (ngModelChange)="validateAddress()" required>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="fill" class="w-full">
+                        <mat-label>{{ 'FORM.ADDRESS_LINE1' | translate }}</mat-label>
+                        <input matInput [(ngModel)]="addressForm.line1" (ngModelChange)="validateAddress()" required>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="fill" class="w-full">
+                        <mat-label>{{ 'FORM.ADDRESS_LINE2' | translate }}</mat-label>
+                        <input matInput [(ngModel)]="addressForm.line2">
+                    </mat-form-field>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <mat-form-field appearance="fill" class="flex-1">
+                            <mat-label>{{ 'FORM.CITY' | translate }}</mat-label>
+                            <input matInput [(ngModel)]="addressForm.city" (ngModelChange)="validateAddress()" required>
+                        </mat-form-field>
+                        
+                        <mat-form-field appearance="fill" class="flex-1">
+                            <mat-label>{{ 'FORM.POSTAL_CODE' | translate }}</mat-label>
+                            <input matInput [(ngModel)]="addressForm.postalCode" (ngModelChange)="validateAddress()" required>
+                        </mat-form-field>
+                        
+                        <mat-form-field appearance="fill" class="flex-1">
+                            <mat-label>{{ 'FORM.COUNTRY' | translate }}</mat-label>
+                            @if (allowedCountries.length > 0) {
+                                <mat-select [(ngModel)]="addressForm.country" (ngModelChange)="validateAddress()" required>
+                                    @for (c of allowedCountries; track c) {
+                                        <mat-option [value]="c">{{ c }}</mat-option>
+                                    }
+                                </mat-select>
+                            } @else {
+                                <input matInput [(ngModel)]="addressForm.country" (ngModelChange)="validateAddress()" required>
+                            }
+                        </mat-form-field>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end mt-4">
+                    <mat-checkbox [checked]="saveAddress"
+                        (change)="onSaveAddressCheckboxChange($event)">
+                        {{ 'CHECKOUT.SAVE_AS_DEFAULT_ADDRESS' | translate }}
+                    </mat-checkbox>
+                </div>
+                <div class="flex justify-between mt-6">
+                    <button class="z-0" routerLink="/shop"
+                        mat-stroked-button>
+                        {{ 'BUTTONS.CONTINUE_SHOPPING' | translate }}
+                    </button>
+                    <button [disabled]="!completionStatus().address" class="z-0"
+                        matStepperNext mat-flat-button>
+                        {{ 'COMMON.NEXT' | translate }}
+                    </button>
+                </div>
+            </mat-step>
+            <mat-step [label]="'CHECKOUT.SHIPPING' | translate"
+                [completed]="completionStatus().delivery">
+                <app-checkout-delivery
+                    (deliveryComplete)="handleDeliveryChange($event)"></app-checkout-delivery>
+                
+                <!-- Payment Method Selection -->
+                <div class="mt-6 p-4 rounded-lg" style="background-color: var(--color-surface); border: 1px solid var(--color-border-primary);">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold" style="color: var(--color-text-primary);">{{ 'CHECKOUT.PAYMENT_METHOD' | translate }}</h3>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        @if (enabledPaymentMethods === 'cash' || enabledPaymentMethods === 'both') {
+                        <label class="flex items-center gap-3 p-3 rounded cursor-pointer transition-all"
+                               [style.background-color]="paymentMethod === 'cash' ? 'var(--color-primary-light)' : 'transparent'"
+                               [style.border]="paymentMethod === 'cash' ? '2px solid var(--color-primary)' : '2px solid var(--color-border-primary)'">
+                            <input type="radio" name="paymentMethod" value="cash" 
+                                   [(ngModel)]="paymentMethod" 
+                                   (change)="onPaymentMethodChange('cash')"
+                                   class="w-4 h-4">
+                            <div class="flex-1">
+                                <div class="font-semibold" style="color: var(--color-text-primary);">{{ 'CHECKOUT.CASH_ON_DELIVERY' | translate }}</div>
+                                <div class="text-sm" style="color: var(--color-text-secondary);">{{ 'CHECKOUT.CASH_ON_DELIVERY_DESC' | translate }}</div>
+                            </div>
+                        </label>
+                        }
+                        @if (enabledPaymentMethods === 'stripe' || enabledPaymentMethods === 'both') {
+                        <label class="flex items-center gap-3 p-3 rounded cursor-pointer transition-all"
+                               [style.background-color]="paymentMethod === 'stripe' ? 'var(--color-primary-light)' : 'transparent'"
+                               [style.border]="paymentMethod === 'stripe' ? '2px solid var(--color-primary)' : '2px solid var(--color-border-primary)'">
+                            <input type="radio" name="paymentMethod" value="stripe" 
+                                   [(ngModel)]="paymentMethod"
+                                   (change)="onPaymentMethodChange('stripe')"
+                                   class="w-4 h-4">
+                            <div class="flex-1">
+                                <div class="font-semibold" style="color: var(--color-text-primary);">{{ 'CHECKOUT.ONLINE_PAYMENT' | translate }}</div>
+                                <div class="text-sm" style="color: var(--color-text-secondary);">{{ 'CHECKOUT.ONLINE_PAYMENT_DESC' | translate }}</div>
+                            </div>
+                        </label>
+                        }
+                    </div>
+                </div>
+                
+                <div class="flex justify-between mt-6">
+                    <button matStepperPrevious mat-stroked-button>
+                        {{ 'COMMON.BACK' | translate }}
+                    </button>
+                    <button [disabled]="!completionStatus().delivery"
+                        matStepperNext mat-flat-button>
+                        {{ 'COMMON.NEXT' | translate }}
+                    </button>
+                </div>
+            </mat-step>
+            <mat-step [label]="'CHECKOUT.PAYMENT' | translate" [completed]="completionStatus().card">
+                @if (paymentMethod === 'cash') {
+                    <div class="p-6 rounded-lg text-center" style="background-color: var(--color-surface); border: 1px solid var(--color-border-primary);">
+                        <mat-icon class="text-6xl mb-4" style="color: var(--color-success);">check_circle</mat-icon>
+                        <h3 class="text-xl font-semibold mb-2" style="color: var(--color-text-primary);">{{ 'CHECKOUT.CASH_SELECTED' | translate }}</h3>
+                        <p style="color: var(--color-text-secondary);">{{ 'CHECKOUT.CASH_SELECTED_DESC' | translate }}</p>
+                    </div>
+                } @else {
+                    <div id="payment-element"></div>
+                }
+                <div class="flex justify-between mt-6">
+                    <button matStepperPrevious mat-stroked-button>
+                        {{ 'COMMON.BACK' | translate }}
+                    </button>
+                    <button [disabled]="!completionStatus().card" matStepperNext
+                        mat-flat-button>
+                        {{ 'COMMON.NEXT' | translate }}
+                    </button>
+                </div>
+            </mat-step>
+            <mat-step [label]="'CHECKOUT.CONFIRMATION' | translate">
+                <app-checkout-review
+                    [confirmationToken]="confirmationToken"
+                    [addressForm]="addressForm"
+                    [paymentMethod]="paymentMethod"></app-checkout-review>
+                <div class="flex justify-between mt-6">
+                    <button class="z-0" matStepperPrevious
+                        mat-stroked-button>
+                        {{ 'COMMON.BACK' | translate }}
+                    </button>
+                    <button [disabled]="(paymentMethod === 'stripe' && !confirmationToken) || loading" 
+                            (click)="confirmPayment(stepper)" 
+                            class="z-0"
+                            mat-flat-button>
+                        @if (loading) {
+                            <mat-spinner diameter="20"></mat-spinner>
+                        } @else {
+                            <span>{{ paymentMethod === 'cash' ? ('CHECKOUT.CONFIRM_ORDER' | translate) : ('CHECKOUT.PAY_AMOUNT' | translate: { amount: (cartService.totals()?.total | currency) }) }}</span>
+                        }
+                    </button>
+                </div>
+            </mat-step>
+        </mat-stepper>
+    </div>
+    <div class="w-full lg:w-1/4">
+        <app-order-summary></app-order-summary>
+    </div>
+</div>

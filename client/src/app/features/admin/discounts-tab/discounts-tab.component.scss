@@ -1,0 +1,81 @@
+@import '../../../../styles/breakpoints';
+@import '../../../../styles/spacing';
+
+::ng-deep {
+  .mat-mdc-paginator {
+    display: none;
+    
+    @include md {
+      display: block;
+    }
+  }
+  
+  table.mat-mdc-table {
+    width: 100%;
+    
+    @media (max-width: 767px) {
+      font-size: 0.75rem;
+      
+      th.mat-mdc-header-cell {
+        padding: $spacing-1 $spacing-2;
+        font-size: 0.7rem;
+      }
+      
+      td.mat-mdc-cell {
+        padding: $spacing-1 $spacing-2;
+        font-size: 0.75rem;
+        word-break: break-word;
+      }
+      
+      .mat-column-dateFrom,
+      .mat-column-dateTo {
+        display: none;
+      }
+      
+      .mat-mdc-icon-button {
+        min-width: 2rem;
+        min-height: 2rem;
+        padding: 0;
+        
+        mat-icon {
+          font-size: 1rem;
+          width: 1rem;
+          height: 1rem;
+        }
+      }
+    }
+    
+    @include md {
+      display: table;
+      
+      th.mat-mdc-header-cell,
+      td.mat-mdc-cell {
+        font-size: 0.875rem;
+        padding: $spacing-3;
+      }
+    }
+  }
+  
+  .mat-mdc-form-field {
+    width: 100%;
+    
+    @include sm {
+      width: auto;
+    }
+  }
+  
+  .mat-mdc-icon-button {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+}
+
+.flex.justify-between {
+  flex-direction: column;
+  gap: $spacing-3;
+  
+  @include sm {
+    flex-direction: row;
+    align-items: center;
+  }
+}

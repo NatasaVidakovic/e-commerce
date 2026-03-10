@@ -1,0 +1,103 @@
+<div class="shop-location-admin">
+    <div class="admin-header">
+        <h2 class="admin-title">
+            <mat-icon>location_on</mat-icon>
+            Shop Location Management
+        </h2>
+        <p class="admin-description">
+            Configure the shop location that will be displayed on the About Us page.
+        </p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading()" class="loading-state">
+        <mat-icon class="loading-icon">hourglass_empty</mat-icon>
+        <p>Loading shop location...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error()" class="error-state">
+        <mat-icon class="error-icon">error</mat-icon>
+        <p>{{ error() }}</p>
+        <button mat-stroked-button (click)="loadShopLocation()" class="retry-btn">
+            <mat-icon>refresh</mat-icon>
+            Retry
+        </button>
+    </div>
+
+    <!-- Form -->
+    <div *ngIf="!loading() && !error()" class="location-form-container">
+        <form [formGroup]="locationForm" class="location-form">
+            <div class="form-row">
+                <mat-form-field class="form-field">
+                    <mat-label>Latitude *</mat-label>
+                    <input matInput type="number" step="any" formControlName="latitude" 
+                           placeholder="e.g., 44.7722">
+                    <mat-error *ngIf="latitude?.invalid && latitude?.touched">
+                        <span *ngIf="latitude?.errors?.['required']">Latitude is required</span>
+                        <span *ngIf="latitude?.errors?.['min']">Latitude must be at least -90</span>
+                        <span *ngIf="latitude?.errors?.['max']">Latitude must be at most 90</span>
+                    </mat-error>
+                    <mat-hint>Enter latitude between -90 and 90</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field class="form-field">
+                    <mat-label>Longitude *</mat-label>
+                    <input matInput type="number" step="any" formControlName="longitude" 
+                           placeholder="e.g., 17.1910">
+                    <mat-error *ngIf="longitude?.invalid && longitude?.touched">
+                        <span *ngIf="longitude?.errors?.['required']">Longitude is required</span>
+                        <span *ngIf="longitude?.errors?.['min']">Longitude must be at least -180</span>
+                        <span *ngIf="longitude?.errors?.['max']">Longitude must be at most 180</span>
+                    </mat-error>
+                    <mat-hint>Enter longitude between -180 and 180</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <mat-form-field class="form-field full-width">
+                <mat-label>Address</mat-label>
+                <textarea matInput formControlName="address" 
+                          placeholder="e.g., Banja Luka, Bosnia and Herzegovina" rows="2"></textarea>
+                <mat-error *ngIf="address?.invalid && address?.touched">
+                    <span *ngIf="address?.errors?.['maxlength']">Address cannot exceed 500 characters</span>
+                </mat-error>
+                <mat-hint>Optional: Enter the physical address</mat-hint>
+            </mat-form-field>
+
+            <div class="form-actions">
+                <button type="button" mat-stroked-button (click)="onGetCurrentLocation()" 
+                        class="location-btn">
+                    <mat-icon>my_location</mat-icon>
+                    Use Current Location
+                </button>
+                
+                <button type="submit" mat-flat-button color="primary" 
+                        (click)="onSaveLocation()" 
+                        [disabled]="locationForm.invalid || saving()"
+                        class="save-btn">
+                    <mat-icon>{{ saving() ? 'hourglass_empty' : 'save' }}</mat-icon>
+                    {{ saving() ? 'Saving...' : 'Save Location' }}
+                </button>
+            </div>
+        </form>
+
+        <!-- Current Location Display -->
+        <div *ngIf="shopLocation()" class="current-location">
+            <h3>Current Shop Location</h3>
+            <div class="location-details">
+                <div class="location-item">
+                    <mat-icon>location_on</mat-icon>
+                    <span>Latitude: {{ shopLocation()?.latitude }}</span>
+                </div>
+                <div class="location-item">
+                    <mat-icon>location_on</mat-icon>
+                    <span>Longitude: {{ shopLocation()?.longitude }}</span>
+                </div>
+                <div *ngIf="shopLocation()?.address" class="location-item">
+                    <mat-icon>place</mat-icon>
+                    <span>Address: {{ shopLocation()?.address }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

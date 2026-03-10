@@ -1,0 +1,36 @@
+<div class="login-container">
+    <mat-card class="login-card">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+            <div class="form-header">
+                <h1>{{ 'NAVIGATION.LOG_IN' | translate }}</h1>
+            </div>
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>{{'FORM.EMAIL' | translate}}</mat-label>
+                <input matInput formControlName="email" type="email"
+                    [placeholder]="'FORM.EMAIL_PLACEHOLDER' | translate" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="form-field">
+                <mat-label>{{'FORM.PASSWORD' | translate}}</mat-label>
+                <input matInput formControlName="password" type="password"
+                    [placeholder]="'FORM.PASSWORD_PLACEHOLDER' | translate" />
+            </mat-form-field>
+            <div class="forgot-password-row">
+                <a routerLink="/account/forgot-password" class="forgot-password-link">Forgot Password?</a>
+            </div>
+            <div *ngIf="errorMessage" class="error-message">
+                <mat-icon>error_outline</mat-icon>
+                <span>{{ errorMessage }}</span>
+            </div>
+            <button mat-flat-button type="submit" color="primary" class="submit-btn">
+                {{ 'NAVIGATION.SUBMITT' | translate }}
+            </button>
+            <div class="divider">
+                <span>{{ 'FORM.OR' | translate }}</span>
+            </div>
+            <button type="button" mat-stroked-button class="google-btn" (click)="googleLogin()">
+                <mat-icon>login</mat-icon>
+                {{ 'NAVIGATION.LOG_IN_WITH_GOOGLE' | translate }}
+            </button>
+        </form>
+    </mat-card>
+</div>

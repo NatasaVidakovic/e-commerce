@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>{{ 'ADMIN.EMAIL.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <div class="order-info">
+    <p><strong>{{ 'ADMIN.EMAIL.ORDER_NUMBER' | translate }}:</strong> {{ data.order.orderNumber || data.order.id }}</p>
+    <p><strong>{{ 'ADMIN.EMAIL.CURRENT_STATUS' | translate }}:</strong> {{ data.order.status }}</p>
+  </div>
+
+  <form [formGroup]="emailForm" class="email-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'ADMIN.EMAIL.RECIPIENT' | translate }}</mat-label>
+      <input matInput formControlName="recipientEmail" required type="email">
+      <mat-error *ngIf="emailForm.get('recipientEmail')?.hasError('required')">
+        {{ 'ADMIN.EMAIL.EMAIL_REQUIRED' | translate }}
+      </mat-error>
+      <mat-error *ngIf="emailForm.get('recipientEmail')?.hasError('email')">
+        {{ 'ADMIN.EMAIL.EMAIL_INVALID' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'ADMIN.EMAIL.EMAIL_TYPE' | translate }}</mat-label>
+      <mat-select formControlName="emailType" required>
+        <mat-option *ngFor="let type of emailTypes" [value]="type.value">
+          {{ type.label | translate }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'ADMIN.EMAIL.ADMIN_NOTES' | translate }}</mat-label>
+      <textarea matInput formControlName="adminNotes" 
+                rows="3"
+                placeholder="{{ 'ADMIN.EMAIL.ADMIN_NOTES_PLACEHOLDER' | translate }}"></textarea>
+      <mat-hint>{{ 'ADMIN.EMAIL.ADMIN_NOTES_HINT' | translate }}</mat-hint>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="sending">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="onSend()" 
+          [disabled]="!emailForm.valid || sending">
+    {{ sending ? 'Sending...' : ('ADMIN.EMAIL.SEND_EMAIL' | translate) }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,133 @@
+<div class="container mx-auto px-4 py-10">
+  <div class="max-w-5xl mx-auto">
+  <div class="mb-8">
+    <button mat-button color="primary" (click)="goBack()" class="mb-4">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'COMMON.BACK' | translate }}
+    </button>
+
+    <h1 class="text-3xl font-semibold tracking-tight">{{ 'PRODUCT.EDIT' | translate }}</h1>
+  </div>
+
+  <mat-card class="p-4 sm:p-8 rounded-2xl shadow-xl form-card" *ngIf="!loading; else loadingTemplate">
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
+        <div class="space-y-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{ 'PRODUCT.NAME' | translate }}</mat-label>
+            <input matInput formControlName="name" required />
+            <mat-error *ngIf="productForm.get('name')?.hasError('required')">
+              {{ 'VALIDATION.REQUIRED' | translate }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{ 'PRODUCT.BRAND' | translate }}</mat-label>
+            <input matInput formControlName="brand" required />
+            <mat-error *ngIf="productForm.get('brand')?.hasError('required')">
+              {{ 'VALIDATION.REQUIRED' | translate }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{ 'PRODUCT.TYPE' | translate }}</mat-label>
+            <mat-select formControlName="productTypeId" required>
+              <mat-option *ngFor="let productType of activeProductTypes" [value]="productType.id">
+                {{ productType.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="productForm.get('productTypeId')?.hasError('required')">
+              {{ 'VALIDATION.REQUIRED' | translate }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{ 'COMMON.PRICE' | translate }}</mat-label>
+            <input matInput type="number" formControlName="price" required />
+            <mat-error *ngIf="productForm.get('price')?.hasError('required')">
+              {{ 'VALIDATION.REQUIRED' | translate }}
+            </mat-error>
+            <mat-error *ngIf="productForm.get('price')?.hasError('min')">
+              {{ 'VALIDATION.MIN_PRICE' | translate }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="space-y-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>{{ 'PRODUCT.QUANTITY_IN_STOCK' | translate }}</mat-label>
+            <input matInput type="number" formControlName="quantityInStock" required />
+            <mat-error *ngIf="productForm.get('quantityInStock')?.hasError('required')">
+              {{ 'VALIDATION.REQUIRED' | translate }}
+            </mat-error>
+            <mat-error *ngIf="productForm.get('quantityInStock')?.hasError('min')">
+              {{ 'VALIDATION.MIN_QUANTITY' | translate }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-full mt-6">
+        <mat-label>{{ 'PRODUCT.DESCRIPTION' | translate }}</mat-label>
+        <textarea matInput formControlName="description" rows="6"></textarea>
+      </mat-form-field>
+
+      <!-- Product Images -->
+      <div class="mt-6">
+        <h3 class="text-lg font-semibold mb-3">{{ 'PRODUCT.IMAGES' | translate }}</h3>
+        <p class="text-sm mb-3" style="color: var(--color-text-secondary);">Upload images for this product. Click the star to set the main image.</p>
+        <div class="flex gap-2 mb-3">
+          <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="uploadingImage" class="image-button">
+            <mat-icon class="button-icon">upload_file</mat-icon>
+            <span class="button-text">{{ uploadingImage ? 'Uploading...' : ('PRODUCT.UPLOAD' | translate) }}</span>
+          </button>
+          <input #fileInput type="file" accept="image/*" multiple hidden (change)="onFilesSelected($event)" />
+        </div>
+        <div *ngIf="productImages.length > 0" class="space-y-2">
+          <div *ngFor="let img of productImages; let i = index"
+               class="flex items-center gap-2 sm:gap-3 p-2 rounded-lg border"
+               [style.border-color]="img.isPrimary ? 'var(--color-primary, #3b82f6)' : 'var(--color-border-primary, #e0e0e0)'"
+               [style.border-width]="img.isPrimary ? '2px' : '1px'">
+            <img [src]="img.url" class="w-14 h-14 object-cover rounded" alt="Product image" />
+            <div class="flex-1 min-w-0">
+              <span *ngIf="img.isPrimary" class="text-xs font-semibold px-2 py-0.5 rounded" style="background-color: var(--color-primary, #3b82f6); color: white;">{{ 'PRODUCT.MAIN' | translate }}</span>
+              <p class="text-sm truncate mt-1" style="color: var(--color-text-secondary);">{{ img.altText || ('Image ' + (i + 1)) }}</p>
+            </div>
+            <button mat-icon-button type="button" (click)="setPrimary(i)" [disabled]="img.isPrimary"
+                    [style.color]="img.isPrimary ? 'var(--color-primary)' : 'inherit'" title="Set as main image">
+              <mat-icon>{{ img.isPrimary ? 'star' : 'star_border' }}</mat-icon>
+            </button>
+            <button mat-icon-button type="button" (click)="moveImage(i, -1)" [disabled]="i === 0">
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
+            <button mat-icon-button type="button" (click)="moveImage(i, 1)" [disabled]="i === productImages.length - 1">
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
+            <button mat-icon-button type="button" color="warn" (click)="removeImage(i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 mt-8">
+        <button mat-stroked-button type="button" (click)="goBack()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="productForm.invalid || saving">
+          <mat-icon>save</mat-icon>
+          {{ 'COMMON.SAVE' | translate }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <ng-template #loadingTemplate>
+    <mat-card class="p-8 rounded-2xl shadow-xl bg-white/70 backdrop-blur-md border border-white/40">
+      <div class="text-center">
+        <p>{{ 'COMMON.LOADING' | translate }}...</p>
+      </div>
+    </mat-card>
+  </ng-template>
+  </div>
+</div>

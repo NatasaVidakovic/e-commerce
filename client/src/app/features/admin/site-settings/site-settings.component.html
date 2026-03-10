@@ -1,0 +1,334 @@
+<div class="site-settings-container">
+
+  <!-- Company Information -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title class="card-title">
+        <mat-icon class="title-icon">business</mat-icon>
+        {{ 'ADMIN.SITE_SETTINGS_COMPANY_INFO' | translate }}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-group">
+        <label class="field-label">{{ 'ADMIN.SITE_SETTINGS_COMPANY_NAME' | translate }}</label>
+        <input type="text" [(ngModel)]="companyName" placeholder="{{ 'ADMIN.SITE_SETTINGS_COMPANY_NAME_PLACEHOLDER' | translate }}" class="field-input">
+      </div>
+
+      <div class="form-group">
+        <label class="field-label">{{ 'ADMIN.SITE_SETTINGS_COMPANY_DESCRIPTION' | translate }}</label>
+        <textarea [(ngModel)]="companyDescription" placeholder="{{ 'ADMIN.SITE_SETTINGS_COMPANY_DESCRIPTION_PLACEHOLDER' | translate }}"
+                  class="field-textarea" rows="4"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="field-label">{{ 'ADMIN.SITE_SETTINGS_HERO_TITLE' | translate }}</label>
+        <input type="text" [(ngModel)]="heroTitle" placeholder="{{ 'ADMIN.SITE_SETTINGS_HERO_TITLE_PLACEHOLDER' | translate }}" class="field-input">
+        <span class="field-hint">{{ 'ADMIN.SITE_SETTINGS_HERO_TITLE_HINT' | translate }}</span>
+      </div>
+
+      <div class="form-group">
+        <label class="field-label">{{ 'ADMIN.SITE_SETTINGS_HERO_SUBTITLE' | translate }}</label>
+        <input type="text" [(ngModel)]="heroSubtitle" placeholder="{{ 'ADMIN.SITE_SETTINGS_HERO_SUBTITLE_PLACEHOLDER' | translate }}" class="field-input">
+        <span class="field-hint">{{ 'ADMIN.SITE_SETTINGS_HERO_SUBTITLE_HINT' | translate }}</span>
+      </div>
+
+      <div class="form-group">
+        <label class="field-label">{{ 'ADMIN.SITE_SETTINGS_CONTACT_EMAIL' | translate }}</label>
+        <input type="email" [(ngModel)]="contactEmail" placeholder="{{ 'ADMIN.SITE_SETTINGS_CONTACT_EMAIL_PLACEHOLDER' | translate }}" class="field-input">
+        <span class="field-hint">{{ 'ADMIN.SITE_SETTINGS_CONTACT_EMAIL_HINT' | translate }}</span>
+      </div>
+
+      <button mat-flat-button color="primary" (click)="saveCompanyInfo()" class="save-btn">
+        <mat-icon>save</mat-icon>
+        {{ 'ADMIN.SITE_SETTINGS_SAVE_COMPANY_INFO' | translate }}
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Logo -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title class="card-title">
+        <mat-icon class="title-icon">branding_watermark</mat-icon>
+        {{ 'ADMIN.SITE_SETTINGS_LOGO' | translate }}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-group">
+        <label class="field-label">{{ 'ADMIN.SITE_SETTINGS_LOGO_IMAGE' | translate }}</label>
+        <div class="input-with-action">
+          <input type="text" [(ngModel)]="logoUrl" placeholder="{{ 'ADMIN.SITE_SETTINGS_LOGO_PLACEHOLDER' | translate }}"
+                 class="field-input">
+          <button mat-raised-button color="primary" type="button" (click)="logoFileInput.click()">
+            <mat-icon>upload_file</mat-icon>
+            {{ 'ADMIN.SITE_SETTINGS_UPLOAD' | translate }}
+          </button>
+          <input #logoFileInput type="file" accept="image/*" (change)="onLogoFileSelected($event)"
+                 style="display: none;">
+        </div>
+        <span class="field-hint">{{ 'ADMIN.SITE_SETTINGS_LOGO_HINT' | translate }}</span>
+
+        <div *ngIf="logoUrl" class="image-preview">
+          <img [src]="logoUrl" [alt]="'ADMIN.SITE_SETTINGS_LOGO_PREVIEW' | translate">
+          <button mat-icon-button color="warn" (click)="removeLogo()" class="remove-btn">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+        <button *ngIf="logoUrl" mat-flat-button color="primary" (click)="saveLogo()" class="save-btn">
+          <mat-icon>save</mat-icon>
+          {{ 'ADMIN.SITE_SETTINGS_SAVE_LOGO' | translate }}
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Welcome Image -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title class="card-title">
+        <mat-icon class="title-icon">photo</mat-icon>
+        {{ 'ADMIN.SITE_SETTINGS_WELCOME_IMAGE' | translate }}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-group">
+        <mat-slide-toggle [(ngModel)]="showWelcomeImage" (ngModelChange)="saveWelcomeImage()" color="primary">
+          {{ 'ADMIN.SITE_SETTINGS_SHOW_WELCOME_IMAGE' | translate }}
+        </mat-slide-toggle>
+        <span class="field-hint">
+          {{ 'ADMIN.SITE_SETTINGS_SHOW_WELCOME_IMAGE_HINT' | translate }}
+        </span>
+      </div>
+
+      <div *ngIf="showWelcomeImage" class="form-group">
+        <label class="field-label">{{ 'ADMIN.SITE_SETTINGS_IMAGE_URL' | translate }}</label>
+        <div class="input-with-action">
+          <input type="text" [(ngModel)]="welcomeImageUrl" placeholder="{{ 'ADMIN.SITE_SETTINGS_IMAGE_PLACEHOLDER' | translate }}"
+                 class="field-input">
+          <button mat-raised-button color="primary" type="button" (click)="welcomeFileInput.click()">
+            <mat-icon>upload_file</mat-icon>
+            {{ 'ADMIN.SITE_SETTINGS_UPLOAD' | translate }}
+          </button>
+          <input #welcomeFileInput type="file" accept="image/*" (change)="onWelcomeFileSelected($event)"
+                 style="display: none;">
+        </div>
+        <span class="field-hint">{{ 'ADMIN.SITE_SETTINGS_WELCOME_IMAGE_HINT' | translate }}</span>
+
+        <div *ngIf="welcomeImageUrl" class="image-preview">
+          <img [src]="welcomeImageUrl" [alt]="'ADMIN.SITE_SETTINGS_WELCOME_IMAGE_PREVIEW' | translate">
+          <button mat-icon-button color="warn" (click)="removeWelcomeImage()" class="remove-btn">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+        <button *ngIf="welcomeImageUrl" mat-flat-button color="primary" (click)="saveWelcomeImage()" class="save-btn">
+          <mat-icon>save</mat-icon>
+          {{ 'ADMIN.SITE_SETTINGS_SAVE_WELCOME_IMAGE' | translate }}
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Social Media Links -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title class="card-title">
+        <mat-icon class="title-icon">share</mat-icon>
+        {{ 'ADMIN.SITE_SETTINGS_SOCIAL_MEDIA_LINKS' | translate }}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngFor="let link of socialMediaLinks; let i = index" class="social-row">
+        <select [(ngModel)]="link.platform" (ngModelChange)="onPlatformChange(i, $event)" class="field-select">
+          <option value="" disabled>{{ 'ADMIN.SITE_SETTINGS_SELECT_PLATFORM' | translate }}</option>
+          <option *ngFor="let p of platforms" [value]="p.name">{{ p.name }}</option>
+        </select>
+        <input type="url" [(ngModel)]="link.url" placeholder="{{ 'ADMIN.SITE_SETTINGS_URL_PLACEHOLDER' | translate }}" class="field-input social-url-input">
+        <button mat-icon-button color="warn" (click)="removeSocialLink(i)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="action-row">
+        <button mat-stroked-button color="primary" (click)="addSocialLink()">
+          <mat-icon>add</mat-icon>
+          {{ 'ADMIN.SITE_SETTINGS_ADD_LINK' | translate }}
+        </button>
+        <button *ngIf="socialMediaLinks.length > 0" mat-flat-button color="primary" (click)="saveSocialLinks()">
+          <mat-icon>save</mat-icon>
+          {{ 'ADMIN.SITE_SETTINGS_SAVE_LINKS' | translate }}
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Photo Gallery -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title class="card-title">
+        <mat-icon class="title-icon">collections</mat-icon>
+        {{ 'ADMIN.SITE_SETTINGS_PHOTO_GALLERY' | translate }}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="gallery-upload-row">
+        <button mat-raised-button color="primary" (click)="galleryFileInput.click()">
+          <mat-icon>add_photo_alternate</mat-icon>
+          {{ 'ADMIN.SITE_SETTINGS_UPLOAD_IMAGES' | translate }}
+        </button>
+        <input #galleryFileInput type="file" accept="image/*" multiple (change)="onGalleryFileSelected($event)"
+               style="display: none;">
+        <span class="field-hint">{{ 'ADMIN.SITE_SETTINGS_GALLERY_HINT' | translate }}</span>
+      </div>
+
+      <div *ngIf="galleryImages.length > 0" class="gallery-admin-grid">
+        <div *ngFor="let img of galleryImages; let i = index" class="gallery-admin-item">
+          <img [src]="img" [alt]="'ABOUT.GALLERY_IMAGE' | translate">
+          <button mat-icon-button color="warn" (click)="removeGalleryImage(i)" class="gallery-remove-btn">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <p *ngIf="galleryImages.length === 0" class="empty-text">{{ 'ADMIN.SITE_SETTINGS_NO_GALLERY_IMAGES' | translate }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Delivery Methods -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title class="card-title">
+        <mat-icon class="title-icon">local_shipping</mat-icon>
+        {{ 'ADMIN.DELIVERY_METHODS' | translate }}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <!-- Add form -->
+      <div class="flex items-end gap-3 mb-4 flex-wrap">
+        <div class="form-group" style="margin-bottom:0; flex:1; min-width:140px;">
+          <label class="field-label">{{ 'ADMIN.DELIVERY_TITLE' | translate }}</label>
+          <input type="text" [(ngModel)]="newDelivery.shortName" [placeholder]="'ADMIN.DELIVERY_TITLE_PLACEHOLDER' | translate" class="field-input">
+        </div>
+        <div class="form-group" style="margin-bottom:0; flex:2; min-width:200px;">
+          <label class="field-label">{{ 'ADMIN.DELIVERY_DESCRIPTION' | translate }}</label>
+          <input type="text" [(ngModel)]="newDelivery.description" [placeholder]="'ADMIN.DELIVERY_DESCRIPTION_PLACEHOLDER' | translate" class="field-input">
+        </div>
+        <div class="form-group" style="margin-bottom:0; flex:1; min-width:120px;">
+          <label class="field-label">{{ 'ADMIN.DELIVERY_TIME' | translate }}</label>
+          <input type="text" [(ngModel)]="newDelivery.deliveryTime" [placeholder]="'ADMIN.DELIVERY_TIME_PLACEHOLDER' | translate" class="field-input">
+        </div>
+        <div class="form-group" style="margin-bottom:0; min-width:100px;">
+          <label class="field-label">{{ 'ADMIN.DELIVERY_PRICE' | translate }}</label>
+          <input type="number" [(ngModel)]="newDelivery.price" placeholder="0" class="field-input" style="width:100px;">
+        </div>
+        <button mat-flat-button color="primary" (click)="addDeliveryMethod()" style="margin-bottom:0;">
+          <mat-icon>add</mat-icon>
+          {{ 'COMMON.ADD' | translate }}
+        </button>
+      </div>
+
+      <!-- List -->
+      <div *ngIf="deliveryMethods.length > 0" class="space-y-2">
+        <div *ngFor="let dm of deliveryMethods" class="flex items-center justify-between p-3 rounded"
+             style="border: 1px solid var(--color-border-primary); background: var(--color-surface-variant);">
+          <div class="flex-1">
+            <div class="font-semibold" style="color: var(--color-text-primary);">{{ dm.shortName }}</div>
+            <div class="text-sm" style="color: var(--color-text-secondary);">{{ dm.description }}</div>
+            <div class="text-xs" style="color: var(--color-text-secondary);">{{ dm.deliveryTime }} &middot; {{ dm.price | currency }}</div>
+          </div>
+          <button mat-icon-button color="warn" (click)="deleteDeliveryMethod(dm.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+      <p *ngIf="deliveryMethods.length === 0" class="empty-text">{{ 'ADMIN.NO_DELIVERY_METHODS' | translate }}</p>
+
+      <mat-divider class="my-4"></mat-divider>
+
+      <!-- Allowed Countries -->
+      <h3 class="text-lg font-semibold mb-3" style="color: var(--color-text-primary);">
+        <mat-icon class="title-icon" style="vertical-align: middle;">public</mat-icon>
+        {{ 'ADMIN.ALLOWED_COUNTRIES' | translate }}
+      </h3>
+      <span class="field-hint mb-3" style="display:block;">{{ 'ADMIN.ALLOWED_COUNTRIES_HINT' | translate }}</span>
+
+      <div class="flex items-end gap-3 mb-4">
+        <div class="form-group" style="margin-bottom:0; flex:1; min-width:200px;">
+          <label class="field-label">{{ 'ADMIN.COUNTRY_NAME' | translate }}</label>
+          <input type="text" [(ngModel)]="newCountry" [placeholder]="'ADMIN.COUNTRY_NAME_PLACEHOLDER' | translate" class="field-input"
+                 (keyup.enter)="addCountry()">
+        </div>
+        <button mat-flat-button color="primary" (click)="addCountry()" style="margin-bottom:0;">
+          <mat-icon>add</mat-icon>
+          {{ 'COMMON.ADD' | translate }}
+        </button>
+      </div>
+
+      <div *ngIf="allowedCountries.length > 0" class="flex flex-wrap gap-2">
+        <div *ngFor="let country of allowedCountries; let i = index"
+             class="flex items-center gap-1 px-3 py-1 rounded-full"
+             style="border: 1px solid var(--color-border-primary); background: var(--color-surface-variant);">
+          <span style="color: var(--color-text-primary);">{{ country }}</span>
+          <button mat-icon-button style="width:24px; height:24px; line-height:24px;" (click)="removeCountry(i)">
+            <mat-icon style="font-size:16px; width:16px; height:16px;">close</mat-icon>
+          </button>
+        </div>
+      </div>
+      <p *ngIf="allowedCountries.length === 0" class="empty-text">{{ 'ADMIN.NO_ALLOWED_COUNTRIES' | translate }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Payment Methods -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title class="card-title">
+        <mat-icon class="title-icon">payment</mat-icon>
+        Payment Methods
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="field-hint" style="margin-bottom: 16px;">
+        Choose which payment methods customers can use at checkout.
+      </p>
+
+      <div class="payment-options">
+        <label class="payment-option" [class.active]="paymentMethods === 'both'"
+               (click)="paymentMethods = 'both'">
+          <input type="radio" name="paymentMethods" value="both" [(ngModel)]="paymentMethods">
+          <mat-icon class="payment-option-icon">account_balance_wallet</mat-icon>
+          <div class="payment-option-text">
+            <span class="payment-option-title">Both</span>
+            <span class="payment-option-desc">Customers can pay with Stripe (card) or Cash on Delivery</span>
+          </div>
+        </label>
+
+        <label class="payment-option" [class.active]="paymentMethods === 'stripe'"
+               (click)="paymentMethods = 'stripe'">
+          <input type="radio" name="paymentMethods" value="stripe" [(ngModel)]="paymentMethods">
+          <mat-icon class="payment-option-icon">credit_card</mat-icon>
+          <div class="payment-option-text">
+            <span class="payment-option-title">Stripe Only</span>
+            <span class="payment-option-desc">Customers can only pay online with credit/debit card via Stripe</span>
+          </div>
+        </label>
+
+        <label class="payment-option" [class.active]="paymentMethods === 'cash'"
+               (click)="paymentMethods = 'cash'">
+          <input type="radio" name="paymentMethods" value="cash" [(ngModel)]="paymentMethods">
+          <mat-icon class="payment-option-icon">local_atm</mat-icon>
+          <div class="payment-option-text">
+            <span class="payment-option-title">Cash on Delivery Only</span>
+            <span class="payment-option-desc">Customers pay in cash when the order is delivered</span>
+          </div>
+        </label>
+      </div>
+
+      <button mat-flat-button color="primary" (click)="savePaymentMethods()" class="save-btn">
+        <mat-icon>save</mat-icon>
+        Save Payment Settings
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+</div>

@@ -1,0 +1,7 @@
+FROM redis:7-alpine
+
+# Custom config
+COPY redis.dev.conf /usr/local/etc/redis/redis.conf
+
+# Password i port
+CMD ["redis-server", "/usr/local/etc/redis/redis.conf"]

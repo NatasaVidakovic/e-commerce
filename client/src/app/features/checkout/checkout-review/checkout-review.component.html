@@ -1,0 +1,55 @@
+<div class="mt-4 w-full">
+  <h4 class="text-lg font-semibold" style="color: var(--color-text-primary);">{{ 'CHECKOUT.BILLING_AND_DELIVERY_INFO' | translate }}</h4>
+  <dl class="space-y-2">
+    <dt class="font-medium" style="color: var(--color-text-primary);">{{ 'CHECKOUT.SHIPPING_ADDRESS' | translate }}</dt>
+    <dd class="mt-1 flex" style="color: var(--color-text-secondary);">
+      @if (paymentMethod === 'stripe' && confirmationToken?.shipping) {
+        <span>{{confirmationToken?.shipping | address}}</span>
+      } @else if (addressForm) {
+        <span>
+          {{addressForm.name}}<br>
+          {{addressForm.line1}}<br>
+          @if (addressForm.line2) {
+            {{addressForm.line2}}<br>
+          }
+          {{addressForm.city}}, {{addressForm.postalCode}}<br>
+          {{addressForm.country}}
+        </span>
+      } @else {
+        <span>{{ 'CHECKOUT.UNKNOWN_ADDRESS' | translate }}</span>
+      }
+    </dd>
+    <dt class="font-medium" style="color: var(--color-text-primary);">{{ 'CHECKOUT.PAYMENT_DETAILS' | translate }}</dt>
+    <dd class="mt-1 flex" style="color: var(--color-text-secondary);">
+      @if (paymentMethod === 'stripe' && confirmationToken?.payment_method_preview) {
+        <span>{{confirmationToken?.payment_method_preview | paymentCard}}</span>
+      } @else if (paymentMethod === 'cash') {
+        <span>{{ 'CHECKOUT.CASH_ON_DELIVERY' | translate }}</span>
+      } @else {
+        <span>{{ 'CHECKOUT.UNKNOWN_PAYMENT_METHOD' | translate }}</span>
+      }
+    </dd>
+  </dl>
+</div>
+
+<div class="mt-6 mx-auto">
+  <div class="border-b" style="border-color: var(--color-border-primary);">
+    <table class="w-full text-center">
+      <tbody class="divide-y" style="border-color: var(--color-border-primary);">
+        @for (item of cartService.cart()?.items; track item.productId) {
+        <tr>
+          <td class="py-4">
+            <div class="flex items-center gap-4">
+              <img src="{{item.pictureUrl}}" alt="{{ 'COMMON.PRODUCT_IMAGE' | translate }}"
+                  class="w-10 h-10">
+              <span style="color: var(--color-text-primary);">{{ item.productName }}</span>
+            </div>
+          </td>
+          <td class="p-4" style="color: var(--color-text-secondary);">x{{ item.quantity }}</td>
+          <td class="p-4 text-right" style="color: var(--color-text-primary);">{{ item.price | currency }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

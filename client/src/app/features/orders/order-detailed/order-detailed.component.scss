@@ -1,0 +1,55 @@
+.refund-status-card {
+  border: 1px solid;
+
+  // Ensure all text within the card has proper color
+  * {
+    color: inherit;
+  }
+
+  &.refund-requested {
+    background: var(--color-warning-dark, #fffbeb);
+    border-color: var(--color-warning, #fbbf24);
+    color: var(--color-warning-light, #78350f);
+    mat-icon { color: var(--color-warning-hover, #f59e0b); }
+  }
+
+  &.refund-approved {
+    background: var(--color-info-dark, #eff6ff);
+    border-color: var(--color-info, #38bdf8);
+    color: var(--color-info-light, #0c4a6e);
+    mat-icon { color: var(--color-info-hover, #0ea5e9); }
+  }
+
+  &.refund-completed {
+    background: var(--color-success-dark, #f0fdf4);
+    border-color: var(--color-success, #22c55e);
+    color: var(--color-success-light, #14532d);
+    mat-icon { color: var(--color-success-hover, #16a34a); }
+  }
+
+  &.refund-rejected {
+    background: var(--color-error-dark, #fef2f2);
+    border-color: var(--color-error, #ef4444);
+    color: var(--color-error-light, #7f1d1d);
+    mat-icon { color: var(--color-error-hover, #dc2626); }
+  }
+}
+
+.active-refund-type {
+  background: var(--color-primary) !important;
+  color: white !important;
+  border-color: var(--color-primary) !important;
+}
+
+.qty-btn {
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  line-height: 28px !important;
+
+  .mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}

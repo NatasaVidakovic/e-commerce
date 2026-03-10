@@ -1,0 +1,73 @@
+<div class="mx-auto mt-16 sm:mt-32 max-w-screen-lg px-3 sm:px-4">
+    <h2 class="font-semibold text-2xl mb-6 text-center" style="color: var(--color-text-primary);">
+        {{ 'ORDERS.MY_ORDERS' | translate }}
+    </h2>
+
+    @if (orders.length === 0) {
+        <div class="text-center py-16 rounded-lg" style="background: var(--color-surface); border: 1px solid var(--color-border-primary);">
+            <mat-icon class="text-6xl mb-4" style="font-size: 64px; width: 64px; height: 64px; color: var(--color-text-tertiary);">receipt_long</mat-icon>
+            <p class="text-lg font-medium mb-2" style="color: var(--color-text-primary);">{{ 'MESSAGES.EMPTY_ORDERS' | translate }}</p>
+            <button routerLink="/shop" mat-flat-button color="primary" class="mt-4">
+                {{ 'BUTTONS.GO_TO_SHOP' | translate }}
+            </button>
+        </div>
+    } @else {
+        <div class="rounded-lg overflow-x-auto shadow-sm" style="border: 1px solid var(--color-border-primary);">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="uppercase text-xs tracking-wider"
+                        style="background: var(--color-surface-variant); color: var(--color-text-secondary);">
+                        <th class="text-center px-3 sm:px-6 py-3">{{ 'ORDERS.ORDER' | translate }}</th>
+                        <th class="text-left px-2 sm:px-4 py-3">{{ 'ORDERS.DATE' | translate }}</th>
+                        <th class="text-left px-2 sm:px-4 py-3 hidden md:table-cell">{{ 'CHECKOUT.PAYMENT_METHOD' | translate }}</th>
+                        <th class="text-right px-2 sm:px-4 py-3">{{ 'ORDERS.TOTAL' | translate }}</th>
+                        <th class="text-center px-2 sm:px-4 py-3">{{ 'ORDERS.STATUS' | translate }}</th>
+                    </tr>
+                </thead>
+                <tbody style="background: var(--color-surface);">
+                    @for (order of orders; track order.id) {
+                        <tr routerLink="/orders/{{order.id}}" class="cursor-pointer transition-colors"
+                            style="border-bottom: 1px solid var(--color-border-primary);"
+                            onmouseenter="this.style.background='var(--color-surface-variant)'"
+                            onmouseleave="this.style.background='var(--color-surface)'">
+                            <th class="px-3 sm:px-6 py-3 sm:py-4 font-semibold text-sm" style="color: var(--color-primary);">#{{orderNumberMap.get(order.id)}}</th>
+                            <td class="px-2 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm" style="color: var(--color-text-secondary);">
+                                {{order.orderDate | date: 'mediumDate'}}
+                            </td>
+                            <td class="px-2 sm:px-4 py-3 sm:py-4 text-sm hidden md:table-cell" style="color: var(--color-text-primary);">
+                                @if (order.paymentType === 'CashOnDelivery') {
+                                    {{ 'CHECKOUT.CASH_ON_DELIVERY' | translate }}
+                                } @else {
+                                    {{ order.paymentType }}
+                                }
+                            </td>
+                            <td class="px-2 sm:px-4 py-3 sm:py-4 text-right font-medium text-sm" style="color: var(--color-text-primary);">
+                                {{order.total | currency}}
+                            </td>
+                            <td class="px-2 sm:px-4 py-3 sm:py-4 text-center">
+                                <div class="flex flex-col items-center gap-1">
+                                    <span class="badge" [ngClass]="{
+                                        'badge-order-status-new': order.status === 'New',
+                                        'badge-order-status-confirmed': order.status === 'Confirmed',
+                                        'badge-order-status-preparing': order.status === 'Preparing',
+                                        'badge-order-status-shipped': order.status === 'Shipped',
+                                        'badge-order-status-delivered': order.status === 'Delivered',
+                                        'badge-order-status-cancelled': order.status === 'Cancelled',
+                                        'badge-order-status-returned': order.status === 'Returned'
+                                    }">
+                                        {{ 'ORDER.STATUS.' + order.status.toUpperCase() | translate }}
+                                    </span>
+                                    @if (order.paymentStatus === 'Refunded' || order.paymentStatus === 'PartiallyRefunded') {
+                                        <span class="badge badge-payment-status-refunded">
+                                            {{ 'PAYMENT_STATUS.' + order.paymentStatus.toUpperCase() | translate }}
+                                        </span>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

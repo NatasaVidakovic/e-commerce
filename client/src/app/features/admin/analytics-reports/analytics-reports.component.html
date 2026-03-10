@@ -1,0 +1,13 @@
+<div class="analytics-reports-container">
+  <mat-tab-group [(selectedIndex)]="activeTabIndex" (selectedTabChange)="onTabChange($event)">
+    <!-- Analytics Tab -->
+    <mat-tab [label]="'ADMIN.ANALYTICS' | translate">
+      <app-analytics-tab></app-analytics-tab>
+    </mat-tab>
+
+    <!-- Reports Tab -->
+    <mat-tab [label]="'ADMIN.REPORTS' | translate">
+      <app-reports-tab></app-reports-tab>
+    </mat-tab>
+  </mat-tab-group>
+</div>

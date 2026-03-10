@@ -1,0 +1,414 @@
+<div class="theme-settings-container">
+  <mat-card class="theme-card">
+    <mat-card-header>
+      <mat-card-title class="card-title">
+        <mat-icon class="title-icon">palette</mat-icon>
+        {{ 'THEME_SETTINGS.TITLE' | translate }}
+      </mat-card-title>
+      <mat-card-subtitle>{{ 'THEME_SETTINGS.SUBTITLE' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <!-- Theme Mode Section -->
+      <section class="settings-section">
+        <h3 class="section-title">
+          <mat-icon>brightness_6</mat-icon>
+          {{ 'THEME_SETTINGS.THEME_MODE' | translate }}
+        </h3>
+        <div class="mode-toggle-container">
+          <div class="mode-info">
+            <mat-icon>{{ isDarkMode() ? 'dark_mode' : 'light_mode' }}</mat-icon>
+            <span class="mode-label">{{ isDarkMode() ? ('THEME_SETTINGS.DARK_MODE' | translate) : ('THEME_SETTINGS.LIGHT_MODE' | translate) }}</span>
+          </div>
+          <mat-slide-toggle
+            [checked]="isDarkMode()"
+            (change)="onThemeModeChange($event.checked)"
+            color="primary">
+          </mat-slide-toggle>
+        </div>
+        <p class="section-description">
+          {{ 'THEME_SETTINGS.THEME_MODE_DESC' | translate }}
+        </p>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Brand Colors Section -->
+      <section class="settings-section">
+        <h3 class="section-title">
+          <mat-icon>color_lens</mat-icon>
+          {{ 'THEME_SETTINGS.BRAND_COLORS' | translate }}
+        </h3>
+        <p class="section-description">
+          {{ 'THEME_SETTINGS.BRAND_COLORS_DESC' | translate }}
+        </p>
+        
+        <div class="color-inputs">
+          <div class="color-input-group">
+            <label class="color-label">
+              <mat-icon class="color-icon">circle</mat-icon>
+              {{ 'THEME_SETTINGS.PRIMARY_COLOR' | translate }}
+            </label>
+            <div class="color-picker-wrapper">
+              <input
+                type="color"
+                [(ngModel)]="primaryColor"
+                (ngModelChange)="onColorChange()"
+                class="color-picker"
+                [title]="'THEME_SETTINGS.SELECT_PRIMARY' | translate">
+              <input
+                type="text"
+                [(ngModel)]="primaryColor"
+                (ngModelChange)="onColorChange()"
+                placeholder="#3b82f6"
+                class="color-text-input"
+                pattern="^#[0-9A-Fa-f]{6}$">
+            </div>
+            <span class="color-hint"><strong>{{ 'THEME_SETTINGS.PRIMARY_COLOR' | translate }}:</strong> {{ 'THEME_SETTINGS.PRIMARY_COLOR_HINT' | translate }}</span>
+          </div>
+
+          <div class="color-input-group">
+            <label class="color-label">
+              <mat-icon class="color-icon">circle</mat-icon>
+              {{ 'THEME_SETTINGS.SECONDARY_COLOR' | translate }}
+            </label>
+            <div class="color-picker-wrapper">
+              <input
+                type="color"
+                [(ngModel)]="secondaryColor"
+                (ngModelChange)="onColorChange()"
+                class="color-picker"
+                [title]="'THEME_SETTINGS.SELECT_SECONDARY' | translate">
+              <input
+                type="text"
+                [(ngModel)]="secondaryColor"
+                (ngModelChange)="onColorChange()"
+                placeholder="#9333ea"
+                class="color-text-input"
+                pattern="^#[0-9A-Fa-f]{6}$">
+            </div>
+            <span class="color-hint"><strong>{{ 'THEME_SETTINGS.SECONDARY_COLOR' | translate }}:</strong> {{ 'THEME_SETTINGS.SECONDARY_COLOR_HINT' | translate }}</span>
+          </div>
+
+          <div class="color-input-group">
+            <label class="color-label">
+              <mat-icon class="color-icon">circle</mat-icon>
+              {{ 'THEME_SETTINGS.ACCENT_COLOR' | translate }}
+            </label>
+            <div class="color-picker-wrapper">
+              <input
+                type="color"
+                [(ngModel)]="accentColor"
+                (ngModelChange)="onColorChange()"
+                class="color-picker"
+                [title]="'THEME_SETTINGS.SELECT_ACCENT' | translate">
+              <input
+                type="text"
+                [(ngModel)]="accentColor"
+                (ngModelChange)="onColorChange()"
+                placeholder="#7d00fa"
+                class="color-text-input"
+                pattern="^#[0-9A-Fa-f]{6}$">
+            </div>
+            <span class="color-hint"><strong>{{ 'THEME_SETTINGS.ACCENT_COLOR' | translate }}:</strong> {{ 'THEME_SETTINGS.ACCENT_COLOR_HINT' | translate }}</span>
+          </div>
+        </div>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Text Colors Section -->
+      <section class="settings-section">
+        <h3 class="section-title">
+          <mat-icon>text_fields</mat-icon>
+          {{ 'THEME_SETTINGS.TEXT_COLORS' | translate }}
+        </h3>
+        <p class="section-description">
+          {{ 'THEME_SETTINGS.TEXT_COLORS_DESC' | translate }}
+        </p>
+        
+        <div class="color-inputs">
+          <div class="color-input-group">
+            <label class="color-label">
+              <mat-icon class="color-icon">title</mat-icon>
+              {{ 'THEME_SETTINGS.PRIMARY_TEXT_COLOR' | translate }}
+            </label>
+            <div class="color-picker-wrapper">
+              <input
+                type="color"
+                [(ngModel)]="textPrimaryColor"
+                (ngModelChange)="onColorChange()"
+                class="color-picker"
+                [title]="'THEME_SETTINGS.SELECT_PRIMARY_TEXT' | translate">
+              <input
+                type="text"
+                [(ngModel)]="textPrimaryColor"
+                (ngModelChange)="onColorChange()"
+                placeholder="#1f2937"
+                class="color-text-input"
+                pattern="^#[0-9A-Fa-f]{6}$">
+            </div>
+            <span class="color-hint"><strong>{{ 'THEME_SETTINGS.PRIMARY_TEXT_COLOR' | translate }}:</strong> {{ 'THEME_SETTINGS.PRIMARY_TEXT_HINT' | translate }}</span>
+          </div>
+
+          <div class="color-input-group">
+            <label class="color-label">
+              <mat-icon class="color-icon">subject</mat-icon>
+              {{ 'THEME_SETTINGS.SECONDARY_TEXT_COLOR' | translate }}
+            </label>
+            <div class="color-picker-wrapper">
+              <input
+                type="color"
+                [(ngModel)]="textSecondaryColor"
+                (ngModelChange)="onColorChange()"
+                class="color-picker"
+                [title]="'THEME_SETTINGS.SELECT_SECONDARY_TEXT' | translate">
+              <input
+                type="text"
+                [(ngModel)]="textSecondaryColor"
+                (ngModelChange)="onColorChange()"
+                placeholder="#6b7280"
+                class="color-text-input"
+                pattern="^#[0-9A-Fa-f]{6}$">
+            </div>
+            <span class="color-hint"><strong>{{ 'THEME_SETTINGS.SECONDARY_TEXT_COLOR' | translate }}:</strong> {{ 'THEME_SETTINGS.SECONDARY_TEXT_HINT' | translate }}</span>
+          </div>
+
+          <div class="color-input-group">
+            <label class="color-label">
+              <mat-icon class="color-icon">notes</mat-icon>
+              {{ 'THEME_SETTINGS.TERTIARY_TEXT_COLOR' | translate }}
+            </label>
+            <div class="color-picker-wrapper">
+              <input
+                type="color"
+                [(ngModel)]="textTertiaryColor"
+                (ngModelChange)="onColorChange()"
+                class="color-picker"
+                [title]="'THEME_SETTINGS.SELECT_TERTIARY_TEXT' | translate">
+              <input
+                type="text"
+                [(ngModel)]="textTertiaryColor"
+                (ngModelChange)="onColorChange()"
+                placeholder="#9ca3af"
+                class="color-text-input"
+                pattern="^#[0-9A-Fa-f]{6}$">
+            </div>
+            <span class="color-hint"><strong>{{ 'THEME_SETTINGS.TERTIARY_TEXT_COLOR' | translate }}:</strong> {{ 'THEME_SETTINGS.TERTIARY_TEXT_HINT' | translate }}</span>
+          </div>
+        </div>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Background Colors Section -->
+      <section class="settings-section">
+        <h3 class="section-title">
+          <mat-icon>wallpaper</mat-icon>
+          {{ 'THEME_SETTINGS.BACKGROUND_COLORS' | translate }}
+        </h3>
+        <p class="section-description">
+          {{ 'THEME_SETTINGS.BACKGROUND_COLORS_DESC' | translate }}
+        </p>
+        
+        <div class="color-inputs">
+          <div class="color-input-group">
+            <label class="color-label">
+              <mat-icon class="color-icon">dashboard</mat-icon>
+              {{ 'THEME_SETTINGS.MAIN_BACKGROUND' | translate }}
+            </label>
+            <div class="color-picker-wrapper">
+              <input
+                type="color"
+                [(ngModel)]="bgPrimaryColor"
+                (ngModelChange)="onColorChange()"
+                class="color-picker"
+                [title]="'THEME_SETTINGS.SELECT_MAIN_BACKGROUND' | translate">
+              <input
+                type="text"
+                [(ngModel)]="bgPrimaryColor"
+                (ngModelChange)="onColorChange()"
+                placeholder="#ffffff"
+                class="color-text-input"
+                pattern="^#[0-9A-Fa-f]{6}$">
+            </div>
+            <span class="color-hint"><strong>{{ 'THEME_SETTINGS.MAIN_BACKGROUND' | translate }}:</strong> {{ 'THEME_SETTINGS.MAIN_BACKGROUND_HINT' | translate }}</span>
+          </div>
+
+          <div class="color-input-group">
+            <label class="color-label">
+              <mat-icon class="color-icon">view_quilt</mat-icon>
+              {{ 'THEME_SETTINGS.SECONDARY_BACKGROUND' | translate }}
+            </label>
+            <div class="color-picker-wrapper">
+              <input
+                type="color"
+                [(ngModel)]="bgSecondaryColor"
+                (ngModelChange)="onColorChange()"
+                class="color-picker"
+                [title]="'THEME_SETTINGS.SELECT_SECONDARY_BACKGROUND' | translate">
+              <input
+                type="text"
+                [(ngModel)]="bgSecondaryColor"
+                (ngModelChange)="onColorChange()"
+                placeholder="#f9fafb"
+                class="color-text-input"
+                pattern="^#[0-9A-Fa-f]{6}$">
+            </div>
+            <span class="color-hint"><strong>{{ 'THEME_SETTINGS.SECONDARY_BACKGROUND' | translate }}:</strong> {{ 'THEME_SETTINGS.SECONDARY_BACKGROUND_HINT' | translate }}</span>
+          </div>
+
+          <div class="color-input-group">
+            <label class="color-label">
+              <mat-icon class="color-icon">web_asset</mat-icon>
+              {{ 'THEME_SETTINGS.SURFACE' | translate }}
+            </label>
+            <div class="color-picker-wrapper">
+              <input
+                type="color"
+                [(ngModel)]="surfaceColor"
+                (ngModelChange)="onColorChange()"
+                class="color-picker"
+                [title]="'THEME_SETTINGS.SELECT_SURFACE' | translate">
+              <input
+                type="text"
+                [(ngModel)]="surfaceColor"
+                (ngModelChange)="onColorChange()"
+                placeholder="#ffffff"
+                class="color-text-input"
+                pattern="^#[0-9A-Fa-f]{6}$">
+            </div>
+            <span class="color-hint"><strong>{{ 'THEME_SETTINGS.SURFACE' | translate }}:</strong> {{ 'THEME_SETTINGS.SURFACE_HINT' | translate }}</span>
+          </div>
+        </div>
+      </section>
+
+      <mat-divider></mat-divider>
+
+
+
+      <!-- Advanced UI Element Colors Section (Collapsible) -->
+      <section class="settings-section">
+        <mat-expansion-panel class="advanced-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>tune</mat-icon>
+              <span>{{ 'THEME_SETTINGS.ADVANCED_UI' | translate }}</span>
+            </mat-panel-title>
+            <mat-panel-description>
+              {{ 'THEME_SETTINGS.ADVANCED_UI_DESC' | translate }}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          
+          <div class="color-inputs">
+            <div class="color-input-group">
+              <label class="color-label">
+                <mat-icon class="color-icon">border_style</mat-icon>
+                {{ 'THEME_SETTINGS.BORDER_COLOR' | translate }}
+              </label>
+              <div class="color-picker-wrapper">
+                <input
+                  type="color"
+                  [(ngModel)]="borderColor"
+                  (ngModelChange)="onColorChange()"
+                  class="color-picker"
+                  [title]="'THEME_SETTINGS.SELECT_BORDER' | translate">
+                <input
+                  type="text"
+                  [(ngModel)]="borderColor"
+                  (ngModelChange)="onColorChange()"
+                  placeholder="#e5e7eb"
+                  class="color-text-input"
+                  pattern="^#[0-9A-Fa-f]{6}$">
+              </div>
+              <span class="color-hint"><strong>{{ 'THEME_SETTINGS.BORDER_COLOR' | translate }}:</strong> {{ 'THEME_SETTINGS.BORDER_COLOR_HINT' | translate }}</span>
+            </div>
+
+            <div class="color-input-group">
+              <label class="color-label">
+                <mat-icon class="color-icon">input</mat-icon>
+                {{ 'THEME_SETTINGS.INPUT_BACKGROUND' | translate }}
+              </label>
+              <div class="color-picker-wrapper">
+                <input
+                  type="color"
+                  [(ngModel)]="inputBgColor"
+                  (ngModelChange)="onColorChange()"
+                  class="color-picker"
+                  [title]="'THEME_SETTINGS.SELECT_INPUT_BACKGROUND' | translate">
+                <input
+                  type="text"
+                  [(ngModel)]="inputBgColor"
+                  (ngModelChange)="onColorChange()"
+                  placeholder="#ffffff"
+                  class="color-text-input"
+                  pattern="^#[0-9A-Fa-f]{6}$">
+              </div>
+              <span class="color-hint"><strong>{{ 'THEME_SETTINGS.INPUT_BACKGROUND' | translate }}:</strong> {{ 'THEME_SETTINGS.INPUT_BACKGROUND_HINT' | translate }}</span>
+            </div>
+
+            <div class="color-input-group">
+              <label class="color-label">
+                <mat-icon class="color-icon">smart_button</mat-icon>
+                {{ 'THEME_SETTINGS.BUTTON_TEXT' | translate }}
+              </label>
+              <div class="color-picker-wrapper">
+                <input
+                  type="color"
+                  [(ngModel)]="buttonTextColor"
+                  (ngModelChange)="onColorChange()"
+                  class="color-picker"
+                  [title]="'THEME_SETTINGS.SELECT_BUTTON_TEXT' | translate">
+                <input
+                  type="text"
+                  [(ngModel)]="buttonTextColor"
+                  (ngModelChange)="onColorChange()"
+                  placeholder="#ffffff"
+                  class="color-text-input"
+                  pattern="^#[0-9A-Fa-f]{6}$">
+              </div>
+              <span class="color-hint"><strong>{{ 'THEME_SETTINGS.BUTTON_TEXT' | translate }}:</strong> {{ 'THEME_SETTINGS.BUTTON_TEXT_HINT' | translate }}</span>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </section>
+
+      <mat-divider></mat-divider>
+
+      <!-- Preview Section -->
+      <section class="settings-section">
+        <h3 class="section-title">{{ 'THEME_SETTINGS.PREVIEW' | translate }}</h3>
+        <div class="preview-container">
+          <div class="preview-item">
+            <button mat-raised-button class="preview-primary-btn">{{ 'BUTTONS.PRIMARY' | translate }}</button>
+          </div>
+          <div class="preview-item">
+            <button mat-raised-button class="preview-secondary-btn">{{ 'BUTTONS.SECONDARY' | translate }}</button>
+          </div>
+          <div class="preview-item">
+            <button mat-stroked-button class="preview-accent-btn">{{ 'BUTTONS.ACCENT' | translate }}</button>
+          </div>
+          <div class="preview-item full-width">
+            <div class="preview-card">
+              <h4>{{ 'THEME_SETTINGS.SAMPLE_CARD' | translate }}</h4>
+              <p>{{ 'THEME_SETTINGS.SAMPLE_CARD_DESC' | translate }}</p>
+              <button mat-button class="preview-link">{{ 'BUTTONS.LEARN_MORE' | translate }}</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </mat-card-content>
+
+    <mat-card-actions class="card-actions">
+      <button mat-raised-button color="primary" (click)="applyCustomColors()">
+        <mat-icon>check</mat-icon>
+        {{ 'THEME_SETTINGS.APPLY' | translate }}
+      </button>
+      <button mat-raised-button color="warn" (click)="resetToDefaults()">
+        <mat-icon>refresh</mat-icon>
+        {{ 'THEME_SETTINGS.RESET' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+</div>

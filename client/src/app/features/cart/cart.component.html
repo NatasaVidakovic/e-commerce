@@ -1,0 +1,24 @@
+<section class="cart-section">
+  @if (cartService.cart()?.items?.length! > 0) {
+
+  <div class="cart-container">
+    <div class="cart-items">
+      @for (item of cartService.cart()?.items; track item.productId) {
+      <app-cart-item [item]="item"></app-cart-item>
+      }
+    </div>
+    <div class="cart-summary">
+      <app-order-summary></app-order-summary>
+    </div>
+  </div>
+
+  } @else {
+  <app-empty-state 
+    [message]="'CART.EMPTY' | translate"
+    icon="remove_shopping_cart"
+    [actionText]="'BUTTONS.GO_TO_SHOP' | translate"
+    (action)="onAction()"
+  />
+  }
+
+</section>

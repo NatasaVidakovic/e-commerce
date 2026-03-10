@@ -1,0 +1,289 @@
+// Theme Variables - Centralized color system for the entire application
+// This file defines CSS custom properties (variables) for both light and dark themes
+
+:root {
+  // ==========================================
+  // LIGHT THEME (Default)
+  // ==========================================
+  
+  // Primary Colors
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-active: #1d4ed8;
+  --color-primary-light: #dbeafe;
+  --color-primary-lighter: #eff6ff;
+  
+  // Secondary Colors
+  --color-secondary: #9333ea;
+  --color-secondary-hover: #7e22ce;
+  --color-secondary-active: #6b21a8;
+  --color-secondary-light: #f3e8ff;
+  
+  // Accent Colors
+  --color-accent: #7d00fa;
+  --color-accent-hover: #6b00d9;
+  
+  // Success Colors
+  --color-success: #16a34a;
+  --color-success-hover: #15803d;
+  --color-success-light: #d1fae5;
+  --color-success-dark: #065f46;
+  
+  // Error Colors
+  --color-error: #dc2626;
+  --color-error-hover: #b91c1c;
+  --color-error-light: #fee2e2;
+  --color-error-dark: #991b1b;
+  
+  // Warning Colors
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-warning-light: #fef3c7;
+  --color-warning-dark: #92400e;
+  
+  // Info Colors
+  --color-info: #0ea5e9;
+  --color-info-hover: #0284c7;
+  --color-info-light: #e0f2fe;
+  --color-info-dark: #075985;
+  
+  // Text Colors
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #6b7280;
+  --color-text-disabled: #9ca3af;
+  --color-text-inverse: #ffffff;
+  
+  // Background Colors
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+  --color-bg-hover: #f3f4f6;
+  --color-bg-active: #e5e7eb;
+  --color-bg-disabled: #f3f4f6;
+  --color-bg-overlay: rgba(0, 0, 0, 0.1);
+  
+  // Surface Colors (for cards, panels, etc.)
+  --color-surface: #ffffff;
+  --color-surface-hover: #f9fafb;
+  --color-surface-raised: #ffffff;
+  
+  // Border Colors
+  --color-border-primary: #e5e7eb;
+  --color-border-secondary: #d1d5db;
+  --color-border-focus: #3b82f6;
+  --color-border-error: #dc2626;
+  
+  // Shadow Colors
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  // Button Colors
+  --color-btn-primary-bg: var(--color-primary);
+  --color-btn-primary-hover: var(--color-primary-hover);
+  --color-btn-primary-text: #ffffff;
+  --color-btn-secondary-bg: var(--color-secondary);
+  --color-btn-secondary-hover: var(--color-secondary-hover);
+  --color-btn-secondary-text: #ffffff;
+  
+  // Input Colors
+  --color-input-bg: #ffffff;
+  --color-input-border: #d1d5db;
+  --color-input-border-focus: var(--color-primary);
+  --color-input-text: #374151;
+  --color-input-placeholder: #9ca3af;
+  
+  // Badge Colors
+  --color-badge-draft-bg: #e0e7ff;
+  --color-badge-draft-text: #4338ca;
+  --color-badge-active-bg: #d1fae5;
+  --color-badge-active-text: #065f46;
+  --color-badge-expired-bg: #fee2e2;
+  --color-badge-expired-text: #991b1b;
+  --color-badge-disabled-bg: #fef3c7;
+  --color-badge-disabled-text: #92400e;
+  --color-badge-default-bg: #f3f4f6;
+  --color-badge-default-text: #374151;
+  
+  // Gradient Colors
+  --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  --gradient-secondary: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+  --gradient-accent: linear-gradient(to bottom right, #3b82f6, #9333ea);
+  --gradient-surface: linear-gradient(to bottom right, #ffffff, #f9fafb);
+  
+  // Notification/Snackbar Colors
+  --color-snackbar-error-bg: #dc2626;
+  --color-snackbar-error-text: #ffffff;
+  --color-snackbar-success-bg: #16a34a;
+  --color-snackbar-success-text: #ffffff;
+  --color-snackbar-warning-bg: #f59e0b;
+  --color-snackbar-warning-text: #ffffff;
+  --color-snackbar-info-bg: #0ea5e9;
+  --color-snackbar-info-text: #ffffff;
+  
+  // Discount/Promotion Colors
+  --color-discount-bg: var(--gradient-accent);
+  --color-discount-text: #1f2937;
+  --color-discount-count-bg: #dbeafe;
+  --color-discount-count-text: #1e3a8a;
+  
+  // Product Card Colors
+  --color-product-card: #ffffff;
+  
+  // Table Colors
+  --color-table-row-bg: transparent;
+  --color-table-header-bg: transparent;
+  --color-table-row-hover: var(--color-bg-hover);
+  --color-table-row-selected: var(--color-primary-light);
+  --color-table-border: transparent;
+  
+  // Filter Colors
+  --color-filter-active-bg: #dbeafe;
+  --color-filter-active-text: #1e40af;
+  --color-filter-inactive-chip: #f3f4f6;
+}
+
+// ==========================================
+// DARK THEME
+// ==========================================
+[data-theme="dark"] {
+  // Primary Colors
+  --color-primary: #60a5fa;
+  --color-primary-hover: #3b82f6;
+  --color-primary-active: #2563eb;
+  --color-primary-light: #1e3a8a;
+  --color-primary-lighter: #1e40af;
+  
+  // Secondary Colors
+  --color-secondary: #a855f7;
+  --color-secondary-hover: #9333ea;
+  --color-secondary-active: #7e22ce;
+  --color-secondary-light: #581c87;
+  
+  // Accent Colors
+  --color-accent: #a855f7;
+  --color-accent-hover: #9333ea;
+  
+  // Success Colors
+  --color-success: #22c55e;
+  --color-success-hover: #16a34a;
+  --color-success-light: #14532d;
+  --color-success-dark: #86efac;
+  
+  // Error Colors
+  --color-error: #ef4444;
+  --color-error-hover: #dc2626;
+  --color-error-light: #7f1d1d;
+  --color-error-dark: #fca5a5;
+  
+  // Warning Colors
+  --color-warning: #fbbf24;
+  --color-warning-hover: #f59e0b;
+  --color-warning-light: #78350f;
+  --color-warning-dark: #fde68a;
+  
+  // Info Colors
+  --color-info: #38bdf8;
+  --color-info-hover: #0ea5e9;
+  --color-info-light: #0c4a6e;
+  --color-info-dark: #7dd3fc;
+  
+  // Text Colors (improved contrast for dark mode)
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-text-tertiary: #9ca3af;
+  --color-text-disabled: #6b7280;
+  --color-text-inverse: #111827;
+  
+  // Background Colors
+  --color-bg-primary: #111827;
+  --color-bg-secondary: #1f2937;
+  --color-bg-tertiary: #374151;
+  --color-bg-hover: #374151;
+  --color-bg-active: #4b5563;
+  --color-bg-disabled: #374151;
+  --color-bg-overlay: rgba(0, 0, 0, 0.5);
+  
+  // Surface Colors
+  --color-surface: #1f2937;
+  --color-surface-hover: #374151;
+  --color-surface-raised: #374151;
+  
+  // Border Colors
+  --color-border-primary: #374151;
+  --color-border-secondary: #4b5563;
+  --color-border-focus: #60a5fa;
+  --color-border-error: #ef4444;
+  
+  // Shadow Colors
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  
+  // Button Colors (better contrast in dark mode)
+  --color-btn-primary-bg: var(--color-primary);
+  --color-btn-primary-hover: var(--color-primary-hover);
+  --color-btn-primary-text: #ffffff;
+  --color-btn-secondary-bg: var(--color-secondary);
+  --color-btn-secondary-hover: var(--color-secondary-hover);
+  --color-btn-secondary-text: #ffffff;
+  
+  // Input Colors
+  --color-input-bg: #374151;
+  --color-input-border: #4b5563;
+  --color-input-border-focus: var(--color-primary);
+  --color-input-text: #f9fafb;
+  --color-input-placeholder: #9ca3af;
+  
+  // Badge Colors
+  --color-badge-draft-bg: #312e81;
+  --color-badge-draft-text: #c7d2fe;
+  --color-badge-active-bg: #14532d;
+  --color-badge-active-text: #86efac;
+  --color-badge-expired-bg: #7f1d1d;
+  --color-badge-expired-text: #fca5a5;
+  --color-badge-disabled-bg: #78350f;
+  --color-badge-disabled-text: #fde68a;
+  --color-badge-default-bg: #374151;
+  --color-badge-default-text: #e5e7eb;
+  
+  // Gradient Colors
+  --gradient-primary: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  --gradient-secondary: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+  --gradient-accent: linear-gradient(to bottom right, #60a5fa, #a855f7);
+  --gradient-surface: linear-gradient(to bottom right, #1f2937, #374151);
+  
+  // Notification/Snackbar Colors (better contrast)
+  --color-snackbar-error-bg: #ef4444;
+  --color-snackbar-error-text: #ffffff;
+  --color-snackbar-success-bg: #22c55e;
+  --color-snackbar-success-text: #ffffff;
+  --color-snackbar-warning-bg: #f59e0b;
+  --color-snackbar-warning-text: #ffffff;
+  --color-snackbar-info-bg: #38bdf8;
+  --color-snackbar-info-text: #ffffff;
+  
+  // Discount/Promotion Colors
+  --color-discount-bg: var(--gradient-accent);
+  --color-discount-text: #f9fafb;
+  --color-discount-count-bg: #1e3a8a;
+  --color-discount-count-text: #93c5fd;
+  
+  // Product Card Colors
+  --color-product-card: #1f2937;
+  
+  // Table Colors
+  --color-table-row-bg: transparent;
+  --color-table-header-bg: transparent;
+  --color-table-row-hover: var(--color-bg-active);
+  --color-table-row-selected: rgba(96, 165, 250, 0.15);
+  --color-table-border: transparent;
+  
+  // Filter Colors
+  --color-filter-active-bg: rgba(96, 165, 250, 0.15);
+  --color-filter-active-text: #93c5fd;
+  --color-filter-inactive-chip: #374151;
+}

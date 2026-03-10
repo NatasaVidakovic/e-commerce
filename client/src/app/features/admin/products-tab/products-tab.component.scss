@@ -1,0 +1,85 @@
+@import '../../../../styles/breakpoints';
+@import '../../../../styles/spacing';
+
+.mat-form-field-infix {
+    padding: 6px 0 !important;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline {
+    border-radius: 10px !important;
+}
+
+.compact-dialog .mat-mdc-dialog-container {
+  padding: 0;
+}
+
+.compact-dialog .mat-mdc-dialog-surface {
+  border-radius: 12px;
+}
+
+// Table container — horizontal scroll on small screens
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+::ng-deep {
+  // mat-mdc-paginator replaced by custom app-pagination; keep visible
+  .mat-mdc-paginator {
+    display: block;
+  }
+
+  table.mat-mdc-table {
+    width: 100%;
+    min-width: 640px; // ensures content is readable before scroll kicks in
+
+    @media (max-width: 767px) {
+      font-size: 0.75rem;
+
+      th.mat-mdc-header-cell {
+        padding: $spacing-1 $spacing-2;
+        font-size: 0.7rem;
+      }
+
+      td.mat-mdc-cell {
+        padding: $spacing-1 $spacing-2;
+        font-size: 0.75rem;
+        word-break: break-word;
+      }
+
+      .mat-column-pictureUrl img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .mat-mdc-icon-button {
+        min-width: 2rem;
+        min-height: 2rem;
+        padding: 0;
+
+        mat-icon {
+          font-size: 1rem;
+          width: 1rem;
+          height: 1rem;
+        }
+      }
+    }
+
+    @include md {
+      th.mat-mdc-header-cell,
+      td.mat-mdc-cell {
+        font-size: 0.875rem;
+        padding: $spacing-3;
+      }
+    }
+  }
+
+  .mat-mdc-form-field {
+    width: 100%;
+
+    @include sm {
+      width: auto;
+    }
+  }
+}

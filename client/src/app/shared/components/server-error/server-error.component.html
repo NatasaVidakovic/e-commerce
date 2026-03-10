@@ -1,0 +1,16 @@
+<div class="container mt-5 p-4 rounded shadow-lg" style="background-color: var(--color-bg-secondary);">
+    <h4 class="text-2xl font-semibold mb-4">{{ 'ERROR.INTERNAL_SERVER_ERROR' | translate }}</h4>
+    @if (error) {
+    <h5 class="text-red-600 text-lg mb-2">{{ 'ERROR.ERROR_PREFIX' | translate }}: {{ error.message }}</h5>
+    <p class="font-bold mb-2">{{ 'ERROR.SERVER_NOT_ANGULAR' | translate }}</p>
+    <p class="mb-2">{{ 'ERROR.WHAT_TO_DO' | translate }}</p>
+    <ol class="list-decimal ml-5 mb-4">
+        <li class="mb-1">{{ 'ERROR.CHECK_NETWORK_TAB' | translate }}</li>
+        <li>{{ 'ERROR.REPRODUCE_POSTMAN' | translate }}</li>
+    </ol>
+    <h5 class="text-lg font-semibold mb-2">{{ 'ERROR.STACK_TRACE' | translate }}</h5>
+    <mat-card class="p-4" style="background-color: var(--color-surface);">
+        <code class="block whitespace-pre-wrap">{{ error.details }}</code>
+    </mat-card>
+    }
+</div>

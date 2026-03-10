@@ -1,0 +1,106 @@
+<div class="flex justify-between items-center mb-6 mt-6 w-full max-w-full">
+    <div class="flex items-center gap-2">
+        <button *ngIf="!enableAddFromExisting && enableEdit" mat-flat-button color="primary" class="flex items-center gap-2" (click)="goToAdd()">
+            <mat-icon>add</mat-icon>
+            {{ 'PRODUCT.ADD' | translate }}
+        </button>
+
+        <button *ngIf="selectedProduct && enableEdit" mat-stroked-button color="primary" class="flex items-center gap-2" (click)="goToEditSelected()">
+            <mat-icon>edit</mat-icon>
+            {{ 'COMMON.EDIT' | translate }}
+        </button>
+
+        <button *ngIf="selectedProduct && enableDelete" mat-stroked-button color="warn" class="flex items-center gap-2" (click)="deleteSelected()">
+            <mat-icon>delete</mat-icon>
+            {{ 'COMMON.DELETE' | translate }}
+        </button>
+
+        <button 
+            *ngIf="enableAddFromExisting"
+            mat-stroked-button 
+            color="primary" 
+            class="flex items-center gap-2" 
+            (click)="openAddFromExistingDialog()">
+            <mat-icon>playlist_add</mat-icon>
+            {{ 'PRODUCT.ADD' | translate }}
+        </button>
+
+        <button mat-stroked-button color="primary" class="flex items-center gap-2" (click)="reloadProducts()">
+            <mat-icon>refresh</mat-icon>
+            {{ 'COMMON.REFRESH' | translate }}
+        </button>
+    </div>
+</div>
+
+<div class="table-container">
+    <table mat-table [dataSource]="dataSource" class="w-full order-table compact-table">
+
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ID' | translate }}</th>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="'COMMON.ID' | translate">{{ p.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="pictureUrl">
+            <th mat-header-cell *matHeaderCellDef>{{ 'PRODUCT.IMAGE' | translate }}</th>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="'PRODUCT.IMAGE' | translate">
+                <img [src]="p.pictureUrl" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: p.name }" class="w-12 h-12 object-cover rounded">
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>{{ 'PRODUCT.NAME' | translate }}</th>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="'PRODUCT.NAME' | translate">
+                <button mat-button color="primary" class="p-0 min-w-0" (click)="$event.stopPropagation(); onRowClick(p);">
+                    {{ p.name }}
+                </button>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="brand">
+            <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.BRAND' | translate }}</th>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="'COMMON.BRAND' | translate">{{ p.brand }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.TYPE' | translate }}</th>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="'COMMON.TYPE' | translate">{{ p.productType?.name || p.type }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef>{{ 'PRODUCT.PRICE' | translate }}</th>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="'PRODUCT.PRICE' | translate">{{ p.price | currency:'EUR' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="quantityInStock">
+            <th mat-header-cell *matHeaderCellDef>{{ 'PRODUCT.STOCK' | translate }}</th>
+            <td mat-cell *matCellDef="let p" class="text-center" [attr.data-label]="'PRODUCT.STOCK' | translate">{{ p.quantityInStock }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="rating">
+            <th mat-header-cell *matHeaderCellDef>{{ 'FORM.RATING' | translate }}</th>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="'FORM.RATING' | translate">
+                <div class="flex items-center gap-1">
+                    <ng-container *ngFor="let star of [1,2,3,4,5]">
+                        <mat-icon class="text-base" [ngStyle]="{'color': star <= (p.rating || 0) ? '#facc15' : '#d1d5db', 'font-size': '18px', 'width': '18px', 'height': '18px'}">
+                            {{ star <= (p.rating || 0) ? 'star' : (star - 0.5 <= (p.rating || 0) ? 'star_half' : 'star_border') }}
+                        </mat-icon>
+                    </ng-container>
+                    <span class="text-sm ml-1" style="color: var(--color-text-secondary);">{{ (p.rating || 0) | number:'1.1-1' }}</span>
+                </div>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onRowClick(row)" [class.selected]="selectedProduct?.id === row.id"></tr>
+
+    </table>
+</div>
+
+<app-pagination
+    [length]="totalCount"
+    [pageSize]="pageSize"
+    [pageIndex]="pageNumber - 1"
+    [pageSizeOptions]="[10, 25, 50, 100]"
+    [showFirstLastButtons]="true"
+    (page)="onPage($event)">
+</app-pagination>

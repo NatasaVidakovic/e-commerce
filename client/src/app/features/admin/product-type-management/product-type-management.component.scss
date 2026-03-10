@@ -1,0 +1,124 @@
+@import '../../../../styles/breakpoints';
+@import '../../../../styles/spacing';
+
+.product-type-management {
+  padding: $spacing-4;
+
+  @include md {
+    padding: $spacing-6;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-4;
+
+    h2 {
+      margin: 0;
+      color: var(--color-text-primary);
+      font-size: 1.25rem;
+
+      @include md {
+        font-size: 1.5rem;
+      }
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  .table-container {
+    background: var(--color-surface);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    table {
+      width: 100%;
+      background: var(--color-surface);
+
+      mat-header-cell {
+        font-weight: 600;
+        color: var(--color-text-secondary);
+        background: var(--color-surface);
+      }
+
+      mat-cell {
+        border-bottom: 1px solid var(--color-border-primary);
+        color: var(--color-text-primary);
+        background: var(--color-surface);
+      }
+
+      mat-row {
+        background: var(--color-surface);
+      }
+    }
+
+    .no-data {
+      padding: 40px;
+      text-align: center;
+      color: var(--color-text-secondary);
+      background: var(--color-surface);
+
+      p {
+        margin: 0;
+        font-size: 16px;
+      }
+    }
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--color-text-secondary);
+    background: var(--color-surface);
+    border-radius: 8px;
+
+    p {
+      margin: 0;
+      font-size: 16px;
+    }
+  }
+
+  mat-slide-toggle {
+    transform: scale(0.8);
+  }
+
+  button[mat-icon-button] {
+    margin-right: 8px;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .warning {
+    color: var(--color-error);
+    font-weight: 500;
+    margin: 12px 0;
+    padding: 12px;
+    background-color: var(--color-error-light);
+    border-radius: 4px;
+    border-left: 4px solid var(--color-error);
+  }
+
+  .full-width {
+    width: 100%;
+  }
+}
+
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+
+  .full-width {
+    width: 100%;
+  }
+}

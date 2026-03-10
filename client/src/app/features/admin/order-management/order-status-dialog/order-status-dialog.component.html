@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>{{ 'ADMIN.ORDER_STATUS.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <div class="order-info">
+    <p><strong>{{ 'ADMIN.ORDER_STATUS.ORDER_NUMBER' | translate }}:</strong> {{ data.order.orderNumber || data.order.id }}</p>
+    <p><strong>{{ 'ADMIN.ORDER_STATUS.CUSTOMER' | translate }}:</strong> {{ data.order.buyerEmail }}</p>
+  </div>
+
+  <form [formGroup]="statusForm" class="status-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'ADMIN.ORDER_STATUS.ORDER_STATUS_LABEL' | translate }}</mat-label>
+      <mat-select formControlName="orderStatus" required>
+        <mat-option *ngFor="let status of orderStatusOptions" [value]="status">
+          {{ status }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>{{ 'ADMIN.ORDER_STATUS.ORDER_STATUS_HINT' | translate }}</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'ADMIN.ORDER_STATUS.PAYMENT_STATUS' | translate }}</mat-label>
+      <mat-select formControlName="paymentStatus" required>
+        <mat-option *ngFor="let status of paymentStatusOptions" [value]="status">
+          {{ status }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>{{ 'ADMIN.ORDER_STATUS.PAYMENT_STATUS_HINT' | translate }}</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'ADMIN.ORDER_STATUS.DELIVERY_STATUS' | translate }}</mat-label>
+      <mat-select formControlName="deliveryStatus" required>
+        <mat-option *ngFor="let status of deliveryStatusOptions" [value]="status">
+          {{ status }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>{{ 'ADMIN.ORDER_STATUS.DELIVERY_STATUS_HINT' | translate }}</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'ADMIN.ORDER_STATUS.COMMENT' | translate }}</mat-label>
+      <textarea matInput formControlName="comment" rows="3" 
+                placeholder="{{ 'ADMIN.ORDER_STATUS.COMMENT_PLACEHOLDER' | translate }}"></textarea>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="sendEmailNotification" class="full-width">
+      {{ 'ADMIN.ORDER_STATUS.SEND_EMAIL_NOTIFICATION' | translate }}
+    </mat-checkbox>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="saving">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="onSave()" 
+          [disabled]="!statusForm.valid || saving">
+    {{ saving ? 'Saving...' : ('COMMON.SAVE' | translate) }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,387 @@
+@if (order) {
+<mat-card class="order-detail-card py-4 sm:py-8 max-w-screen-lg mx-auto shadow-md">
+    <div class="px-3 sm:px-6 w-full">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <h2 class="text-xl sm:text-2xl font-semibold" style="color: var(--color-text-primary);">
+                {{ 'ORDER_DETAILS.TITLE' | translate: { orderId: order.id } }}
+            </h2>
+            <button (click)="onReturnClick()" mat-stroked-button class="w-full sm:w-auto">{{ 'ORDER_DETAILS.RETURN_BUTTON' | translate }}</button>
+        </div>
+
+        <!-- Status Banner -->
+        <div class="status-banner mt-6 p-4 rounded-lg flex flex-wrap gap-4 items-center justify-between"
+             style="background: var(--color-surface-variant); border: 1px solid var(--color-border-primary);">
+            <div class="flex items-center gap-3">
+                <mat-icon class="text-3xl" style="width:32px; height:32px; font-size:32px;"
+                    [style.color]="order.status === 'Delivered' ? 'var(--color-success)' :
+                                   order.status === 'Cancelled' || order.status === 'Returned' ? 'var(--color-error)' :
+                                   order.status === 'Shipped' ? 'var(--color-info)' : 'var(--color-primary)'">
+                    {{ order.status === 'Delivered' ? 'check_circle' :
+                       order.status === 'Cancelled' ? 'cancel' :
+                       order.status === 'Returned' ? 'undo' :
+                       order.status === 'Shipped' ? 'local_shipping' :
+                       order.status === 'Preparing' ? 'inventory_2' :
+                       order.status === 'Confirmed' ? 'thumb_up' : 'pending' }}
+                </mat-icon>
+                <div>
+                    <div class="text-sm" style="color: var(--color-text-secondary);">{{ 'COMMON.STATUS' | translate }}</div>
+                    <div class="text-lg font-bold">
+                        <span class="badge" [ngClass]="{
+                            'badge-order-status-new': order.status === 'New',
+                            'badge-order-status-confirmed': order.status === 'Confirmed',
+                            'badge-order-status-preparing': order.status === 'Preparing',
+                            'badge-order-status-shipped': order.status === 'Shipped',
+                            'badge-order-status-delivered': order.status === 'Delivered',
+                            'badge-order-status-cancelled': order.status === 'Cancelled',
+                            'badge-order-status-returned': order.status === 'Returned'
+                        }">
+                            {{ 'ORDER.STATUS.' + order.status.toUpperCase() | translate }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-6 flex-wrap">
+                <!-- Payment Status -->
+                <div class="text-center">
+                    <div class="text-xs" style="color: var(--color-text-secondary);">{{ 'ORDER_DETAILS.PAYMENT_STATUS' | translate }}</div>
+                    <span class="badge mt-1" [ngClass]="{
+                        'badge-payment-status-paid': order.paymentStatus === 'Paid',
+                        'badge-payment-status-pending': order.paymentStatus === 'Pending',
+                        'badge-payment-status-failed': order.paymentStatus === 'Failed',
+                        'badge-payment-status-refunded': order.paymentStatus === 'Refunded'
+                    }">
+                        {{ 'PAYMENT_STATUS.' + order.paymentStatus.toUpperCase() | translate }}
+                    </span>
+                </div>
+                <!-- Delivery Status -->
+                <div class="text-center">
+                    <div class="text-xs" style="color: var(--color-text-secondary);">{{ 'ORDER_DETAILS.DELIVERY_STATUS' | translate }}</div>
+                    <span class="badge mt-1" [ngClass]="{
+                        'badge-delivery-status-delivered': order.deliveryStatus === 'Delivered',
+                        'badge-delivery-status-shipped': order.deliveryStatus === 'Shipped',
+                        'badge-delivery-status-pending': order.deliveryStatus === 'Pending' || order.deliveryStatus === 'Processing',
+                        'badge-delivery-status-returned': order.deliveryStatus === 'Returned'
+                    }">
+                        {{ 'DELIVERY_STATUS.' + order.deliveryStatus.toUpperCase() | translate }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Shipping Address -->
+            <div class="info-card p-4 rounded-lg" style="background: var(--color-surface-variant); border: 1px solid var(--color-border-primary);">
+                <div class="flex items-center gap-2 mb-2">
+                    <mat-icon style="color: var(--color-primary);">location_on</mat-icon>
+                    <h4 class="font-semibold" style="color: var(--color-text-primary);">{{ 'ORDER_DETAILS.SHIPPING_ADDRESS' | translate }}</h4>
+                </div>
+                <p class="text-sm" style="color: var(--color-text-secondary);">{{ order.shippingAddress | address }}</p>
+            </div>
+
+            <!-- Delivery Method -->
+            <div class="info-card p-4 rounded-lg" style="background: var(--color-surface-variant); border: 1px solid var(--color-border-primary);">
+                <div class="flex items-center gap-2 mb-2">
+                    <mat-icon style="color: var(--color-primary);">local_shipping</mat-icon>
+                    <h4 class="font-semibold" style="color: var(--color-text-primary);">{{ 'ORDER_DETAILS.DELIVERY_METHOD' | translate }}</h4>
+                </div>
+                <p class="text-sm font-medium" style="color: var(--color-text-primary);">{{ order.deliveryMethod }}</p>
+                <p class="text-sm" style="color: var(--color-text-secondary);">{{ order.shippingPrice | currency }}</p>
+                @if (order.tracking?.trackingNumber) {
+                    <div class="mt-2 pt-2" style="border-top: 1px solid var(--color-border-primary);">
+                        <div class="text-xs" style="color: var(--color-text-secondary);">{{ 'ORDER_DETAILS.TRACKING' | translate }}</div>
+                        <div class="text-sm font-medium" style="color: var(--color-text-primary);">
+                            {{ order.tracking?.courierName }} — {{ order.tracking?.trackingNumber }}
+                        </div>
+                        @if (order.tracking?.estimatedDeliveryDate) {
+                            <div class="text-xs" style="color: var(--color-text-secondary);">
+                                {{ 'ORDER_DETAILS.ESTIMATED_DELIVERY' | translate }}: {{ order.tracking?.estimatedDeliveryDate | date: 'mediumDate' }}
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Payment Info -->
+            <div class="info-card p-4 rounded-lg" style="background: var(--color-surface-variant); border: 1px solid var(--color-border-primary);">
+                <div class="flex items-center gap-2 mb-2">
+                    <mat-icon style="color: var(--color-primary);">payment</mat-icon>
+                    <h4 class="font-semibold" style="color: var(--color-text-primary);">{{ 'ORDER_DETAILS.PAYMENT_INFO' | translate }}</h4>
+                </div>
+                <p class="text-sm font-medium" style="color: var(--color-text-primary);">
+                    @if (order.paymentType === 'CashOnDelivery') {
+                        {{ 'CHECKOUT.CASH_ON_DELIVERY' | translate }}
+                    } @else {
+                        {{ order.paymentType }}
+                    }
+                </p>
+                @if (order.paymentSummary) {
+                    <p class="text-sm" style="color: var(--color-text-secondary);">{{ order.paymentSummary | paymentCard }}</p>
+                }
+            </div>
+        </div>
+
+        <!-- Order Details Row -->
+        <div class="mt-4 flex flex-wrap gap-6 px-1" style="color: var(--color-text-secondary);">
+            <div class="text-sm">
+                <span class="font-medium" style="color: var(--color-text-primary);">{{ 'ORDER_DETAILS.EMAIL_ADDRESS' | translate }}:</span>
+                {{ order.buyerEmail }}
+            </div>
+            <div class="text-sm">
+                <span class="font-medium" style="color: var(--color-text-primary);">{{ 'COMMON.DATE' | translate }}:</span>
+                {{ order.orderDate | date: 'medium' }}
+            </div>
+            @if (order.invoiceNumber) {
+                <div class="text-sm">
+                    <span class="font-medium" style="color: var(--color-text-primary);">{{ 'ORDER_DETAILS.INVOICE' | translate }}:</span>
+                    {{ order.invoiceNumber }}
+                </div>
+            }
+        </div>
+
+        <!-- Order Items -->
+        <div class="mt-6 overflow-x-auto -mx-3 sm:mx-0">
+            <div class="border-y min-w-[400px] sm:min-w-0" style="border-color: var(--color-border-primary);">
+                <table class="w-full text-center">
+                    <thead style="background: var(--color-surface-variant);">
+                        <tr class="text-sm" style="color: var(--color-text-secondary);">
+                            <th class="px-6 py-3 text-left">{{ 'PRODUCT.NAME' | translate }}</th>
+                            <th class="px-6 py-3">{{ 'CART.QUANTITY' | translate }}</th>
+                            <th class="px-6 py-3 text-right">{{ 'CART.PRICE' | translate }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y" style="border-color: var(--color-border-primary);">
+                        @for (item of order.orderItems; track item.productId) {
+                        <tr>
+                            <td class="py-4 px-2 sm:px-4">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <img [src]="item.pictureUrl"
+                                        [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: item.productName }"
+                                        class="w-8 h-8 sm:w-10 sm:h-10 object-cover rounded flex-shrink-0">
+                                    <span class="text-sm sm:text-base text-left" style="color: var(--color-text-primary);">{{ item.productName }}</span>
+                                </div>
+                            </td>
+                            <td class="p-2 sm:p-4" style="color: var(--color-text-secondary);">x{{ item.quantity }}</td>
+                            <td class="p-2 sm:p-4 text-right" style="color: var(--color-text-primary);">{{ item.price | currency }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="space-y-4 rounded-lg p-4 mt-4" style="background: var(--color-surface-variant); border: 1px solid var(--color-border-primary);">
+            <p class="text-xl font-semibold" style="color: var(--color-text-primary);">{{ 'ORDER_DETAILS.ORDER_SUMMARY' | translate }}</p>
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <dl class="flex items-center justify-between gap-4">
+                        <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.SUBTOTAL' | translate }}</dt>
+                        <dd class="font-medium" style="color: var(--color-text-primary);">{{ order.subtotal | currency }}</dd>
+                    </dl>
+                    @if (order.discount) {
+                        <dl class="flex items-center justify-between gap-4">
+                            <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.DISCOUNT' | translate }}</dt>
+                            <dd class="font-medium" style="color: var(--color-success);">-{{ order.discount | currency }}</dd>
+                        </dl>
+                    }
+                    <dl class="flex items-center justify-between gap-4">
+                        <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.SHIPPING' | translate }}</dt>
+                        <dd class="font-medium" style="color: var(--color-text-primary);">{{ order.shippingPrice | currency }}</dd>
+                    </dl>
+                </div>
+
+                <dl class="flex items-center justify-between gap-4 pt-2" style="border-top: 1px solid var(--color-border-primary);">
+                    <dt class="font-semibold text-lg" style="color: var(--color-text-primary);">{{ 'CART.TOTAL' | translate }}</dt>
+                    <dd class="font-bold text-lg" style="color: var(--color-text-primary);">{{ order.total | currency }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Special Notes -->
+        @if (order.specialNotes) {
+            <div class="mt-4 p-4 rounded-lg" style="background: var(--color-surface-variant); border: 1px solid var(--color-border-primary);">
+                <div class="flex items-center gap-2 mb-1">
+                    <mat-icon style="color: var(--color-primary);">note</mat-icon>
+                    <span class="font-semibold" style="color: var(--color-text-primary);">{{ 'ORDER_DETAILS.SPECIAL_NOTES' | translate }}</span>
+                </div>
+                <p class="text-sm" style="color: var(--color-text-secondary);">{{ order.specialNotes }}</p>
+            </div>
+        }
+
+        <!-- Refund Status -->
+        @if (refund) {
+            <div class="refund-status-card mt-4 p-4 rounded-lg" [ngClass]="{
+                'refund-requested': refund.status === 'Requested' || refund.status === 'UnderReview',
+                'refund-approved': refund.status === 'Approved',
+                'refund-completed': refund.status === 'Completed',
+                'refund-rejected': refund.status === 'Rejected'
+            }">
+                <div class="flex items-center gap-2 mb-3">
+                    <mat-icon>
+                        {{ refund.status === 'Completed' ? 'check_circle' :
+                           refund.status === 'Rejected' ? 'cancel' :
+                           refund.status === 'Approved' ? 'hourglass_top' : 'pending' }}
+                    </mat-icon>
+                    <span class="font-semibold text-lg">{{ 'REFUND.REFUND_STATUS_LABEL' | translate }} {{ refund.status }}</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                    <p><strong>{{ 'ADMIN.REFUND_DIALOG.AMOUNT' | translate }}:</strong> {{ refund.amount | currency }}</p>
+                    <p><strong>{{ 'ADMIN.REFUND_DIALOG.REASON' | translate }}:</strong> {{ refund.reason }}</p>
+                    @if (refund.reasonDetails) {
+                        <p class="md:col-span-2"><strong>{{ 'ADMIN.REFUND_DIALOG.DETAILS' | translate }}:</strong> {{ refund.reasonDetails }}</p>
+                    }
+                    <p><strong>{{ 'ADMIN.REFUND_DIALOG.REQUESTED_AT' | translate }}:</strong> {{ refund.requestedAt | date:'medium' }}</p>
+                    @if (refund.processedAt) {
+                        <p><strong>{{ 'REFUND.PROCESSED' | translate }}:</strong> {{ refund.processedAt | date:'medium' }}</p>
+                    }
+                    @if (refund.completedAt) {
+                        <p><strong>{{ 'REFUND.COMPLETED' | translate }}:</strong> {{ refund.completedAt | date:'medium' }}</p>
+                    }
+                    @if (refund.rejectionReason) {
+                        <p class="md:col-span-2"><strong>{{ 'ADMIN.REFUND_DIALOG.REJECTION_REASON' | translate }}:</strong> {{ refund.rejectionReason }}</p>
+                    }
+                    @if (refund.isPartialRefund && refund.items?.length) {
+                        <div class="md:col-span-2 mt-2">
+                            <p class="font-medium mb-1">{{ 'REFUND.RETURNED_PRODUCTS' | translate }}:</p>
+                            @for (item of refund.items; track item.productId) {
+                                <p class="ml-2">• {{ item.productName }} x{{ item.quantity }} — {{ item.price * item.quantity | currency }}</p>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Request Refund Button -->
+        @if (canRequestRefund) {
+            <div class="mt-4">
+                @if (!showRefundForm) {
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                        <button mat-stroked-button color="warn" (click)="showRefundForm = true">
+                            <mat-icon>money_off</mat-icon> {{ 'REFUND.REQUEST' | translate }}
+                        </button>
+                        <span class="text-xs" style="color: var(--color-text-tertiary);">
+                            {{ 'REFUND.DAYS_REMAINING' | translate: { days: daysRemaining } }}
+                        </span>
+                    </div>
+                } @else {
+                    <div class="refund-form-card p-4 rounded-lg" style="background: var(--color-surface-variant); border: 1px solid var(--color-border-primary);">
+                        <h4 class="font-semibold mb-3" style="color: var(--color-text-primary);">
+                            <mat-icon style="vertical-align: middle;">receipt_long</mat-icon> {{ 'REFUND.REQUEST' | translate }}
+                        </h4>
+                        <p class="text-xs mb-4" style="color: var(--color-text-tertiary);">
+                            {{ 'REFUND.DAYS_REMAINING' | translate: { days: daysRemaining } }}
+                        </p>
+
+                        <!-- Full / Partial choice -->
+                        <div class="flex gap-3 mb-4">
+                            <button mat-stroked-button [class.active-refund-type]="refundType === 'full'"
+                                    (click)="refundType = 'full'; selectedItems = {}">
+                                {{ 'REFUND.FULL_REFUND' | translate }}
+                            </button>
+                            <button mat-stroked-button [class.active-refund-type]="refundType === 'partial'"
+                                    (click)="refundType = 'partial'">
+                                {{ 'REFUND.PARTIAL_REFUND' | translate }}
+                            </button>
+                        </div>
+
+                        <!-- Partial: product selection -->
+                        @if (refundType === 'partial') {
+                            <div class="mb-4 rounded-lg overflow-hidden" style="border: 1px solid var(--color-border-primary);">
+                                <table class="w-full text-sm">
+                                    <thead style="background: var(--color-surface);">
+                                        <tr style="color: var(--color-text-secondary);">
+                                            <th class="px-3 py-2 text-left">{{ 'REFUND.SELECT' | translate }}</th>
+                                            <th class="px-3 py-2 text-left">{{ 'PRODUCT.NAME' | translate }}</th>
+                                            <th class="px-3 py-2 text-center">{{ 'REFUND.QTY' | translate }}</th>
+                                            <th class="px-3 py-2 text-right">{{ 'CART.PRICE' | translate }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (item of order.orderItems; track item.productId) {
+                                            <tr style="border-top: 1px solid var(--color-border-primary);">
+                                                <td class="px-3 py-2">
+                                                    <mat-checkbox [checked]="!!selectedItems[item.productId]"
+                                                                  (change)="toggleItem(item, $event.checked)"></mat-checkbox>
+                                                </td>
+                                                <td class="px-3 py-2">
+                                                    <div class="flex items-center gap-2">
+                                                        <img [src]="item.pictureUrl" [alt]="item.productName"
+                                                             class="w-8 h-8 object-cover rounded flex-shrink-0">
+                                                        <span style="color: var(--color-text-primary);">{{ item.productName }}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-3 py-2 text-center">
+                                                    @if (selectedItems[item.productId]) {
+                                                        <div class="flex items-center justify-center gap-1">
+                                                            <button mat-icon-button class="qty-btn"
+                                                                    (click)="updateItemQuantity(item, selectedItems[item.productId] - 1)"
+                                                                    [disabled]="selectedItems[item.productId] <= 1">
+                                                                <mat-icon class="text-sm">remove</mat-icon>
+                                                            </button>
+                                                            <span class="w-6 text-center" style="color: var(--color-text-primary);">{{ selectedItems[item.productId] }}</span>
+                                                            <button mat-icon-button class="qty-btn"
+                                                                    (click)="updateItemQuantity(item, selectedItems[item.productId] + 1)"
+                                                                    [disabled]="selectedItems[item.productId] >= item.quantity">
+                                                                <mat-icon class="text-sm">add</mat-icon>
+                                                            </button>
+                                                            <span class="text-xs" style="color: var(--color-text-tertiary);">/ {{ item.quantity }}</span>
+                                                        </div>
+                                                    } @else {
+                                                        <span style="color: var(--color-text-tertiary);">{{ item.quantity }}</span>
+                                                    }
+                                                </td>
+                                                <td class="px-3 py-2 text-right" style="color: var(--color-text-primary);">
+                                                    {{ item.price | currency }}
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+
+                        <!-- Refund amount display -->
+                        <p class="text-sm mb-3" style="color: var(--color-text-secondary);">
+                            {{ 'REFUND.REFUND_AMOUNT_LABEL' | translate }}:
+                            <strong style="color: var(--color-text-primary);">{{ refundAmount | currency }}</strong>
+                            @if (refundType === 'full') {
+                                <span class="text-xs" style="color: var(--color-text-tertiary);">({{ 'REFUND.FULL_ORDER' | translate }})</span>
+                            }
+                        </p>
+
+                        <!-- Reason -->
+                        <mat-form-field appearance="outline" class="w-full">
+                            <mat-label>{{ 'ADMIN.REFUND_DIALOG.REASON' | translate }}</mat-label>
+                            <mat-select [(ngModel)]="refundReason">
+                                @for (reason of refundReasons; track reason.value) {
+                                    <mat-option [value]="reason.value">{{ reason.label }}</mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full">
+                            <mat-label>{{ 'REFUND.ADDITIONAL_DETAILS' | translate }}</mat-label>
+                            <textarea matInput [(ngModel)]="refundDetails" rows="3"
+                                      [placeholder]="'REFUND.DESCRIBE_REASON' | translate"></textarea>
+                        </mat-form-field>
+                        <div class="flex gap-2 justify-end">
+                            <button mat-button (click)="showRefundForm = false; selectedItems = {}" [disabled]="refundLoading">{{ 'COMMON.CANCEL' | translate }}</button>
+                            <button mat-flat-button color="warn" (click)="submitRefundRequest()"
+                                    [disabled]="refundLoading || (refundType === 'partial' && !hasSelectedItems)">
+                                @if (refundLoading) {
+                                    {{ 'REFUND.SUBMITTING' | translate }}
+                                } @else {
+                                    {{ 'REFUND.SUBMIT' | translate }}
+                                }
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</mat-card>
+}

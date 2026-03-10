@@ -1,0 +1,38 @@
+<div class="admin-dashboard px-6 pt-6">
+  <div class="flex gap-6" [style.flex-direction]="screenWidth < 1024 ? 'column' : 'row'" [style.gap]="screenWidth < 1024 ? '1rem' : '1.5rem'">
+    <!-- Left Column: Title and Filters -->
+    <aside class="filter-sidebar w-full lg:w-64 xl:w-72 flex-shrink-0" [style.width]="screenWidth < 1024 ? '100%' : (screenWidth < 1280 ? '16rem' : '18rem')" [style.flexShrink]="screenWidth < 1024 ? '1' : '0'">
+      <h2 class="text-2xl font-semibold mb-4">{{'ADMIN.BEST_SELLING_PRODUCTS' | translate}}</h2>
+      
+      <!-- Filters -->
+      <app-dynamic-filter-bar
+        [filterDefinitions]="filterDefinitions"
+        [sortOptions]="sortOptions"
+        [liveFiltering]="false"
+        [minPriceRange]="minPrice"
+        [maxPriceRange]="maxPrice"
+        (changed)="onDynamicChanged($event)"
+        (reset)="onDynamicReset()">
+      </app-dynamic-filter-bar>
+    </aside>
+
+    <!-- Right Column: Products Table and Buttons -->
+    <main class="products-main flex-1 min-w-0" [style.width]="screenWidth < 1024 ? '100%' : 'auto'" [style.flex]="screenWidth < 1024 ? '1' : '1'">
+      <div class="products-content flex flex-col gap-4">
+        <products-tab
+          [products]="filteredProducts"
+          [brands]="brands"
+          [types]="types"
+          [isAdmin]="true"
+          [enableAddFromExisting]="true"
+          [enableEdit]="false"
+          [enableDelete]="true"
+          [serverSide]="false"
+          (productUpdated)="loadProducts()"
+          (productDeleted)="onProductDeleted($event)"
+          (addFromExisting)="onAddFromExisting($event)">
+        </products-tab>
+      </div>
+    </main>
+  </div>
+</div>

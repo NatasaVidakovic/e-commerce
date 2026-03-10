@@ -1,0 +1,38 @@
+<h2 mat-dialog-title class="text-red-600">{{ 'DISCOUNT.DELETE_DISCOUNT' | translate }}</h2>
+
+<mat-dialog-content>
+  <div class="py-4">
+    <p>{{ 'DISCOUNT.DELETE_CONFIRM' | translate }} "{{ data.name }}"?</p>
+    <p class="text-sm text-gray-600 mt-2">{{ 'COMMON.CANNOT_UNDO' | translate }}</p>
+    
+    <!-- Restriction Warning -->
+    <div *ngIf="!canDelete" class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+      <div class="flex items-start gap-2">
+        <span class="text-red-600 font-bold">⚠️</span>
+        <div>
+          <p class="text-sm font-semibold text-red-900 mb-1">{{ 'DISCOUNT.ERRORS.CANNOT_DELETE' | translate }}</p>
+          <p class="text-xs text-red-700">{{ restrictionReason }}</p>
+          <p class="text-xs text-red-600 mt-2 italic">{{ 'COMMON.STATUS' | translate }}: {{ data.state }} | {{ 'DISCOUNT.USED_IN_ORDERS_SHORT' | translate }}: {{ data.hasBeenUsed ? ('DISCOUNT.COMMON.YES' | translate) : ('DISCOUNT.COMMON.NO' | translate) }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+      <p class="text-sm text-red-800">{{ errorMessage }}</p>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">
+    {{ 'COMMON.CANCEL' | translate }}
+  </button>
+  <button 
+    mat-flat-button 
+    color="warn" 
+    (click)="onConfirm()" 
+    [disabled]="loading || !canDelete">
+    {{ canDelete ? ('COMMON.DELETE' | translate) : ('DISCOUNT.ERRORS.CANNOT_DELETE' | translate) }}
+  </button>
+</mat-dialog-actions>

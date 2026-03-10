@@ -1,0 +1,86 @@
+<div class="reports-container">
+  <!-- Report Type Tabs -->
+  <div class="reports-header">
+    <div class="report-tabs">
+      <div class="tab" [class.active]="selectedReportType === 'orders'" (click)="selectReportType('orders')">
+        <mat-icon>shopping_cart</mat-icon>
+        <span>{{ 'ADMIN.ORDERS_REPORT' | translate }}</span>
+      </div>
+      <div class="tab" [class.active]="selectedReportType === 'products'" (click)="selectReportType('products')">
+        <mat-icon>inventory</mat-icon>
+        <span>{{ 'ADMIN.PRODUCTS_REPORT' | translate }}</span>
+      </div>
+      <div class="tab" [class.active]="selectedReportType === 'customers'" (click)="selectReportType('customers')">
+        <mat-icon>people</mat-icon>
+        <span>{{ 'ADMIN.CUSTOMERS_REPORT' | translate }}</span>
+      </div>
+      <div class="tab" [class.active]="selectedReportType === 'financial'" (click)="selectReportType('financial')">
+        <mat-icon>account_balance</mat-icon>
+        <span>{{ 'ADMIN.FINANCIAL_REPORT' | translate }}</span>
+      </div>
+      <div class="tab" [class.active]="selectedReportType === 'inventory'" (click)="selectReportType('inventory')">
+        <mat-icon>warehouse</mat-icon>
+        <span>{{ 'ADMIN.INVENTORY_REPORT' | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="reports-content" *ngIf="selectedReportType">
+    <!-- Sidebar: Filters + Export -->
+    <div class="sidebar">
+      <app-dynamic-filter-bar
+        [filterDefinitions]="filterDefinitions"
+        [sortOptions]="sortOptions"
+        [liveFiltering]="false"
+        (changed)="onDynamicFilterChange($event)"
+        (reset)="clearFilters()">
+      </app-dynamic-filter-bar>
+
+      <div class="export-section">
+        <p class="export-label">{{ 'ADMIN.EXPORT' | translate }}</p>
+        <div class="export-row">
+          <mat-form-field appearance="outline" class="export-format-field">
+            <mat-select [value]="selectedFormat" (selectionChange)="onFormatChange($event.value)">
+              <mat-option value="pdf">PDF</mat-option>
+              <mat-option value="excel">Excel</mat-option>
+              <mat-option value="csv">CSV</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button mat-icon-button (click)="onExportClick(selectedFormat)" [matTooltip]="'ADMIN.DOWNLOAD' | translate">
+            <mat-icon>download</mat-icon>
+          </button>
+          <button mat-icon-button (click)="printReport()" matTooltip="Print report">
+            <mat-icon>print</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Display -->
+    <div class="main-content">
+      <div class="loading-state" *ngIf="loading">
+        <mat-progress-spinner mode="indeterminate" diameter="36"></mat-progress-spinner>
+        <p>{{ 'ADMIN.LOADING_REPORT' | translate }}</p>
+      </div>
+
+      <div class="report-container" *ngIf="!loading">
+        <app-universal-report
+          [title]="getReportTitle(selectedReportType)"
+          [description]="getReportDescription(selectedReportType)"
+          [columns]="reportColumns"
+          [data]="reportData"
+          [summaryMetrics]="reportSummaryMetrics"
+          [loading]="loading">
+        </app-universal-report>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="no-report-selected" *ngIf="!selectedReportType">
+    <mat-icon>description</mat-icon>
+    <h2>{{ 'ADMIN.SELECT_REPORT_TYPE' | translate }}</h2>
+    <p>{{ 'ADMIN.SELECT_REPORT_TO_VIEW' | translate }}</p>
+  </div>
+</div>

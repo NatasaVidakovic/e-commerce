@@ -1,0 +1,48 @@
+name: Trigger auto deployment for webshop-frontend
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ master ]
+    paths:
+    - '**'
+    - '.github/workflows/webshop-frontend-AutoDeployTrigger-563a4415-2e6a-42d5-a3fd-d2c7da849e4f.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.WEBSHOPFRONTEND_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.WEBSHOPFRONTEND_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.WEBSHOPFRONTEND_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: .                           
+          dockerfilePath: dockerfile.frontend        
+          registryUrl: webshopacr.azurecr.io
+          registryUsername: ${{ secrets.WEBSHOPFRONTEND_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.WEBSHOPFRONTEND_REGISTRY_PASSWORD }}
+          containerAppName: webshop-frontend
+          resourceGroup: WebShopRG
+          imageToBuild: webshopacr.azurecr.io/webshop-frontend:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
+

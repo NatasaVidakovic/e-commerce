@@ -1,0 +1,97 @@
+// ==========================================
+// TYPOGRAPHY SYSTEM
+// ==========================================
+// Fluid typography using clamp() and rem units
+
+@import 'breakpoints';
+
+// Base font size
+$font-size-base: 1rem; // 16px
+
+// Fluid typography using clamp()
+$font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);      // 12-14px
+$font-size-sm: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);       // 14-16px
+$font-size-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);      // 16-18px
+$font-size-lg: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);    // 18-20px
+$font-size-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);        // 20-24px
+$font-size-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);     // 24-30px
+$font-size-3xl: clamp(1.875rem, 1.65rem + 1.125vw, 2.25rem);   // 30-36px
+$font-size-4xl: clamp(2.25rem, 1.95rem + 1.5vw, 3rem);         // 36-48px
+
+// Line heights
+$line-height-tight: 1.25;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+// Font weights
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// Typography utility classes
+.text-xs { font-size: $font-size-xs !important; }
+.text-sm { font-size: $font-size-sm !important; }
+.text-base { font-size: $font-size-base !important; }
+.text-lg { font-size: $font-size-lg !important; }
+.text-xl { font-size: $font-size-xl !important; }
+.text-2xl { font-size: $font-size-2xl !important; }
+.text-3xl { font-size: $font-size-3xl !important; }
+.text-4xl { font-size: $font-size-4xl !important; }
+
+// Responsive heading styles
+h1, .h1 {
+  font-size: $font-size-4xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  margin-bottom: $spacing-6;
+}
+
+h2, .h2 {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  margin-bottom: $spacing-5;
+}
+
+h3, .h3 {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-normal;
+  margin-bottom: $spacing-4;
+}
+
+h4, .h4 {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-normal;
+  margin-bottom: $spacing-3;
+}
+
+h5, .h5 {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-normal;
+  margin-bottom: $spacing-2;
+}
+
+h6, .h6 {
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-normal;
+  margin-bottom: $spacing-2;
+}
+
+// Body text
+body {
+  font-size: $font-size-base;
+  line-height: $line-height-normal;
+  font-weight: $font-weight-normal;
+}
+
+// Minimum touch target size for accessibility
+.touch-target {
+  min-height: 2.75rem; // 44px
+  min-width: 2.75rem;
+}

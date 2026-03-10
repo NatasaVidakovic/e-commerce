@@ -1,0 +1,177 @@
+@import '../../../../styles/breakpoints';
+@import '../../../../styles/spacing';
+
+.cart-item-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.5rem;
+  padding: $spacing-4;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease;
+  
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.cart-item-content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  
+  @include md {
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-6;
+  }
+}
+
+.cart-item-image {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 8rem;
+  
+  @include md {
+    width: 5rem;
+    max-width: 5rem;
+  }
+  
+  img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 0.375rem;
+  }
+}
+
+.cart-item-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+  min-width: 0;
+}
+
+.cart-item-name {
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: var(--color-primary);
+  }
+}
+
+.cart-item-price {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-2;
+  
+  @include md {
+    display: none;
+  }
+  
+  .price-label {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+  
+  .price-value {
+    font-size: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+}
+
+.cart-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+  
+  @include sm {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  @include md {
+    flex-direction: row;
+    gap: $spacing-4;
+  }
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  
+  @include md {
+    gap: $spacing-3;
+  }
+  
+  .quantity-btn {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+  
+  .quantity-display {
+    font-size: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);
+    font-weight: 600;
+    min-width: 2rem;
+    text-align: center;
+    color: var(--color-text-primary);
+  }
+}
+
+.remove-btn {
+  color: var(--color-error) !important;
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  
+  &:hover {
+    background-color: var(--color-error-light) !important;
+  }
+}
+
+// Desktop layout additions
+@include md {
+  .cart-item-content {
+    position: relative;
+  }
+  
+  .cart-item-details {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .cart-item-name {
+    flex: 1;
+    max-width: 20rem;
+  }
+  
+  .cart-item-actions {
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-6;
+  }
+  
+  // Show price on desktop in the actions area
+  .cart-item-content::after {
+    content: attr(data-price);
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    min-width: 8rem;
+    text-align: right;
+  }
+}

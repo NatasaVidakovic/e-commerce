@@ -1,0 +1,196 @@
+<div class="container mx-auto px-4 py-10">
+  <div class="max-w-6xl mx-auto">
+    <div class="mb-8">
+      <button mat-button color="primary" (click)="goBack()" class="mb-4">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'COMMON.BACK' | translate }}
+      </button>
+
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <h1 class="text-3xl font-semibold tracking-tight">{{ 'DISCOUNT.DISCOUNT_DETAILS' | translate }}</h1>
+          <span *ngIf="discount" [class]="'state-badge ' + getStateBadgeClass(discount.state)">
+            {{ discount.state }}
+          </span>
+        </div>
+        <div class="flex flex-col items-end gap-2">
+          <div class="flex gap-2">
+            <button 
+              *ngIf="discount?.state === 'Active' && discount?.isActive"
+              mat-stroked-button 
+              color="warn"
+              (click)="disableDiscount()">
+              <mat-icon>block</mat-icon>
+              {{ 'COMMON.DISABLE' | translate }}
+            </button>
+            <button 
+              mat-flat-button 
+              color="primary" 
+              (click)="goToEdit()"
+              [disabled]="discount && !discount.canEdit">
+              <mat-icon>edit</mat-icon>
+              {{ 'COMMON.EDIT' | translate }}
+            </button>
+            <button 
+              mat-stroked-button 
+              color="warn"
+              (click)="deleteDiscount()"
+              [disabled]="discount && !discount.canDelete">
+              <mat-icon>delete</mat-icon>
+              {{ 'COMMON.DELETE' | translate }}
+            </button>
+          </div>
+          
+          <!-- Restriction explanations -->
+          <div *ngIf="discount && (!discount.canEdit || !discount.canDelete)" class="text-right">
+            <p *ngIf="!discount.canEdit" class="text-xs italic">
+              <mat-icon class="text-xs align-middle">info</mat-icon>
+              {{ getEditRestrictionReason() }}
+            </p>
+            <p *ngIf="!discount.canDelete" class="text-xs italic mt-1">
+              <mat-icon class="text-xs align-middle">info</mat-icon>
+              {{ getDeleteRestrictionReason() }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="text-center py-8">
+      <p>{{ 'COMMON.LOADING' | translate }}</p>
+    </div>
+
+    <div *ngIf="!loading && discount">
+      <mat-card class="p-8 rounded-2xl shadow-xl mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-sm font-medium mb-1">{{ 'DISCOUNT.NAME' | translate }}</h3>
+            <p class="text-lg font-semibold">{{ discount.name }}</p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium mb-1">{{ 'DISCOUNT.VALUE' | translate }}</h3>
+            <p class="text-lg font-semibold">{{ discount.value }}{{ discount.isPercentage ? '%' : '' }}</p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium mb-1">{{ 'COMMON.STATUS' | translate }}</h3>
+            <div class="flex items-center gap-2">
+              <span [class]="'inline-badge ' + getStateBadgeClass(discount.state)">{{ discount.state }}</span>
+              <span *ngIf="!discount.isActive" class="inline-badge badge-disabled text-xs">{{ 'COMMON.DISABLED' | translate }}</span>
+              <span *ngIf="discount.hasBeenUsed" class="inline-badge bg-purple-100 text-purple-800 text-xs">
+                <mat-icon class="text-xs align-middle">receipt</mat-icon> {{ 'DISCOUNT.USED_IN_ORDERS_SHORT' | translate }}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium mb-1">{{ 'DISCOUNT.DATE_FROM' | translate }}</h3>
+            <p class="text-lg">{{ discount.dateFrom | date }}</p>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-medium mb-1">{{ 'DISCOUNT.DATE_TO' | translate }}</h3>
+            <p class="text-lg">{{ discount.dateTo | date }}</p>
+          </div>
+
+          <div class="md:col-span-2">
+            <h3 class="text-sm font-medium mb-1">{{ 'DISCOUNT.DESCRIPTION' | translate }}</h3>
+            <p class="text-lg">{{ discount.description }}</p>
+          </div>
+
+          <!-- Restriction Information Banners -->
+          <div *ngIf="discount.hasBeenUsed" class="md:col-span-2">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
+              <mat-icon class="text-blue-600 mt-0.5">receipt_long</mat-icon>
+              <div>
+                <p class="text-sm font-semibold text-blue-900 mb-1">{{ 'DISCOUNT.USED_IN_ORDERS' | translate }}</p>
+                <p class="text-xs text-blue-700">{{ 'DISCOUNT.USED_IN_ORDERS_DESC' | translate }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!discount.canEdit && !discount.hasBeenUsed && discount.state === 'Active'" class="md:col-span-2">
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
+              <mat-icon class="text-amber-600 mt-0.5">schedule</mat-icon>
+              <div>
+                <p class="text-sm font-semibold text-amber-900 mb-1">{{ 'DISCOUNT.ACTIVE_EDITING_RESTRICTED' | translate }}</p>
+                <p class="text-xs text-amber-700">{{ 'DISCOUNT.ACTIVE_EDITING_RESTRICTED_DESC' | translate }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="discount.state === 'Expired'" class="md:col-span-2">
+            <div class="rounded-lg p-3 flex items-start gap-2" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border-primary);">
+              <mat-icon class="mt-0.5" style="color: var(--color-text-secondary);">event_busy</mat-icon>
+              <div>
+                <p class="text-sm font-semibold mb-1" style="color: var(--color-text-primary);">{{ 'DISCOUNT.EXPIRED_READ_ONLY' | translate }}</p>
+                <p class="text-xs" style="color: var(--color-text-secondary);">{{ 'DISCOUNT.EXPIRED_READ_ONLY_DESC' | translate }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="discount.state === 'Disabled'" class="md:col-span-2">
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-2">
+              <mat-icon class="text-yellow-600 mt-0.5">block</mat-icon>
+              <div>
+                <p class="text-sm font-semibold text-yellow-900 mb-1">{{ 'DISCOUNT.DISABLED_READ_ONLY' | translate }}</p>
+                <p class="text-xs text-yellow-700">{{ 'DISCOUNT.DISABLED_READ_ONLY_DESC' | translate }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="discount.state === 'Draft'" class="md:col-span-2">
+            <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-3 flex items-start gap-2">
+              <mat-icon class="text-indigo-600 mt-0.5">edit_note</mat-icon>
+              <div>
+                <p class="text-sm font-semibold text-indigo-900 mb-1">{{ 'DISCOUNT.DRAFT_FULLY_EDITABLE' | translate }}</p>
+                <p class="text-xs text-indigo-700">{{ 'DISCOUNT.DRAFT_FULLY_EDITABLE_DESC' | translate:{ date: (discount.dateFrom | date:'short') } }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="p-8 rounded-2xl shadow-xl">
+        <h2 class="text-2xl font-semibold mb-4">{{ 'DISCOUNT.APPLIED_PRODUCTS' | translate }}</h2>
+
+        <div *ngIf="dataSource.data.length === 0" class="text-center py-8">
+          {{ 'DISCOUNT.NO_PRODUCTS_APPLIED' | translate }}
+        </div>
+
+        <div *ngIf="dataSource.data.length > 0">
+          <table mat-table [dataSource]="dataSource" class="min-w-full">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.ID' | translate }}</th>
+              <td mat-cell *matCellDef="let product" class="px-4 py-2">{{ product.id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'PRODUCT.NAME' | translate }}</th>
+              <td mat-cell *matCellDef="let product" class="px-4 py-2">{{ product.name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="brand">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.BRAND' | translate }}</th>
+              <td mat-cell *matCellDef="let product" class="px-4 py-2">{{ product.brand }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.TYPE' | translate }}</th>
+              <td mat-cell *matCellDef="let product" class="px-4 py-2">{{ product.type }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'PRODUCT.PRICE' | translate }}</th>
+              <td mat-cell *matCellDef="let product" class="px-4 py-2">{{ product.price | currency:'EUR' }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="sticky top-0 z-10"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="themed-table-row"></tr>
+          </table>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

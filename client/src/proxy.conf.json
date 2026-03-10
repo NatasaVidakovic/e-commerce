@@ -1,0 +1,18 @@
+{
+  "/api": {
+    "target": "https://localhost:5001",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/hub": {
+    "target": "https://localhost:5001",
+    "secure": false,
+    "changeOrigin": true,
+    "ws": true
+  },
+  "/images/*": {
+    "target": "https://localhost:5001",
+    "secure": false
+  }
+
+}

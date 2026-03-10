@@ -1,0 +1,1214 @@
+@use '@angular/material' as mat;
+
+// Import centralized theme variables
+@import 'styles/themes/theme-variables';
+
+// Import responsive system
+@import 'styles/breakpoints';
+@import 'styles/spacing';
+@import 'styles/typography';
+@import 'styles/utilities';
+@import 'styles/progressive-enhancement';
+@import 'styles/badges';
+@import 'styles/product-cards';
+
+// Import Swiper styles globally
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+
+// ============================================
+// GLOBAL RESPONSIVE FOUNDATION
+// ============================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+// Horizontal scroll containment
+html {
+  overflow-x: hidden;
+}
+
+// Utility: horizontal-scroll wrapper for wide tables
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  
+  table {
+    min-width: 600px;
+  }
+}
+
+// Global styles using theme variables
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  font-size: $font-size-base;
+  line-height: $line-height-normal;
+}
+
+// Ensure all text elements use theme colors with fluid typography
+h1 {
+  color: var(--color-text-primary);
+  font-size: $font-size-4xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+}
+
+h2 {
+  color: var(--color-text-primary);
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+}
+
+h3 {
+  color: var(--color-text-primary);
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-normal;
+}
+
+h4 {
+  color: var(--color-text-primary);
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-normal;
+}
+
+h5 {
+  color: var(--color-text-primary);
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-normal;
+}
+
+h6 {
+  color: var(--color-text-primary);
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-normal;
+}
+
+p {
+  color: var(--color-text-secondary);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-weight: 500;
+  
+  &:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+// Material component overrides for dark theme specifications
+
+// Cards
+.mat-mdc-card {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+}
+
+// Dialogs & Modals
+.mat-mdc-dialog-container {
+  background-color: transparent !important;
+  color: var(--color-text-primary) !important;
+  box-shadow: none !important;
+
+  .mdc-dialog__surface {
+    background-color: var(--color-surface-raised) !important;
+    color: var(--color-text-primary) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+    overflow: hidden;
+  }
+
+  .mat-mdc-dialog-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    padding: 20px 24px 0;
+    margin: 0;
+  }
+
+  .mat-mdc-dialog-content,
+  [mat-dialog-content] {
+    padding: 16px 24px !important;
+    max-height: 65vh;
+    overflow-y: auto;
+  }
+
+  .mat-mdc-dialog-actions,
+  [mat-dialog-actions] {
+    padding: 12px 24px 20px !important;
+    gap: 8px;
+  }
+}
+
+.cdk-overlay-backdrop {
+  background-color: var(--color-bg-overlay) !important;
+}
+
+// Tables - Specific dark theme styling
+.mat-mdc-table,
+.mat-table,
+table.mat-mdc-table,
+table.mat-table {
+  background-color: var(--color-table-row-bg) !important;
+  color: var(--color-text-primary) !important;
+  
+  .mat-mdc-header-cell,
+  .mat-header-cell {
+    background-color: var(--color-table-header-bg) !important;
+    color: var(--color-text-secondary) !important;
+    font-weight: 600 !important;
+    border-bottom: 1px solid var(--color-table-border) !important;
+  }
+  
+  .mdc-data-table__header-row,
+  .mat-mdc-header-row {
+    background-color: var(--color-table-header-bg) !important;
+  }
+  
+  .mdc-data-table__header-cell {
+    background-color: var(--color-table-header-bg) !important;
+    color: var(--color-text-secondary) !important;
+    border-bottom-color: var(--color-table-border) !important;
+  }
+  
+  .mat-mdc-cell,
+  .mat-cell {
+    color: var(--color-text-primary) !important;
+    border-bottom: 1px solid var(--color-border-primary) !important;
+  }
+  
+  .mdc-data-table__cell {
+    color: var(--color-text-primary) !important;
+    border-bottom-color: var(--color-border-primary) !important;
+  }
+  
+  .mat-mdc-row,
+  .mat-row {
+    background-color: var(--color-table-row-bg) !important;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: var(--color-table-row-hover) !important;
+    }
+    
+    &.selected {
+      background-color: var(--color-table-row-selected) !important;
+    }
+  }
+  
+  .mdc-data-table__row {
+    background-color: var(--color-table-row-bg) !important;
+    transition: background-color 0.2s ease;
+  }
+
+  .mdc-data-table__row:hover {
+    background-color: var(--color-table-row-hover) !important;
+  }
+
+  .mdc-data-table__row.selected,
+  .mat-mdc-row.selected,
+  .mat-row.selected {
+    background-color: var(--color-table-row-selected) !important;
+  }
+
+  .mat-mdc-cell .mat-mdc-button,
+  .mat-cell .mat-button,
+  .mdc-data-table__cell .mdc-button {
+    border-radius: 6px !important;
+    background-color: transparent !important;
+  }
+}
+
+.mat-elevation-z8 {
+  background-color: var(--color-table-row-bg) !important;
+}
+
+// Form fields - Search & Input styling with Material Design focus states
+.mat-mdc-form-field {
+  .mat-mdc-input-element {
+    color: var(--color-input-text) !important;
+  }
+
+  .mat-mdc-form-field-label,
+  .mdc-floating-label {
+    color: var(--color-text-secondary) !important;
+  }
+
+  .mdc-text-field__input::placeholder {
+    color: var(--color-input-placeholder) !important;
+  }
+
+  .mat-mdc-input-element::placeholder {
+    color: var(--color-input-placeholder) !important;
+  }
+  
+  .mdc-text-field--filled {
+    background-color: var(--color-input-bg) !important;
+  }
+  
+  .mdc-text-field--outlined {
+    background-color: var(--color-input-bg) !important;
+  }
+  
+  .mdc-text-field--outlined {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--color-input-border) !important;
+    }
+    
+    &:hover:not(.mdc-text-field--focused) .mdc-notched-outline {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: var(--color-input-border-hover) !important;
+      }
+    }
+    
+    &.mdc-text-field--focused {
+      .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: var(--color-input-border-focus) !important;
+          border-width: 2px !important;
+        }
+      }
+      
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.30) !important;
+    }
+  }
+  
+  &.mat-focused .mdc-text-field--outlined {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.30) !important;
+  }
+}
+
+[data-theme="dark"] {
+  .mat-mdc-form-field {
+    .mdc-text-field--outlined.mdc-text-field--focused {
+      box-shadow: 0 0 0 2px rgba(144, 202, 249, 0.30) !important;
+    }
+    
+    &.mat-focused .mdc-text-field--outlined {
+      box-shadow: 0 0 0 2px rgba(144, 202, 249, 0.30) !important;
+    }
+  }
+}
+
+// Select dropdowns - Proper dark styling
+.mat-mdc-select {
+  color: var(--color-text-primary) !important;
+  
+  .mat-mdc-select-value {
+    color: var(--color-text-primary) !important;
+  }
+
+  .mat-mdc-select-value-text,
+  .mat-mdc-select-trigger {
+    color: var(--color-text-primary) !important;
+  }
+  
+  .mat-mdc-select-arrow {
+    color: var(--color-text-secondary) !important;
+  }
+  
+  .mdc-select__selected-text {
+    color: var(--color-text-primary) !important;
+  }
+
+  .mat-mdc-select-min-line,
+  .mat-mdc-select-placeholder {
+    color: var(--color-text-primary) !important;
+  }
+}
+
+.mat-mdc-select-panel {
+  background-color: var(--color-surface-raised) !important;
+  border: 1px solid var(--color-border-secondary) !important;
+  box-shadow: var(--shadow-lg) !important;
+  
+  .mat-mdc-option {
+    color: var(--color-text-primary) !important;
+
+    .mdc-list-item__primary-text {
+      color: var(--color-text-primary) !important;
+    }
+    
+    &:hover {
+      background-color: var(--color-surface-hover) !important;
+    }
+    
+    &.mat-mdc-option-active {
+      background-color: var(--color-surface-hover) !important;
+    }
+    
+    &.mdc-list-item--selected {
+      background-color: var(--color-primary-light) !important;
+      color: var(--color-primary) !important;
+    }
+  }
+}
+
+// Menus - User menu & dropdowns
+.mat-mdc-menu-panel {
+  background-color: var(--color-surface-raised) !important;
+  border: 1px solid var(--color-border-secondary) !important;
+  box-shadow: var(--shadow-lg) !important;
+  
+  .mat-mdc-menu-item {
+    color: var(--color-text-primary) !important;
+    
+    &:hover {
+      background-color: var(--color-surface-hover) !important;
+    }
+    
+    .mat-icon {
+      color: var(--color-text-secondary) !important;
+    }
+  }
+}
+
+// Buttons - Primary, Secondary, Ghost
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-unelevated-button.mat-primary {
+  background-color: var(--color-btn-primary-bg) !important;
+  color: var(--color-btn-primary-text) !important;
+  
+  &:hover {
+    background-color: var(--color-btn-primary-hover) !important;
+  }
+}
+
+.mat-mdc-stroked-button,
+.mat-mdc-outlined-button {
+  background-color: var(--color-btn-secondary-bg) !important;
+  border-color: var(--color-border-secondary) !important;
+  color: var(--color-btn-secondary-text) !important;
+  
+  &:hover {
+    background-color: var(--color-btn-secondary-hover) !important;
+  }
+}
+
+.mat-mdc-button {
+  color: var(--color-text-secondary) !important;
+  
+  &:hover {
+    background-color: var(--color-bg-hover) !important;
+  }
+}
+
+.mat-mdc-icon-button {
+  color: var(--color-text-primary) !important;
+  
+  &:hover {
+    background-color: var(--color-bg-hover) !important;
+  }
+}
+
+// Paginator
+.mat-mdc-paginator {
+  background-color: var(--color-table-row-bg) !important;
+  color: var(--color-text-primary) !important;
+  border-top: 1px solid var(--color-border-primary) !important;
+  
+  .mat-mdc-paginator-page-size-label,
+  .mat-paginator-page-size-label {
+    color: var(--color-text-primary) !important;
+  }
+  
+  .mat-mdc-select-value {
+    color: var(--color-text-primary) !important;
+  }
+
+  .mat-mdc-icon-button {
+    color: var(--color-text-primary) !important;
+  }
+}
+
+// Make tables completely seamless with background - applies to both themes
+.mat-mdc-table,
+.mat-table,
+table.mat-mdc-table,
+table.mat-table {
+  background: transparent !important;
+  
+  .mat-mdc-row,
+  .mat-row,
+  .mdc-data-table__row {
+    background: transparent !important;
+    
+    &:hover {
+      background-color: var(--color-table-row-hover) !important;
+    }
+    
+    &.selected {
+      background-color: var(--color-table-row-selected) !important;
+      border-left: 3px solid var(--color-primary);
+    }
+  }
+  
+  .mat-mdc-cell,
+  .mat-cell,
+  .mdc-data-table__cell {
+    background: transparent !important;
+    color: var(--color-text-primary) !important;
+    border-color: transparent !important;
+  }
+  
+  .mat-mdc-header-cell,
+  .mat-header-cell,
+  .mdc-data-table__header-cell {
+    background: transparent !important;
+    color: var(--color-text-primary) !important;
+    border-color: transparent !important;
+  }
+}
+
+// Remove table container backgrounds
+.table-container {
+  background: transparent !important;
+}
+
+// Tabs - Filter tabs styling
+.mat-mdc-tab-header {
+  background-color: var(--color-bg-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+.mat-mdc-tab {
+  .mdc-tab__content {
+    color: var(--color-text-secondary) !important;
+  }
+
+  .mdc-tab__text-label {
+    color: var(--color-text-primary) !important;
+  }
+  
+  &:hover {
+    background-color: var(--color-bg-hover) !important;
+  }
+}
+
+.mat-mdc-tab.mdc-tab--active {
+  background-color: var(--color-filter-active-bg) !important;
+
+  .mdc-tab__text-label {
+    color: var(--color-filter-active-text) !important;
+    font-weight: 600 !important;
+  }
+}
+
+.mdc-tab-indicator__content--underline {
+  border-color: var(--color-primary) !important;
+}
+
+// Chips
+.mat-mdc-chip {
+  background-color: var(--color-filter-inactive-chip) !important;
+  color: var(--color-text-secondary) !important;
+  
+  &.mat-mdc-chip-selected {
+    background-color: var(--color-filter-active-bg) !important;
+    color: var(--color-filter-active-text) !important;
+  }
+}
+
+// Tooltips
+.mat-mdc-tooltip {
+  background-color: var(--color-bg-tertiary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+// Dividers
+.mat-divider {
+  border-color: var(--color-border-primary) !important;
+}
+
+// Snackbars/Toasts
+.mat-mdc-snack-bar-container {
+  background-color: var(--color-snackbar-error-bg) !important;
+  color: var(--color-text-primary) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.match-input-height {
+  height: var(--mat-form-field-container-height) !important;
+}
+
+// Fix oversized caret in outlined inputs — keep native input at text height, let container pad around it
+.mat-mdc-form-field {
+  .mat-mdc-form-field-infix {
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  input.mat-mdc-input-element,
+  .mdc-text-field__input {
+    height: auto !important;
+    line-height: 1.25 !important;
+    align-self: center !important;
+  }
+}
+
+.mdc-notched-outline__notch {
+  border-right-style: none !important;
+}
+
+// Dark-theme fixes for Tailwind light utility classes used across templates
+[data-theme="dark"] {
+  // Make tables completely seamless with background
+  .mat-mdc-table,
+  .mat-table,
+  table.mat-mdc-table,
+  table.mat-table {
+    background: transparent !important;
+    
+    .mat-mdc-row,
+    .mat-row,
+    .mdc-data-table__row {
+      background: transparent !important;
+      
+      &:hover {
+        background-color: var(--color-bg-active) !important;
+      }
+      
+      &.selected {
+        background-color: var(--color-table-row-selected) !important;
+        border-left: 3px solid var(--color-primary);
+      }
+    }
+    
+    .mat-mdc-cell,
+    .mat-cell,
+    .mdc-data-table__cell {
+      background: transparent !important;
+      color: var(--color-text-primary) !important;
+      border-color: transparent !important;
+    }
+    
+    .mat-mdc-header-cell,
+    .mat-header-cell,
+    .mdc-data-table__header-cell {
+      background: transparent !important;
+      color: var(--color-text-primary) !important;
+      border-color: transparent !important;
+    }
+  }
+
+  // Fix white backgrounds in dark theme
+  .bg-white {
+    background-color: var(--color-surface) !important;
+  }
+
+  .bg-gray-50,
+  .bg-gray-100,
+  .bg-gray-200 {
+    background-color: var(--color-bg-secondary) !important;
+  }
+
+  .hover\:bg-gray-50:hover,
+  .hover\:bg-gray-100:hover {
+    background-color: var(--color-bg-hover) !important;
+  }
+
+  // Fix text colors for dark theme
+  .text-gray-900,
+  .text-gray-700,
+  .text-gray-600 {
+    color: var(--color-text-primary) !important;
+  }
+
+  .text-gray-500 {
+    color: var(--color-text-secondary) !important;
+  }
+
+  .hover\:bg-blue-50:hover {
+    background-color: var(--color-primary-lighter) !important;
+  }
+
+  .border-gray-100,
+  .text-gray-400 {
+    color: var(--color-text-tertiary) !important;
+  }
+
+  .text-gray-600,
+  .text-gray-700 {
+    color: var(--color-text-primary) !important;
+  }
+
+  .border-gray-100,
+  .border-gray-200,
+  .border-gray-300 {
+    border-color: var(--color-border-primary) !important;
+  }
+
+  .bg-blue-50,
+  .bg-blue-100 {
+    background-color: var(--color-primary-light) !important;
+  }
+
+  .text-blue-600,
+  .text-blue-700,
+  .text-blue-800 {
+    color: var(--color-primary) !important;
+  }
+
+  // Fix status badge colors
+  .bg-green-100 {
+    background-color: rgba(34, 197, 94, 0.14) !important;
+  }
+
+  .text-green-800 {
+    color: #22c55e !important;
+  }
+
+  .bg-yellow-100 {
+    background-color: rgba(251, 191, 36, 0.14) !important;
+  }
+
+  .text-yellow-800 {
+    color: #fbbf24 !important;
+  }
+
+  .bg-red-100 {
+    background-color: rgba(239, 68, 68, 0.14) !important;
+  }
+
+  .text-red-800 {
+    color: #ef4444 !important;
+  }
+
+  .bg-purple-100,
+  .bg-indigo-100 {
+    background-color: rgba(168, 85, 247, 0.14) !important;
+  }
+
+  .text-purple-800,
+  .text-indigo-800 {
+    color: #a855f7 !important;
+  }
+
+  .bg-orange-100 {
+    background-color: rgba(251, 146, 60, 0.14) !important;
+  }
+
+  .text-orange-800 {
+    color: #fb923c !important;
+  }
+
+  // Fix hover states for interactive elements
+  .hover\:bg-gray-50:hover {
+    background-color: var(--color-bg-active) !important;
+  }
+
+  .hover\:bg-gray-100:hover {
+    background-color: var(--color-bg-active) !important;
+  }
+
+  .hover\:bg-gray-200:hover {
+    background-color: var(--color-bg-active) !important;
+  }
+
+  // Fix form elements
+  .border-gray-300 {
+    border-color: var(--color-input-border) !important;
+  }
+
+  .focus\:border-blue-500:focus {
+    border-color: var(--color-input-border-focus) !important;
+  }
+
+  // Enhanced form card styling
+  .form-card {
+    background: var(--color-surface) !important;
+    border: 1px solid var(--color-border-primary) !important;
+    box-shadow: var(--shadow-lg) !important;
+  }
+
+  // Enhanced input styling for better contrast
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: var(--color-input-bg) !important;
+      
+      .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: var(--color-input-border) !important;
+        }
+      }
+      
+      &.mdc-text-field--focused .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: var(--color-input-border-focus) !important;
+          border-width: 2px !important;
+        }
+      }
+      
+      .mdc-text-field__input {
+        color: var(--color-input-text) !important;
+      }
+    }
+    
+    .mat-mdc-form-field-label {
+      color: var(--color-text-secondary) !important;
+      
+      &.mat-mdc-form-field-empty {
+        color: var(--color-input-placeholder) !important;
+      }
+    }
+    
+    .mat-mdc-select-value {
+      color: var(--color-input-text) !important;
+    }
+    
+    .mat-mdc-select-arrow {
+      color: var(--color-text-secondary) !important;
+    }
+    
+    .mat-mdc-select-placeholder {
+      color: var(--color-input-placeholder) !important;
+    }
+  }
+
+  // Enhanced textarea styling
+  textarea {
+    background-color: var(--color-input-bg) !important;
+    color: var(--color-input-text) !important;
+    border-color: var(--color-input-border) !important;
+    
+    &::placeholder {
+      color: var(--color-input-placeholder) !important;
+    }
+    
+    &:focus {
+      border-color: var(--color-input-border-focus) !important;
+    }
+  }
+
+  // Fix card and surface elements
+  .shadow-lg {
+    box-shadow: var(--shadow-lg) !important;
+  }
+
+  .shadow-md {
+    box-shadow: var(--shadow-md) !important;
+  }
+
+  // Fix dialog and modal overlays
+  .mat-mdc-dialog-container {
+    .mdc-dialog__surface {
+      background-color: var(--color-surface-raised) !important;
+      color: var(--color-text-primary) !important;
+    }
+  }
+
+  // Fix snackbar backgrounds
+  .mat-mdc-snack-bar-container {
+    &.mat-snack-bar-error {
+      background-color: var(--color-snackbar-error-bg) !important;
+      color: var(--color-snackbar-error-text) !important;
+    }
+    
+    &.mat-snack-bar-success {
+      background-color: var(--color-snackbar-success-bg) !important;
+      color: var(--color-snackbar-success-text) !important;
+    }
+    
+    &.mat-snack-bar-warning {
+      background-color: var(--color-snackbar-warning-bg) !important;
+      color: var(--color-snackbar-warning-text) !important;
+    }
+    
+    &.mat-snack-bar-info {
+      background-color: var(--color-snackbar-info-bg) !important;
+      color: var(--color-snackbar-info-text) !important;
+    }
+  }
+
+  // Fix tooltip colors
+  .mat-mdc-tooltip {
+    background-color: var(--color-bg-tertiary) !important;
+    color: var(--color-text-primary) !important;
+  }
+
+  // Fix list elements in dark theme - better contrast
+  .mat-mdc-option {
+    &:hover {
+      background-color: var(--color-bg-active) !important;
+      color: var(--color-text-primary) !important;
+    }
+    
+    &.mat-mdc-option-active {
+      background-color: var(--color-bg-active) !important;
+      color: var(--color-text-primary) !important;
+    }
+    
+    &.mdc-list-item--selected {
+      background-color: var(--color-bg-active) !important;
+      color: var(--color-text-primary) !important;
+      
+      .mdc-list-item__primary-text {
+        color: var(--color-text-primary) !important;
+      }
+    }
+  }
+
+  // Fix select panel colors
+  .mat-mdc-select-panel {
+    background-color: var(--color-surface-raised) !important;
+    border: 1px solid var(--color-border-secondary) !important;
+    
+    .mat-mdc-option {
+      color: var(--color-text-primary) !important;
+      
+      &:hover {
+        background-color: var(--color-bg-active) !important;
+        color: var(--color-text-primary) !important;
+      }
+      
+      &.mat-mdc-option-active {
+        background-color: var(--color-bg-active) !important;
+        color: var(--color-text-primary) !important;
+      }
+      
+      &.mdc-list-item--selected {
+        background-color: var(--color-bg-active) !important;
+        color: var(--color-text-primary) !important;
+        
+        .mdc-list-item__primary-text {
+          color: var(--color-text-primary) !important;
+        }
+      }
+    }
+  }
+
+  // Fix menu panel colors
+  .mat-mdc-menu-panel {
+    background-color: var(--color-surface-raised) !important;
+    border: 1px solid var(--color-border-secondary) !important;
+    
+    .mat-mdc-menu-item {
+      color: var(--color-text-primary) !important;
+      
+      &:hover {
+        background-color: var(--color-bg-active) !important;
+        color: var(--color-text-primary) !important;
+      }
+      
+      .mat-icon {
+        color: var(--color-text-secondary) !important;
+      }
+    }
+  }
+
+  // Fix button hover states
+  .mat-mdc-button {
+    &:hover {
+      background-color: var(--color-bg-hover) !important;
+    }
+  }
+
+  .mat-mdc-icon-button {
+    &:hover {
+      background-color: var(--color-bg-hover) !important;
+    }
+  }
+
+  // Fix paginator
+  .mat-mdc-paginator {
+    background-color: var(--color-table-row-bg) !important;
+    color: var(--color-text-primary) !important;
+    border-top: 1px solid var(--color-border-primary) !important;
+  }
+
+  // Fix tabs
+  .mat-mdc-tab-header {
+    background-color: var(--color-bg-primary) !important;
+    border-bottom: 1px solid var(--color-border-primary) !important;
+  }
+
+  .mat-mdc-tab {
+    .mdc-tab__text-label {
+      color: var(--color-text-primary) !important;
+    }
+    
+    &:hover {
+      background-color: var(--color-bg-hover) !important;
+    }
+  }
+
+  .mat-mdc-tab.mdc-tab--active {
+    background-color: var(--color-filter-active-bg) !important;
+    
+    .mdc-tab__text-label {
+      color: var(--color-filter-active-text) !important;
+    }
+  }
+
+  // Fix chips
+  .mat-mdc-chip {
+    background-color: var(--color-filter-inactive-chip) !important;
+    color: var(--color-text-secondary) !important;
+    
+    &.mat-mdc-chip-selected {
+      background-color: var(--color-filter-active-bg) !important;
+      color: var(--color-filter-active-text) !important;
+    }
+  }
+
+  // Fix cards
+  .mat-mdc-card {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text-primary) !important;
+    border: 1px solid var(--color-border-primary) !important;
+  }
+
+  // Fix dividers
+  .mat-divider {
+    border-color: var(--color-border-primary) !important;
+  }
+
+  // Fix common white text on white background issues
+  .text-white {
+    color: var(--color-text-inverse) !important;
+  }
+
+  // Fix common light gray backgrounds
+  .bg-gray-50,
+  .bg-gray-100,
+  .bg-gray-200,
+  .bg-gray-300 {
+    background-color: var(--color-bg-secondary) !important;
+  }
+
+  // Fix input placeholder colors
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-input-placeholder) !important;
+  }
+
+  // Fix scrollbar styling for number inputs
+  input[type="number"] {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-primary) var(--color-input-bg);
+    
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: var(--color-input-bg);
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border-primary);
+      border-radius: 3px;
+      
+      &:hover {
+        background: var(--color-border-secondary);
+      }
+    }
+  }
+
+  // Fix focus states
+  .focus\:ring-2:focus,
+  .focus\:ring-blue-500:focus {
+    box-shadow: 0 0 0 2px var(--color-primary) !important;
+  }
+
+  // Fix disabled states
+  .opacity-50 {
+    opacity: 0.5 !important;
+  }
+
+  .cursor-not-allowed {
+    cursor: not-allowed !important;
+  }
+
+  // Dark theme scrollbar styling
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-primary);
+    border-radius: 4px;
+    border: 1px solid var(--color-bg-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-tertiary);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: var(--color-bg-secondary);
+  }
+
+  // Firefox scrollbar styling
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-primary) var(--color-bg-secondary);
+  }
+}
+
+// Light theme scrollbar styling (global - applies when not in dark theme)
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  border: 1px solid #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+::-webkit-scrollbar-corner {
+  background: #f1f5f9;
+}
+
+// Firefox scrollbar styling for light theme
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+// Light theme number input scrollbar styling
+:not([data-theme="dark"]) {
+  input[type="number"] {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #ffffff;
+    
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #ffffff;
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+      
+      &:hover {
+        background: #94a3b8;
+      }
+    }
+  }
+}
+
+// Global Admin Dashboard Responsive Layout - Override Everything
+app-admin-dashboard {
+  .admin-dashboard {
+    .flex.gap-6 {
+      flex-direction: column !important;
+      gap: 1rem !important;
+      
+      @media (min-width: 1024px) {
+        flex-direction: row !important;
+        gap: 1.5rem !important;
+      }
+    }
+    
+    .filter-sidebar {
+      width: 100% !important;
+      flex-shrink: 1 !important;
+      max-width: none !important;
+      
+      @media (min-width: 1024px) {
+        width: 16rem !important;
+        max-width: 18rem !important;
+        flex-shrink: 0 !important;
+      }
+      
+      @media (min-width: 1280px) {
+        width: 18rem !important;
+        max-width: 20rem !important;
+      }
+    }
+    
+    .products-main {
+      width: 100% !important;
+      min-width: 0 !important;
+      flex: 1 !important;
+      max-width: none !important;
+    }
+  }
+}
+
+// Force mobile layout for all screens smaller than 1024px
+@media (max-width: 1023px) {
+  app-admin-dashboard .admin-dashboard .flex.gap-6 {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  app-admin-dashboard .admin-dashboard .filter-sidebar {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-shrink: 1 !important;
+  }
+  
+  app-admin-dashboard .admin-dashboard .products-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 !important;
+  }
+}

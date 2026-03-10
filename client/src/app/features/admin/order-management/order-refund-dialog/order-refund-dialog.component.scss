@@ -1,0 +1,527 @@
+// Dialog layout - Compact version
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid var(--color-border-primary, #e0e0e0);
+  background: var(--color-surface, #ffffff);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #111827);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--color-primary, #3b82f6);
+  }
+}
+
+.dialog-content {
+  padding: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+.dialog-actions {
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-border-primary, #e0e0e0);
+  background: var(--color-surface, #ffffff);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+
+  // Enhanced button styling
+  button {
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0);
+      transition: background 0.2s ease;
+    }
+
+    &:hover::before {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &:active::before {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      margin-right: 6px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover mat-icon {
+      transform: scale(1.1);
+    }
+
+    &:active mat-icon {
+      transform: scale(0.95);
+    }
+
+    // Cancel button styling
+    &[mat-button] {
+      color: var(--color-text-secondary, #6b7280);
+      background: var(--color-bg-secondary, #f8f9fa);
+      border: 1px solid var(--color-border-primary, #e0e0e0);
+
+      &:hover {
+        background: var(--color-bg-tertiary, #e9ecef);
+        border-color: var(--color-border-secondary, #ced4da);
+        color: var(--color-text-primary, #111827);
+      }
+
+      &:active {
+        background: var(--color-bg-quaternary, #dee2e6);
+        transform: translateY(1px);
+      }
+    }
+
+    // Primary button styling (Approve/Confirm)
+    &[mat-flat-button][color="primary"] {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border: 2px solid #2563eb;
+      color: white;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border-color: #1d4ed8;
+        box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+      }
+
+      &:disabled {
+        background: var(--color-bg-secondary, #f8f9fa);
+        border-color: var(--color-border-primary, #e0e0e0);
+        color: var(--color-text-tertiary, #9ca3af);
+        box-shadow: none;
+        transform: none;
+
+        &:hover {
+          transform: none;
+          box-shadow: none;
+        }
+      }
+    }
+
+    // Warning button styling (Reject)
+    &[mat-flat-button][color="warn"] {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border: 2px solid #dc2626;
+      color: white;
+      box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        border-color: #b91c1c;
+        box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        background: linear-gradient(135deg, #b91c1c, #991b1b);
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+      }
+
+      &:disabled {
+        background: var(--color-bg-secondary, #f8f9fa);
+        border-color: var(--color-border-primary, #e0e0e0);
+        color: var(--color-text-tertiary, #9ca3af);
+        box-shadow: none;
+        transform: none;
+
+        &:hover {
+          transform: none;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
+
+// Loading and empty states - Compact
+.loading-state, .no-refund-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 16px;
+  color: var(--color-text-secondary, #6b7280);
+
+  .large-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+  }
+
+  .spin {
+    animation: spin 1s linear infinite;
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 12px;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Refund content layout - Compact
+.refund-content {
+  padding: 12px 16px;
+}
+
+.refund-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.order-summary {
+  flex: 1;
+
+  .order-id {
+    font-size: 13px;
+    margin-bottom: 4px;
+
+    strong {
+      color: var(--color-text-secondary, #6b7280);
+      font-weight: 500;
+    }
+
+    span {
+      color: var(--color-text-primary, #111827);
+      font-weight: 600;
+      margin-left: 4px;
+    }
+  }
+
+  .order-meta {
+    font-size: 12px;
+    color: var(--color-text-secondary, #6b7280);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    .separator {
+      opacity: 0.5;
+    }
+  }
+}
+
+.refund-type-container {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.refund-type-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary, #6b7280);
+  margin-bottom: 6px;
+}
+
+.refund-type-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .refund-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .refund-text {
+    font-weight: 700;
+  }
+
+  &.badge-full {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e40af;
+    border-color: #3b82f6;
+
+    .refund-icon {
+      color: #2563eb;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, #bfdbfe, #93c5fd);
+      border-color: #2563eb;
+    }
+  }
+
+  &.badge-partial {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #78350f;
+    border-color: #fbbf24;
+
+    .refund-icon {
+      color: #d97706;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, #fde68a, #fcd34d);
+      border-color: #d97706;
+    }
+  }
+}
+
+// Details grid - Compact
+.refund-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  &.amount {
+  .amount-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .amount-value {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: var(--color-primary, #3b82f6);
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #3b82f6;
+  }
+
+  .amount-percentage {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-warning, #f59e0b);
+    background: var(--color-warning-dark, #fef3c7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--color-warning, #fbbf24);
+  }
+}
+}
+
+.detail-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.detail-value {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #111827);
+  word-break: break-word;
+
+  &.status {
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 8px;
+    background: var(--color-bg-secondary, #f8f9fa);
+    display: inline-block;
+  }
+}
+
+// Status colors - Compact
+.status-requested { 
+  color: var(--color-warning-hover, #d97706); 
+  background: var(--color-warning-dark, #fef3c7);
+}
+.status-approved { 
+  color: var(--color-info-hover, #2563eb); 
+  background: var(--color-info-dark, #dbeafe);
+}
+.status-completed { 
+  color: var(--color-success-hover, #16a34a); 
+  background: var(--color-success-dark, #f0fdf4);
+}
+.status-rejected { 
+  color: var(--color-error-hover, #dc2626); 
+  background: var(--color-error-dark, #fef2f2);
+}
+
+// Additional details section - Compact
+.additional-details {
+  margin-bottom: 12px;
+}
+
+.returned-items {
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--color-bg-secondary, #f8f9fa);
+  border: 1px solid var(--color-border-primary, #e0e0e0);
+  border-radius: 6px;
+
+  h4 {
+    margin: 0 0 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-primary, #111827);
+  }
+}
+
+.items-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--color-border-primary, #f0f0f0);
+  font-size: 0.75rem;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .item-name {
+    flex: 1;
+    color: var(--color-text-primary, #111827);
+  }
+
+  .item-qty {
+    color: var(--color-text-secondary, #6b7280);
+    font-weight: 500;
+    min-width: 30px;
+    text-align: center;
+  }
+
+  .item-price {
+    font-weight: 600;
+    color: var(--color-text-primary, #111827);
+    min-width: 60px;
+    text-align: right;
+  }
+}
+
+// Admin actions section - Compact
+.admin-actions {
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border-primary, #e0e0e0);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notes-field, .rejection-field {
+  width: 100%;
+}
+
+// Form fields compact
+::ng-deep .admin-actions .mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    padding: 0 !important;
+  }
+  
+  .mat-mdc-form-field-flex {
+    margin-top: 0 !important;
+  }
+  
+  .mat-mdc-form-field-infix {
+    padding: 6px 0 !important;
+    min-height: auto !important;
+  }
+  
+  textarea {
+    font-size: 0.75rem !important;
+    line-height: 1.2 !important;
+  }
+}
+
+// Responsive adjustments - Compact
+@media (max-width: 600px) {
+  .refund-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .refund-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dialog-title {
+    padding: 10px 12px 6px;
+  }
+
+  .refund-content {
+    padding: 10px 12px;
+  }
+
+  .dialog-actions {
+    padding: 6px 12px;
+    flex-direction: column-reverse;
+  }
+}

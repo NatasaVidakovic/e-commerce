@@ -1,0 +1,145 @@
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon>receipt_long</mat-icon>
+  {{ 'ADMIN.REFUND_DIALOG.TITLE' | translate }}
+</h2>
+
+<mat-dialog-content class="dialog-content">
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-icon class="spin">hourglass_empty</mat-icon>
+    <p>Loading...</p>
+  </div>
+
+  <!-- No refund request exists -->
+  <div *ngIf="!loading && !existingRefund" class="no-refund-state">
+    <mat-icon class="large-icon">info</mat-icon>
+    <p>{{ 'ADMIN.REFUND_DIALOG.NO_REFUND_REQUEST' | translate }}</p>
+  </div>
+
+  <!-- Refund request details -->
+  <div *ngIf="!loading && existingRefund" class="refund-content">
+    <!-- Header with order info and refund type -->
+    <div class="refund-header">
+      <div class="order-summary">
+        <div class="order-id">
+          <strong>{{ 'ADMIN.REFUND_DIALOG.ORDER_NUMBER' | translate }}:</strong>
+          <span>#{{ data.order.orderNumber || data.order.id }}</span>
+        </div>
+        <div class="order-meta">
+          <span>{{ data.order.buyerEmail }}</span>
+          <span class="separator">•</span>
+          <span>{{ data.order.total | currency }}</span>
+          <span class="separator">•</span>
+          <span>{{ data.order.paymentType }}</span>
+        </div>
+      </div>
+      <div class="refund-type-container">
+        <div class="refund-type-label">Refund Type</div>
+        <div class="refund-type-badge" [ngClass]="existingRefund.isPartialRefund ? 'badge-partial' : 'badge-full'">
+          <mat-icon class="refund-icon">
+            {{ existingRefund.isPartialRefund ? 'remove_circle' : 'all_inclusive' }}
+          </mat-icon>
+          <span class="refund-text">
+            {{ existingRefund.isPartialRefund ? ('REFUND.PARTIAL_REFUND' | translate) : ('REFUND.FULL_REFUND' | translate) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refund details grid -->
+    <div class="refund-grid">
+      <div class="detail-item">
+        <span class="detail-label">{{ 'ADMIN.REFUND_DIALOG.STATUS' | translate }}</span>
+        <span class="detail-value status" [ngClass]="{
+          'status-requested': existingRefund.status === 'Requested',
+          'status-approved': existingRefund.status === 'Approved',
+          'status-completed': existingRefund.status === 'Completed',
+          'status-rejected': existingRefund.status === 'Rejected'
+        }">{{ existingRefund.status }}</span>
+      </div>
+
+      <div class="detail-item amount">
+        <span class="detail-label">{{ 'ADMIN.REFUND_DIALOG.AMOUNT' | translate }}</span>
+        <div class="amount-container">
+          <span class="detail-value amount-value">{{ existingRefund.amount | currency }}</span>
+          <span class="amount-percentage" *ngIf="existingRefund.isPartialRefund">
+            {{ (existingRefund.amount / data.order.total * 100) | number:'1.0-1' }}%
+          </span>
+        </div>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">{{ 'ADMIN.REFUND_DIALOG.REASON' | translate }}</span>
+        <span class="detail-value">{{ existingRefund.reason }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">{{ 'ADMIN.REFUND_DIALOG.REQUESTED_BY' | translate }}</span>
+        <span class="detail-value">{{ existingRefund.requestedBy }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">{{ 'ADMIN.REFUND_DIALOG.REQUESTED_AT' | translate }}</span>
+        <span class="detail-value">{{ existingRefund.requestedAt | date:'short' }}</span>
+      </div>
+
+      <div class="detail-item" *ngIf="existingRefund.processedBy">
+        <span class="detail-label">{{ 'ADMIN.REFUND_DIALOG.PROCESSED_BY' | translate }}</span>
+        <span class="detail-value">{{ existingRefund.processedBy }}</span>
+      </div>
+    </div>
+
+    <!-- Additional details -->
+    <div class="additional-details" *ngIf="existingRefund.reasonDetails || (existingRefund.isPartialRefund && existingRefund.items?.length)">
+      <div class="detail-item full-width" *ngIf="existingRefund.reasonDetails">
+        <span class="detail-label">{{ 'ADMIN.REFUND_DIALOG.DETAILS' | translate }}</span>
+        <span class="detail-value">{{ existingRefund.reasonDetails }}</span>
+      </div>
+
+      <!-- Partial refund items -->
+      <div class="returned-items" *ngIf="existingRefund.isPartialRefund && existingRefund.items?.length">
+        <h4>{{ 'REFUND.RETURNED_PRODUCTS' | translate }}</h4>
+        <div class="items-grid">
+          <div class="item-row" *ngFor="let item of existingRefund.items">
+            <span class="item-name">{{ item.productName }}</span>
+            <span class="item-qty">x{{ item.quantity }}</span>
+            <span class="item-price">{{ item.price * item.quantity | currency }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin actions section -->
+    <div class="admin-actions" *ngIf="canProcess">
+      <mat-form-field appearance="outline" class="notes-field">
+        <mat-label>{{ 'ADMIN.REFUND_DIALOG.ADMIN_NOTES' | translate }}</mat-label>
+        <textarea matInput [(ngModel)]="adminNotes" rows="2"
+                  placeholder="{{ 'ADMIN.REFUND_DIALOG.ADMIN_NOTES_PLACEHOLDER' | translate }}"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="rejection-field">
+        <mat-label>{{ 'ADMIN.REFUND_DIALOG.REJECTION_REASON' | translate }}</mat-label>
+        <textarea matInput [(ngModel)]="rejectionReason" rows="2"
+                  placeholder="{{ 'ADMIN.REFUND_DIALOG.REJECTION_REASON_PLACEHOLDER' | translate }}"></textarea>
+      </mat-form-field>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions">
+  <button mat-button (click)="onCancel()">{{ 'ADMIN.REFUND_DIALOG.CANCEL' | translate }}</button>
+
+  <ng-container *ngIf="canProcess">
+    <button mat-flat-button color="warn" (click)="onReject()" [disabled]="processing">
+      <mat-icon>close</mat-icon> {{ 'ADMIN.REFUND_DIALOG.REJECT' | translate }}
+    </button>
+    <button mat-flat-button color="primary" (click)="onApprove()" [disabled]="processing">
+      <mat-icon>check</mat-icon> OK
+    </button>
+  </ng-container>
+
+  <!-- COD confirm -->
+  <button *ngIf="canConfirmCod" mat-flat-button color="primary" (click)="onConfirmCod()" [disabled]="processing">
+    <mat-icon>payments</mat-icon> {{ 'ADMIN.REFUND_DIALOG.CONFIRM_CASH_RETURNED' | translate }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,39 @@
+using System;
+using Core.Entities;
+
+namespace Core.Specifications;
+
+public class ProductSpecification : BaseSpecification<Product>
+{
+    public ProductSpecification(ProductSpecParams productParams)
+        : base(x =>
+            (string.IsNullOrEmpty(productParams.Search)
+                || x.Name.ToLower().Contains(productParams.Search)) &&
+            (!productParams.Brands.Any() || productParams.Brands.Contains(x.Brand)) &&
+            (!productParams.Types.Any() || productParams.Types.Contains(x.ProductType.Name)))
+    {
+        ApplyPaging(productParams.PageSize * (productParams.PageIndex - 1), productParams.PageSize);
+        AddInclude(x => x.ProductType);
+        AddInclude(x => x.Images);
+
+        switch (productParams.Sort)
+        {
+            case "priceAsc":
+                AddOrderBy(x => x.Price);
+                break;
+            case "priceDesc":
+                AddOrderByDescending(x => x.Price);
+                break;
+            default:
+                AddOrderBy(x => x.Name);
+                break;
+        }
+    }
+
+    // Constructor for getting single product with discounts
+    public ProductSpecification(int id) : base(x => x.Id == id)
+    {
+        AddInclude(x => x.Discounts);
+        AddInclude(x => x.ProductType);
+    }
+}

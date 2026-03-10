@@ -1,0 +1,76 @@
+@if (signalrService.orderSignal(); as order) {
+<section style="background-color: var(--color-surface);" class="py-16">
+    <div class="mx-auto max-w-2xl px-4">
+        <h2 class="font-semibold text-2xl mb-2" style="color: var(--color-text-primary);">{{ 'CHECKOUT.THANKS' | translate }}</h2>
+        <p class="mb-8" style="color: var(--color-text-secondary);">
+            @if (order.paymentType === 'CashOnDelivery') {
+                {{ 'CHECKOUT.ORDER_DETAILS_CASH' | translate:{orderId: order.id} }}
+            } @else {
+                {{ 'CHECKOUT.ORDER_DETAILS' | translate:{orderId: order.id} }}
+            }
+        </p>
+        
+        <div class="space-y-2 rounded-lg border p-6 mb-8" 
+             style="background-color: var(--color-surface-variant); border-color: var(--color-border-primary);">
+            <dl class="flex items-center justify-between gap-4">
+                <dt style="color: var(--color-text-secondary);">{{ 'CHECKOUT.DATE' | translate }}</dt>
+                <dd class="font-medium text-end" style="color: var(--color-text-primary);">
+                    {{order.orderDate | date: 'medium'}}
+                </dd>
+            </dl>
+            <dl class="flex items-center justify-between gap-4">
+                <dt style="color: var(--color-text-secondary);">{{ 'CHECKOUT.PAYMENT_METHOD' | translate }}</dt>
+                <dd class="font-medium text-end" style="color: var(--color-text-primary);">
+                    @if (order.paymentType === 'CashOnDelivery') {
+                        {{ 'CHECKOUT.CASH_ON_DELIVERY' | translate }}
+                    } @else {
+                        {{order.paymentSummary | paymentCard}}
+                    }
+                </dd>
+            </dl>
+            <dl class="flex items-center justify-between gap-4">
+                <dt style="color: var(--color-text-secondary);">{{ 'CHECKOUT.ADDRESS' | translate }}</dt>
+                <dd class="font-medium text-end" style="color: var(--color-text-primary);">
+                    {{order.shippingAddress | address}}
+                </dd>
+            </dl>
+            <dl class="flex items-center justify-between gap-4">
+                <dt style="color: var(--color-text-secondary);">{{ 'CHECKOUT.AMOUNT' | translate }}</dt>
+                <dd class="font-medium text-end" style="color: var(--color-text-primary);">
+                    {{order.total | currency}}
+                </dd>
+            </dl>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <button routerLink="/orders/{{order.id}}" mat-flat-button color="primary">
+                {{ 'CHECKOUT.VIEW_ORDER' | translate }}
+            </button>
+            <button routerLink="/shop" mat-stroked-button>
+                {{ 'CHECKOUT.CONTINUE_SHOPPING' | translate }}
+            </button>
+        </div>
+    </div>
+</section>
+} @else {
+<section style="background-color: var(--color-surface);" class="py-16">
+    <div class="mx-auto max-w-2xl px-4">
+        <h2 class="font-semibold text-2xl mb-2" style="color: var(--color-text-primary);">{{ 'CHECKOUT.PROCESSING_ORDER' | translate }}</h2>
+
+        <div class="space-y-2 rounded-lg border p-6 mb-8" 
+             style="background-color: var(--color-surface-variant); border-color: var(--color-border-primary);">
+            <div class="flex flex-col justify-center items-center text-center">
+                <mat-spinner diameter="30" class="mb-4"></mat-spinner>
+                <p class="text-xl font-medium" style="color: var(--color-text-primary);">{{ 'CHECKOUT.LOADING_ORDER' | translate }}</p>
+                <span style="color: var(--color-text-secondary);">{{ 'CHECKOUT.ORDER_PROCESSING' | translate }}</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <button routerLink="/shop" mat-stroked-button>
+                {{ 'CHECKOUT.CONTINUE_SHOPPING' | translate }}
+            </button>
+        </div>
+    </div>
+</section>
+}

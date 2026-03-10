@@ -1,0 +1,75 @@
+<div class="universal-report-container">
+  <!-- Report Header -->
+  <div class="report-header">
+    <div class="header-info">
+      <h2>{{ title }}</h2>
+      <p>{{ description }}</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>Loading report data...</p>
+  </div>
+
+  <!-- Report Content -->
+  <div class="report-content" *ngIf="!loading">
+    <!-- Data Table -->
+    <div class="table-container">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th *ngFor="let column of columns; trackBy: trackByFn" 
+                [style.width]="column.width">
+              {{ column.label }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of data; trackBy: trackByFn">
+            <td *ngFor="let column of columns; trackBy: trackByFn">
+              {{ getDisplayValue(row[column.key], column) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="data.length === 0">
+      <mat-icon>inbox</mat-icon>
+      <h3>No data available</h3>
+      <p>Try adjusting your filters or check back later.</p>
+    </div>
+  </div>
+
+  <!-- Summary Section -->
+  <div class="summary-section" *ngIf="summaryMetrics.length > 0">
+    <h3>Summary</h3>
+    <div class="summary-table-container">
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let metric of summaryMetrics; trackBy: trackByFn">
+            <td>{{ metric.label }}</td>
+            <td>{{ metric.value }}</td>
+            <td>
+              <span class="trend" 
+                    [class.positive]="metric.change && metric.change.startsWith('+')"
+                    [class.negative]="metric.change && metric.change.startsWith('-')">
+                {{ metric.change || '-' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

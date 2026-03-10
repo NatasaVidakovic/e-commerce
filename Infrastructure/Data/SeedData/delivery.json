@@ -1,0 +1,20 @@
+[
+  {
+    "ShortName": "FAST",
+    "Description": "Fast delivery (10km radius)",
+    "DeliveryTime": "Same day",
+    "Price": 10
+  },
+  {
+    "ShortName": "POST",
+    "Description": "Delivery via Poste Srpske",
+    "DeliveryTime": "2-5 Days",
+    "Price": 5
+  },
+  {
+    "ShortName": "PICKUP",
+    "Description": "Pick up in shop",
+    "DeliveryTime": "Ready today",
+    "Price": 0
+  }
+]

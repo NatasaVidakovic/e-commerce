@@ -1,0 +1,204 @@
+// Semantic Status Badges - Material Design 3 Dark Theme
+// Comprehensive badge styling for order states and other status indicators
+
+// Base badge styling
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  transition: all 0.2s ease;
+  
+  &-sm {
+    padding: 0.125rem 0.5rem;
+    font-size: 0.6875rem;
+  }
+  
+  &-lg {
+    padding: 0.375rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+// Order Status Badges
+.badge-order-status {
+  &-new {
+    background-color: var(--color-badge-new-bg, var(--md-sys-info-container));
+    color: var(--color-badge-new-text, var(--md-sys-info));
+    border-left: 3px solid var(--md-sys-info);
+  }
+  
+  &-confirmed {
+    background-color: var(--color-badge-confirmed-bg, var(--md-sys-primary-container));
+    color: var(--color-badge-confirmed-text, var(--md-sys-primary));
+    border-left: 3px solid var(--md-sys-primary);
+  }
+  
+  &-preparing {
+    background-color: var(--color-badge-preparing-bg, var(--md-sys-info-container));
+    color: var(--color-badge-preparing-text, var(--md-sys-info));
+    border-left: 3px solid var(--md-sys-info);
+  }
+  
+  &-shipped {
+    background-color: var(--color-badge-shipped-bg, var(--md-sys-info-container));
+    color: var(--color-badge-shipped-text, var(--md-sys-info));
+    border-left: 3px solid var(--md-sys-info);
+  }
+  
+  &-delivered {
+    background-color: var(--color-badge-delivered-bg, var(--md-sys-success-container));
+    color: var(--color-badge-delivered-text, var(--md-sys-success));
+    border-left: 3px solid var(--md-sys-success);
+  }
+  
+  &-cancelled {
+    background-color: var(--color-badge-cancelled-bg, var(--md-sys-error-container));
+    color: var(--color-badge-cancelled-text, var(--md-sys-error));
+    border-left: 3px solid var(--md-sys-error);
+  }
+  
+  &-returned {
+    background-color: var(--color-badge-returned-bg, var(--md-sys-warning-container));
+    color: var(--color-badge-returned-text, var(--md-sys-warning));
+    border-left: 3px solid var(--md-sys-warning);
+  }
+}
+
+// Payment Status Badges
+.badge-payment-status {
+  &-pending {
+    background-color: var(--md-sys-warning-container);
+    color: var(--md-sys-warning);
+    border-left: 3px solid var(--md-sys-warning);
+  }
+  
+  &-paid {
+    background-color: var(--md-sys-success-container);
+    color: var(--md-sys-success);
+    border-left: 3px solid var(--md-sys-success);
+  }
+  
+  &-failed {
+    background-color: var(--md-sys-error-container);
+    color: var(--md-sys-error);
+    border-left: 3px solid var(--md-sys-error);
+  }
+  
+  &-refunded {
+    background-color: var(--color-badge-default-bg);
+    color: var(--color-badge-default-text);
+    border-left: 3px solid var(--md-sys-text-tertiary);
+  }
+}
+
+// Delivery Status Badges
+.badge-delivery-status {
+  &-pending {
+    background-color: var(--md-sys-warning-container);
+    color: var(--md-sys-warning);
+    border-left: 3px solid var(--md-sys-warning);
+  }
+  
+  &-shipped {
+    background-color: var(--md-sys-info-container);
+    color: var(--md-sys-info);
+    border-left: 3px solid var(--md-sys-info);
+  }
+  
+  &-delivered {
+    background-color: var(--md-sys-success-container);
+    color: var(--md-sys-success);
+    border-left: 3px solid var(--md-sys-success);
+  }
+  
+  &-returned {
+    background-color: var(--md-sys-error-container);
+    color: var(--md-sys-error);
+    border-left: 3px solid var(--md-sys-error);
+  }
+}
+
+// Payment Type Badges
+.badge-payment-type {
+  &-stripe {
+    background-color: var(--md-sys-primary-container);
+    color: var(--md-sys-primary);
+  }
+  
+  &-cod {
+    background-color: var(--md-sys-success-container);
+    color: var(--md-sys-success);
+  }
+}
+
+// Generic State Badges
+.badge-state {
+  &-draft {
+    background-color: var(--color-badge-draft-bg);
+    color: var(--color-badge-draft-text);
+  }
+  
+  &-active {
+    background-color: var(--color-badge-active-bg);
+    color: var(--color-badge-active-text);
+  }
+  
+  &-expired {
+    background-color: var(--color-badge-expired-bg);
+    color: var(--color-badge-expired-text);
+  }
+  
+  &-disabled {
+    background-color: var(--color-badge-disabled-bg);
+    color: var(--color-badge-disabled-text);
+  }
+  
+  &-default {
+    background-color: var(--color-badge-default-bg);
+    color: var(--color-badge-default-text);
+  }
+}
+
+// Toast/Alert Badges
+.badge-toast {
+  &-success {
+    background-color: var(--md-sys-success-container);
+    color: var(--md-sys-success);
+    border-left: 4px solid var(--md-sys-success);
+  }
+  
+  &-error {
+    background-color: var(--md-sys-error-container);
+    color: var(--md-sys-error);
+    border-left: 4px solid var(--md-sys-error);
+  }
+  
+  &-warning {
+    background-color: var(--md-sys-warning-container);
+    color: var(--md-sys-warning);
+    border-left: 4px solid var(--md-sys-warning);
+  }
+  
+  &-info {
+    background-color: var(--md-sys-info-container);
+    color: var(--md-sys-info);
+    border-left: 4px solid var(--md-sys-info);
+  }
+}
+
+// Utility classes for backward compatibility with Tailwind-style classes
+.status-badge {
+  @extend .badge;
+  
+  &.new { @extend .badge-order-status-new; }
+  &.confirmed { @extend .badge-order-status-confirmed; }
+  &.preparing { @extend .badge-order-status-preparing; }
+  &.shipped { @extend .badge-order-status-shipped; }
+  &.delivered { @extend .badge-order-status-delivered; }
+  &.cancelled { @extend .badge-order-status-cancelled; }
+  &.returned { @extend .badge-order-status-returned; }
+}

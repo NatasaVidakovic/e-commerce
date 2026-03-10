@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>{{ 'COMMON.DELETE' | translate }}</h2>
+
+<mat-dialog-content>
+  <p class="text-sm mb-3">{{ 'MESSAGES.CANT_UNDONE' | translate }}</p>
+
+  <div class="flex items-center gap-4 mb-4 p-3 bg-red-50 rounded-lg">
+    <img [src]="data.pictureUrl || '/assets/default-product.png'" 
+         alt="{{ 'PRODUCT.IMAGE_ALT' | translate:{name: data.name} }}"
+         class="w-12 h-12 object-cover rounded border">
+    <div class="flex-1 min-w-0">
+      <p class="font-medium truncate">{{ data.name }}</p>
+      <p class="text-sm" style="color: var(--color-text-secondary);">{{ data.brand }} • {{ data.productType?.name || data.type }}</p>
+      <p class="text-sm font-medium">{{ data.price | currency:'EUR' }}</p>
+    </div>
+  </div>
+
+  <p class="text-sm">
+    {{ 'MESSAGES.DELETE_PRODUCT_QUESTION' | translate:{data: data} }}
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button mat-flat-button color="warn" (click)="confirm()">{{ 'COMMON.DELETE' | translate }}</button>
+</mat-dialog-actions>

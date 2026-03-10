@@ -1,0 +1,473 @@
+<div [formGroup]="form" class="filter-bar-wrapper">
+  <!-- Mobile Filter Toggle Button -->
+  <button class="mobile-filter-toggle" (click)="toggleMobileDrawer()">
+    <mat-icon>filter_list</mat-icon>
+    <span>{{ 'FILTER.FILTERS' | translate }}</span>
+    @if (activeFilterCount > 0) {
+    <span class="filter-count">{{ activeFilterCount }}</span>
+    }
+  </button>
+
+  <!-- Desktop Filter Panel -->
+  <div class="desktop-filters">
+  <!-- Search field at top if exists -->
+  <div *ngIf="searchDefinition" class="mb-4">
+    <mat-form-field
+      appearance="outline"
+      class="w-full">
+      <mat-label>{{ searchDefinition.label }}</mat-label>
+      <input matInput type="text" [formControlName]="searchDefinition.key" />
+      <mat-icon matSuffix style="color: var(--color-text-disabled);">search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Sort dropdown at top -->
+  <div *ngIf="sortOptions.length > 0" class="mb-4">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>{{ 'FILTER.SORT_BY' | translate }}</mat-label>
+      <mat-select formControlName="sort" panelClass="modern-select-panel">
+        <mat-option *ngFor="let o of sortOptions; index as i" [value]="i">
+          {{ o.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Desktop Filter panel -->
+  <div class="filter-panel">
+    <div class="flex items-center justify-between mb-3 pb-3" style="border-bottom: 1px solid var(--color-border-primary);">
+      <div class="text-base font-semibold">{{ 'FILTER.FILTERS' | translate }}</div>
+      <button 
+        *ngIf="activeFilterCount > 0"
+        mat-button 
+        type="button" 
+        class="text-sm text-blue-600"
+        (click)="onReset()">
+        {{ 'FILTER.CLEAR_ALL' | translate }} ({{ activeFilterCount }})
+      </button>
+    </div>
+
+    <!-- Collapsible filter sections -->
+    <div class="space-y-2">
+      <ng-container *ngFor="let d of panelFilterDefinitions">
+        <!-- Skip minPrice and maxPrice individually - they'll be handled together -->
+        <ng-container *ngIf="d.key !== 'minPrice' && d.key !== 'maxPrice'">
+          <div class="rounded-lg overflow-hidden" style="border: 1px solid var(--color-border-primary);">
+            <!-- Filter header - clickable to expand/collapse -->
+            <button
+              type="button"
+              class="filter-section-toggle w-full flex items-center justify-between p-3 transition-colors"
+              (click)="toggleFilterSection(d.key)">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium">{{ d.label }}</span>
+                <span 
+                  *ngIf="hasValue(d.key)"
+                  class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
+                  ✓
+                </span>
+              </div>
+              <mat-icon class="transition-transform" style="color: var(--color-text-disabled);" [class.rotate-180]="isFilterSectionOpen(d.key)">
+                expand_more
+              </mat-icon>
+            </button>
+
+            <!-- Filter content - collapsible -->
+            <div 
+              *ngIf="isFilterSectionOpen(d.key)"
+              class="p-3 pt-0" style="border-top: 1px solid var(--color-border-primary);">
+              
+              <!-- Select field -->
+              <div *ngIf="d.controlType === 'select'" class="space-y-2">
+                <div *ngIf="d.multiple" class="max-h-48 overflow-y-auto space-y-1">
+                  <label 
+                    *ngFor="let o of (d.options || [])"
+                    class="filter-option-row flex items-center gap-2 p-2 rounded cursor-pointer">
+                    <input 
+                      type="checkbox"
+                      [value]="o"
+                      [checked]="isOptionSelected(d.key, o)"
+                      (change)="toggleOption(d.key, o)"
+                      class="filter-checkbox w-4 h-4 text-blue-600 rounded">
+                    <span class="text-sm">{{ o }}</span>
+                  </label>
+                </div>
+                <div *ngIf="!d.multiple" class="max-h-48 overflow-y-auto space-y-1">
+                  <label
+                    *ngFor="let o of (d.options || [])"
+                    class="filter-option-row flex items-center gap-2 p-2 rounded cursor-pointer">
+                    <input
+                      type="radio"
+                      [name]="d.key"
+                      [checked]="form.get(d.key)?.value === o"
+                      (change)="form.get(d.key)?.setValue(o)"
+                      class="filter-radio w-4 h-4">
+                    <span class="text-sm">{{ o }}</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Number field -->
+              <mat-form-field
+                *ngIf="d.controlType === 'number'"
+                appearance="outline"
+                class="w-full">
+                <input matInput type="number" [formControlName]="d.key" placeholder="{{ 'FILTER.ENTER_VALUE' | translate }}" />
+              </mat-form-field>
+
+              <!-- Date field -->
+              <mat-form-field
+                *ngIf="d.controlType === 'date'"
+                appearance="outline"
+                class="w-full">
+                <mat-label>{{ d.label }}</mat-label>
+                <input matInput [matDatepicker]="datePicker" [formControlName]="d.key">
+                <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+                <mat-datepicker #datePicker></mat-datepicker>
+              </mat-form-field>
+
+              <!-- Date Range field -->
+              <div *ngIf="d.controlType === 'dateRange'">
+                <div class="date-range-inline">
+                  <mat-form-field appearance="outline" class="date-range-field"
+                    [class.date-field-error]="isDateRangeInvalid(d.key)">
+                    <mat-label>From</mat-label>
+                    <input matInput [matDatepicker]="startDatePicker"
+                      [formControlName]="d.key + 'Start'"
+                      [max]="getMaxStartDate(d.key)"
+                      placeholder="Start">
+                    <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #startDatePicker></mat-datepicker>
+                  </mat-form-field>
+                  <span class="date-range-sep">–</span>
+                  <mat-form-field appearance="outline" class="date-range-field"
+                    [class.date-field-error]="isDateRangeInvalid(d.key)">
+                    <mat-label>To</mat-label>
+                    <input matInput [matDatepicker]="endDatePicker"
+                      [formControlName]="d.key + 'End'"
+                      [min]="getMinEndDate(d.key)"
+                      placeholder="End">
+                    <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #endDatePicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                <div *ngIf="isDateRangeInvalid(d.key)" class="date-range-error">
+                  <mat-icon>error_outline</mat-icon>
+                  <span>"To" date must be after "From" date</span>
+                </div>
+              </div>
+
+              <!-- Clear button for this filter -->
+              <button
+                *ngIf="d.controlType === 'dateRange' ? hasDateRangeValue(d.key) : hasValue(d.key)"
+                type="button"
+                class="w-full mt-2 flex items-center justify-center gap-1 px-3 py-1.5 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                (click)="d.controlType === 'dateRange' ? clearDateRange(d.key) : clearFilter(d.key)">
+                <mat-icon class="text-sm">close</mat-icon>
+                <span>{{ 'FILTER.CLEAR' | translate }} {{ d.label }}</span>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Special handling for {{ 'FILTER.PRICE_RANGE' | translate }} (minPrice + maxPrice combined) -->
+        <ng-container *ngIf="d.key === 'minPrice' && hasPriceRange()">
+          <div class="rounded-lg overflow-hidden" style="border: 1px solid var(--color-border-primary);">
+            <!-- {{ 'FILTER.PRICE_RANGE' | translate }} header -->
+            <button
+              type="button"
+              class="filter-section-toggle w-full flex items-center justify-between p-3 transition-colors"
+              (click)="toggleFilterSection('priceRange')">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium">{{ 'FILTER.PRICE_RANGE' | translate }}</span>
+                <span 
+                  *ngIf="hasValue('minPrice') || hasValue('maxPrice')"
+                  class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
+                  ✓
+                </span>
+              </div>
+              <mat-icon class="transition-transform" style="color: var(--color-text-disabled);" [class.rotate-180]="isFilterSectionOpen('priceRange')">
+                expand_more
+              </mat-icon>
+            </button>
+
+            <!-- {{ 'FILTER.PRICE_RANGE' | translate }} content -->
+            <div 
+              *ngIf="isFilterSectionOpen('priceRange')"
+              class="p-4 pt-2" style="border-top: 1px solid var(--color-border-primary);">
+              
+              <!-- Dual Range Slider -->
+              <div class="relative px-2 py-6">
+                <div class="relative h-2 price-range-track">
+                  <!-- Track background -->
+                  <div class="absolute w-full h-2 rounded-full" style="background-color: var(--color-bg-tertiary);"></div>
+                  
+                  <!-- Active range highlight -->
+                  <div 
+                    class="absolute h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-200"
+                    [style.left.%]="getPriceRangeLeft()"
+                    [style.width.%]="getPriceRangeWidth()">
+                  </div>
+                  
+                  <!-- Min slider -->
+                  <input 
+                    type="range" 
+                    [min]="minPriceRange" 
+                    [max]="getPriceMax()" 
+                    step="10"
+                    [value]="getPriceMin()"
+                    (input)="onMinPriceSliderChange($event)"
+                    class="absolute w-full h-2 appearance-none bg-transparent cursor-pointer range-slider top-0"
+                    style="z-index: 3;">
+                  
+                  <!-- Max slider -->
+                  <input 
+                    type="range" 
+                    [min]="minPriceRange" 
+                    [max]="getPriceMax()" 
+                    step="10"
+                    [value]="getPriceMaxValue()"
+                    (input)="onMaxPriceSliderChange($event)"
+                    class="absolute w-full h-2 appearance-none bg-transparent cursor-pointer range-slider top-0"
+                    style="z-index: 4;">
+                </div>
+                
+                <!-- Values on sides of slider -->
+                <div class="flex justify-between mt-2 text-xs">
+                  <span>{{ getPriceMin() }}</span>
+                  <span>{{ getPriceMaxValue() }}</span>
+                </div>
+              </div>
+
+              <!-- Clear button for price range -->
+              <button
+                *ngIf="hasValue('minPrice') || hasValue('maxPrice')"
+                type="button"
+                class="w-full mt-2 flex items-center justify-center gap-1 px-3 py-1.5 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                (click)="clearPriceRange()">
+                <mat-icon class="text-sm">close</mat-icon>
+                <span>Clear {{ 'FILTER.PRICE_RANGE' | translate }}</span>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <!-- Apply button (for non-live filtering) -->
+    <div *ngIf="!liveFiltering" class="mt-4 pt-4" style="border-top: 1px solid var(--color-border-primary);">
+      <button 
+        mat-flat-button 
+        type="button" 
+        color="primary" 
+        class="w-full h-11"
+        [disabled]="hasAnyInvalidDateRange()"
+        [matTooltip]="hasAnyInvalidDateRange() ? 'End date must be after start date' : ''"
+        (click)="applyFilters()">
+        <mat-icon class="text-lg">check</mat-icon>
+        <span class="ml-2">Apply Filters</span>
+      </button>
+    </div>
+  </div>
+  </div>
+
+  <!-- Mobile Filter Drawer -->
+  <div class="mobile-drawer-overlay" [class.open]="mobileDrawerOpen" (click)="closeMobileDrawer()"></div>
+  
+  <div class="mobile-drawer" [class.open]="mobileDrawerOpen">
+    <div class="mobile-drawer-header">
+      <h2>Filters</h2>
+      <button class="close-btn" (click)="closeMobileDrawer()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="mobile-drawer-content">
+      <!-- Search field -->
+      <div *ngIf="searchDefinition" class="mb-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ searchDefinition.label }}</mat-label>
+          <input matInput type="text" [formControlName]="searchDefinition.key" />
+          <mat-icon matSuffix style="color: var(--color-text-disabled);">search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Sort dropdown -->
+      <div *ngIf="sortOptions.length > 0" class="mb-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Sort By</mat-label>
+          <mat-select formControlName="sort" panelClass="modern-select-panel">
+            <mat-option *ngFor="let o of sortOptions; index as i" [value]="i">
+              {{ o.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Filter sections -->
+      <div class="space-y-2">
+        <ng-container *ngFor="let d of panelFilterDefinitions">
+          <ng-container *ngIf="d.key !== 'minPrice' && d.key !== 'maxPrice'">
+            <div class="rounded-lg overflow-hidden" style="border: 1px solid var(--color-border-primary);">
+              <button type="button" class="filter-section-toggle w-full flex items-center justify-between p-3 transition-colors"
+                (click)="toggleFilterSection(d.key)">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium">{{ d.label }}</span>
+                  <span *ngIf="hasValue(d.key)"
+                    class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
+                    ✓
+                  </span>
+                </div>
+                <mat-icon class="transition-transform" style="color: var(--color-text-disabled);" [class.rotate-180]="isFilterSectionOpen(d.key)">
+                  expand_more
+                </mat-icon>
+              </button>
+
+              <div *ngIf="isFilterSectionOpen(d.key)" class="p-3 pt-0" style="border-top: 1px solid var(--color-border-primary);">
+                <div *ngIf="d.controlType === 'select'" class="space-y-2">
+                  <div *ngIf="d.multiple" class="max-h-48 overflow-y-auto space-y-1">
+                    <label *ngFor="let o of (d.options || [])"
+                      class="filter-option-row flex items-center gap-2 p-2 rounded cursor-pointer">
+                      <input type="checkbox" [value]="o" [checked]="isOptionSelected(d.key, o)"
+                        (change)="toggleOption(d.key, o)"
+                        class="filter-checkbox w-4 h-4 text-blue-600 rounded">
+                      <span class="text-sm">{{ o }}</span>
+                    </label>
+                  </div>
+                  <div *ngIf="!d.multiple" class="max-h-48 overflow-y-auto space-y-1">
+                    <label *ngFor="let o of (d.options || [])"
+                      class="filter-option-row flex items-center gap-2 p-2 rounded cursor-pointer">
+                      <input
+                        type="radio"
+                        [name]="d.key"
+                        [checked]="form.get(d.key)?.value === o"
+                        (change)="form.get(d.key)?.setValue(o)"
+                        class="filter-radio w-4 h-4">
+                      <span class="text-sm">{{ o }}</span>
+                    </label>
+                  </div>
+                </div>
+
+                <mat-form-field *ngIf="d.controlType === 'number'" appearance="outline" class="w-full">
+                  <input matInput type="number" [formControlName]="d.key" placeholder="{{ 'FILTER.ENTER_VALUE' | translate }}" />
+                </mat-form-field>
+
+                <mat-form-field *ngIf="d.controlType === 'text'" appearance="outline" class="w-full">
+                  <input matInput type="text" [formControlName]="d.key" placeholder="{{ 'FILTER.ENTER_VALUE' | translate }}" />
+                </mat-form-field>
+
+                <!-- Date field -->
+                <mat-form-field
+                  *ngIf="d.controlType === 'date'"
+                  appearance="outline"
+                  class="w-full">
+                  <mat-label>{{ d.label }}</mat-label>
+                  <input matInput [matDatepicker]="mobileDatePicker" [formControlName]="d.key">
+                  <mat-datepicker-toggle matSuffix [for]="mobileDatePicker"></mat-datepicker-toggle>
+                  <mat-datepicker #mobileDatePicker></mat-datepicker>
+                </mat-form-field>
+
+                <!-- Date Range field -->
+                <div *ngIf="d.controlType === 'dateRange'">
+                  <div class="date-range-inline">
+                    <mat-form-field appearance="outline" class="date-range-field"
+                      [class.date-field-error]="isDateRangeInvalid(d.key)">
+                      <mat-label>From</mat-label>
+                      <input matInput [matDatepicker]="mobileStartDatePicker"
+                        [formControlName]="d.key + 'Start'"
+                        [max]="getMaxStartDate(d.key)"
+                        placeholder="Start">
+                      <mat-datepicker-toggle matSuffix [for]="mobileStartDatePicker"></mat-datepicker-toggle>
+                      <mat-datepicker #mobileStartDatePicker></mat-datepicker>
+                    </mat-form-field>
+                    <span class="date-range-sep">–</span>
+                    <mat-form-field appearance="outline" class="date-range-field"
+                      [class.date-field-error]="isDateRangeInvalid(d.key)">
+                      <mat-label>To</mat-label>
+                      <input matInput [matDatepicker]="mobileEndDatePicker"
+                        [formControlName]="d.key + 'End'"
+                        [min]="getMinEndDate(d.key)"
+                        placeholder="End">
+                      <mat-datepicker-toggle matSuffix [for]="mobileEndDatePicker"></mat-datepicker-toggle>
+                      <mat-datepicker #mobileEndDatePicker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div *ngIf="isDateRangeInvalid(d.key)" class="date-range-error">
+                    <mat-icon>error_outline</mat-icon>
+                    <span>"To" date must be after "From" date</span>
+                  </div>
+                </div>
+
+                <button *ngIf="d.controlType === 'dateRange' ? hasDateRangeValue(d.key) : hasValue(d.key)" type="button"
+                  class="w-full mt-2 flex items-center justify-center gap-1 px-3 py-1.5 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                  (click)="d.controlType === 'dateRange' ? clearDateRange(d.key) : clearFilter(d.key)">
+                  <mat-icon class="text-sm">close</mat-icon>
+                  <span>{{ 'FILTER.CLEAR' | translate }} {{ d.label }}</span>
+                </button>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="d.key === 'minPrice' && hasPriceRange()">
+            <div class="rounded-lg overflow-hidden" style="border: 1px solid var(--color-border-primary);">
+              <button type="button" class="filter-section-toggle w-full flex items-center justify-between p-3 transition-colors"
+                (click)="toggleFilterSection('priceRange')">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium">{{ 'FILTER.PRICE_RANGE' | translate }}</span>
+                  <span *ngIf="hasValue('minPrice') || hasValue('maxPrice')"
+                    class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
+                    ✓
+                  </span>
+                </div>
+                <mat-icon class="transition-transform" style="color: var(--color-text-disabled);" [class.rotate-180]="isFilterSectionOpen('priceRange')">
+                  expand_more
+                </mat-icon>
+              </button>
+
+              <div *ngIf="isFilterSectionOpen('priceRange')" class="p-4 pt-2" style="border-top: 1px solid var(--color-border-primary);">
+                <div class="relative px-2 py-6">
+                  <div class="relative h-2 price-range-track">
+                    <div class="absolute w-full h-2 rounded-full" style="background-color: var(--color-bg-tertiary);"></div>
+                    <div class="absolute h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-200"
+                      [style.left.%]="getPriceRangeLeft()" [style.width.%]="getPriceRangeWidth()">
+                    </div>
+                    <input type="range" [min]="minPriceRange" [max]="getPriceMax()" step="10"
+                      [value]="getPriceMin()" (input)="onMinPriceSliderChange($event)"
+                      class="absolute w-full h-2 appearance-none bg-transparent cursor-pointer range-slider top-0"
+                      style="z-index: 3;">
+                    <input type="range" [min]="minPriceRange" [max]="getPriceMax()" step="10"
+                      [value]="getPriceMaxValue()" (input)="onMaxPriceSliderChange($event)"
+                      class="absolute w-full h-2 appearance-none bg-transparent cursor-pointer range-slider top-0"
+                      style="z-index: 4;">
+                  </div>
+                  <div class="flex justify-between mt-2 text-xs">
+                    <span>{{ getPriceMin() }}</span>
+                    <span>{{ getPriceMaxValue() }}</span>
+                  </div>
+                </div>
+
+                <button *ngIf="hasValue('minPrice') || hasValue('maxPrice')" type="button"
+                  class="w-full mt-2 flex items-center justify-center gap-1 px-3 py-1.5 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                  (click)="clearPriceRange()">
+                  <mat-icon class="text-sm">close</mat-icon>
+                  <span>Clear {{ 'FILTER.PRICE_RANGE' | translate }}</span>
+                </button>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+    
+    <div class="mobile-drawer-footer">
+      <button mat-stroked-button type="button" class="flex-1" (click)="onReset()">
+        Clear All
+      </button>
+      <button mat-flat-button color="primary" type="button" class="flex-1"
+        [disabled]="hasAnyInvalidDateRange()"
+        [matTooltip]="hasAnyInvalidDateRange() ? 'End date must be after start date' : ''"
+        (click)="applyMobileFilters()">
+        Apply Filters
+      </button>
+    </div>
+  </div>
+</div>

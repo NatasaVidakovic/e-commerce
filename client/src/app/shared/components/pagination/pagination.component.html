@@ -1,0 +1,65 @@
+<div class="pagination-container">
+  <!-- Items info -->
+  <div class="pagination-info">
+    <span class="pagination-range">
+      {{ startItem }}–{{ endItem }} {{ 'PAGINATION.OF' | translate }} {{ length }}
+    </span>
+  </div>
+
+  <!-- Page size selector -->
+  <div class="pagination-size">
+    <label class="pagination-label">{{ 'PAGINATION.PER_PAGE' | translate }}:</label>
+    <select 
+      class="pagination-select"
+      [value]="pageSize"
+      [disabled]="disabled"
+      (change)="changePageSize(+$any($event.target).value)">
+      @for (option of pageSizeOptions; track option) {
+        <option [value]="option">{{ option }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- Navigation buttons -->
+  <div class="pagination-nav">
+    @if (showFirstLastButtons) {
+      <button
+        class="pagination-btn"
+        [disabled]="!hasPreviousPage || disabled"
+        (click)="firstPage()"
+        [attr.aria-label]="'PAGINATION.FIRST_PAGE' | translate">
+        <mat-icon>first_page</mat-icon>
+      </button>
+    }
+    
+    <button
+      class="pagination-btn"
+      [disabled]="!hasPreviousPage || disabled"
+      (click)="previousPage()"
+      [attr.aria-label]="'PAGINATION.PREVIOUS_PAGE' | translate">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <span class="pagination-page">
+      {{ currentPage }} / {{ totalPages }}
+    </span>
+
+    <button
+      class="pagination-btn"
+      [disabled]="!hasNextPage || disabled"
+      (click)="nextPage()"
+      [attr.aria-label]="'PAGINATION.NEXT_PAGE' | translate">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+
+    @if (showFirstLastButtons) {
+      <button
+        class="pagination-btn"
+        [disabled]="!hasNextPage || disabled"
+        (click)="lastPage()"
+        [attr.aria-label]="'PAGINATION.LAST_PAGE' | translate">
+        <mat-icon>last_page</mat-icon>
+      </button>
+    }
+  </div>
+</div>

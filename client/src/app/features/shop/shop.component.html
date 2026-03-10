@@ -1,0 +1,110 @@
+<div class="shop-container flex flex-col lg:flex-row gap-6">
+  <!-- Left sidebar: Filters — always visible -->
+  @if (filterDefinitions.length > 0) {
+    <aside class="filter-sidebar w-full lg:w-64 xl:w-72 flex-shrink-0">
+      <app-dynamic-filter-bar
+        [filterDefinitions]="filterDefinitions"
+        [sortOptions]="sortOptions"
+        [liveFiltering]="false"
+        [initialValues]="initialFilterValues"
+        [minPriceRange]="minPrice"
+        [maxPriceRange]="maxPrice"
+        (changed)="onDynamicChanged($event)"
+        (reset)="onDynamicReset()"
+        (rawValuesChanged)="onRawValuesChanged($event)">
+      </app-dynamic-filter-bar>
+    </aside>
+  }
+
+  <!-- Right content: Products -->
+  <main class="products-main flex-1 min-w-0">
+    <div class="products-content flex flex-col gap-4">
+
+      <!-- Active filter chips -->
+      @if (activeChips.length > 0) {
+        <div class="active-filters-bar">
+          <span class="active-filters-label">Active filters:</span>
+          <div class="active-filter-chips">
+            @for (chip of activeChips; track chip.keys[0]) {
+              <button class="filter-chip" (click)="clearChip(chip)" type="button">
+                <span class="chip-label">{{ chip.label }}</span>
+                <mat-icon class="chip-remove">close</mat-icon>
+              </button>
+            }
+          </div>
+          <button class="clear-all-btn" (click)="onDynamicReset()" type="button">
+            <mat-icon>filter_alt_off</mat-icon>
+            Clear All
+          </button>
+        </div>
+      }
+
+      <!-- View Layout Toggle -->
+      <div class="view-toggle-container">
+        <span class="flex-1"></span>
+        <button 
+          class="view-toggle-btn" 
+          [class.active]="viewLayout === 'grid'"
+          (click)="toggleViewLayout('grid')"
+          [attr.aria-label]="'SHOP.GRID_VIEW' | translate">
+          <mat-icon>grid_view</mat-icon>
+        </button>
+        <button 
+          class="view-toggle-btn" 
+          [class.active]="viewLayout === 'list'"
+          (click)="toggleViewLayout('list')"
+          [attr.aria-label]="'SHOP.LIST_VIEW' | translate">
+          <mat-icon>view_list</mat-icon>
+        </button>
+      </div>
+
+      <!-- Loading state -->
+      @if (loading) {
+        <div class="shop-loading">
+          <mat-spinner diameter="48"></mat-spinner>
+        </div>
+
+      <!-- Empty state — filters remain visible and active -->
+      } @else if (!products || products.count === 0) {
+        <div class="shop-empty-state">
+          <mat-icon class="empty-icon">search_off</mat-icon>
+          <h3 class="empty-title">No products found</h3>
+          <p class="empty-message">No products match your current filters.</p>
+          <p class="empty-hint">Try adjusting or removing some filters.</p>
+          @if (hasActiveFilters) {
+            <button class="reset-filters-btn" (click)="onDynamicReset()" type="button">
+              <mat-icon>filter_alt_off</mat-icon>
+              Reset Filters
+            </button>
+          }
+        </div>
+
+      <!-- Products -->
+      } @else {
+        <div
+          class="product-container"
+          [class.product-grid]="viewLayout === 'grid'"
+          [class.product-list]="viewLayout === 'list'">
+          @for (product of products.data; track product.id) {
+            <app-product-item 
+              [product]="product" 
+              [isFavourite]="product.isFavourite"
+              (favoriteToggled)="onFavoriteToggled($event)">
+            </app-product-item>
+          }
+        </div>
+
+        <!-- Pagination -->
+        <app-pagination
+          (page)="handlePageEvent($event)" 
+          [length]="totalCount"
+          [pageSize]="pageSize" 
+          [pageIndex]="pageNumber - 1"
+          [pageSizeOptions]="pageSizeOptions"
+          [showFirstLastButtons]="true">
+        </app-pagination>
+      }
+
+    </div>
+  </main>
+</div>

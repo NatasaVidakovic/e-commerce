@@ -1,0 +1,18 @@
+@import '../styles/breakpoints';
+@import '../styles/spacing';
+
+.main-content {
+  margin-top: 3.5rem;
+  padding: $spacing-4;
+  min-height: calc(100vh - 3.5rem);
+  
+  @include md {
+    margin-top: 4.5rem;
+    padding: $spacing-6;
+    min-height: calc(100vh - 4.5rem);
+  }
+  
+  @include lg {
+    padding: $spacing-8;
+  }
+}
