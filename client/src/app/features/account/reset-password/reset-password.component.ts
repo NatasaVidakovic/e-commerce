@@ -7,7 +7,7 @@ import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { AccountService } from '../../../core/services/account.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { AccountService } from '../../../core/services/account.service';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatCard, MatFormField, MatInput,
-    MatButton, MatLabel, MatIcon, RouterLink, TranslatePipe
+    MatButton, MatLabel, MatIcon, RouterLink
   ],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss'

@@ -5,7 +5,7 @@ on:
   # Automatically trigger it when detected changes in repo
   push:
     branches: 
-      [ master ]
+      [ main ]
     paths:
     - '**'
     - '.github/workflows/webshop-frontend-AutoDeployTrigger-563a4415-2e6a-42d5-a3fd-d2c7da849e4f.yml'
