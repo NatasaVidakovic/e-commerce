@@ -4,19 +4,19 @@ services:
       context: .
       dockerfile: dockerfile.api
     ports:
-      - "5001:80"
+      - "5001:443"
     environment:
       - "ConnectionStrings__DefaultConnection=Server=sql;Database=WebShop;User Id=sa;Password=Password@1;TrustServerCertificate=true;MultipleActiveResultSets=true"
       - "ConnectionStrings__Redis=redis:6379,password=devredis123"
-      - "ASPNETCORE_ENVIRONMENT=Development"  # Swagger radi!
-      - "ASPNETCORE_URLS=http://+:80"        # HTTPS off
+      - "ASPNETCORE_ENVIRONMENT=Development"
+      - "ASPNETCORE_URLS=https://+:443"
+      - "ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pem"
+      - "ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/https/localhost-key.pem"
       - "DEFAULT_USER_PASSWORD=Pa$$w0rd"
-      - "Cors__AllowedOrigins__0=http://localhost:4200"
-      - "Cors__AllowedOrigins__1=https://localhost:4200"
-      - "Cors__AllowedOrigins__2=http://localhost:8080"
-      - "Cors__AllowedOrigins__3=http://localhost:80"
-      - "Cors__AllowedOrigins__4=https://localhost:8080"
-      - "Cors__AllowedOrigins__5=https://localhost:80"
+      - "Cors__AllowedOrigins__0=https://localhost:4200"
+      - "Cors__AllowedOrigins__1=https://localhost"
+    volumes:
+      - ./ssl:/https:ro
     depends_on:
       - sql
       - redis
@@ -24,9 +24,12 @@ services:
       - webshop-network
 
   frontend:
-    image: webshopdejanacr.azurecr.io/webshop-frontend:latest
+    image: webshopacr.azurecr.io/webshop-frontend:latest
     ports:
-      - "4200:80"
+      - "4200:443"
+    volumes:
+      - ./client/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./client/ssl:/etc/nginx/ssl:ro
     depends_on:
       - api
     networks:

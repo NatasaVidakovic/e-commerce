@@ -5,6 +5,7 @@ COPY ["Core/Core.csproj", "Core/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 WORKDIR /src/API
 RUN dotnet restore
+WORKDIR /src
 COPY . .
 WORKDIR /src/API
 RUN dotnet publish "API.csproj" -c Release -o /app/publish /p:UseAppHost=false

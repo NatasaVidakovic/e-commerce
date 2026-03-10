@@ -231,8 +231,8 @@ try
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     try
     {
-        await context.Database.MigrateAsync();
-        logger.LogInformation("Migrations applied successfully.");
+        // await context.Database.MigrateAsync();
+        // logger.LogInformation("Migrations applied successfully.");
 
 
         await context.SeedDataAsync(services);

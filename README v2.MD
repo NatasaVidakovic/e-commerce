@@ -59,17 +59,16 @@ az acr login --name webshopacr
 ## CICD
 
 ### docker image deploy
-
+t
 ``` bash
 
 docker build -f dockerfile.frontend -t webshopacr.azurecr.io/webshop-frontend:latest . --no-cache
 docker push webshopacr.azurecr.io/webshop-frontend:latest
-az containerapp update --name webshop-frontend --resource-group WebShopRG --min-replicas 0
+az containerapp update --name webshop-frontend --resource-group WebShopRG --image webshopacr.azurecr.io/webshop-frontend:latest --min-replicas 1
 
 docker build -f dockerfile.api -t webshopacr.azurecr.io/webshop-api:latest . --no-cache
 docker push webshopacr.azurecr.io/webshop-api:latest
-az containerapp update --name webshop-api --resource-group WebShopRG --min-replicas 0
-
+az containerapp update --name webshop-api --resource-group WebShopRG --image webshopacr.azurecr.io/webshop-api:latest --min-replicas 1
 
 docker build -f dockerfile.redis -t webshopacr.azurecr.io/webshop-redis:latest . --no-cache
 docker push webshopacr.azurecr.io/webshop-redis:latest
