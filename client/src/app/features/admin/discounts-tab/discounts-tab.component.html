@@ -1,236 +1,233 @@
-<div class="flex justify-between items-center mb-6 mt-6 w-full max-w-full">
-  <div class="flex items-center gap-2">
-    <button mat-flat-button color="primary" class="flex items-center gap-2" (click)="goToAdd()">
-      <mat-icon>add</mat-icon>
-      {{ 'DISCOUNT.ADD_DISCOUNT' | translate }}
-    </button>
+<mat-tab-group animationDuration="0ms">
 
-    <button 
-      *ngIf="selectedDiscount" 
-      mat-stroked-button 
-      color="primary" 
-      class="flex items-center gap-2" 
-      (click)="goToEditSelected()"
-      [disabled]="selectedDiscount && !selectedDiscount.canEdit"
-      [matTooltip]="selectedDiscount && !selectedDiscount.canEdit ? getEditRestrictionTooltip() : ''">
-      <mat-icon>edit</mat-icon>
-      {{ 'COMMON.EDIT' | translate }}
-    </button>
+  <!-- ===== DISCOUNTS TAB ===== -->
+  <mat-tab label="{{ 'DISCOUNT.ADD_DISCOUNT' | translate }}">
+    <div class="tab-content">
 
-    <button 
-      *ngIf="selectedDiscount" 
-      mat-stroked-button 
-      color="warn" 
-      class="flex items-center gap-2" 
-      (click)="deleteSelected()"
-      [disabled]="selectedDiscount && !selectedDiscount.canDelete"
-      [matTooltip]="selectedDiscount && !selectedDiscount.canDelete ? getDeleteRestrictionTooltip() : ''">
-      <mat-icon>delete</mat-icon>
-      {{ 'COMMON.DELETE' | translate }}
-    </button>
-
-    <button mat-stroked-button color="primary" class="flex items-center gap-2" (click)="reloadDiscounts()">
-      <mat-icon>refresh</mat-icon>
-      {{ 'ADMIN.REFRESH' | translate }}
-    </button>
-  </div>
-</div>
-
-<div class="table-scroll">
-<table mat-table [dataSource]="dataSource" class="min-w-full">
-
-    <!-- ID COLUMN -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.ID' | translate }}</th>
-      <td mat-cell *matCellDef="let discount" class="px-4 py-2">{{ discount.id }}</td>
-    </ng-container>
-
-    <!-- NAME COLUMN -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{'DISCOUNT.NAME' | translate}}</th>
-      <td mat-cell *matCellDef="let discount" class="px-4 py-2">
-        <button mat-button color="primary" class="p-0 min-w-0" (click)="$event.stopPropagation(); onRowClick(discount);">
-          {{ discount.name }}
+      <!-- Toolbar -->
+      <div class="flex items-center gap-2 mb-4 mt-4 flex-wrap">
+        <button mat-flat-button color="primary" class="flex items-center gap-2" (click)="goToAdd()">
+          <mat-icon>add</mat-icon>
+          {{ 'DISCOUNT.ADD_DISCOUNT' | translate }}
         </button>
-      </td>
-    </ng-container>
 
-    <!-- DESCRIPTION COLUMN -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{"DISCOUNT.DESCRIPTION" | translate}}</th>
-      <td mat-cell *matCellDef="let discount" class="px-4 py-2">{{ discount.description }}</td>
-    </ng-container>
+        <button
+          *ngIf="selectedDiscount?.canEdit"
+          mat-stroked-button
+          color="primary"
+          class="flex items-center gap-2"
+          (click)="goToEditSelected()">
+          <mat-icon>edit</mat-icon>
+          {{ 'COMMON.EDIT' | translate }}
+        </button>
 
-    <!-- VALUE COLUMN -->
-    <ng-container matColumnDef="value">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{"DISCOUNT.VALUE" | translate}}</th>
-      <td mat-cell *matCellDef="let discount" class="px-4 py-2">
-        {{ discount.value }}{{ discount.isPercentage ? '%' : '' }}
-      </td>
-    </ng-container>
+        <button
+          *ngIf="selectedDiscount?.canDelete"
+          mat-stroked-button
+          color="warn"
+          class="flex items-center gap-2"
+          (click)="deleteSelected()">
+          <mat-icon>delete</mat-icon>
+          {{ 'COMMON.DELETE' | translate }}
+        </button>
 
-    <!-- STATE COLUMN -->
-    <ng-container matColumnDef="state">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.STATUS' | translate }}</th>
-      <td mat-cell *matCellDef="let discount" class="px-4 py-2">
-        <div class="flex items-center gap-1.5">
-          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
-                [class.bg-indigo-100]="discount.state === 'Draft'"
-                [class.text-indigo-800]="discount.state === 'Draft'"
-                [class.bg-green-100]="discount.state === 'Active'"
-                [class.text-green-800]="discount.state === 'Active'"
-                [class.bg-red-100]="discount.state === 'Expired'"
-                [class.text-red-800]="discount.state === 'Expired'"
-                [class.bg-yellow-100]="discount.state === 'Disabled'"
-                [class.text-yellow-800]="discount.state === 'Disabled'">
-            {{ discount.state }}
-          </span>
-          <span *ngIf="discount.hasBeenUsed" 
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800"
-                matTooltip="{{ 'DISCOUNT.USED_IN_ORDERS' | translate }}">
-            <mat-icon class="text-xs" style="font-size: 12px; width: 12px; height: 12px;">receipt</mat-icon>
-          </span>
+        <button mat-stroked-button color="primary" class="flex items-center gap-2" (click)="reloadDiscounts()">
+          <mat-icon>refresh</mat-icon>
+          {{ 'ADMIN.REFRESH' | translate }}
+        </button>
+      </div>
+
+      <!-- Discounts Table -->
+      <div class="table-scroll">
+        <table mat-table [dataSource]="discounts" class="min-w-full">
+
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.ID' | translate }}</th>
+            <td mat-cell *matCellDef="let discount" class="px-4 py-2">{{ discount.id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'DISCOUNT.NAME' | translate }}</th>
+            <td mat-cell *matCellDef="let discount" class="px-4 py-2">
+              <button mat-button color="primary" class="p-0 min-w-0" (click)="$event.stopPropagation(); onRowClick(discount);">
+                {{ discount.name }}
+              </button>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'DISCOUNT.DESCRIPTION' | translate }}</th>
+            <td mat-cell *matCellDef="let discount" class="px-4 py-2">{{ discount.description }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'DISCOUNT.VALUE' | translate }}</th>
+            <td mat-cell *matCellDef="let discount" class="px-4 py-2">
+              {{ discount.value }}{{ discount.isPercentage ? '%' : '' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="state">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.STATUS' | translate }}</th>
+            <td mat-cell *matCellDef="let discount" class="px-4 py-2">
+              <div class="flex items-center gap-1.5">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
+                      [class.bg-indigo-100]="discount.state === 'Draft'"
+                      [class.text-indigo-800]="discount.state === 'Draft'"
+                      [class.bg-green-100]="discount.state === 'Active'"
+                      [class.text-green-800]="discount.state === 'Active'"
+                      [class.bg-red-100]="discount.state === 'Expired'"
+                      [class.text-red-800]="discount.state === 'Expired'"
+                      [class.bg-yellow-100]="discount.state === 'Disabled'"
+                      [class.text-yellow-800]="discount.state === 'Disabled'">
+                  {{ discount.state }}
+                </span>
+                <span *ngIf="discount.hasBeenUsed"
+                      class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800"
+                      matTooltip="{{ 'DISCOUNT.USED_IN_ORDERS' | translate }}">
+                  <mat-icon style="font-size: 12px; width: 12px; height: 12px;">receipt</mat-icon>
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="dateFrom">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'DISCOUNT.DATE_FROM' | translate }}</th>
+            <td mat-cell *matCellDef="let discount" class="px-4 py-2">{{ discount.dateFrom | date }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="dateTo">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'DISCOUNT.DATE_TO' | translate }}</th>
+            <td mat-cell *matCellDef="let discount" class="px-4 py-2">{{ discount.dateTo | date }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+              (click)="onRowClick(row)"
+              class="cursor-pointer"
+              [class.selected]="selectedDiscount?.id === row.id"></tr>
+        </table>
+      </div>
+
+      <app-pagination
+        [length]="discountTotalCount"
+        [pageSize]="discountPageSize"
+        [pageIndex]="discountPageIndex"
+        [pageSizeOptions]="pageSizeOptions"
+        [showFirstLastButtons]="true"
+        (page)="onDiscountPage($event)">
+      </app-pagination>
+
+      <div *ngIf="discounts.length === 0" class="text-center py-8" style="color: var(--color-text-secondary);">
+        {{ 'MESSAGES.NO_DISCOUNTS_AVAILABLE' | translate }}
+      </div>
+
+    </div>
+  </mat-tab>
+
+  <!-- ===== VOUCHERS TAB ===== -->
+  <mat-tab label="{{ 'VOUCHER.TITLE' | translate }}">
+    <div class="tab-content">
+
+      <!-- Add Voucher Form -->
+      <div class="flex items-end gap-3 mb-4 mt-4 flex-wrap">
+        <div class="flex flex-col">
+          <label class="text-sm font-medium mb-1" style="color: var(--color-text-secondary);">{{ 'VOUCHER.CODE' | translate }}</label>
+          <input type="text" [(ngModel)]="newVoucher.code"
+                 class="voucher-input px-3 py-2 border rounded" style="border-color: var(--color-border-primary); background: var(--color-surface);">
         </div>
-      </td>
-    </ng-container>
-
-    <!-- IS PERCENTAGE COLUMN -->
-    <ng-container matColumnDef="isPercentage">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{"DISCOUNT.IS_PERCENTAGE" | translate}}</th>
-      <td mat-cell *matCellDef="let discount" class="px-4 py-2">
-        {{ discount.isPercentage ? ('COMMON.YES' | translate) : ('COMMON.NO' | translate) }}
-      </td>
-    </ng-container>
-
-    <!-- DATE FROM COLUMN -->
-    <ng-container matColumnDef="dateFrom">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{"DISCOUNT.DATE_FROM" | translate}}</th>
-      <td mat-cell *matCellDef="let discount" class="px-4 py-2">{{ discount.dateFrom | date }}</td>
-    </ng-container>
-
-    <!-- DATE TO COLUMN -->
-    <ng-container matColumnDef="dateTo">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{"DISCOUNT.DATE_TO" | translate}}</th>
-      <td mat-cell *matCellDef="let discount" class="px-4 py-2">{{ discount.dateTo | date }}</td>
-    </ng-container>
-
-    <!-- PRODUCTS COLUMN -->
-    <ng-container matColumnDef="products">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{"DISCOUNT.PRODUCTS" | translate}}</th>
-      <td mat-cell *matCellDef="let discount" class="px-4 py-2">
-        <ng-container *ngFor="let product of discount.products; let last = last">
-          {{ product.name }}<span *ngIf="!last">, </span>
-        </ng-container>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onRowClick(row)" class="cursor-pointer" [class.selected]="selectedDiscount?.id === row.id"></tr>
-
-  </table>
-</div>
-
-<app-pagination
-  [length]="dataSource.data.length"
-  [pageSize]="25"
-  [pageIndex]="0"
-  [pageSizeOptions]="[10, 25, 50]"
-  [showFirstLastButtons]="true">
-</app-pagination>
-
-<!-- No data message -->
-<div *ngIf="dataSource.data.length === 0" class="text-center py-8" style="color: var(--color-text-secondary);">
-  {{"MESSAGES.NO_DISCOUNTS_AVAILABLE" | translate}}
-</div>
-
-<!-- Voucher Codes Section -->
-<div class="mt-8 border-t pt-6" style="border-color: var(--color-border-primary);">
-  <h3 class="text-xl font-semibold mb-4" style="color: var(--color-text-primary);">
-    {{ 'VOUCHER.TITLE' | translate }}
-  </h3>
-
-  <!-- Add Voucher Form -->
-  <div class="flex items-end gap-3 mb-4 flex-wrap">
-    <div class="flex flex-col">
-      <label class="text-sm font-medium mb-1" style="color: var(--color-text-secondary);">{{ 'VOUCHER.CODE' | translate }}</label>
-      <input type="text" [(ngModel)]="newVoucher.code" [placeholder]="'VOUCHER.CODE_PLACEHOLDER' | translate"
-             class="px-3 py-2 border rounded" style="border-color: var(--color-border-primary); background: var(--color-surface);">
-    </div>
-    <div class="flex flex-col">
-      <label class="text-sm font-medium mb-1" style="color: var(--color-text-secondary);">{{ 'VOUCHER.DESCRIPTION' | translate }}</label>
-      <input type="text" [(ngModel)]="newVoucher.description" [placeholder]="'VOUCHER.DESCRIPTION_PLACEHOLDER' | translate"
-             class="px-3 py-2 border rounded" style="border-color: var(--color-border-primary); background: var(--color-surface);">
-    </div>
-    <div class="flex flex-col">
-      <label class="text-sm font-medium mb-1" style="color: var(--color-text-secondary);">{{ 'VOUCHER.AMOUNT_OFF' | translate }}</label>
-      <input type="number" [(ngModel)]="newVoucher.amountOff" placeholder="0"
-             class="px-3 py-2 border rounded w-24" style="border-color: var(--color-border-primary); background: var(--color-surface);">
-    </div>
-    <div class="flex flex-col">
-      <label class="text-sm font-medium mb-1" style="color: var(--color-text-secondary);">{{ 'VOUCHER.PERCENT_OFF' | translate }}</label>
-      <input type="number" [(ngModel)]="newVoucher.percentOff" placeholder="0"
-             class="px-3 py-2 border rounded w-24" style="border-color: var(--color-border-primary); background: var(--color-surface);">
-    </div>
-    <button mat-flat-button color="primary" (click)="addVoucher()" class="flex items-center gap-1">
-      <mat-icon>add</mat-icon>
-      {{ 'VOUCHER.ADD' | translate }}
-    </button>
-  </div>
-
-  <!-- Voucher Table -->
-  <div class="table-scroll" *ngIf="voucherDataSource.data.length > 0">
-  <table mat-table [dataSource]="voucherDataSource" class="min-w-full">
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.ID' | translate }}</th>
-      <td mat-cell *matCellDef="let v" class="px-4 py-2">{{ v.id }}</td>
-    </ng-container>
-    <ng-container matColumnDef="code">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'VOUCHER.CODE' | translate }}</th>
-      <td mat-cell *matCellDef="let v" class="px-4 py-2 font-mono font-semibold">{{ v.code }}</td>
-    </ng-container>
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'VOUCHER.DESCRIPTION' | translate }}</th>
-      <td mat-cell *matCellDef="let v" class="px-4 py-2">{{ v.description }}</td>
-    </ng-container>
-    <ng-container matColumnDef="value">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'DISCOUNT.VALUE' | translate }}</th>
-      <td mat-cell *matCellDef="let v" class="px-4 py-2">
-        <span *ngIf="v.amountOff">{{ v.amountOff | currency }}</span>
-        <span *ngIf="v.percentOff">{{ v.percentOff }}%</span>
-        <span *ngIf="!v.amountOff && !v.percentOff">-</span>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.STATUS' | translate }}</th>
-      <td mat-cell *matCellDef="let v" class="px-4 py-2">
-        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
-              [class.bg-green-100]="v.isActive" [class.text-green-800]="v.isActive"
-              [class.bg-red-100]="!v.isActive" [class.text-red-800]="!v.isActive">
-          {{ v.isActive ? ('VOUCHER.ACTIVE' | translate) : ('VOUCHER.INACTIVE' | translate) }}
-        </span>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.ACTIONS' | translate }}</th>
-      <td mat-cell *matCellDef="let v" class="px-4 py-2">
-        <div class="flex gap-1">
-          <button *ngIf="!v.isActive" mat-icon-button color="primary" (click)="activateVoucher(v)" matTooltip="{{ 'VOUCHER.ACTIVATE' | translate }}">
-            <mat-icon>check_circle</mat-icon>
-          </button>
-          <button *ngIf="v.isActive" mat-icon-button color="warn" (click)="deactivateVoucher(v)" matTooltip="{{ 'VOUCHER.DEACTIVATE' | translate }}">
-            <mat-icon>block</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="deleteVoucher(v)" matTooltip="{{ 'COMMON.DELETE' | translate }}">
-            <mat-icon>delete</mat-icon>
-          </button>
+        <div class="flex flex-col">
+          <label class="text-sm font-medium mb-1" style="color: var(--color-text-secondary);">{{ 'VOUCHER.DESCRIPTION' | translate }}</label>
+          <input type="text" [(ngModel)]="newVoucher.description"
+                 class="voucher-input px-3 py-2 border rounded" style="border-color: var(--color-border-primary); background: var(--color-surface);">
         </div>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="voucherColumns" class="sticky top-0 z-10"></tr>
-    <tr mat-row *matRowDef="let row; columns: voucherColumns;"></tr>
-  </table>
-  </div>
-  <div *ngIf="voucherDataSource.data.length === 0" class="text-center py-4" style="color: var(--color-text-secondary);">
-    {{ 'VOUCHER.NO_VOUCHERS' | translate }}
-  </div>
-</div>
+        <div class="flex flex-col">
+          <label class="text-sm font-medium mb-1" style="color: var(--color-text-secondary);">{{ 'VOUCHER.AMOUNT_OFF' | translate }}</label>
+          <input type="number" [(ngModel)]="newVoucher.amountOff"
+                 (ngModelChange)="onAmountOffChange($event)"
+                 class="voucher-input px-3 py-2 border rounded w-24" style="border-color: var(--color-border-primary); background: var(--color-surface);">
+        </div>
+        <div class="flex flex-col">
+          <label class="text-sm font-medium mb-1" style="color: var(--color-text-secondary);">{{ 'VOUCHER.PERCENT_OFF' | translate }}</label>
+          <input type="number" [(ngModel)]="newVoucher.percentOff"
+                 (ngModelChange)="onPercentOffChange($event)"
+                 class="voucher-input px-3 py-2 border rounded w-24" style="border-color: var(--color-border-primary); background: var(--color-surface);">
+        </div>
+        <button mat-flat-button color="primary" (click)="addVoucher()" class="flex items-center gap-1">
+          <mat-icon>add</mat-icon>
+          {{ 'VOUCHER.ADD' | translate }}
+        </button>
+      </div>
+
+      <!-- Vouchers Table -->
+      <div class="table-scroll" *ngIf="vouchers.length > 0">
+        <table mat-table [dataSource]="vouchers" class="min-w-full">
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.ID' | translate }}</th>
+            <td mat-cell *matCellDef="let v" class="px-4 py-2">{{ v.id }}</td>
+          </ng-container>
+          <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'VOUCHER.CODE' | translate }}</th>
+            <td mat-cell *matCellDef="let v" class="px-4 py-2 font-mono font-semibold">{{ v.code }}</td>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'VOUCHER.DESCRIPTION' | translate }}</th>
+            <td mat-cell *matCellDef="let v" class="px-4 py-2">{{ v.description }}</td>
+          </ng-container>
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'DISCOUNT.VALUE' | translate }}</th>
+            <td mat-cell *matCellDef="let v" class="px-4 py-2">
+              <span *ngIf="v.amountOff">{{ v.amountOff | currency }}</span>
+              <span *ngIf="v.percentOff">{{ v.percentOff }}%</span>
+              <span *ngIf="!v.amountOff && !v.percentOff">-</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.STATUS' | translate }}</th>
+            <td mat-cell *matCellDef="let v" class="px-4 py-2">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
+                    [class.bg-green-100]="v.isActive" [class.text-green-800]="v.isActive"
+                    [class.bg-red-100]="!v.isActive" [class.text-red-800]="!v.isActive">
+                {{ v.isActive ? ('VOUCHER.ACTIVE' | translate) : ('VOUCHER.INACTIVE' | translate) }}
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.ACTIONS' | translate }}</th>
+            <td mat-cell *matCellDef="let v" class="px-4 py-2">
+              <div class="flex gap-1">
+                <button *ngIf="!v.isActive" mat-icon-button color="primary" (click)="activateVoucher(v)" matTooltip="{{ 'VOUCHER.ACTIVATE' | translate }}">
+                  <mat-icon>check_circle</mat-icon>
+                </button>
+                <button *ngIf="v.isActive" mat-icon-button color="warn" (click)="deactivateVoucher(v)" matTooltip="{{ 'VOUCHER.DEACTIVATE' | translate }}">
+                  <mat-icon>block</mat-icon>
+                </button>
+                <button mat-icon-button (click)="openVoucherHistory(v)" matTooltip="View Status History">
+                  <mat-icon>history</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="voucherColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: voucherColumns;"></tr>
+        </table>
+      </div>
+
+      <app-pagination
+        *ngIf="vouchers.length > 0"
+        [length]="voucherTotalCount"
+        [pageSize]="voucherPageSize"
+        [pageIndex]="voucherPageIndex"
+        [pageSizeOptions]="pageSizeOptions"
+        [showFirstLastButtons]="true"
+        (page)="onVoucherPage($event)">
+      </app-pagination>
+
+      <div *ngIf="vouchers.length === 0" class="text-center py-4" style="color: var(--color-text-secondary);">
+        {{ 'VOUCHER.NO_VOUCHERS' | translate }}
+      </div>
+
+    </div>
+  </mat-tab>
+
+</mat-tab-group>

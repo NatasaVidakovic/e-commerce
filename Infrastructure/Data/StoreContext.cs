@@ -21,6 +21,7 @@ public class StoreContext(DbContextOptions options) : IdentityDbContext<AppUser>
     public required DbSet<Favourite> Favourites { get; set; }
     public required DbSet<Discount> Discounts { get; set; }
     public required DbSet<Voucher> Vouchers { get; set; }
+    public required DbSet<VoucherStatusHistory> VoucherStatusHistory { get; set; }
     public required DbSet<SiteSettings> SiteSettings { get; set; }
     public required DbSet<Refund> Refunds { get; set; }
     public required DbSet<ProductImage> ProductImages { get; set; }

@@ -12,4 +12,5 @@ public interface IDiscountRepository : IGenericRepository<Discount>
     Task<IReadOnlyList<Discount>> GetOverlappingDiscountsForProductsAsync(List<int> productIds, DateTime dateFrom, DateTime dateTo, int? excludeDiscountId = null);
     Task MarkDiscountAsUsedAsync(int discountId);
     Task<bool> HasDiscountBeenUsedAsync(int discountId);
+    Task<(IReadOnlyList<Discount> Items, int TotalCount)> GetDiscountsPagedAsync(int pageNumber, int pageSize);
 }

@@ -14,5 +14,6 @@ public interface IDiscountService
     Task<bool> ValidateDiscountAsync(string name);
     Task<IReadOnlyList<Product>> GetProductsWithOverlappingDiscounts(Discount discount);
     Task DisableDiscountAsync(int id);
+    Task<(IReadOnlyList<Discount> Items, int TotalCount)> GetDiscountsPagedAsync(int pageNumber, int pageSize);
     Task ValidateNoOverlappingDiscountsAsync(List<int> productIds, DateTime dateFrom, DateTime dateTo, int? excludeDiscountId = null);
 }

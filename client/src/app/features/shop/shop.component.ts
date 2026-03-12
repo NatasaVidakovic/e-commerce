@@ -62,9 +62,9 @@ export class ShopComponent implements OnInit {
   lastFilters: FilterViewModel[][] = [];
   lastSort: DynamicSortOption = this.sortOptions[0];
   pageNumber = 1;
-  pageSize = 10;
+  pageSize = 20;
   totalCount = 0;
-  pageSizeOptions = [5, 10, 15, 20];
+  pageSizeOptions = [20, 50, 100];
   viewLayout: 'grid' | 'list' = 'grid';
 
   initialFilterValues: Record<string, any> = {};
@@ -133,7 +133,7 @@ export class ShopComponent implements OnInit {
     this.lastFilters = this.urlParamsToFilters(params);
 
     if (params['page']) this.pageNumber = Math.max(1, Number(params['page']) || 1);
-    if (params['pageSize']) this.pageSize = Number(params['pageSize']) || 10;
+    if (params['pageSize']) this.pageSize = Number(params['pageSize']) || 20;
     if (params['sort'] !== undefined) {
       const sortIdx = Number(params['sort']) || 0;
       if (sortIdx >= 0 && sortIdx < this.sortOptions.length) {
@@ -306,7 +306,7 @@ export class ShopComponent implements OnInit {
     if (sortIdx !== 0) queryParams['sort'] = sortIdx;
 
     if (this.pageNumber > 1) queryParams['page'] = this.pageNumber;
-    if (this.pageSize !== 10) queryParams['pageSize'] = this.pageSize;
+    if (this.pageSize !== 20) queryParams['pageSize'] = this.pageSize;
 
     this.router.navigate([], { relativeTo: this.route, queryParams, replaceUrl: true });
   }

@@ -39,6 +39,35 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         return Ok(dtos);
     }
 
+    [HttpGet("paged")]
+    public async Task<ActionResult> GetDiscountsPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    {
+        var productMapper = serviceProvider.GetService<ProductMapping>();
+        if (productMapper == null)
+            return BadRequest();
+
+        var (discounts, totalCount) = await discountService.GetDiscountsPagedAsync(pageNumber, pageSize);
+
+        var dtos = discounts.Select(d => new DiscountDto
+        {
+            Id = d.Id,
+            Name = d.Name,
+            Description = d.Description,
+            Value = d.Value,
+            IsPercentage = d.IsPercentage,
+            IsActive = d.IsActive,
+            DateFrom = d.DateFrom,
+            DateTo = d.DateTo,
+            Products = d.Products.Select(p => productMapper.ToDto(p)).ToArray(),
+            HasBeenUsed = d.HasBeenUsed,
+            State = d.GetState(),
+            CanEdit = d.CanBeEdited(),
+            CanDelete = d.CanBeDeleted()
+        }).ToList();
+
+        return Ok(new { data = dtos, totalCount });
+    }
+
     [Cached(1)]
     [HttpGet("active")]
     public async Task<ActionResult<IReadOnlyList<Discount>>> GetActiveDiscounts()

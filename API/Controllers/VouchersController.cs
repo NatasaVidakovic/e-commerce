@@ -14,12 +14,15 @@ public class VouchersController(StoreContext context) : BaseApiController
     }
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult<List<Voucher>>> GetVouchers()
+    public async Task<ActionResult> GetVouchers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
-        var vouchers = await context.Vouchers
-            .OrderByDescending(v => v.CreatedAt)
+        var query = context.Vouchers.OrderByDescending(v => v.CreatedAt);
+        var totalCount = await query.CountAsync();
+        var vouchers = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
-        return Ok(vouchers);
+        return Ok(new { data = vouchers, totalCount });
     }
 
     [HttpGet("validate/{code}")]
@@ -56,8 +59,22 @@ public class VouchersController(StoreContext context) : BaseApiController
         var voucher = await GetVoucherByIdAsync(id);
         if (voucher == null) return NotFound();
 
-        voucher.IsActive = true;
-        await context.SaveChangesAsync();
+        if (!voucher.IsActive)
+        {
+            voucher.IsActive = true;
+            
+            var history = new VoucherStatusHistory
+            {
+                VoucherId = voucher.Id,
+                IsActive = true,
+                ChangedAt = DateTime.UtcNow,
+                ChangedBy = User.Identity?.Name ?? "Admin",
+                Reason = "Activated by admin"
+            };
+            context.VoucherStatusHistory.Add(history);
+            
+            await context.SaveChangesAsync();
+        }
 
         return Ok(voucher);
     }
@@ -69,22 +86,52 @@ public class VouchersController(StoreContext context) : BaseApiController
         var voucher = await GetVoucherByIdAsync(id);
         if (voucher == null) return NotFound();
 
-        voucher.IsActive = false;
-        await context.SaveChangesAsync();
+        if (voucher.IsActive)
+        {
+            voucher.IsActive = false;
+            
+            var history = new VoucherStatusHistory
+            {
+                VoucherId = voucher.Id,
+                IsActive = false,
+                ChangedAt = DateTime.UtcNow,
+                ChangedBy = User.Identity?.Name ?? "Admin",
+                Reason = "Deactivated by admin"
+            };
+            context.VoucherStatusHistory.Add(history);
+            
+            await context.SaveChangesAsync();
+        }
 
         return Ok(voucher);
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteVoucher(int id)
+    [HttpGet("{id:int}/history")]
+    public async Task<ActionResult> GetVoucherHistory(int id)
     {
         var voucher = await GetVoucherByIdAsync(id);
         if (voucher == null) return NotFound();
 
-        context.Vouchers.Remove(voucher);
-        await context.SaveChangesAsync();
+        var history = await context.VoucherStatusHistory
+            .Where(h => h.VoucherId == id)
+            .OrderByDescending(h => h.ChangedAt)
+            .ToListAsync();
 
-        return NoContent();
+        return Ok(history);
     }
+
+    // Vouchers cannot be deleted for audit and control purposes
+    // This ensures we can always verify when a voucher was active/inactive
+    // and prevent inactive vouchers from being applied to orders
+    // [Authorize(Roles = "Admin")]
+    // [HttpDelete("{id:int}")]
+    // public async Task<ActionResult> DeleteVoucher(int id)
+    // {
+    //     var voucher = await GetVoucherByIdAsync(id);
+    //     if (voucher == null) return NotFound();
+    //     context.Vouchers.Remove(voucher);
+    //     await context.SaveChangesAsync();
+    //     return NoContent();
+    // }
 }

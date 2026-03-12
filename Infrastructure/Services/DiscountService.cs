@@ -299,6 +299,13 @@ public class DiscountService(IUnitOfWork unit, IDiscountRepository repository) :
         return overlappingProducts.AsReadOnly();
     }
 
+    public async Task<(IReadOnlyList<Discount> Items, int TotalCount)> GetDiscountsPagedAsync(int pageNumber, int pageSize)
+    {
+        var (items, totalCount) = await discountRepo.GetDiscountsPagedAsync(pageNumber, pageSize);
+        await CheckAndDeactivateExpiredDiscounts(items);
+        return (items, totalCount);
+    }
+
     public async Task DisableDiscountAsync(int id)
     {
         var discount = await discountRepo.GetByIdAsync(id);

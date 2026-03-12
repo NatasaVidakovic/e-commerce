@@ -69,7 +69,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<StoreContext>(opt =>
 {
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), 
-        b => b.MigrationsAssembly("API"));
+        b => b.MigrationsAssembly("Infrastructure"));
 });
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -231,8 +231,7 @@ try
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     try
     {
-        // await context.Database.MigrateAsync();
-        // logger.LogInformation("Migrations applied successfully.");
+        await ApplyMigrationsWithRetryAsync(context, logger);
 
 
         await context.SeedDataAsync(services);
@@ -250,3 +249,30 @@ catch (Exception e)
 }
 
 app.Run();
+
+static async Task ApplyMigrationsWithRetryAsync(StoreContext context, ILogger logger)
+{
+    const int maxAttempts = 20;
+    for (int attempt = 0; attempt < maxAttempts; attempt++)
+    {
+        try
+        {
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Migrations applied successfully.");
+            return;
+        }
+        catch (SqlException ex) when (ex.Number == 2714) // Object already exists
+        {
+            var pending = (await context.Database.GetPendingMigrationsAsync()).ToList();
+            if (!pending.Any()) throw;
+
+            var conflicting = pending.First();
+            logger.LogWarning("Migration '{Migration}' skipped — object already exists in database.", conflicting);
+            await context.Database.ExecuteSqlRawAsync(
+                "IF NOT EXISTS (SELECT 1 FROM [__EFMigrationsHistory] WHERE [MigrationId] = {0}) " +
+                "INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES ({0}, {1})",
+                conflicting, "9.0.0");
+        }
+    }
+    throw new InvalidOperationException("Could not apply all migrations after maximum retry attempts.");
+}

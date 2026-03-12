@@ -11,11 +11,10 @@
     <label class="pagination-label">{{ 'PAGINATION.PER_PAGE' | translate }}:</label>
     <select 
       class="pagination-select"
-      [value]="pageSize"
       [disabled]="disabled"
       (change)="changePageSize(+$any($event.target).value)">
       @for (option of pageSizeOptions; track option) {
-        <option [value]="option">{{ option }}</option>
+        <option [value]="option" [selected]="option === pageSize">{{ option }}</option>
       }
     </select>
   </div>

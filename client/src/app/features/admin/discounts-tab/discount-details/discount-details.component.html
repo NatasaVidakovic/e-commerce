@@ -24,18 +24,18 @@
               {{ 'COMMON.DISABLE' | translate }}
             </button>
             <button 
+              *ngIf="discount?.canEdit"
               mat-flat-button 
               color="primary" 
-              (click)="goToEdit()"
-              [disabled]="discount && !discount.canEdit">
+              (click)="goToEdit()">
               <mat-icon>edit</mat-icon>
               {{ 'COMMON.EDIT' | translate }}
             </button>
             <button 
+              *ngIf="discount?.canDelete"
               mat-stroked-button 
               color="warn"
-              (click)="deleteDiscount()"
-              [disabled]="discount && !discount.canDelete">
+              (click)="deleteDiscount()">
               <mat-icon>delete</mat-icon>
               {{ 'COMMON.DELETE' | translate }}
             </button>

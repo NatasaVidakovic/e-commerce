@@ -53,9 +53,20 @@ public class DiscountRepository(StoreContext _context) : GenericRepository<Disco
             
         await _context.Entry(entity).Collection(e => e.Products).LoadAsync();
         entity.Products.Clear();
-        
-        var res = await _context.SaveChangesAsync();
-        return res > 0;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<(IReadOnlyList<Discount> Items, int TotalCount)> GetDiscountsPagedAsync(int pageNumber, int pageSize)
+    {
+        var query = _context.Discounts.Include(d => d.Products);
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .OrderByDescending(d => d.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        return (items, totalCount);
     }
 
     public async Task<IReadOnlyList<Discount>> GetOverlappingDiscountsForProductsAsync(

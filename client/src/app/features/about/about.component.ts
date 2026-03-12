@@ -128,11 +128,13 @@ export class AboutComponent implements OnInit, AfterViewInit {
   }
 
   private initializeMap(): void {
-    // Make initMap globally available for Google Maps API callback
-    (window as any).initMap = () => {
+    (window as any).__angularInitMap = () => {
       console.log('Google Maps API loaded, initializing map...');
       this.loadMap();
     };
+    if ((window as any).google && (window as any).google.maps) {
+      this.loadMap();
+    }
   }
 
   private loadShopLocation(): void {

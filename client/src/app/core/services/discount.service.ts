@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Discount } from '../../shared/models/discount';
@@ -11,6 +11,13 @@ export class DiscountService {
 
     getDiscounts(): Observable<Discount[]> {
         return this.http.get<Discount[]>(this.baseUrl);
+    }
+
+    getDiscountsPaged(pageNumber: number, pageSize: number): Observable<{ data: Discount[]; totalCount: number }> {
+        const params = new HttpParams()
+            .set('pageNumber', pageNumber)
+            .set('pageSize', pageSize);
+        return this.http.get<{ data: Discount[]; totalCount: number }>(`${this.baseUrl}/paged`, { params });
     }
 
     getDiscountById(id: number): Observable<Discount> {

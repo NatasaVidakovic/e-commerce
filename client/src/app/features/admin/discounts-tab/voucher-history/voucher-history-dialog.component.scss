@@ -1,0 +1,13 @@
+mat-dialog-content {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-mdc-header-cell,
+td.mat-mdc-cell {
+  font-size: 0.875rem;
+}

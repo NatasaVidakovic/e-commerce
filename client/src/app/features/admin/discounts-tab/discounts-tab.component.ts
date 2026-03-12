@@ -1,16 +1,18 @@
 import { Component, OnInit, AfterViewInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { PaginationComponent, PaginationEvent } from '../../../shared/components/pagination/pagination.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Discount } from '../../../shared/models/discount';
 import { DiscountService } from '../../../core/services/discount.service';
 import { DeleteDiscountDialogComponent } from './discount-delete/discount-delete-dialog.component';
+import { VoucherHistoryDialogComponent } from './voucher-history/voucher-history-dialog.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CurrencyPipe } from '@angular/common';
 import { Voucher } from '../../../shared/models/voucher';
@@ -28,6 +30,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatTabsModule,
     PaginationComponent,
     TranslatePipe,
     CurrencyPipe
@@ -41,16 +44,20 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  // Paginator removed - using universal pagination component
-
-  dataSource = new MatTableDataSource<Discount>();
   discounts: Discount[] = [];
   selectedDiscount: Discount | null = null;
+  discountPageIndex = 0;
+  discountPageSize = 10;
+  discountTotalCount = 0;
 
-  // Voucher management
-  voucherDataSource = new MatTableDataSource<Voucher>();
+  vouchers: Voucher[] = [];
   voucherColumns: string[] = ['id', 'code', 'description', 'value', 'status', 'actions'];
   newVoucher: Partial<Voucher> = { code: '', description: '', amountOff: undefined, percentOff: undefined };
+  voucherPageIndex = 0;
+  voucherPageSize = 10;
+  voucherTotalCount = 0;
+
+  readonly pageSizeOptions = [10, 25, 50];
 
   displayedColumns: string[] = [
     'id',
@@ -65,7 +72,7 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.loadDiscounts();
     this.loadVouchers();
-    
+
     // Listen for refresh parameter
     this.route.queryParams.subscribe(params => {
       if (params['refresh']) {
@@ -79,14 +86,25 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
   }
 
   loadDiscounts(): void {
-    this.discountService.getDiscounts().subscribe(discounts => {
-      this.discounts = discounts;
-      this.dataSource.data = discounts;
-      
-      if (this.selectedDiscount && !discounts.find(d => d.id === this.selectedDiscount?.id)) {
+    this.discountService.getDiscountsPaged(this.discountPageIndex + 1, this.discountPageSize).subscribe(result => {
+      this.discounts = result.data;
+      this.discountTotalCount = result.totalCount;
+      if (this.selectedDiscount && !result.data.find(d => d.id === this.selectedDiscount?.id)) {
         this.selectedDiscount = null;
       }
     });
+  }
+
+  onDiscountPage(event: PaginationEvent): void {
+    this.discountPageIndex = event.pageIndex;
+    this.discountPageSize = event.pageSize;
+    this.loadDiscounts();
+  }
+
+  onVoucherPage(event: PaginationEvent): void {
+    this.voucherPageIndex = event.pageIndex;
+    this.voucherPageSize = event.pageSize;
+    this.loadVouchers();
   }
 
   onRowClick(discount: Discount): void {
@@ -131,7 +149,7 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
 
   getEditRestrictionTooltip(): string {
     if (!this.selectedDiscount) return '';
-    
+
     if (this.selectedDiscount.hasBeenUsed) {
       return 'Cannot edit: Used in customer orders';
     }
@@ -149,7 +167,7 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
 
   getDeleteRestrictionTooltip(): string {
     if (!this.selectedDiscount) return '';
-    
+
     if (this.selectedDiscount.hasBeenUsed) {
       return 'Cannot delete: Used in orders (accounting requirement)';
     }
@@ -167,8 +185,11 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
 
   // Voucher methods
   loadVouchers(): void {
-    this.voucherService.getVouchers().subscribe({
-      next: vouchers => this.voucherDataSource.data = vouchers,
+    this.voucherService.getVouchers(this.voucherPageIndex + 1, this.voucherPageSize).subscribe({
+      next: result => {
+        this.vouchers = result.data;
+        this.voucherTotalCount = result.totalCount;
+      },
       error: err => this.snackbar.error('Failed to load vouchers')
     });
   }
@@ -176,6 +197,18 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
   addVoucher(): void {
     if (!this.newVoucher.code?.trim()) {
       this.snackbar.error('Voucher code is required');
+      return;
+    }
+    if (this.newVoucher.amountOff && this.newVoucher.percentOff) {
+      this.snackbar.error('Voucher can have either amount off OR percent off, not both');
+      return;
+    }
+    if (this.newVoucher.amountOff && this.newVoucher.amountOff < 0) {
+      this.snackbar.error('Amount off cannot be negative');
+      return;
+    }
+    if (this.newVoucher.percentOff && (this.newVoucher.percentOff < 0 || this.newVoucher.percentOff > 100)) {
+      this.snackbar.error('Percent off must be between 0 and 100');
       return;
     }
     this.voucherService.createVoucher(this.newVoucher).subscribe({
@@ -186,6 +219,18 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
       },
       error: err => this.snackbar.errorFrom(err, 'Failed to create voucher')
     });
+  }
+
+  onAmountOffChange(value: number | null): void {
+    if (value && value > 0) {
+      this.newVoucher.percentOff = undefined;
+    }
+  }
+
+  onPercentOffChange(value: number | null): void {
+    if (value && value > 0) {
+      this.newVoucher.amountOff = undefined;
+    }
   }
 
   activateVoucher(v: Voucher): void {
@@ -202,10 +247,10 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deleteVoucher(v: Voucher): void {
-    this.voucherService.deleteVoucher(v.id).subscribe({
-      next: () => { this.snackbar.success('Voucher deleted'); this.loadVouchers(); },
-      error: err => this.snackbar.errorFrom(err, 'Failed to delete voucher')
+  openVoucherHistory(voucher: Voucher): void {
+    this.dialog.open(VoucherHistoryDialogComponent, {
+      width: '700px',
+      data: { voucherId: voucher.id, voucherCode: voucher.code }
     });
   }
 }
