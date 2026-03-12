@@ -117,7 +117,7 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
     spaceBetween: 20,
     centeredSlides: false,
     grabCursor: true,
-    loop: true,
+    loop: false,
     autoplay: false,
     navigation: {
       nextEl: '.discount-swiper .swiper-button-next',
@@ -135,16 +135,18 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
     spaceBetween: 20,
     centeredSlides: false,
     grabCursor: true,
-    loop: true,
+    loop: false,
     autoplay: false,
+    slidesPerGroup: 1,
+    watchSlidesProgress: true,
     navigation: {
       nextEl: '.product-carousel-swiper .swiper-button-next',
       prevEl: '.product-carousel-swiper .swiper-button-prev'
     },
     breakpoints: {
-      640: { slidesPerView: 2, spaceBetween: 30 },
-      768: { slidesPerView: 3, spaceBetween: 40 },
-      1024: { slidesPerView: 4, spaceBetween: 50 }
+      640: { slidesPerView: 2, spaceBetween: 20, slidesPerGroup: 1 },
+      768: { slidesPerView: 3, spaceBetween: 20, slidesPerGroup: 1 },
+      1024: { slidesPerView: 4, spaceBetween: 20, slidesPerGroup: 1 }
     }
   };
 

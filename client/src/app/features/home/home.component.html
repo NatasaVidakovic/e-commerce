@@ -38,7 +38,7 @@
                  [pagination]="false"
                  [spaceBetween]="20"
                  [slidesPerView]="1"
-                 [loop]="true"
+                 [loop]="false"
                  [config]="discountSwiperConfig">
                 <div class="swiper-wrapper">
                     <div *ngFor="let discount of discounts" class="swiper-slide">
@@ -99,9 +99,7 @@
                  swiper
                  [navigation]="true"
                  [pagination]="false"
-                 [spaceBetween]="20"
-                 [slidesPerView]="'auto'"
-                 [loop]="true"
+                 [loop]="false"
                  [config]="productSwiperConfig">
                 <div class="swiper-wrapper product-carousel">
                     <app-product-item *ngFor="let product of bestReviewedProducts" [product]="product"
@@ -124,9 +122,7 @@
                  swiper
                  [navigation]="true"
                  [pagination]="false"
-                 [spaceBetween]="20"
-                 [slidesPerView]="'auto'"
-                 [loop]="true"
+                 [loop]="false"
                  [config]="productSwiperConfig">
                 <div class="swiper-wrapper product-carousel">
                     <app-product-item *ngFor="let product of favouriteProducts" [product]="product"
@@ -149,9 +145,7 @@
                  swiper
                  [navigation]="true"
                  [pagination]="false"
-                 [spaceBetween]="20"
-                 [slidesPerView]="'auto'"
-                 [loop]="true"
+                 [loop]="false"
                  [config]="productSwiperConfig">
                 <div class="swiper-wrapper product-carousel">
                     <app-product-item *ngFor="let product of suggestedProducts" [product]="product"

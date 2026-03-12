@@ -615,6 +615,8 @@
     "MOST_EXPENSIVE": "Najskuplje"
   },
   "ADMIN": {
+    "DASHBOARD": "Kontrolna tabla",
+    "USERS": "Korisnici",
     "REFRESH":"Osvježi",
     "STATISTICS": "Statistika",
     "ANALYTICS": "Analitika",

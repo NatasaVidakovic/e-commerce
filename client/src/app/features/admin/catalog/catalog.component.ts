@@ -89,8 +89,8 @@ import { forkJoin } from 'rxjs';
     initializeFilterDefinitions() {
         this.filterDefinitions = [
             { key: 'search', label: 'Search', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
-            { key: 'brand', label: 'Brand', controlType: 'select', propertyName: 'Brand', operationType: 'Equal', dataType: 'String', options: this.brands, multiple: true },
-            { key: 'type', label: 'Type', controlType: 'select', propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String', options: this.types, multiple: true },
+            { key: 'brand', label: 'Brand', controlType: 'select', propertyName: 'Brand', operationType: 'Equal', dataType: 'String', options: this.brands, multiple: true, allLabel: 'All Brands' },
+            { key: 'type', label: 'Type', controlType: 'select', propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String', options: this.types, multiple: true, allLabel: 'All Types' },
             { key: 'minPrice', label: 'Min price', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
             { key: 'maxPrice', label: 'Max price', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
         ];
@@ -166,14 +166,14 @@ import { forkJoin } from 'rxjs';
     }
 
     addProduct() {
-        this.router.navigate(['/admin/products/new'], { 
-            queryParams: { returnTab: 'catalog' } 
+        this.router.navigate(['/admin/catalog/new'], {
+            queryParams: { returnTab: 'catalog' }
         });
     }
 
     editProduct(productId: number) {
-        this.router.navigate(['/admin/products', productId, 'edit'], { 
-            queryParams: { returnTab: 'catalog' } 
+        this.router.navigate(['/admin/catalog', productId, 'edit'], {
+            queryParams: { returnTab: 'catalog' }
         });
     }
 

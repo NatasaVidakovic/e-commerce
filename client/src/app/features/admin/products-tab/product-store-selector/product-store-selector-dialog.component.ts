@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -30,13 +30,13 @@ export type ProductStoreSelectorDialogData = {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    CurrencyPipe,
     TranslatePipe
   ],
-  templateUrl: './product-store-selector-dialog.component.html'
+  templateUrl: './product-store-selector-dialog.component.html',
+  styleUrls: ['./product-store-selector-dialog.component.scss']
 })
 export class ProductStoreSelectorDialogComponent implements OnInit {
-  displayedColumns: string[] = ['select', 'id', 'pictureUrl', 'name', 'brand', 'type', 'price', 'quantityInStock'];
+  displayedColumns: string[] = ['select', 'id', 'pictureUrl', 'name', 'brand', 'type'];
   dataSource = new MatTableDataSource<Product>([]);
   selection = new SelectionModel<Product>(true, []);
   loading = false;

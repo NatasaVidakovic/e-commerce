@@ -15,7 +15,7 @@
       <a routerLink="/admin/statistics" routerLinkActive="active">{{ 'NAVIGATION.STATISTICS' | translate }}</a>
       <a routerLink="/admin/reports" routerLinkActive="active">{{ 'NAVIGATION.REPORTS' | translate }}</a>
       }
-      <a *appIsAdmin routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ 'NAVIGATION.ADMIN' | translate }}</a>
+      <a *appIsAdmin routerLink="/admin" routerLinkActive="active">{{ 'NAVIGATION.ADMIN' | translate }}</a>
     </nav>
     
     <!-- Desktop Actions -->
@@ -149,7 +149,7 @@
             <span>{{ 'NAVIGATION.REPORTS' | translate }}</span>
           </a>
           }
-          <a *appIsAdmin routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">
+          <a *appIsAdmin routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">
             <mat-icon>admin_panel_settings</mat-icon>
             <span>{{ 'NAVIGATION.ADMIN' | translate }}</span>
           </a>
@@ -207,4 +207,3 @@
   }
 </style>
 
-<mat-progress-bar *ngIf="busyService.loading" class="fixed top-20 z-50" mode="indeterminate"></mat-progress-bar>

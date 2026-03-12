@@ -3,15 +3,12 @@ import { MatIcon } from "@angular/material/icon";
 import { MatButton } from "@angular/material/button";
 import { MatBadge } from "@angular/material/badge";
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatProgressBar } from "@angular/material/progress-bar";
-import { BusyService } from '../../core/services/busy.service';
 import { CartService } from '../../core/services/cart.service';
 import { AccountService } from '../../core/services/account.service';
 import { MatDivider } from '@angular/material/divider';
 import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 import { IsAdmin } from '../../shared/directives/is-admin';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { NgIf } from '@angular/common';
 import { ThemeService } from '../../core/services/theme.service';
 import { computed } from '@angular/core';
 
@@ -21,10 +18,8 @@ import { computed } from '@angular/core';
     MatIcon,
     MatButton,
     MatBadge,
-    NgIf,
     RouterLink,
     RouterLinkActive,
-    MatProgressBar,
     MatMenuTrigger,
     MatMenu,
     MatDivider,
@@ -36,7 +31,6 @@ import { computed } from '@angular/core';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit {
-  busyService = inject(BusyService);
   cartService = inject(CartService);
   accountService = inject(AccountService);
   themeService = inject(ThemeService);

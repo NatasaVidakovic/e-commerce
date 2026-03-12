@@ -1,24 +1,18 @@
 .theme-settings-container {
   padding: 1.5rem;
   width: 100%;
-  max-width: none;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-
-  @media (min-width: 1024px) {
-    padding: 2rem;
-  }
 }
 
 .theme-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-primary);
-  box-shadow: var(--shadow-md);
+  background: transparent;
+  border: none !important;
+  box-shadow: none !important;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+
+  ::ng-deep .mdc-card {
+    box-shadow: none !important;
+    background: transparent !important;
+  }
 }
 
 .card-title {
@@ -455,10 +449,8 @@ mat-divider {
 .card-actions {
   display: flex;
   gap: 1rem;
-  padding: 1.5rem;
-  border-top: 1px solid var(--color-border-primary);
+  padding: 1.5rem 0;
   flex-wrap: wrap;
-  background: var(--color-bg-secondary);
 
   button {
     flex: 1;

@@ -100,6 +100,7 @@ export class DynamicFilterBarComponent implements OnInit {
 
   form!: FormGroup;
   isFiltersOpen = false;
+  advancedFiltersOpen = false;
   openFilterSections = new Set<string>();
   mobileDrawerOpen = false;
 
@@ -456,6 +457,7 @@ export class DynamicFilterBarComponent implements OnInit {
 
   closeFilters() {
     this.isFiltersOpen = false;
+    this.advancedFiltersOpen = false;
   }
 
   onSortSelect(index: number) {
@@ -477,6 +479,15 @@ export class DynamicFilterBarComponent implements OnInit {
     this.closeMobileDrawer();
     this.reset.emit();
     this.rawValuesChanged.emit({ ...this.form.value });
+  }
+
+  toggleAdvancedFilters() {
+    this.advancedFiltersOpen = !this.advancedFiltersOpen;
+  }
+
+  onSortSelectChange(event: Event) {
+    const idx = Number((event.target as HTMLSelectElement).value);
+    this.form.get('sort')?.setValue(idx);
   }
 
   toggleMobileDrawer() {

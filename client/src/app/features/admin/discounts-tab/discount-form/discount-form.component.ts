@@ -240,7 +240,7 @@ export class DiscountFormComponent implements OnInit {
           this.isEditMode ? 'Discount updated successfully!' : 'Discount created successfully!',
           { duration: 3000, panelClass: ['success-snackbar'] }
         );
-        this.router.navigate(['/admin'], { queryParams: { tab: 6, refresh: 1 } });
+        this.router.navigate(['/admin/discounts']);
       },
       error: (error: any) => {
         console.error('Error saving discount:', error);
@@ -257,7 +257,7 @@ export class DiscountFormComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/admin'], { queryParams: { tab: 6 } });
+    this.router.navigate(['/admin/discounts']);
   }
 
   getProductName(productId: number): string {

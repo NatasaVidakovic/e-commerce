@@ -29,15 +29,15 @@
     
     .mat-mdc-tab-label {
       min-width: auto;
-      padding: $spacing-2 $spacing-3;
-      font-size: 0.875rem;
+      padding: $spacing-1 $spacing-3;
+      font-size: 0.8125rem;
       color: var(--color-text-secondary) !important;
       opacity: 1 !important;
       font-weight: 500;
       
       @include md {
-        padding: $spacing-3 $spacing-4;
-        font-size: 1rem;
+        padding: $spacing-2 $spacing-3;
+        font-size: 0.875rem;
       }
       
       &:hover {
@@ -81,9 +81,10 @@
       }
     }
     
-    // Ensure tab group uses full width
+    // Ensure tab group uses full width, reduce height
     .mat-mdc-tab-header {
       width: 100% !important;
+      --mdc-secondary-navigation-tab-container-height: 40px;
     }
     
     .mat-mdc-tab-label-container {

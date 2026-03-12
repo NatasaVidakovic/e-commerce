@@ -8,15 +8,20 @@ import { DynamicFilterBarComponent } from '../../../shared/components/dynamic-fi
 import { BaseDataViewModelRequest, DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../../shared/models/dynamic-filtering';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { forkJoin } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'best-reviewed-products',
     imports: [
         ProductsTabComponent,
         TranslatePipe,
-        DynamicFilterBarComponent
+        DynamicFilterBarComponent,
+        MatButtonModule,
+        MatIconModule
     ],
     templateUrl: './best-reviewed-products.component.html',
+    styleUrl: './best-reviewed-products.component.scss',
 }) export class BestReviewedComponent implements OnInit, OnDestroy {
     products: Product[] = [];
     brands: string[] = [];
@@ -88,8 +93,8 @@ import { forkJoin } from 'rxjs';
     initializeFilterDefinitions() {
         this.filterDefinitions = [
             { key: 'search', label: 'Search Products', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
-            { key: 'brand', label: 'Brand', controlType: 'select', multiple: true, options: this.brands, propertyName: 'Brand', operationType: 'Equal', dataType: 'String' },
-            { key: 'type', label: 'Type', controlType: 'select', multiple: true, options: this.types, propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String' },
+            { key: 'brand', label: 'Brand', controlType: 'select', multiple: true, options: this.brands, propertyName: 'Brand', operationType: 'Equal', dataType: 'String', allLabel: 'All Brands' },
+            { key: 'type', label: 'Type', controlType: 'select', multiple: true, options: this.types, propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String', allLabel: 'All Types' },
             { key: 'minPrice', label: 'Min Price', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
             { key: 'maxPrice', label: 'Max Price', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
         ];

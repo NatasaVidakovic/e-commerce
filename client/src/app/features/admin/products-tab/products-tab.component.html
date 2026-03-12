@@ -1,3 +1,4 @@
+@if (showActionBar) {
 <div class="flex justify-between items-center mb-6 mt-6 w-full max-w-full">
     <div class="flex items-center gap-2">
         <button *ngIf="!enableAddFromExisting && enableEdit" mat-flat-button color="primary" class="flex items-center gap-2" (click)="goToAdd()">
@@ -31,6 +32,7 @@
         </button>
     </div>
 </div>
+}
 
 <div class="table-container">
     <table mat-table [dataSource]="dataSource" class="w-full order-table compact-table">

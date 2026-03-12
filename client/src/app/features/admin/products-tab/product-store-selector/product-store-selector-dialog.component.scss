@@ -1,0 +1,78 @@
+.search-field {
+  max-width: 400px;
+  margin-bottom: 1rem;
+}
+
+.table-wrapper {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid var(--color-border-primary);
+  border-radius: 4px;
+}
+
+.product-table {
+  width: 100%;
+  
+  .select-column {
+    width: 60px;
+    padding: 8px 12px;
+  }
+  
+  .id-column {
+    width: 60px;
+    padding: 8px 12px;
+  }
+  
+  .image-column {
+    width: 80px;
+    padding: 8px 12px;
+  }
+  
+  .name-column {
+    min-width: 200px;
+    padding: 8px 12px;
+  }
+  
+  .brand-column {
+    width: 150px;
+    padding: 8px 12px;
+  }
+  
+  .type-column {
+    width: 150px;
+    padding: 8px 12px;
+  }
+}
+
+.product-image {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.table-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--color-surface);
+}
+
+.table-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: var(--color-hover, rgba(0, 0, 0, 0.04));
+  }
+  
+  &.selected-row {
+    background-color: rgba(var(--color-primary-rgb, 59, 130, 246), 0.1);
+  }
+  
+  &.preselected-row {
+    background-color: rgba(128, 128, 128, 0.1);
+    opacity: 0.7;
+  }
+}

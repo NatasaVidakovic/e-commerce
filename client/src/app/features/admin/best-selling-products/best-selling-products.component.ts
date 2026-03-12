@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShopService } from '../../../core/services/shop.service';
 import { BestSellingService } from '../../../core/services/best-selling.service';
@@ -9,17 +9,26 @@ import { DynamicFilterBarComponent } from '../../../shared/components/dynamic-fi
 import { DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../../shared/models/dynamic-filtering';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { forkJoin } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'best-selling-products',
     imports: [
         ProductsTabComponent,
         TranslatePipe,
-        DynamicFilterBarComponent
+        DynamicFilterBarComponent,
+        MatButtonModule,
+        MatIconModule
     ],
     templateUrl: './best-selling-products.component.html',
+    styleUrl: './best-selling-products.component.scss',
 })
 export class BestSellingProductsComponent implements OnInit, OnDestroy {
+    @ViewChild(ProductsTabComponent) productsTab?: ProductsTabComponent;
+
+    selectedProduct: Product | null = null;
+
     products: Product[] = [];
     brands: string[] = [];
     types: string[] = [];
@@ -79,8 +88,8 @@ export class BestSellingProductsComponent implements OnInit, OnDestroy {
     initializeFilterDefinitions() {
         this.filterDefinitions = [
             { key: 'search', label: 'Search Products', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
-            { key: 'brand', label: 'Brand', controlType: 'select', multiple: true, options: this.brands, propertyName: 'Brand', operationType: 'Equal', dataType: 'String' },
-            { key: 'type', label: 'Type', controlType: 'select', multiple: true, options: this.types, propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String' },
+            { key: 'brand', label: 'Brand', controlType: 'select', multiple: true, options: this.brands, propertyName: 'Brand', operationType: 'Equal', dataType: 'String', allLabel: 'All Brands' },
+            { key: 'type', label: 'Type', controlType: 'select', multiple: true, options: this.types, propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String', allLabel: 'All Types' },
             { key: 'minPrice', label: 'Min Price', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
             { key: 'maxPrice', label: 'Max Price', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
         ];

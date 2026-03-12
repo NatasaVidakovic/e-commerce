@@ -2,6 +2,28 @@
 @import '../../../../styles/spacing';
 
 ::ng-deep {
+  // Seamless inner tab group — labels and body blend with page background
+  .mat-mdc-tab-labels {
+    background-color: var(--color-bg-primary) !important;
+  }
+
+  .mat-mdc-tab-header {
+    border-bottom-color: transparent !important;
+  }
+
+  .mat-mdc-tab-body-wrapper {
+    background-color: var(--color-bg-primary) !important;
+  }
+
+  // Tab label text: neutral color, only the indicator line shows active state
+  .mat-mdc-tab .mdc-tab__text-label {
+    color: var(--color-text-secondary) !important;
+  }
+
+  .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+    color: var(--color-text-primary) !important;
+  }
+
   .mat-mdc-paginator {
     display: none;
     

@@ -1,74 +1,68 @@
 <h2 mat-dialog-title class="text-xl font-semibold">{{ data.title }}</h2>
 
 <div mat-dialog-content class="flex flex-col gap-4">
-  <mat-form-field appearance="outline" class="w-full">
+  <mat-form-field appearance="outline" class="search-field">
     <mat-label>{{ 'FORM.SEARCH_PRODUCT' | translate }}</mat-label>
     <input matInput (input)="applyFilter($event)" [placeholder]="'FORM.SEARCH_PRODUCT' | translate" />
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
 
-  <div class="max-h-[500px] overflow-y-auto">
-    <table mat-table [dataSource]="dataSource" class="min-w-full" style="background-color: var(--color-surface);">
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="dataSource" class="product-table" style="background-color: var(--color-surface);">
       <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">
+        <th mat-header-cell *matHeaderCellDef class="select-column">
           <mat-checkbox
             [checked]="isAllSelected()"
-            (change)="toggleAll()">
+            (change)="toggleAll()"
+            color="primary">
           </mat-checkbox>
         </th>
-        <td mat-cell *matCellDef="let p" class="px-4 py-2">
+        <td mat-cell *matCellDef="let p" class="select-column">
           <mat-checkbox
             [disabled]="isPreselected(p)"
             [checked]="selection.isSelected(p) || isPreselected(p)"
             (click)="$event.stopPropagation()"
-            (change)="toggleRow(p)">
+            (change)="toggleRow(p)"
+            color="primary">
           </mat-checkbox>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.ID' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.id }}</td>
+        <th mat-header-cell *matHeaderCellDef class="id-column">{{ 'COMMON.ID' | translate }}</th>
+        <td mat-cell *matCellDef="let p" class="id-column">{{ p.id }}</td>
       </ng-container>
 
       <ng-container matColumnDef="pictureUrl">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'PRODUCT.IMAGE' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="px-4 py-2">
-          <img [src]="p.pictureUrl" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: p.name }" class="w-12 h-12 object-cover rounded" />
+        <th mat-header-cell *matHeaderCellDef class="image-column">{{ 'PRODUCT.IMAGE' | translate }}</th>
+        <td mat-cell *matCellDef="let p" class="image-column">
+          <img [src]="p.pictureUrl" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: p.name }" class="product-image" />
         </td>
       </ng-container>
 
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'PRODUCT.NAME' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.name }}</td>
+        <th mat-header-cell *matHeaderCellDef class="name-column">{{ 'PRODUCT.NAME' | translate }}</th>
+        <td mat-cell *matCellDef="let p" class="name-column">{{ p.name }}</td>
       </ng-container>
 
       <ng-container matColumnDef="brand">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.BRAND' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.brand }}</td>
+        <th mat-header-cell *matHeaderCellDef class="brand-column">{{ 'COMMON.BRAND' | translate }}</th>
+        <td mat-cell *matCellDef="let p" class="brand-column">{{ p.brand }}</td>
       </ng-container>
 
       <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.TYPE' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.type }}</td>
+        <th mat-header-cell *matHeaderCellDef class="type-column">{{ 'COMMON.TYPE' | translate }}</th>
+        <td mat-cell *matCellDef="let p" class="type-column">{{ p.type }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="price">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'PRODUCT.PRICE' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="px-4 py-2">{{ p.price | currency:'EUR' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="quantityInStock">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'PRODUCT.STOCK' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="px-4 py-2 text-center">{{ p.quantityInStock }}</td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="sticky top-0 z-10" style="background-color: var(--color-surface);"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header"></tr>
       <tr
         mat-row
         *matRowDef="let row; columns: displayedColumns;"
         (click)="toggleRow(row)"
-        class="themed-table-row cursor-pointer">
+        [class.selected-row]="selection.isSelected(row)"
+        [class.preselected-row]="isPreselected(row)"
+        class="table-row">
       </tr>
     </table>
   </div>

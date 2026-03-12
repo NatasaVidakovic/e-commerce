@@ -1,56 +1,26 @@
-/* Responsive layout for admin dashboard */
-.admin-dashboard {
-  .flex.gap-6 {
-    flex-direction: column !important;
-    gap: 1rem !important;
-    
-    @media (min-width: 1024px) {
-      flex-direction: row !important;
-      gap: 1.5rem !important;
-    }
-  }
-  
-  .filter-sidebar {
-    width: 100% !important;
-    flex-shrink: 1 !important;
-    max-width: none !important;
-    
-    @media (min-width: 1024px) {
-      width: 16rem !important;
-      max-width: 18rem !important;
-      flex-shrink: 0 !important;
-    }
-    
-    @media (min-width: 1280px) {
-      width: 18rem !important;
-      max-width: 20rem !important;
-    }
-  }
-  
-  .products-main {
-    width: 100% !important;
-    min-width: 0 !important;
-    flex: 1 !important;
-    max-width: none !important;
+/* Page header row: title left, actions right */
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+
+  h2 {
+    margin: 0;
   }
 }
 
-/* Force mobile layout for all screens smaller than 1024px */
-@media (max-width: 1023px) {
-  .admin-dashboard .flex.gap-6 {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  
-  .admin-dashboard .filter-sidebar {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex-shrink: 1 !important;
-  }
-  
-  .admin-dashboard .products-main {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex: 1 !important;
-  }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Filter bar sits full-width below the header */
+.filter-bar-container {
+  width: 100%;
+  margin-bottom: 1rem;
 }

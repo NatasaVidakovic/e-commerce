@@ -60,6 +60,7 @@ export interface DynamicFilterDefinition {
 
   options?: string[];
   multiple?: boolean;
+  allLabel?: string;
 }
 
 export interface DynamicSortOption {

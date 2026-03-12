@@ -45,6 +45,7 @@ export class ProductsTabComponent implements OnChanges, AfterViewInit {
   @Input() enableDelete = true;
   @Input() showInternalFilters = true;
   @Input() showRating = false;
+  @Input() showActionBar = true;
 
   @Output() productUpdated = new EventEmitter<void>();
   @Output() productDeleted = new EventEmitter<number>();
@@ -54,6 +55,8 @@ export class ProductsTabComponent implements OnChanges, AfterViewInit {
   @Output() productCreated = new EventEmitter<void>();
   @Input() brands: string[] = [];
   @Input() types: string[] = [];
+
+  @Output() selectedProductChange = new EventEmitter<Product | null>();
 
   @Input() serverSide = false;
   @Input() totalCount = 0;
@@ -100,6 +103,7 @@ export class ProductsTabComponent implements OnChanges, AfterViewInit {
       return;
     }
     this.selectedProduct = product;
+    this.selectedProductChange.emit(this.selectedProduct);
   }
 
   goToAdd() {

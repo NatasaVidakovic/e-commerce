@@ -87,6 +87,9 @@ export class ReportsTabComponent implements OnInit {
   }
 
   private setupReportData(): void {
+    // Setup dynamic filters FIRST (only when report type changes)
+    this.setupDynamicFilters();
+    
     switch (this.selectedReportType) {
       case 'orders':
         this.setupOrdersReport();
@@ -106,9 +109,6 @@ export class ReportsTabComponent implements OnInit {
       default:
         this.clearReportData();
     }
-    
-    // Setup dynamic filters after report setup
-    this.setupDynamicFilters();
   }
 
   private setupDynamicFilters(): void {

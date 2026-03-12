@@ -125,7 +125,7 @@ export class DiscountDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/admin'], { queryParams: { tab: 6 } });
+    this.router.navigate(['/admin/discounts']);
   }
 
   goToEdit() {
@@ -162,7 +162,7 @@ export class DiscountDetailsComponent implements OnInit {
       this.discountService.deleteDiscount(this.discount.id).subscribe({
         next: () => {
           this.snackbar.success('Discount deleted successfully', { duration: 3000, panelClass: ['success-snackbar'] });
-          this.router.navigate(['/admin'], { queryParams: { tab: 6 } });
+          this.router.navigate(['/admin/discounts']);
         },
         error: (error: any) => {
           this.snackbar.errorFrom(error, 'Error deleting discount', { duration: 8000, panelClass: ['error-snackbar'] });

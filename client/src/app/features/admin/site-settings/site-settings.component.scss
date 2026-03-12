@@ -3,13 +3,17 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
-  max-width: 900px;
-  margin: 0 auto;
 }
 
 .settings-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-primary);
+  background: transparent;
+  border: none !important;
+  box-shadow: none !important;
+
+  ::ng-deep .mdc-card {
+    box-shadow: none !important;
+    background: transparent !important;
+  }
 }
 
 .card-title {

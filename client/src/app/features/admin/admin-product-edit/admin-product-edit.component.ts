@@ -131,7 +131,7 @@ export class AdminProductEditComponent implements OnInit {
 
     this.shopService.updateProduct(this.productId, productData).subscribe({
       next: () => {
-        this.router.navigate(['/admin'], { queryParams: { tab: this.getTabIndex(this.returnTab), refresh: 1 } });
+        this.router.navigate(['/admin', this.returnTab]);
       },
       error: (error) => {
         console.error('Error updating product:', error);
@@ -200,17 +200,6 @@ export class AdminProductEditComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/admin'], { queryParams: { tab: this.getTabIndex(this.returnTab) } });
-  }
-
-  private getTabIndex(tabName: string): number {
-    const tabMap: {[key: string]: number} = {
-      'catalog': 1,
-      'best-reviewed': 3,
-      'best-selling': 4,
-      'suggested': 5,
-      'discounts': 6
-    };
-    return tabMap[tabName] || 1; // Default to catalog
+    this.router.navigate(['/admin', this.returnTab]);
   }
 }

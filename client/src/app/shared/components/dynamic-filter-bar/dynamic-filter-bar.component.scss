@@ -1,89 +1,9 @@
 @import '../../../../styles/breakpoints';
 @import '../../../../styles/spacing';
 
-// Admin-specific compact styling
-:host-context(.admin-dashboard) {
-  .filter-panel {
-    padding: $spacing-2 !important;
-  }
-
-  .filter-section-toggle {
-    padding: $spacing-1.5 !important;
-    min-height: 1.75rem !important;
-
-    span {
-      font-size: 0.8rem !important;
-    }
-  }
-
-  .filter-option-row {
-    padding: $spacing-0.5 $spacing-1 !important;
-    min-height: 1.5rem !important;
-
-    span {
-      font-size: 0.75rem !important;
-    }
-  }
-
-  // More compact form fields
-  ::ng-deep .mat-mdc-form-field {
-    .mat-mdc-text-field-wrapper {
-      min-height: 1.75rem !important;
-    }
-    
-    .mat-mdc-form-field-infix {
-      min-height: 1.75rem !important;
-      padding-top: 0.125rem !important;
-      padding-bottom: 0.125rem !important;
-      font-size: 0.8rem !important;
-    }
-    
-    .mat-mdc-select-trigger {
-      min-height: 1.75rem !important;
-    }
-    
-    .mat-mdc-select-value {
-      font-size: 0.8rem !important;
-    }
-  }
-
-  // Compact price range slider
-  .price-range-track {
-    .relative {
-      padding: 0.25rem 0.5rem 1rem 0.5rem !important;
-    }
-  }
-
-  // Smaller buttons
-  button {
-    min-height: 2rem !important;
-    font-size: 0.8rem !important;
-    padding: $spacing-1 $spacing-2 !important;
-  }
-
-  // Compact mobile drawer
-  .mobile-drawer-header {
-    padding: $spacing-3 $spacing-4 !important;
-
-    h2 {
-      font-size: 1rem !important;
-    }
-  }
-
-  .mobile-drawer-content {
-    padding: $spacing-3 !important;
-  }
-}
-
-.filter-bar {
-  background-color: var(--color-bg-primary);
-  border: 1px solid var(--color-border-primary);
-  border-radius: 0.5rem;
-  padding: $spacing-3;
-  box-shadow: var(--shadow-md);
-}
-
-// Mobile Filter Toggle Button
+// ==========================================
+// MOBILE FILTER TOGGLE BUTTON
+// ==========================================
 .mobile-filter-toggle {
   display: flex;
   align-items: center;
@@ -101,15 +21,15 @@
   transition: background-color 0.2s ease;
   min-height: 2.75rem;
   position: relative;
-  
-  @include lg {
+
+  @include md {
     display: none;
   }
-  
+
   &:hover {
     background-color: var(--color-primary-hover);
   }
-  
+
   .filter-count {
     position: absolute;
     top: -0.5rem;
@@ -128,15 +48,401 @@
   }
 }
 
-// Desktop Filters
+// ==========================================
+// DESKTOP HORIZONTAL FILTER BAR
+// ==========================================
 .desktop-filters {
   display: none;
-  
-  @include lg {
+
+  @include md {
     display: block;
   }
 }
 
+// ── Main Row ──────────────────────────────
+.filter-main-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.5rem;
+  padding: $spacing-3 $spacing-4;
+  box-shadow: var(--shadow-sm);
+
+  @include max-sm {
+    flex-wrap: wrap;
+    gap: $spacing-2;
+  }
+}
+
+// Search field
+.filter-search-field {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  background-color: var(--color-input-bg);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.375rem;
+  padding: 0 $spacing-3;
+  height: 2.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-lighter, rgba(37, 99, 235, 0.12));
+  }
+}
+
+.search-icon-inline {
+  color: var(--color-text-disabled);
+  font-size: 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+
+  &::placeholder {
+    color: var(--color-text-disabled);
+  }
+}
+
+// Right-side controls (Advanced Filters + Sort By)
+.filter-right-controls {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  flex-shrink: 0;
+
+  @include max-sm {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+// Advanced Filters toggle button
+.advanced-filters-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: 0 $spacing-4;
+  height: 2.5rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+  position: relative;
+
+  mat-icon {
+    font-size: 1.125rem;
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  &:hover {
+    background-color: var(--color-primary-lighter, rgba(37, 99, 235, 0.08));
+  }
+
+  &.active {
+    background-color: var(--color-primary);
+    color: #fff;
+  }
+}
+
+.adv-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 $spacing-1;
+  background-color: var(--color-error);
+  color: #fff;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  .active & {
+    background-color: #fff;
+    color: var(--color-primary);
+  }
+}
+
+// Sort By group
+.filter-sort-group {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  white-space: nowrap;
+}
+
+.sort-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.sort-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sort-select {
+  height: 2.5rem;
+  padding: 0 2.25rem 0 $spacing-3;
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.375rem;
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  min-width: 9.5rem;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-lighter, rgba(37, 99, 235, 0.12));
+  }
+}
+
+.sort-arrow-icon {
+  position: absolute;
+  right: $spacing-2;
+  pointer-events: none;
+  color: var(--color-text-disabled);
+  font-size: 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+// ── Advanced Filters Panel ─────────────────
+.filter-advanced-panel {
+  margin-top: $spacing-2;
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.5rem;
+  padding: $spacing-4;
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-dropdowns-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+  align-items: flex-end;
+}
+
+.filter-dropdown-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  flex: 1 1 10rem;
+  min-width: 10rem;
+  max-width: 16rem;
+
+  &.filter-dropdown-wide {
+    min-width: 20rem;
+    max-width: none;
+    flex: 2 1 20rem;
+  }
+
+  &.filter-price-range {
+    min-width: 16rem;
+    max-width: none;
+    flex: 1 1 16rem;
+  }
+}
+
+.filter-col-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+// Native select wrapper (positions the arrow icon)
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter-native-select {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 2.25rem 0 $spacing-3;
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.375rem;
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-lighter, rgba(37, 99, 235, 0.12));
+  }
+}
+
+.select-arrow-icon {
+  position: absolute;
+  right: $spacing-2;
+  pointer-events: none;
+  color: var(--color-text-disabled);
+  font-size: 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+// mat-form-field compact for multi-select and datepickers
+.filter-mat-field {
+  width: 100%;
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background-color: var(--color-input-bg) !important;
+      min-height: 2.5rem !important;
+    }
+
+    .mat-mdc-form-field-infix {
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+      min-height: 2.5rem !important;
+    }
+
+    .mat-mdc-select-value,
+    .mat-mdc-select-placeholder {
+      font-size: 0.875rem;
+      color: var(--color-text-primary);
+    }
+
+    .mat-mdc-select-placeholder {
+      color: var(--color-text-disabled) !important;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none !important;
+    }
+  }
+}
+
+// Number inputs
+.filter-number-input {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 $spacing-3;
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.375rem;
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-lighter, rgba(37, 99, 235, 0.12));
+  }
+}
+
+// Text inputs (non-search)
+.filter-text-input {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 $spacing-3;
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.375rem;
+  background-color: var(--color-input-bg);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+}
+
+// Price range
+.price-inputs-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.price-sep {
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  font-size: 0.875rem;
+}
+
+// Actions row
+.filter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $spacing-3;
+  margin-top: $spacing-4;
+  padding-top: $spacing-3;
+  border-top: 1px solid var(--color-border-primary);
+}
+
+.filter-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 2.5rem;
+  padding: 0 $spacing-4;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: color 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-hover);
+  }
+}
+
+.filter-apply-btn {
+  height: 2.5rem !important;
+  padding: 0 $spacing-6 !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  border-radius: 0.375rem !important;
+}
+
+// ── Legacy panel styles (used by mobile drawer) ──
 .filter-panel {
   background-color: var(--color-bg-primary);
   border: 1px solid var(--color-border-primary);

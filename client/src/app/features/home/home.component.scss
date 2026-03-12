@@ -578,16 +578,24 @@
         opacity: 0.8;
         transition: all 0.2s ease;
         z-index: 10;
+        pointer-events: auto;
+        cursor: pointer;
         
         &::after {
             font-size: 18px;
             font-weight: bold;
         }
 
-        &:hover {
+        &:hover:not(.swiper-button-disabled) {
             opacity: 1;
             background: var(--color-primary-dark, #2563eb);
             transform: scale(1.1);
+        }
+
+        &.swiper-button-disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
         }
     }
 
@@ -614,16 +622,24 @@
         opacity: 0.8;
         transition: all 0.2s ease;
         z-index: 10;
+        pointer-events: auto;
+        cursor: pointer;
         
         &::after {
             font-size: 18px;
             font-weight: bold;
         }
 
-        &:hover {
+        &:hover:not(.swiper-button-disabled) {
             opacity: 1;
             background: var(--color-primary-dark, #2563eb);
             transform: scale(1.1);
+        }
+
+        &.swiper-button-disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
         }
     }
 

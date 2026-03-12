@@ -1,0 +1,31 @@
+<div class="admin-layout" [class.collapsed]="collapsed()">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title" *ngIf="!collapsed()">{{ 'ADMIN.DASHBOARD' | translate }}</span>
+      <button class="collapse-btn" (click)="toggleCollapse()" [matTooltip]="collapsed() ? 'Expand' : 'Collapse'">
+        <mat-icon>{{ collapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: false }"
+        class="nav-item"
+        [matTooltip]="collapsed() ? (item.labelKey | translate) : ''"
+        matTooltipPosition="right"
+        [attr.aria-label]="item.labelKey | translate">
+        <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+        <span class="nav-label" *ngIf="!collapsed()">{{ item.labelKey | translate }}</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

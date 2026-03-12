@@ -65,12 +65,12 @@ export class AdminProductDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/admin'], { queryParams: { tab: 1 } });
+    this.router.navigate(['/admin/catalog']);
   }
 
   editProduct() {
     if (this.product) {
-      this.router.navigate(['/admin/products', this.product.id, 'edit'], { queryParams: { tab: 1 } });
+      this.router.navigate(['/admin/catalog', this.product.id, 'edit']);
     }
   }
 
@@ -78,7 +78,7 @@ export class AdminProductDetailsComponent implements OnInit {
     if (this.product && confirm('Are you sure you want to delete this product?')) {
       this.shopService.deleteProduct(this.product.id).subscribe({
         next: () => {
-          this.router.navigate(['/admin'], { queryParams: { tab: 1 } });
+          this.router.navigate(['/admin/catalog']);
         },
         error: (error) => {
           console.error('Error deleting product:', error);

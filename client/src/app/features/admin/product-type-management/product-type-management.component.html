@@ -1,10 +1,16 @@
-<div class="product-type-management">
-  <div class="header mb-6 mt-6">
-    <h2>{{ 'ADMIN.PRODUCT_TYPE.TITLE' | translate }}</h2>
-    <button mat-raised-button color="primary" (click)="openCreateDialog()">
-      <mat-icon>add</mat-icon>
-      {{ 'ADMIN.PRODUCT_TYPE.ADD_NEW' | translate }}
-    </button>
+<div class="admin-dashboard px-6 pt-6">
+  <div class="flex justify-between items-center mb-6 mt-6 w-full max-w-full">
+    <h2 class="text-2xl font-semibold">{{ 'ADMIN.PRODUCT_TYPE.TITLE' | translate }}</h2>
+    <div class="flex items-center gap-2">
+      <button mat-flat-button color="primary" class="flex items-center gap-2" (click)="openCreateDialog()">
+        <mat-icon>add</mat-icon>
+        {{ 'ADMIN.PRODUCT_TYPE.ADD_NEW' | translate }}
+      </button>
+      <button mat-stroked-button color="primary" class="flex items-center gap-2" (click)="loadProductTypes()">
+        <mat-icon>refresh</mat-icon>
+        {{ 'ADMIN.REFRESH' | translate }}
+      </button>
+    </div>
   </div>
 
   <div class="table-container" *ngIf="!isLoading; else loading">

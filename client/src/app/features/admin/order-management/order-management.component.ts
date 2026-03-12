@@ -82,7 +82,8 @@ export class OrderManagementComponent implements OnInit {
       operationType: 'Equal',
       dataType: 'String',
       options: ['New', 'Confirmed', 'Preparing', 'ReadyToShip', 'Shipped', 'OutForDelivery', 'Delivered', 'Returned', 'Cancelled', 'OnHold', 'FraudReview', 'PaymentFailed', 'PaymentMismatch'],
-      multiple: false
+      multiple: false,
+      allLabel: 'All Statuses'
     },
     {
       key: 'paymentStatus',
@@ -92,7 +93,8 @@ export class OrderManagementComponent implements OnInit {
       operationType: 'Equal',
       dataType: 'String',
       options: ['Pending', 'Authorized', 'Paid', 'Failed', 'Refunded', 'PartiallyRefunded', 'Chargeback', 'Cancelled'],
-      multiple: false
+      multiple: false,
+      allLabel: 'All Statuses'
     },
     {
       key: 'paymentType',
@@ -102,7 +104,8 @@ export class OrderManagementComponent implements OnInit {
       operationType: 'Equal',
       dataType: 'String',
       options: ['Stripe', 'CashOnDelivery', 'PayPal', 'BankTransfer', 'Crypto'],
-      multiple: false
+      multiple: false,
+      allLabel: 'All Types'
     },
     {
       key: 'deliveryStatus',
@@ -112,7 +115,8 @@ export class OrderManagementComponent implements OnInit {
       operationType: 'Equal',
       dataType: 'String',
       options: ['Pending', 'AssignedToCourier', 'InTransit', 'OutForDelivery', 'Delivered', 'FailedDelivery', 'ReturnedToSender'],
-      multiple: false
+      multiple: false,
+      allLabel: 'All Statuses'
     }
   ];
 
