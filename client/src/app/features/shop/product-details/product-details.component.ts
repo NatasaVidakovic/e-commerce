@@ -141,7 +141,10 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         console.log('Reviews:', product.reviews);
         this.updateQuantityInBasket();
         this.loadSuggestedProducts(product);
-        this.checkFavoriteStatus(id);
+        // Only check favorite status for logged-in non-admin users
+        if (this.accountService.currentUser() && !this.accountService.isAdmin()) {
+          this.checkFavoriteStatus(id);
+        }
       },
       error: error => { console.error('Failed to load product:', error); this.snackbar.errorFrom(error, 'Failed to load product'); }
     });

@@ -108,7 +108,7 @@
                 {{ getButtonText() | translate }}
               </button>
 
-              <button class="pd-wishlist-btn" [class.text-favorite]="isFavourite" [class.text-gray-400]="!isFavourite" (click)="toggleFavorite()" aria-label="Wishlist">
+              <button class="pd-wishlist-btn" *ngIf="accountService.currentUser() && !accountService.isAdmin()" [class.text-favorite]="isFavourite" [class.text-gray-400]="!isFavourite" (click)="toggleFavorite()" aria-label="Wishlist">
                 <mat-icon>{{ isFavourite ? 'favorite' : 'favorite_border' }}</mat-icon>
               </button>
             </div>
