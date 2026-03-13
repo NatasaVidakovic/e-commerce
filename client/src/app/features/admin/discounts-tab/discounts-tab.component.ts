@@ -1,8 +1,6 @@
-import { Component, OnInit, AfterViewInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -12,12 +10,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Discount } from '../../../shared/models/discount';
 import { DiscountService } from '../../../core/services/discount.service';
 import { DeleteDiscountDialogComponent } from './discount-delete/discount-delete-dialog.component';
-import { VoucherHistoryDialogComponent } from './voucher-history/voucher-history-dialog.component';
 import { TranslatePipe } from '@ngx-translate/core';
-import { CurrencyPipe } from '@angular/common';
-import { Voucher } from '../../../shared/models/voucher';
-import { VoucherService } from '../../../core/services/voucher.service';
-import { SnackbarService } from '../../../core/services/snackbar.service';
+import { DynamicFilterBarComponent } from '../../../shared/components/dynamic-filter-bar/dynamic-filter-bar.component';
+import { DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../../shared/models/dynamic-filtering';
 
 @Component({
   selector: 'discounts-tab',
@@ -25,21 +20,17 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
   styleUrls: ['./discounts-tab.component.scss'],
   imports: [
     CommonModule,
-    FormsModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    MatTabsModule,
     PaginationComponent,
     TranslatePipe,
-    CurrencyPipe
+    DynamicFilterBarComponent
   ]
 })
-export class DiscountsTabComponent implements OnInit, AfterViewInit {
+export class DiscountsTabComponent implements OnInit {
   private discountService = inject(DiscountService);
-  private voucherService = inject(VoucherService);
-  private snackbar = inject(SnackbarService);
   private dialog = inject(MatDialog);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -49,31 +40,83 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
   discountPageIndex = 0;
   discountPageSize = 10;
   discountTotalCount = 0;
-
-  vouchers: Voucher[] = [];
-  voucherColumns: string[] = ['id', 'code', 'description', 'value', 'status', 'actions'];
-  newVoucher: Partial<Voucher> = { code: '', description: '', amountOff: undefined, percentOff: undefined };
-  voucherPageIndex = 0;
-  voucherPageSize = 10;
-  voucherTotalCount = 0;
+  private searchTerm = '';
+  private selectedState = '';
+  private selectedIsPercentage = '';
+  private selectedHasBeenUsed = '';
+  private dateFromStart = '';
+  private dateFromEnd = '';
+  private sortColumn = 'Name';
+  private sortAscending = true;
 
   readonly pageSizeOptions = [10, 25, 50];
 
-  displayedColumns: string[] = [
-    'id',
-    'name',
-    'description',
-    'value',
-    'state',
-    'dateFrom',
-    'dateTo'
+  displayedColumns: string[] = ['id', 'name', 'description', 'value', 'state', 'dateFrom', 'dateTo'];
+
+  filterDefinitions: DynamicFilterDefinition[] = [
+    {
+      key: 'search',
+      label: 'Search by name or description',
+      controlType: 'text',
+      propertyName: 'Name',
+      operationType: 'Contains',
+      dataType: 'String'
+    },
+    {
+      key: 'state',
+      label: 'Status',
+      controlType: 'select',
+      propertyName: 'State',
+      operationType: 'Equal',
+      dataType: 'String',
+      options: ['Draft', 'Active', 'Expired', 'Disabled'],
+      multiple: false,
+      allLabel: 'All Statuses'
+    },
+    {
+      key: 'isPercentage',
+      label: 'Discount Type',
+      controlType: 'select',
+      propertyName: 'IsPercentage',
+      operationType: 'Equal',
+      dataType: 'String',
+      options: ['Percentage', 'Fixed Amount'],
+      multiple: false,
+      allLabel: 'All Types'
+    },
+    {
+      key: 'hasBeenUsed',
+      label: 'Usage',
+      controlType: 'select',
+      propertyName: 'HasBeenUsed',
+      operationType: 'Equal',
+      dataType: 'String',
+      options: ['Used', 'Unused'],
+      multiple: false,
+      allLabel: 'All'
+    },
+    {
+      key: 'dateFrom',
+      label: 'Start Date Range',
+      controlType: 'dateRange',
+      propertyName: 'DateFrom',
+      operationType: 'GreaterThanOrEqual',
+      dataType: 'DateTime'
+    }
+  ];
+
+  sortOptions: DynamicSortOption[] = [
+    { label: 'Name (A-Z)', column: 'Name', ascending: true, descending: false },
+    { label: 'Name (Z-A)', column: 'Name', ascending: false, descending: true },
+    { label: 'Value (Low–High)', column: 'Value', ascending: true, descending: false },
+    { label: 'Value (High–Low)', column: 'Value', ascending: false, descending: true },
+    { label: 'Start Date (Earliest)', column: 'DateFrom', ascending: true, descending: false },
+    { label: 'Start Date (Latest)', column: 'DateFrom', ascending: false, descending: true }
   ];
 
   ngOnInit(): void {
     this.loadDiscounts();
-    this.loadVouchers();
 
-    // Listen for refresh parameter
     this.route.queryParams.subscribe(params => {
       if (params['refresh']) {
         this.loadDiscounts();
@@ -81,30 +124,77 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-    // Pagination now handled by universal pagination component
-  }
-
   loadDiscounts(): void {
-    this.discountService.getDiscountsPaged(this.discountPageIndex + 1, this.discountPageSize).subscribe(result => {
+    this.discountService.getDiscountsPaged(
+      this.discountPageIndex + 1,
+      this.discountPageSize,
+      this.searchTerm,
+      this.selectedState,
+      this.selectedIsPercentage,
+      this.selectedHasBeenUsed,
+      this.dateFromStart,
+      this.dateFromEnd,
+      this.sortColumn,
+      this.sortAscending
+    ).subscribe(result => {
       this.discounts = result.data;
-      this.discountTotalCount = result.totalCount;
+      this.discountTotalCount = result.count;
       if (this.selectedDiscount && !result.data.find(d => d.id === this.selectedDiscount?.id)) {
         this.selectedDiscount = null;
       }
     });
   }
 
+  onFiltersChanged(event: { filters: FilterViewModel[][], sort: DynamicSortOption }): void {
+    const allFilters = event.filters.flat();
+
+    const searchFilter = allFilters.find(f => f.propertyName === 'Name' && f.operationType === 'Contains');
+    this.searchTerm = searchFilter?.value ?? '';
+
+    const stateFilter = allFilters.find(f => f.propertyName === 'State');
+    this.selectedState = stateFilter?.value ?? '';
+
+    const isPctFilter = allFilters.find(f => f.propertyName === 'IsPercentage');
+    const isPctRaw = isPctFilter?.value ?? '';
+    this.selectedIsPercentage = isPctRaw === 'Percentage' ? 'true' : isPctRaw === 'Fixed Amount' ? 'false' : '';
+
+    const usedFilter = allFilters.find(f => f.propertyName === 'HasBeenUsed');
+    const usedRaw = usedFilter?.value ?? '';
+    this.selectedHasBeenUsed = usedRaw === 'Used' ? 'true' : usedRaw === 'Unused' ? 'false' : '';
+
+    const dfStart = allFilters.find(f => f.propertyName === 'DateFrom' && f.operationType === 'GreaterThanOrEqual');
+    this.dateFromStart = dfStart?.value ? new Date(dfStart.value).toISOString() : '';
+
+    const dfEnd = allFilters.find(f => f.propertyName === 'DateFrom' && f.operationType === 'LessThanOrEqual');
+    this.dateFromEnd = dfEnd?.value ? new Date(dfEnd.value).toISOString() : '';
+
+    const sort = event.sort;
+    if (sort) {
+      this.sortColumn = sort.column;
+      this.sortAscending = sort.ascending;
+    }
+
+    this.discountPageIndex = 0;
+    this.loadDiscounts();
+  }
+
+  onFiltersReset(): void {
+    this.searchTerm = '';
+    this.selectedState = '';
+    this.selectedIsPercentage = '';
+    this.selectedHasBeenUsed = '';
+    this.dateFromStart = '';
+    this.dateFromEnd = '';
+    this.sortColumn = 'Name';
+    this.sortAscending = true;
+    this.discountPageIndex = 0;
+    this.loadDiscounts();
+  }
+
   onDiscountPage(event: PaginationEvent): void {
     this.discountPageIndex = event.pageIndex;
     this.discountPageSize = event.pageSize;
     this.loadDiscounts();
-  }
-
-  onVoucherPage(event: PaginationEvent): void {
-    this.voucherPageIndex = event.pageIndex;
-    this.voucherPageSize = event.pageSize;
-    this.loadVouchers();
   }
 
   onRowClick(discount: Discount): void {
@@ -135,7 +225,6 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
       width: '380px',
       data: discount
     });
-
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.loadDiscounts();
@@ -181,76 +270,5 @@ export class DiscountsTabComponent implements OnInit, AfterViewInit {
       return 'Cannot delete: Disabled discounts must be retained';
     }
     return 'Cannot delete this discount';
-  }
-
-  // Voucher methods
-  loadVouchers(): void {
-    this.voucherService.getVouchers(this.voucherPageIndex + 1, this.voucherPageSize).subscribe({
-      next: result => {
-        this.vouchers = result.data;
-        this.voucherTotalCount = result.totalCount;
-      },
-      error: err => this.snackbar.error('Failed to load vouchers')
-    });
-  }
-
-  addVoucher(): void {
-    if (!this.newVoucher.code?.trim()) {
-      this.snackbar.error('Voucher code is required');
-      return;
-    }
-    if (this.newVoucher.amountOff && this.newVoucher.percentOff) {
-      this.snackbar.error('Voucher can have either amount off OR percent off, not both');
-      return;
-    }
-    if (this.newVoucher.amountOff && this.newVoucher.amountOff < 0) {
-      this.snackbar.error('Amount off cannot be negative');
-      return;
-    }
-    if (this.newVoucher.percentOff && (this.newVoucher.percentOff < 0 || this.newVoucher.percentOff > 100)) {
-      this.snackbar.error('Percent off must be between 0 and 100');
-      return;
-    }
-    this.voucherService.createVoucher(this.newVoucher).subscribe({
-      next: () => {
-        this.snackbar.success('Voucher created');
-        this.newVoucher = { code: '', description: '', amountOff: undefined, percentOff: undefined };
-        this.loadVouchers();
-      },
-      error: err => this.snackbar.errorFrom(err, 'Failed to create voucher')
-    });
-  }
-
-  onAmountOffChange(value: number | null): void {
-    if (value && value > 0) {
-      this.newVoucher.percentOff = undefined;
-    }
-  }
-
-  onPercentOffChange(value: number | null): void {
-    if (value && value > 0) {
-      this.newVoucher.amountOff = undefined;
-    }
-  }
-
-  activateVoucher(v: Voucher): void {
-    this.voucherService.activateVoucher(v.id).subscribe({
-      next: () => { this.snackbar.success('Voucher activated'); this.loadVouchers(); },
-      error: err => this.snackbar.errorFrom(err, 'Failed to activate voucher')
-    });
-  }
-
-  deactivateVoucher(v: Voucher): void {
-    this.voucherService.deactivateVoucher(v.id).subscribe({
-      next: () => { this.snackbar.success('Voucher deactivated'); this.loadVouchers(); },
-      error: err => this.snackbar.errorFrom(err, 'Failed to deactivate voucher')
-    });
-  }
-
-  openVoucherHistory(voucher: Voucher): void {
-    this.dialog.open(VoucherHistoryDialogComponent, {
-      width: '700px',
-      data: { voucherId: voucher.id, voucherCode: voucher.code }
-    });
   }
 }

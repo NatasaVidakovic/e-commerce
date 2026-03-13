@@ -1,4 +1,5 @@
-﻿using API.Filters;
+﻿using System.Threading.RateLimiting;
+using API.Filters;
 using API.Mappings;
 using API.Middleware;
 using API.SignalR;
@@ -97,9 +98,35 @@ builder.Services.AddScoped<ISeedDataService, SeedDataService>();
 builder.Services.AddScoped<IRefundService, RefundService>();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
 builder.Services.AddScoped<IShopSettingsService, ShopSettingsService>();
-builder.Services.Configure<ImageStorageOptions>(opts =>
-    opts.WebRootPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot"));
-builder.Services.AddScoped<IImageStorageService, LocalImageStorageService>();
+// Image storage: set provider = "cloudinary" in appsettings to use cloud storage in production
+var imageProvider = builder.Configuration.GetValue<string>("ImageStorage:Provider") ?? "local";
+if (string.Equals(imageProvider, "cloudinary", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
+    builder.Services.AddScoped<IImageStorageService, CloudinaryImageStorageService>();
+}
+else
+{
+    builder.Services.Configure<ImageStorageOptions>(opts =>
+        opts.WebRootPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot"));
+    builder.Services.AddScoped<IImageStorageService, LocalImageStorageService>();
+}
+
+// Rate limiting: 20 image uploads per user per minute
+builder.Services.AddRateLimiter(rlo =>
+{
+    rlo.AddPolicy("image-upload", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.User.Identity?.Name ?? context.Connection.RemoteIpAddress?.ToString() ?? "anon",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit          = 20,
+                Window               = TimeSpan.FromMinutes(1),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit           = 0
+            }));
+    rlo.RejectionStatusCode = 429;
+});
 
 builder.Services.AddMappings(typeof(ProductMapping).Assembly);
 builder.Services.AddMappings(typeof(DiscountMapping).Assembly);
@@ -197,8 +224,30 @@ app.UseCors("FrontendPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseRateLimiter();
 app.UseDefaultFiles();
-app.UseStaticFiles();
+
+// Only serve image files from wwwroot/images — block everything else
+var allowedImageExtensions = new HashSet<string>(["webp", "jpg", "jpeg", "png", "gif", "ico", "svg"], StringComparer.OrdinalIgnoreCase);
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        var ext = Path.GetExtension(ctx.File.Name).TrimStart('.').ToLowerInvariant();
+        if (!allowedImageExtensions.Contains(ext))
+        {
+            ctx.Context.Response.StatusCode = 403;
+            ctx.Context.Response.ContentLength = 0;
+            ctx.Context.Response.Body = Stream.Null;
+            return;
+        }
+        // Cache images for 30 days in production
+        ctx.Context.Response.Headers.CacheControl =
+            ctx.Context.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment()
+                ? "no-cache"
+                : "public, max-age=2592000";
+    }
+});
 
 if (!app.Environment.IsDevelopment())
 {

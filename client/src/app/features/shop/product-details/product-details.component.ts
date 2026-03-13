@@ -1,46 +1,47 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, inject, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ShopService } from '../../../core/services/shop.service';
 import { Product } from '../../../shared/models/product';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { MatButton } from '@angular/material/button';
-import { MatDivider } from '@angular/material/divider';
+import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { MatFormField, MatLabel } from '@angular/material/form-field'
-import { MatInput } from '@angular/material/input';
 import { CartService } from '../../../core/services/cart.service';
-import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../../core/services/account.service';
 import { ProductReviewsComponent } from '../product-reviews/product-reviews';
 import { TranslateModule } from '@ngx-translate/core';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-product-details',
   imports: [
     MatIcon,
-    MatFormField,
-    MatDivider,
-    MatLabel,
+    MatIconButton,
     CurrencyPipe,
-    MatButton,
-    MatFormField,
-    MatInput,
-    FormsModule,
     CommonModule,
     ProductReviewsComponent,
-    TranslateModule
+    TranslateModule,
+    RouterLink
   ],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss'
 })
-export class ProductDetailsComponent implements OnInit {
+export class ProductDetailsComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   private shopService = inject(ShopService);
   private cartService = inject(CartService);
   private activatedRoute = inject(ActivatedRoute);
+  private router = inject(Router);
+  private snackbar = inject(SnackbarService);
   product?: Product & { reviews?: any[] };
   quantityInCart = 0;
   quantity = 1;
   currentImageIndex = 0;
+  lightboxOpen = false;
+  lightboxIndex = 0;
+  activeTab: 'description' | 'reviews' = 'description';
+  suggestedProducts: Product[] = [];
   public accountService = inject(AccountService);
 
   get allImages(): string[] {
@@ -52,6 +53,10 @@ export class ProductDetailsComponent implements OnInit {
 
   get currentImage(): string {
     return this.allImages[this.currentImageIndex] || this.product?.pictureUrl || '';
+  }
+
+  get reviewCount(): number {
+    return this.product?.reviews?.length || 0;
   }
 
   prevImage(): void {
@@ -68,21 +73,101 @@ export class ProductDetailsComponent implements OnInit {
     this.currentImageIndex = index;
   }
 
-
-  ngOnInit() {
-
-    this.loadProduct();
+  openLightbox(index: number): void {
+    this.lightboxIndex = index;
+    this.lightboxOpen = true;
   }
 
-  loadProduct() {
-    const id = this.activatedRoute.snapshot.paramMap.get('id');
-    if (!id) return;
-    this.shopService.getProduct(+id).subscribe({
+  closeLightbox(): void {
+    this.lightboxOpen = false;
+  }
+
+  lightboxPrev(): void {
+    this.lightboxIndex = (this.lightboxIndex - 1 + this.allImages.length) % this.allImages.length;
+  }
+
+  lightboxNext(): void {
+    this.lightboxIndex = (this.lightboxIndex + 1) % this.allImages.length;
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(e: KeyboardEvent): void {
+    if (!this.lightboxOpen) return;
+    if (e.key === 'Escape')     { this.closeLightbox(); }
+    if (e.key === 'ArrowLeft')  { this.lightboxPrev(); }
+    if (e.key === 'ArrowRight') { this.lightboxNext(); }
+  }
+
+  incrementQuantity(): void {
+    if (!this.product) return;
+    if (this.quantity < this.product.quantityInStock) {
+      this.quantity++;
+    }
+  }
+
+  decrementQuantity(): void {
+    if (this.quantity > 1) this.quantity--;
+  }
+
+  ngOnInit() {
+    this.activatedRoute.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const id = params.get('id');
+      if (!id) return;
+      this.currentImageIndex = 0;
+      this.activeTab = 'description';
+      this.suggestedProducts = [];
+      this.loadProduct(+id);
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadProduct(id: number) {
+    this.shopService.getProduct(id).subscribe({
       next: product => {
-        this.product = product
+        this.product = product;
+        console.log('Product loaded:', product);
+        console.log('Has discount?', product.hasActiveDiscount);
+        console.log('Original price:', product.originalPrice);
+        console.log('Current price:', product.price);
+        console.log('Rating:', product.rating);
+        console.log('Reviews:', product.reviews);
         this.updateQuantityInBasket();
+        this.loadSuggestedProducts(product);
       },
-      error: error => console.error('Failed to load product:', error)
+      error: error => { console.error('Failed to load product:', error); this.snackbar.errorFrom(error, 'Failed to load product'); }
+    });
+  }
+
+  loadSuggestedProducts(product: Product) {
+    const request = {
+      currentPage: 1,
+      pageSize: 5,
+      column: 'Name',
+      accessor: '',
+      ascending: true,
+      descending: false,
+      filters: product.type ? [[{
+        propertyName: 'type',
+        firstLevel: '',
+        secondLevel: '',
+        operationType: 'Equal' as const,
+        dataType: 'String' as const,
+        value: product.type,
+        defaultFilter: false,
+        multipleValues: false
+      }]] : []
+    };
+    this.shopService.filterProducts(request).subscribe({
+      next: response => {
+        this.suggestedProducts = (response.data || [])
+          .filter(p => p.id !== product.id)
+          .slice(0, 4);
+      },
+      error: () => {}
     });
   }
 
@@ -97,6 +182,12 @@ export class ProductDetailsComponent implements OnInit {
       this.quantityInCart -= itemsToRemove;
       this.cartService.removeItemFromCart(this.product.id, itemsToRemove);
     }
+  }
+
+  buyNow() {
+    if (!this.product) return;
+    this.cartService.addItemToCart(this.product, this.quantity);
+    this.router.navigate(['/cart']);
   }
 
   updateQuantityInBasket() {

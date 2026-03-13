@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { Product } from './../../../shared/models/product';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { PaginationComponent, PaginationEvent } from '../../../shared/components/pagination/pagination.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -123,6 +123,7 @@ export class ProductsTabComponent implements OnChanges, AfterViewInit {
       ProductStoreSelectorDialogComponent,
       {
         width: '980px',
+        maxHeight: '90vh',
         data: {
           title: 'Products in Store',
           preselectedIds: this.products.map(p => p.id)
@@ -162,14 +163,5 @@ export class ProductsTabComponent implements OnChanges, AfterViewInit {
 
   onPage(event: PaginationEvent) {
     this.pageChanged.emit({ pageNumber: event.pageIndex + 1, pageSize: event.pageSize });
-  }
-
-  private getAllExistingProducts(): Product[] {
-    return this.products;
-  }
-
-  private handleExistingProductSelection(selectedProduct: Product) {
-    console.log('Selected existing product:', selectedProduct);
-    this.productUpdated.emit();
   }
 }

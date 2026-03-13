@@ -9,9 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 import { ProductTypeDto, CreateProductTypeDto, UpdateProductTypeDto } from '../../../shared/models/product-type.model';
 import { AdminService } from '../../../core/services/admin.service';
@@ -53,7 +53,7 @@ export class ProductTypeManagementComponent implements OnInit {
   
   private adminService = inject(AdminService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private snackbar = inject(SnackbarService);
   private fb = inject(FormBuilder);
   private translate = inject(TranslateService);
 
@@ -78,11 +78,7 @@ export class ProductTypeManagementComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading product types:', error);
-        this.snackBar.open(
-          this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.LOAD_ERROR'), 
-          this.translate.instant('COMMON.CLOSE'), 
-          { duration: 3000 }
-        );
+        this.snackbar.error(this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.LOAD_ERROR'));
         this.isLoading = false;
       }
     });
@@ -115,21 +111,13 @@ export class ProductTypeManagementComponent implements OnInit {
     
     this.adminService.createProductType(createDto).subscribe({
       next: () => {
-        this.snackBar.open(
-          this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.CREATE_SUCCESS'), 
-          this.translate.instant('COMMON.CLOSE'), 
-          { duration: 3000 }
-        );
+        this.snackbar.success(this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.CREATE_SUCCESS'));
         this.closeAddDialog();
         this.loadProductTypes();
       },
       error: (error) => {
         console.error('Error creating product type:', error);
-        this.snackBar.open(
-          this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.CREATE_ERROR'), 
-          this.translate.instant('COMMON.CLOSE'), 
-          { duration: 3000 }
-        );
+        this.snackbar.error(this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.CREATE_ERROR'));
       }
     });
   }
@@ -156,21 +144,13 @@ export class ProductTypeManagementComponent implements OnInit {
 
     this.adminService.deleteProductType(this.selectedProductType.id).subscribe({
       next: () => {
-        this.snackBar.open(
-          this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.DELETE_SUCCESS'), 
-          this.translate.instant('COMMON.CLOSE'), 
-          { duration: 3000 }
-        );
+        this.snackbar.success(this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.DELETE_SUCCESS'));
         this.closeDeleteDialog();
         this.loadProductTypes();
       },
       error: (error) => {
         console.error('Error deleting product type:', error);
-        this.snackBar.open(
-          this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.DELETE_ERROR'), 
-          this.translate.instant('COMMON.CLOSE'), 
-          { duration: 3000 }
-        );
+        this.snackbar.error(this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.DELETE_ERROR'));
       }
     });
   }
@@ -186,20 +166,12 @@ export class ProductTypeManagementComponent implements OnInit {
 
     this.adminService.updateProductType(productType.id, updateDto).subscribe({
       next: () => {
-        this.snackBar.open(
-          this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.UPDATE_SUCCESS', { status: statusKey }), 
-          this.translate.instant('COMMON.CLOSE'), 
-          { duration: 3000 }
-        );
+        this.snackbar.success(this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.UPDATE_SUCCESS', { status: statusKey }));
         this.loadProductTypes();
       },
       error: (error) => {
         console.error('Error updating product type:', error);
-        this.snackBar.open(
-          this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.UPDATE_ERROR'), 
-          this.translate.instant('COMMON.CLOSE'), 
-          { duration: 3000 }
-        );
+        this.snackbar.error(this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.UPDATE_ERROR'));
       }
     });
   }

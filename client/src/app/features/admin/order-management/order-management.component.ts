@@ -16,7 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { OrderEmailDialogComponent } from './order-email-dialog/order-email-dialog.component';
 import { OrderRefundDialogComponent } from './order-refund-dialog/order-refund-dialog.component';
 import { OrderDetailsDialogComponent } from './order-details-dialog/order-details-dialog.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCardModule } from '@angular/material/card';
 
@@ -42,7 +42,7 @@ import { MatCardModule } from '@angular/material/card';
 export class OrderManagementComponent implements OnInit {
   private adminService = inject(AdminService);
   private dialog = inject(MatDialog);
-  private snackBar = inject(MatSnackBar);
+  private snackbar = inject(SnackbarService);
   
   displayedColumns: string[] = ['id', 'buyerEmail', 'orderDate', 'total', 'paymentType', 'paymentStatus', 'status', 'deliveryStatus', 'action'];
 
@@ -61,7 +61,7 @@ export class OrderManagementComponent implements OnInit {
 
   onEmailNotificationToggle(): void {
     const status = this.sendEmailNotifications ? 'enabled' : 'disabled';
-    this.snackBar.open(`Automatic email notifications ${status}`, '✓', { duration: 2000 });
+    this.snackbar.show(`Automatic email notifications ${status}`, { action: '✓', duration: 2000 });
   }
 
   // Dynamic filter configuration for orders
@@ -292,7 +292,7 @@ export class OrderManagementComponent implements OnInit {
     // Check if order is refunded
     if (this.isOrderRefunded(order)) {
       select.value = order.status; // revert
-      this.snackBar.open('Cannot change status of refunded order', '✗', { duration: 3000 });
+      this.snackbar.error('Cannot change status of refunded order', { action: '✗', duration: 3000 });
       return;
     }
 
@@ -314,12 +314,12 @@ export class OrderManagementComponent implements OnInit {
         if (!this.sendEmailNotifications) {
           message += ' (Email disabled)';
         }
-        this.snackBar.open(message, '✓', { duration: 3000 });
+        this.snackbar.success(message, { action: '✓', duration: 3000 });
         this.updatingOrder[order.id] = false;
       },
       error: (err) => {
         select.value = oldStatus; // revert
-        this.snackBar.open(err?.error || 'Failed to update status', '✗', { duration: 3000 });
+        this.snackbar.error(err?.error || 'Failed to update status', { action: '✗', duration: 3000 });
         this.updatingOrder[order.id] = false;
       }
     });
@@ -333,7 +333,7 @@ export class OrderManagementComponent implements OnInit {
     // Check if order is refunded
     if (this.isOrderRefunded(order)) {
       select.value = order.paymentStatus; // revert
-      this.snackBar.open('Cannot change status of refunded order', '✗', { duration: 3000 });
+      this.snackbar.error('Cannot change status of refunded order', { action: '✗', duration: 3000 });
       return;
     }
 
@@ -351,12 +351,12 @@ export class OrderManagementComponent implements OnInit {
         if (!this.sendEmailNotifications) {
           message += ' (Email disabled)';
         }
-        this.snackBar.open(message, '✓', { duration: 2000 });
+        this.snackbar.success(message, { action: '✓', duration: 2000 });
         this.updatingOrder[order.id] = false;
       },
       error: (err) => {
         select.value = oldStatus; // revert
-        this.snackBar.open(err?.error || 'Failed to update payment status', '✗', { duration: 3000 });
+        this.snackbar.error(err?.error || 'Failed to update payment status', { action: '✗', duration: 3000 });
         this.updatingOrder[order.id] = false;
       }
     });
@@ -370,7 +370,7 @@ export class OrderManagementComponent implements OnInit {
     // Check if order is refunded
     if (this.isOrderRefunded(order)) {
       select.value = order.deliveryStatus; // revert
-      this.snackBar.open('Cannot change status of refunded order', '✗', { duration: 3000 });
+      this.snackbar.error('Cannot change status of refunded order', { action: '✗', duration: 3000 });
       return;
     }
 
@@ -388,12 +388,12 @@ export class OrderManagementComponent implements OnInit {
         if (!this.sendEmailNotifications) {
           message += ' (Email disabled)';
         }
-        this.snackBar.open(message, '✓', { duration: 2000 });
+        this.snackbar.success(message, { action: '✓', duration: 2000 });
         this.updatingOrder[order.id] = false;
       },
       error: (err) => {
         select.value = oldStatus;
-        this.snackBar.open(err?.error || 'Failed to update delivery status', '✗', { duration: 3000 });
+        this.snackbar.error(err?.error || 'Failed to update delivery status', { action: '✗', duration: 3000 });
         this.updatingOrder[order.id] = false;
       }
     });
@@ -402,7 +402,7 @@ export class OrderManagementComponent implements OnInit {
   quickRefund(order: Order): void {
     // Only open dialog if refund request exists
     if (!this.hasRefundRequest(order.id)) {
-      this.snackBar.open('No refund request submitted for this order', '✗', { duration: 3000 });
+      this.snackbar.error('No refund request submitted for this order', { action: '✗', duration: 3000 });
       return;
     }
 

@@ -17,6 +17,8 @@ public class ProductDto : BaseDto
     public int ProductTypeId { get; set; }
     public string Brand { get; set; } = String.Empty;
     public int QuantityInStock { get; set; } = 0;
+    public float Rating { get; set; } = 0;
+    public int ReviewsCount { get; set; } = 0;
 }
 
 

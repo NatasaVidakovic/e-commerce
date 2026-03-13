@@ -5,11 +5,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatChipsModule } from '@angular/material/chips';
-import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../core/services/admin.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
+import { PaginationComponent, PaginationEvent } from '../../../shared/components/pagination/pagination.component';
+import { DynamicFilterBarComponent } from '../../../shared/components/dynamic-filter-bar/dynamic-filter-bar.component';
+import { DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../../shared/models/dynamic-filtering';
 
 export interface UserInfo {
   id: string;
@@ -38,23 +38,68 @@ export interface UserInfo {
     MatButtonModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatChipsModule,
-    FormsModule
+    PaginationComponent,
+    DynamicFilterBarComponent
   ],
   templateUrl: './users-tab.component.html',
   styleUrl: './users-tab.component.scss'
 })
 export class UsersTabComponent implements OnInit {
   private adminService = inject(AdminService);
+  private snackbar = inject(SnackbarService);
 
   users: UserInfo[] = [];
-  filteredUsers: UserInfo[] = [];
   loading = true;
-  searchTerm = '';
+  private searchTerm = '';
+  private selectedRole = '';
+  private selectedVerified = '';
+  private sortColumn = 'Email';
+  private sortAscending = true;
 
-  displayedColumns = ['avatar', 'email', 'name', 'phone', 'roles', 'emailConfirmed', 'address'];
+  filterDefinitions: DynamicFilterDefinition[] = [
+    {
+      key: 'search',
+      label: 'Search by email, name or phone',
+      controlType: 'text',
+      propertyName: 'Email',
+      operationType: 'Contains',
+      dataType: 'String'
+    },
+    {
+      key: 'role',
+      label: 'Role',
+      controlType: 'select',
+      propertyName: 'Role',
+      operationType: 'Equal',
+      dataType: 'String',
+      options: ['Admin', 'Customer'],
+      multiple: false,
+      allLabel: 'All Roles'
+    },
+    {
+      key: 'emailConfirmed',
+      label: 'Email Status',
+      controlType: 'select',
+      propertyName: 'EmailConfirmed',
+      operationType: 'Equal',
+      dataType: 'String',
+      options: ['Verified', 'Unverified'],
+      multiple: false,
+      allLabel: 'All'
+    }
+  ];
+
+  sortOptions: DynamicSortOption[] = [
+    { label: 'Email (A-Z)', column: 'Email', ascending: true, descending: false },
+    { label: 'Email (Z-A)', column: 'Email', ascending: false, descending: true }
+  ];
+
+  pageIndex = 0;
+  pageSize = 10;
+  totalCount = 0;
+  readonly pageSizeOptions = [10, 25, 50];
+
+  displayedColumns = ['email', 'name', 'phone', 'roles', 'emailConfirmed', 'address'];
 
   ngOnInit(): void {
     this.loadUsers();
@@ -62,32 +107,57 @@ export class UsersTabComponent implements OnInit {
 
   loadUsers(): void {
     this.loading = true;
-    this.adminService.getUsers().subscribe({
-      next: (users) => {
-        this.users = users;
-        this.applyFilter();
+    this.adminService.getUsers(this.pageIndex + 1, this.pageSize, this.searchTerm, this.selectedRole, this.selectedVerified, this.sortColumn, this.sortAscending).subscribe({
+      next: (result) => {
+        this.users = result.data;
+        this.totalCount = result.count;
         this.loading = false;
       },
       error: (err) => {
         console.error('Error loading users:', err);
+        this.snackbar.errorFrom(err, 'Failed to load users');
         this.loading = false;
       }
     });
   }
 
-  applyFilter(): void {
-    const term = this.searchTerm.toLowerCase().trim();
-    if (!term) {
-      this.filteredUsers = [...this.users];
-      return;
+  onFiltersChanged(event: { filters: FilterViewModel[][], sort: DynamicSortOption }): void {
+    const allFilters = event.filters.flat();
+
+    const searchFilter = allFilters.find(f => f.propertyName === 'Email' && f.operationType === 'Contains');
+    this.searchTerm = searchFilter?.value ?? '';
+
+    const roleFilter = allFilters.find(f => f.propertyName === 'Role');
+    this.selectedRole = roleFilter?.value ?? '';
+
+    const confirmedFilter = allFilters.find(f => f.propertyName === 'EmailConfirmed');
+    const confirmedRaw: string = confirmedFilter?.value ?? '';
+    this.selectedVerified = confirmedRaw === 'Verified' ? 'true' : confirmedRaw === 'Unverified' ? 'false' : '';
+
+    const sort = event.sort;
+    if (sort) {
+      this.sortColumn = sort.column;
+      this.sortAscending = sort.ascending;
     }
-    this.filteredUsers = this.users.filter(u =>
-      (u.email?.toLowerCase().includes(term)) ||
-      (u.firstName?.toLowerCase().includes(term)) ||
-      (u.lastName?.toLowerCase().includes(term)) ||
-      (u.phoneNumber?.includes(term)) ||
-      (u.roles?.some(r => r.toLowerCase().includes(term)))
-    );
+
+    this.pageIndex = 0;
+    this.loadUsers();
+  }
+
+  onFiltersReset(): void {
+    this.searchTerm = '';
+    this.selectedRole = '';
+    this.selectedVerified = '';
+    this.sortColumn = 'Email';
+    this.sortAscending = true;
+    this.pageIndex = 0;
+    this.loadUsers();
+  }
+
+  onPageChange(event: PaginationEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadUsers();
   }
 
   getUserName(user: UserInfo): string {
@@ -99,26 +169,6 @@ export class UsersTabComponent implements OnInit {
     if (!user.address) return '—';
     const parts = [user.address.line1, user.address.line2, user.address.city, user.address.postalCode, user.address.country].filter(Boolean);
     return parts.join(', ');
-  }
-
-  get totalUsers(): number {
-    return this.users.length;
-  }
-
-  get adminCount(): number {
-    return this.users.filter(u => u.roles?.includes('Admin')).length;
-  }
-
-  get customerCount(): number {
-    return this.users.filter(u => u.roles?.includes('Customer')).length;
-  }
-
-  get confirmedCount(): number {
-    return this.users.filter(u => u.emailConfirmed).length;
-  }
-
-  get unconfirmedCount(): number {
-    return this.users.filter(u => !u.emailConfirmed).length;
   }
 
   getInitials(user: UserInfo): string {

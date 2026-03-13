@@ -118,7 +118,10 @@ import { forkJoin } from 'rxjs';
                 }));
                 this.updatePriceBounds(this.products);
             },
-            error: (error) => console.error(error)
+            error: (error) => {
+                console.error('Error loading products:', error);
+                this.snackbar.errorFrom(error, 'Error loading products', { duration: 2000 });
+            }
         });
     }
 

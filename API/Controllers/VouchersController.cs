@@ -1,3 +1,4 @@
+using API.RequestHelpers;
 using Core.Entities;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -14,15 +15,51 @@ public class VouchersController(StoreContext context) : BaseApiController
     }
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult> GetVouchers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    public async Task<ActionResult> GetVouchers(
+        [FromQuery] int pageIndex = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null,
+        [FromQuery] string? status = null,
+        [FromQuery] string? type = null,
+        [FromQuery] string? sortColumn = null,
+        [FromQuery] bool sortAscending = false)
     {
-        var query = context.Vouchers.OrderByDescending(v => v.CreatedAt);
+        var query = context.Vouchers.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+            query = query.Where(v =>
+                (v.Code != null && v.Code.ToLower().Contains(term)) ||
+                (v.Description != null && v.Description.ToLower().Contains(term)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            if (status == "Active") query = query.Where(v => v.IsActive);
+            else if (status == "Inactive") query = query.Where(v => !v.IsActive);
+        }
+
+        if (!string.IsNullOrWhiteSpace(type))
+        {
+            if (type == "Percentage Off") query = query.Where(v => v.PercentOff != null);
+            else if (type == "Amount Off") query = query.Where(v => v.AmountOff != null);
+        }
+
+        query = (sortColumn, sortAscending) switch
+        {
+            ("Code", true)      => query.OrderBy(v => v.Code),
+            ("Code", false)     => query.OrderByDescending(v => v.Code),
+            ("CreatedAt", true) => query.OrderBy(v => v.CreatedAt),
+            _                   => query.OrderByDescending(v => v.CreatedAt)
+        };
         var totalCount = await query.CountAsync();
         var vouchers = await query
-            .Skip((pageNumber - 1) * pageSize)
+            .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
-        return Ok(new { data = vouchers, totalCount });
+        var pagination = new Pagination<Voucher>(pageIndex, pageSize, totalCount, vouchers);
+        return Ok(pagination);
     }
 
     [HttpGet("validate/{code}")]

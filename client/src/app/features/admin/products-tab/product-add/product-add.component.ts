@@ -13,6 +13,7 @@ import { Product, CreateProductRequest } from '../../../../shared/models/product
 import { ShopService } from '../../../../core/services/shop.service';
 import { AdminService } from '../../../../core/services/admin.service';
 import { ProductTypeDto } from '../../../../shared/models/product-type.model';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-admin-product-add',
@@ -46,7 +47,8 @@ export class AdminProductAddComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private shopService: ShopService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private snackbar: SnackbarService
   ) {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
@@ -111,7 +113,7 @@ export class AdminProductAddComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error creating product:', error);
-        alert('Error creating product: ' + (error.error?.message || error.message || 'Unknown error'));
+        this.snackbar.errorFrom(error, 'Error creating product');
         this.loading = false;
       }
     });
@@ -131,15 +133,25 @@ export class AdminProductAddComponent implements OnInit {
   }
 
   removeImage(index: number): void {
-    this.pendingImages.splice(index, 1);
+    this.pendingImages = this.pendingImages.filter((_, i) => i !== index);
   }
 
   moveImage(index: number, direction: -1 | 1): void {
     const newIndex = index + direction;
     if (newIndex < 0 || newIndex >= this.pendingImages.length) return;
-    const temp = this.pendingImages[index];
-    this.pendingImages[index] = this.pendingImages[newIndex];
-    this.pendingImages[newIndex] = temp;
+    const arr = [...this.pendingImages];
+    const temp = arr[index];
+    arr[index] = arr[newIndex];
+    arr[newIndex] = temp;
+    this.pendingImages = arr;
+  }
+
+  setPrimaryPending(index: number): void {
+    if (index === 0) return;
+    const arr = [...this.pendingImages];
+    const [item] = arr.splice(index, 1);
+    arr.unshift(item);
+    this.pendingImages = arr;
   }
 
   private uploadPendingImages(productId: number, index: number, callback: () => void): void {

@@ -66,11 +66,14 @@ export class SwiperDirective implements AfterViewInit, OnDestroy, OnInit, OnChan
     if (this.effect === 'flip') modules.push(EffectFlip);
     if (this.effect === 'creative') modules.push(EffectCreative);
 
+    const nextEl = this.el.nativeElement.querySelector('.swiper-button-next');
+    const prevEl = this.el.nativeElement.querySelector('.swiper-button-prev');
+
     const defaultConfig = {
       modules,
       navigation: this.navigation ? {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
+        nextEl: nextEl || '.swiper-button-next',
+        prevEl: prevEl || '.swiper-button-prev',
       } : false,
       pagination: this.pagination ? {
         el: '.swiper-pagination',

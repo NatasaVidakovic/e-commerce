@@ -29,6 +29,7 @@ export type Product = {
   rating?: number;
   reviews?: ProductReview[];
   images?: ProductImage[];
+  reviewsCount?: number;
 }
 
 export type CreateProductRequest = {

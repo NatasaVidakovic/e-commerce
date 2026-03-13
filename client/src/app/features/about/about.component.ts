@@ -129,7 +129,6 @@ export class AboutComponent implements OnInit, AfterViewInit {
 
   private initializeMap(): void {
     (window as any).__angularInitMap = () => {
-      console.log('Google Maps API loaded, initializing map...');
       this.loadMap();
     };
     if ((window as any).google && (window as any).google.maps) {
@@ -157,8 +156,6 @@ export class AboutComponent implements OnInit, AfterViewInit {
       const mapElement = findMapElement();
       
       if (mapElement) {
-        console.log('Map element found, location:', location);
-        
         // Check if Google Maps API is loaded
         if ((window as any).google && (window as any).google.maps) {
           // Use real Google Maps
@@ -178,19 +175,16 @@ export class AboutComponent implements OnInit, AfterViewInit {
               title: location.address || 'Shop Location'
             });
             
-            console.log('Google Maps loaded successfully');
           } catch (error) {
             console.error('Error loading Google Maps:', error);
             this.showMapPlaceholder(mapElement, location);
           }
         } else {
           // Show placeholder when Google Maps API is not available
-          console.log('Google Maps API not loaded, showing placeholder');
           this.showMapPlaceholder(mapElement, location);
         }
       } else if (attempts < maxAttempts) {
         attempts++;
-        console.log(`Map element not found, retrying... (${attempts}/${maxAttempts})`);
         setTimeout(tryLoadMap, 200);
       } else {
         console.error('Map element not found after multiple attempts');

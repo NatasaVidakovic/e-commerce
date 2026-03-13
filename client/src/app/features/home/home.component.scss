@@ -27,7 +27,6 @@
     justify-content: center;
     width: 100%;
     min-height: 420px;
-    overflow: hidden;
 
     @include md {
         min-height: 520px;
@@ -538,32 +537,23 @@
 // Swiper integration for carousels
 .product-carousel-swiper {
     position: relative;
-    
-    .swiper-wrapper.product-carousel {
-        display: flex;
-        gap: 1rem;
-        padding: 1rem 0;
-        
-        @include md {
-            gap: 1.5rem;
-        }
+    padding: 0.5rem 0;
+
+    // Reset standalone carousel styles that conflict with Swiper's own layout
+    .product-carousel {
+        overflow: visible;
+        gap: 0;
+        padding: 0;
+    }
+
+    .product-carousel-item {
+        width: 100%;
+        max-width: none;
+        flex-shrink: 0;
     }
 
     .swiper-slide.product-carousel-item {
-        flex: 0 0 auto;
-        width: 280px;
-        
-        @include md {
-            width: 320px;
-        }
-        
-        @include lg {
-            width: 280px;
-        }
-        
-        @include xl {
-            width: 300px;
-        }
+        height: auto;
     }
 
     // Custom Swiper navigation arrows - always visible

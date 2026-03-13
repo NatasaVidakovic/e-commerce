@@ -6,6 +6,7 @@ using Core.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
@@ -96,6 +97,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
             .ListAllQueryiableAsync()
             .Include(p => p.ProductType)
             .Include(p => p.Images)
+            .Include(p => p.Discounts)
             .FirstOrDefaultAsync(p => p.Id == id);
             
         if (productEntity == null) return NotFound();
@@ -409,6 +411,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
 
     [InvalidateCache("api/products|")]
     [Authorize(Roles = "Admin")]
+    [EnableRateLimiting("image-upload")]
     [HttpPost("{productId}/images/upload")]
     public async Task<ActionResult<ProductImageDto>> UploadProductImage(
         int productId, IFormFile file, [FromForm] string altText = "")
@@ -441,11 +444,12 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
 
             var image = new ProductImage
             {
-                Url = result.Url,
+                Url          = result.Url,
+                ThumbnailUrl = result.ThumbnailUrl,
                 DisplayOrder = displayOrder,
-                IsPrimary = isPrimary,
-                AltText = altText,
-                ProductId = productId
+                IsPrimary    = isPrimary,
+                AltText      = altText,
+                ProductId    = productId
             };
             unit.Repository<ProductImage>().Add(image);
 
@@ -508,10 +512,8 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
         foreach (var img in images)
             img.IsPrimary = img.Id == imageId;
 
-        if (await unit.Complete())
-            return NoContent();
-
-        return BadRequest("Failed to set primary image.");
+        await unit.Complete();
+        return NoContent();
     }
 
     [InvalidateCache("api/products|")]
@@ -531,17 +533,15 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
             if (img != null) img.DisplayOrder = i;
         }
 
-        if (await unit.Complete())
-            return NoContent();
-
-        return BadRequest("Failed to reorder images.");
+        await unit.Complete();
+        return NoContent();
     }
 
     private static ProductImageDto MapImageDto(ProductImage i, string? thumbnailUrl = null) => new()
     {
         Id           = i.Id,
         Url          = i.Url,
-        ThumbnailUrl = thumbnailUrl ?? DeriveThumbnailUrl(i.Url),
+        ThumbnailUrl = thumbnailUrl ?? (string.IsNullOrEmpty(i.ThumbnailUrl) ? DeriveThumbnailUrl(i.Url) : i.ThumbnailUrl),
         DisplayOrder = i.DisplayOrder,
         IsPrimary    = i.IsPrimary,
         AltText      = i.AltText

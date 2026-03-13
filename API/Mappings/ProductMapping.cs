@@ -21,7 +21,11 @@ public class ProductMapping : BaseMapping<ProductDto, Product>
             ProductType = product.ProductType?.ToDto() ?? null!,
             Brand = product.Brand,
             QuantityInStock = product.QuantityInStock,
-            Id = product.Id
+            Id = product.Id,
+            Rating = product.Reviews != null && product.Reviews.Any() 
+                ? (float)Math.Round(product.Reviews.Average(r => (double)r.Rating), 2) 
+                : 0,
+            ReviewsCount = product.Reviews?.Count ?? 0
         };
 
         // Find active discounts and calculate actual discount amounts

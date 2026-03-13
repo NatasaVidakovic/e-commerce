@@ -2,6 +2,7 @@ using API.Mappings;
 using API.RequestHelpers;
 using Core.DTOs;
 using Core.Entities;
+using Core.Enums;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -40,15 +41,74 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
     }
 
     [HttpGet("paged")]
-    public async Task<ActionResult> GetDiscountsPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    public async Task<ActionResult<Pagination<DiscountDto>>> GetDiscountsPaged(
+        [FromQuery] int pageIndex = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null,
+        [FromQuery] string? state = null,
+        [FromQuery] string? isPercentage = null,
+        [FromQuery] string? hasBeenUsed = null,
+        [FromQuery] string? dateFromStart = null,
+        [FromQuery] string? dateFromEnd = null,
+        [FromQuery] string? sortColumn = null,
+        [FromQuery] bool sortAscending = true)
     {
         var productMapper = serviceProvider.GetService<ProductMapping>();
         if (productMapper == null)
             return BadRequest();
 
-        var (discounts, totalCount) = await discountService.GetDiscountsPagedAsync(pageNumber, pageSize);
+        var allDiscounts = (await discountService.GetAllDiscountsAsync()).AsEnumerable();
 
-        var dtos = discounts.Select(d => new DiscountDto
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+            allDiscounts = allDiscounts.Where(d =>
+                (d.Name != null && d.Name.ToLower().Contains(term)) ||
+                (d.Description != null && d.Description.ToLower().Contains(term)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(state) && Enum.TryParse<DiscountState>(state, out var stateEnum))
+        {
+            allDiscounts = allDiscounts.Where(d => d.GetState() == stateEnum);
+        }
+
+        if (!string.IsNullOrWhiteSpace(isPercentage) && bool.TryParse(isPercentage, out var isPct))
+        {
+            allDiscounts = allDiscounts.Where(d => d.IsPercentage == isPct);
+        }
+
+        if (!string.IsNullOrWhiteSpace(hasBeenUsed) && bool.TryParse(hasBeenUsed, out var used))
+        {
+            allDiscounts = allDiscounts.Where(d => d.HasBeenUsed == used);
+        }
+
+        if (!string.IsNullOrWhiteSpace(dateFromStart) && DateTime.TryParse(dateFromStart, out var dfStart))
+        {
+            allDiscounts = allDiscounts.Where(d => d.DateFrom >= dfStart);
+        }
+
+        if (!string.IsNullOrWhiteSpace(dateFromEnd) && DateTime.TryParse(dateFromEnd, out var dfEnd))
+        {
+            allDiscounts = allDiscounts.Where(d => d.DateFrom <= dfEnd);
+        }
+
+        var filtered = allDiscounts.ToList();
+        var totalCount = filtered.Count;
+
+        IEnumerable<Discount> sorted = sortColumn switch
+        {
+            "Name" when sortAscending  => filtered.OrderBy(d => d.Name),
+            "Name"                     => filtered.OrderByDescending(d => d.Name),
+            "Value" when sortAscending => filtered.OrderBy(d => d.Value),
+            "Value"                    => filtered.OrderByDescending(d => d.Value),
+            "DateFrom" when sortAscending => filtered.OrderBy(d => d.DateFrom),
+            "DateFrom"                    => filtered.OrderByDescending(d => d.DateFrom),
+            _                          => filtered.OrderBy(d => d.Name)
+        };
+
+        var paged = sorted.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+
+        var dtos = paged.Select(d => new DiscountDto
         {
             Id = d.Id,
             Name = d.Name,
@@ -65,7 +125,8 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
             CanDelete = d.CanBeDeleted()
         }).ToList();
 
-        return Ok(new { data = dtos, totalCount });
+        var pagination = new Pagination<DiscountDto>(pageIndex, pageSize, totalCount, dtos);
+        return Ok(pagination);
     }
 
     [Cached(1)]

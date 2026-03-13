@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Discount } from '../../../../shared/models/discount';
 import { Product } from '../../../../shared/models/product';
 import { DiscountService } from '../../../../core/services/discount.service';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { DeleteDiscountDialogComponent } from '../discount-delete/discount-delete-dialog.component';
 
 @Component({
   selector: 'app-discount-details',
@@ -20,6 +23,7 @@ import { SnackbarService } from '../../../../core/services/snackbar.service';
     MatIconModule,
     MatCardModule,
     MatTableModule,
+    MatDialogModule,
     TranslatePipe
   ],
   templateUrl: './discount-details.component.html',
@@ -30,6 +34,8 @@ export class DiscountDetailsComponent implements OnInit {
   loading = true;
   dataSource = new MatTableDataSource<Product>();
   displayedColumns: string[] = ['id', 'name', 'brand', 'type', 'price'];
+
+  private dialog = inject(MatDialog);
 
   constructor(
     private router: Router,
@@ -86,9 +92,18 @@ export class DiscountDetailsComponent implements OnInit {
 
   disableDiscount() {
     if (!this.discount) return;
-    
-    if (confirm('Are you sure you want to disable this discount? It will no longer apply to new orders.')) {
-      this.discountService.disableDiscount(this.discount.id).subscribe({
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '380px',
+      data: {
+        title: 'Disable Discount',
+        message: 'Are you sure you want to disable this discount? It will no longer apply to new orders.'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+      this.discountService.disableDiscount(this.discount!.id).subscribe({
         next: () => {
           this.snackbar.success('Discount disabled successfully', { duration: 3000, panelClass: ['success-snackbar'] });
           this.loadDiscount(this.discount!.id);
@@ -97,7 +112,7 @@ export class DiscountDetailsComponent implements OnInit {
           this.snackbar.errorFrom(error, 'Error disabling discount', { duration: 8000, panelClass: ['error-snackbar'] });
         }
       });
-    }
+    });
   }
 
   ngOnInit() {
@@ -146,28 +161,16 @@ export class DiscountDetailsComponent implements OnInit {
 
   deleteDiscount() {
     if (!this.discount) return;
-    
-    if (!this.discount.canDelete) {
-      let message = 'This discount cannot be deleted.';
-      if (this.discount.hasBeenUsed) {
-        message = 'This discount has been used in orders and cannot be deleted due to accounting requirements.';
-      } else if (this.discount.state !== 'Draft') {
-        message = 'Only draft discounts can be deleted. Disable it instead.';
+
+    const dialogRef = this.dialog.open(DeleteDiscountDialogComponent, {
+      width: '380px',
+      data: this.discount
+    });
+
+    dialogRef.afterClosed().subscribe(deleted => {
+      if (deleted) {
+        this.router.navigate(['/admin/discounts']);
       }
-      this.snackbar.error(message);
-      return;
-    }
-    
-    if (confirm('Are you sure you want to delete this discount? This action cannot be undone.')) {
-      this.discountService.deleteDiscount(this.discount.id).subscribe({
-        next: () => {
-          this.snackbar.success('Discount deleted successfully', { duration: 3000, panelClass: ['success-snackbar'] });
-          this.router.navigate(['/admin/discounts']);
-        },
-        error: (error: any) => {
-          this.snackbar.errorFrom(error, 'Error deleting discount', { duration: 8000, panelClass: ['error-snackbar'] });
-        }
-      });
-    }
+    });
   }
 }

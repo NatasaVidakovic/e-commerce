@@ -45,6 +45,40 @@ export class ProductReviewsComponent implements OnChanges {
 
     newCommentText: string = '';
     newCommentRating: number = 5;
+    hoverRating: number = 0;
+
+    setRating(r: number): void {
+        this.newCommentRating = r;
+    }
+
+    setHoverRating(r: number): void {
+        this.hoverRating = r;
+    }
+
+    clearHoverRating(): void {
+        this.hoverRating = 0;
+    }
+
+    getFormStarIcon(star: number): string {
+        return (this.hoverRating || this.newCommentRating) >= star ? 'star' : 'star_border';
+    }
+
+    getRelativeTime(date: Date | string | undefined): string {
+        if (!date) return '';
+        const now = new Date();
+        const then = new Date(date);
+        const diffMs = now.getTime() - then.getTime();
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        if (diffDays === 0) return 'today';
+        if (diffDays === 1) return '1 day ago';
+        if (diffDays < 7) return `${diffDays} days ago`;
+        if (diffDays < 14) return '1 week ago';
+        if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+        if (diffDays < 60) return '1 month ago';
+        if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+        if (diffDays < 730) return '1 year ago';
+        return `${Math.floor(diffDays / 365)} years ago`;
+    }
 
     public accountService = inject(AccountService);
     private reviewsService = inject(ProductReviewsService);

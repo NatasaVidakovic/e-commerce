@@ -4,6 +4,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { CatalogComponent } from "./catalog/catalog.component";
 import { BestReviewedComponent } from './best-reviewed-products/best-reviewed-products.component';
 import { DiscountsTabComponent } from './discounts-tab/discounts-tab.component';
+import { VouchersTabComponent } from './vouchers-tab/vouchers-tab.component';
 import { BestSellingProductsComponent } from './best-selling-products/best-selling-products.component';
 import { SuggestedProductsComponent } from './suggested-products/suggested-products.component';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -22,6 +23,7 @@ import { UsersTabComponent } from './users-tab/users-tab.component';
     BestSellingProductsComponent,
     BestReviewedComponent,
     DiscountsTabComponent,
+    VouchersTabComponent,
     SuggestedProductsComponent,
     TranslatePipe,
     ThemeSettingsComponent,

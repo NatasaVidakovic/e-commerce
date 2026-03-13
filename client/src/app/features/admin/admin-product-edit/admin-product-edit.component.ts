@@ -13,6 +13,7 @@ import { Product, CreateProductRequest, ProductImage } from '../../../shared/mod
 import { ShopService } from '../../../core/services/shop.service';
 import { AdminService } from '../../../core/services/admin.service';
 import { ProductTypeDto } from '../../../shared/models/product-type.model';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-admin-product-edit',
@@ -48,7 +49,8 @@ export class AdminProductEditComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private shopService: ShopService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private snackbar: SnackbarService
   ) {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
@@ -135,7 +137,7 @@ export class AdminProductEditComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error updating product:', error);
-        alert('Error updating product: ' + (error.error?.message || error.message || 'Unknown error'));
+        this.snackbar.errorFrom(error, 'Error updating product');
         this.saving = false;
       }
     });
@@ -172,7 +174,7 @@ export class AdminProductEditComponent implements OnInit {
     if (!img?.id) return;
     this.shopService.deleteProductImage(this.productId, img.id).subscribe({
       next: () => this.productImages.splice(index, 1),
-      error: (err) => console.error('Failed to delete image:', err)
+      error: (err) => { console.error('Failed to delete image:', err); this.snackbar.errorFrom(err, 'Failed to delete image'); }
     });
   }
 
@@ -183,19 +185,21 @@ export class AdminProductEditComponent implements OnInit {
       next: () => {
         this.productImages.forEach((i, idx) => i.isPrimary = idx === index);
       },
-      error: (err) => console.error('Failed to set primary:', err)
+      error: (err) => { console.error('Failed to set primary:', err); this.snackbar.errorFrom(err, 'Failed to set primary image'); }
     });
   }
 
   moveImage(index: number, direction: -1 | 1): void {
     const newIndex = index + direction;
     if (newIndex < 0 || newIndex >= this.productImages.length) return;
-    const temp = this.productImages[index];
-    this.productImages[index] = this.productImages[newIndex];
-    this.productImages[newIndex] = temp;
+    const arr = [...this.productImages];
+    const temp = arr[index];
+    arr[index] = arr[newIndex];
+    arr[newIndex] = temp;
+    this.productImages = arr;
     const orderedIds = this.productImages.map(i => i.id);
     this.shopService.reorderProductImages(this.productId, orderedIds).subscribe({
-      error: (err) => console.error('Failed to reorder:', err)
+      error: (err) => { console.error('Failed to reorder:', err); this.snackbar.errorFrom(err, 'Failed to reorder images'); }
     });
   }
 

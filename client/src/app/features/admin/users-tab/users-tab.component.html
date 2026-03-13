@@ -1,111 +1,30 @@
-<div class="users-tab-container">
+<div class="admin-dashboard px-6 pt-6">
 
   <!-- Page Header -->
-  <div class="page-header">
-    <div class="page-title-group">
-      <h2 class="page-title">Users</h2>
-      <span class="page-subtitle">{{ totalUsers }} registered accounts</span>
-    </div>
-
-    <!-- Compact expandable search -->
-    <div class="search-wrap">
-      <mat-icon class="search-icon">search</mat-icon>
-      <input
-        class="search-input"
-        type="text"
-        placeholder="Search by email, name, phone or role…"
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="applyFilter()" />
-      <button *ngIf="searchTerm" class="search-clear" (click)="searchTerm = ''; applyFilter()" type="button" aria-label="Clear search">
-        <mat-icon>close</mat-icon>
+  <div class="page-header-row">
+    <h2 class="text-2xl font-semibold">Users</h2>
+    <div class="header-actions">
+      <button mat-stroked-button color="primary" (click)="loadUsers()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
       </button>
     </div>
   </div>
 
-  <!-- Summary Cards -->
-  <div class="summary-cards">
-    <div class="summary-card" matTooltip="All registered accounts" matTooltipPosition="above">
-      <div class="summary-icon total"><mat-icon>people</mat-icon></div>
-      <div class="summary-info">
-        <span class="summary-value">{{ totalUsers }}</span>
-        <span class="summary-label">Total Users</span>
-      </div>
-    </div>
-    <div class="summary-card" matTooltip="Users with Admin role — can manage the entire store" matTooltipPosition="above">
-      <div class="summary-icon admins"><mat-icon>admin_panel_settings</mat-icon></div>
-      <div class="summary-info">
-        <span class="summary-value">{{ adminCount }}</span>
-        <span class="summary-label">Admins</span>
-      </div>
-    </div>
-    <div class="summary-card" matTooltip="Users with Customer role — standard shoppers" matTooltipPosition="above">
-      <div class="summary-icon customers"><mat-icon>person</mat-icon></div>
-      <div class="summary-info">
-        <span class="summary-value">{{ customerCount }}</span>
-        <span class="summary-label">Customers</span>
-      </div>
-    </div>
-    <div class="summary-card" matTooltip="Email address has been verified via confirmation link" matTooltipPosition="above">
-      <div class="summary-icon confirmed"><mat-icon>mark_email_read</mat-icon></div>
-      <div class="summary-info">
-        <span class="summary-value">{{ confirmedCount }}</span>
-        <span class="summary-label">Verified</span>
-      </div>
-    </div>
-    <div class="summary-card" matTooltip="Email not yet confirmed — user cannot log in until verified" matTooltipPosition="above">
-      <div class="summary-icon unconfirmed"><mat-icon>mark_email_unread</mat-icon></div>
-      <div class="summary-info">
-        <span class="summary-value">{{ unconfirmedCount }}</span>
-        <span class="summary-label">Unverified</span>
-      </div>
-    </div>
+  <!-- Filter Bar - Full Width -->
+  <div class="filter-bar-container">
+    <app-dynamic-filter-bar
+      [filterDefinitions]="filterDefinitions"
+      [sortOptions]="sortOptions"
+      [liveFiltering]="false"
+      (changed)="onFiltersChanged($event)"
+      (reset)="onFiltersReset()">
+    </app-dynamic-filter-bar>
   </div>
 
-  <!-- Status Legend -->
-  <div class="status-legend">
-    <span class="legend-title">Status guide:</span>
-    <span class="legend-item"
-      matTooltip="Full store access: manage products, orders, discounts, users and all settings"
-      matTooltipPosition="above">
-      <span class="role-chip role-admin">Admin</span>
-    </span>
-    <span class="legend-item"
-      matTooltip="Standard shopper: can browse, purchase and manage their own account"
-      matTooltipPosition="above">
-      <span class="role-chip role-customer">Customer</span>
-    </span>
-    <span class="legend-item"
-      matTooltip="Email verified — user confirmed their address via the confirmation link"
-      matTooltipPosition="above">
-      <mat-icon class="legend-icon verified-icon">check_circle</mat-icon>
-      <span class="legend-text">Verified</span>
-    </span>
-    <span class="legend-item"
-      matTooltip="Email not confirmed — user hasn't clicked the confirmation link yet"
-      matTooltipPosition="above">
-      <mat-icon class="legend-icon unverified-icon">cancel</mat-icon>
-      <span class="legend-text">Unverified</span>
-    </span>
-  </div>
-
-  <!-- Loading -->
-  <div *ngIf="loading" class="loading-container">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
-
-  <!-- Table -->
-  <div *ngIf="!loading" class="table-wrapper">
-    <table mat-table [dataSource]="filteredUsers" class="users-table">
-
-      <!-- Avatar -->
-      <ng-container matColumnDef="avatar">
-        <th mat-header-cell *matHeaderCellDef class="avatar-col"></th>
-        <td mat-cell *matCellDef="let user" class="avatar-col">
-          <div class="user-avatar" [style.background-color]="getAvatarColor(user)">
-            {{ getInitials(user) }}
-          </div>
-        </td>
-      </ng-container>
+  <!-- Users Table -->
+  <div class="table-container mt-4">
+    <table mat-table [dataSource]="users" class="w-full users-table compact-table">
 
       <!-- Email -->
       <ng-container matColumnDef="email">
@@ -138,11 +57,7 @@
           <div class="role-chips">
             <span *ngFor="let role of user.roles"
               class="role-chip"
-              [ngClass]="{ 'role-admin': role === 'Admin', 'role-customer': role === 'Customer' }"
-              [matTooltip]="role === 'Admin'
-                ? 'Admin — full store management access'
-                : 'Customer — standard shopper account'"
-              matTooltipPosition="above">
+              [ngClass]="{ 'role-admin': role === 'Admin', 'role-customer': role === 'Customer' }">
               {{ role }}
             </span>
           </div>
@@ -151,15 +66,11 @@
 
       <!-- Email Confirmed -->
       <ng-container matColumnDef="emailConfirmed">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <th mat-header-cell *matHeaderCellDef>Verified</th>
         <td mat-cell *matCellDef="let user">
           <div class="status-badge"
             [class.status-verified]="user.emailConfirmed"
-            [class.status-unverified]="!user.emailConfirmed"
-            [matTooltip]="user.emailConfirmed
-              ? 'Email confirmed — this user verified their address and can log in'
-              : 'Email not confirmed — user needs to click the link sent to their inbox'"
-            matTooltipPosition="above">
+            [class.status-unverified]="!user.emailConfirmed">
             <mat-icon>{{ user.emailConfirmed ? 'check_circle' : 'schedule' }}</mat-icon>
             <span>{{ user.emailConfirmed ? 'Verified' : 'Pending' }}</span>
           </div>
@@ -177,13 +88,31 @@
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="user-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-
-    <div *ngIf="filteredUsers.length === 0 && !loading" class="empty-state">
-      <mat-icon>manage_search</mat-icon>
-      <p class="empty-title">No users found</p>
-      <p class="empty-hint" *ngIf="searchTerm">Try a different search term or <button class="clear-link" (click)="searchTerm = ''; applyFilter()">clear the search</button></p>
-    </div>
   </div>
+
+  @if (loading) {
+    <div class="text-center py-8" style="color: var(--color-text-secondary);">
+      <mat-spinner diameter="40" style="margin: 0 auto;"></mat-spinner>
+    </div>
+  }
+
+  @if (!loading && users.length === 0) {
+    <div class="text-center py-8" style="color: var(--color-text-secondary);">
+      <mat-icon style="font-size: 48px; width: 48px; height: 48px;" class="mb-2">manage_search</mat-icon>
+      <p>No users found</p>
+    </div>
+  }
+
+  <app-pagination
+    *ngIf="totalCount > 0"
+    [length]="totalCount"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    [showFirstLastButtons]="true"
+    (page)="onPageChange($event)">
+  </app-pagination>
+
 </div>

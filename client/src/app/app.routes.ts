@@ -109,6 +109,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/admin/discounts-tab/discounts-tab.component').then(m => m.DiscountsTabComponent)
             },
             {
+                path: 'vouchers',
+                loadComponent: () => import('./features/admin/vouchers-tab/vouchers-tab.component').then(m => m.VouchersTabComponent)
+            },
+            {
                 path: 'discounts/new',
                 loadComponent: () => import('./features/admin/discounts-tab/discount-form/discount-form.component').then(m => m.DiscountFormComponent)
             },

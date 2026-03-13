@@ -93,6 +93,10 @@
               <span *ngIf="i === 0" class="text-xs font-semibold px-2 py-0.5 rounded" style="background-color: var(--color-primary, #3b82f6); color: white;">{{ 'PRODUCT.MAIN' | translate }}</span>
               <p class="text-sm truncate mt-1" style="color: var(--color-text-secondary);">{{ img.file.name }}</p>
             </div>
+            <button mat-icon-button type="button" (click)="setPrimaryPending(i)" [disabled]="i === 0"
+                    [style.color]="i === 0 ? 'var(--color-primary)' : 'inherit'" title="Set as main image">
+              <mat-icon>{{ i === 0 ? 'star' : 'star_border' }}</mat-icon>
+            </button>
             <button mat-icon-button type="button" (click)="moveImage(i, -1)" [disabled]="i === 0">
               <mat-icon>arrow_upward</mat-icon>
             </button>

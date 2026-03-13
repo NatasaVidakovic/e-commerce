@@ -31,33 +31,38 @@ public class LocalImageStorageService(IOptions<ImageStorageOptions> options) : I
 
         var slug = Guid.NewGuid().ToString("N")[..12];
 
-        // Save original for potential future re-processing
-        var origPath = Path.Combine(folder, $"{slug}-original{Path.GetExtension(request.FileName).ToLowerInvariant()}");
-        await using (var fs = File.Create(origPath))
-        {
-            request.FileStream.Position = 0;
-            await request.FileStream.CopyToAsync(fs);
-        }
-
+        // Load image bytes into memory once so the stream can be read multiple times
         request.FileStream.Position = 0;
         using var image = await Image.LoadAsync(request.FileStream);
 
         var encoder = new WebpEncoder { Quality = 82 };
         var urlDict = new Dictionary<string, string>();
+        var writtenFiles = new List<string>();
 
-        foreach (var (suffix, width) in Sizes)
+        try
         {
-            var height = (int)Math.Round(image.Height * ((double)width / image.Width));
-            using var resized = image.Clone(ctx => ctx.Resize(new ResizeOptions
+            foreach (var (suffix, width) in Sizes)
             {
-                Size = new Size(width, height),
-                Mode = ResizeMode.Max
-            }));
+                var height = (int)Math.Round(image.Height * ((double)width / image.Width));
+                using var resized = image.Clone(ctx => ctx.Resize(new ResizeOptions
+                {
+                    Size = new Size(width, height),
+                    Mode = ResizeMode.Max
+                }));
 
-            var fileName = $"{slug}-{suffix}.webp";
-            var filePath = Path.Combine(folder, fileName);
-            await resized.SaveAsync(filePath, encoder);
-            urlDict[suffix] = $"/images/products/{productId}/{fileName}";
+                var fileName = $"{slug}-{suffix}.webp";
+                var filePath = Path.Combine(folder, fileName);
+                await resized.SaveAsync(filePath, encoder);
+                writtenFiles.Add(filePath);
+                urlDict[suffix] = $"/images/products/{productId}/{fileName}";
+            }
+        }
+        catch
+        {
+            // Clean up any partially-written files so no orphans remain on disk
+            foreach (var f in writtenFiles)
+                if (File.Exists(f)) File.Delete(f);
+            throw;
         }
 
         return new ImageUploadResult(

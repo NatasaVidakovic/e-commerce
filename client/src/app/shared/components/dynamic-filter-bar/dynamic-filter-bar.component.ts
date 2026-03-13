@@ -88,9 +88,12 @@ export class DynamicFilterBarComponent implements OnInit {
     return this.sliderMaxBound ?? 10000;
   }
 
+  @Input() viewLayout: 'grid' | 'list' = 'grid';
+  
   @Output() changed = new EventEmitter<{ filters: FilterViewModel[][]; sort: DynamicSortOption }>();
   @Output() reset = new EventEmitter<void>();
   @Output() rawValuesChanged = new EventEmitter<Record<string, any>>();
+  @Output() viewLayoutChange = new EventEmitter<'grid' | 'list'>();
 
   private _initialValues: Record<string, any> | null = null;
 
@@ -502,5 +505,9 @@ export class DynamicFilterBarComponent implements OnInit {
     if (this.hasAnyInvalidDateRange()) return;
     this.emit();
     this.closeMobileDrawer();
+  }
+
+  onViewLayoutChange(layout: 'grid' | 'list') {
+    this.viewLayoutChange.emit(layout);
   }
 }

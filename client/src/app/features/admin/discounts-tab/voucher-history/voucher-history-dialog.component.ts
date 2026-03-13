@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { VoucherService } from '../../../../core/services/voucher.service';
+import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 export interface VoucherStatusChange {
   id: number;
@@ -35,7 +36,8 @@ export class VoucherHistoryDialogComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { voucherId: number; voucherCode: string },
-    private voucherService: VoucherService
+    private voucherService: VoucherService,
+    private snackbar: SnackbarService
   ) {
     this.loadHistory();
   }
@@ -48,6 +50,7 @@ export class VoucherHistoryDialogComponent {
       },
       error: (err: any) => {
         console.error('Failed to load voucher history', err);
+        this.snackbar.errorFrom(err, 'Failed to load voucher history');
         this.loading = false;
       }
     });

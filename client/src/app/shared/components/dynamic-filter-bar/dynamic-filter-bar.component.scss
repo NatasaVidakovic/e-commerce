@@ -234,6 +234,69 @@
   height: 1.125rem;
 }
 
+// View toggle group
+.view-toggle-group {
+  display: flex;
+  gap: $spacing-1;
+  align-items: center;
+  padding-left: $spacing-3;
+  margin-left: $spacing-3;
+  border-left: 1px solid var(--color-border-primary);
+
+  @include max-sm {
+    padding-left: 0;
+    margin-left: 0;
+    border-left: none;
+  }
+}
+
+.view-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  padding: $spacing-2;
+  background-color: var(--color-input-bg);
+  border: 1px solid var(--color-border-primary);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  mat-icon {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-text-secondary);
+    transition: color 0.2s ease;
+  }
+  
+  &:hover {
+    background-color: var(--color-bg-hover);
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    
+    mat-icon {
+      color: var(--color-primary);
+    }
+  }
+  
+  &.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+    
+    mat-icon {
+      color: white;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 // ── Advanced Filters Panel ─────────────────
 .filter-advanced-panel {
   margin-top: $spacing-2;

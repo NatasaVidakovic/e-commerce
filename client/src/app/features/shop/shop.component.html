@@ -9,9 +9,11 @@
       [initialValues]="initialFilterValues"
       [minPriceRange]="minPrice"
       [maxPriceRange]="maxPrice"
+      [viewLayout]="viewLayout"
       (changed)="onDynamicChanged($event)"
       (reset)="onDynamicReset()"
-      (rawValuesChanged)="onRawValuesChanged($event)">
+      (rawValuesChanged)="onRawValuesChanged($event)"
+      (viewLayoutChange)="toggleViewLayout($event)">
     </app-dynamic-filter-bar>
   }
 
@@ -37,33 +39,15 @@
       </div>
     }
 
-    <!-- View Layout Toggle -->
-    <div class="view-toggle-container">
-      <span class="flex-1"></span>
-      <button
-        class="view-toggle-btn"
-        [class.active]="viewLayout === 'grid'"
-        (click)="toggleViewLayout('grid')"
-        [attr.aria-label]="'SHOP.GRID_VIEW' | translate">
-        <mat-icon>grid_view</mat-icon>
-      </button>
-      <button
-        class="view-toggle-btn"
-        [class.active]="viewLayout === 'list'"
-        (click)="toggleViewLayout('list')"
-        [attr.aria-label]="'SHOP.LIST_VIEW' | translate">
-        <mat-icon>view_list</mat-icon>
-      </button>
-    </div>
-
     <!-- Loading state -->
     @if (loading) {
       <div class="shop-loading">
         <mat-spinner diameter="48"></mat-spinner>
       </div>
+    }
 
     <!-- Empty state -->
-    } @else if (!products || products.count === 0) {
+    @else if (!products || products.count === 0) {
       <div class="shop-empty-state">
         <mat-icon class="empty-icon">search_off</mat-icon>
         <h3 class="empty-title">No products found</h3>
@@ -87,6 +71,7 @@
           <app-product-item
             [product]="product"
             [isFavourite]="product.isFavourite"
+            [viewMode]="viewLayout"
             (favoriteToggled)="onFavoriteToggled($event)">
           </app-product-item>
         }

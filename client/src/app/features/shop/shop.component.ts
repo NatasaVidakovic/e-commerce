@@ -13,6 +13,7 @@ import { DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { forkJoin } from 'rxjs';
+import { SnackbarService } from '../../core/services/snackbar.service';
 
 export interface ActiveFilterChip {
   keys: string[];
@@ -40,7 +41,8 @@ export class ShopComponent implements OnInit {
     private favouritesService: FavouritesService,
     private accountService: AccountService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snackbar: SnackbarService
   ) {
     if (!this.accountService.isLoggedIn()) {
       this.favouriteIds = new Set();
@@ -224,7 +226,7 @@ export class ShopComponent implements OnInit {
           data: mappedData
         };
       },
-      error: (error) => { this.loading = false; console.error(error); }
+      error: (error) => { this.loading = false; console.error(error); this.snackbar.errorFrom(error, 'Failed to load products'); }
     });
   }
 

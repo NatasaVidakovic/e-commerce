@@ -17,6 +17,14 @@ namespace API.RequestHelpers;
 /// </summary>
 public static class ScriptDynamicFiltering
 {
+    /// <summary>
+    /// Parses a date string into a DateTime. Used by dynamic LINQ expressions.
+    /// </summary>
+    public static DateTime ParseDate(string s)
+    {
+        return DateTime.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
+    }
+
     #region EXPRESSIONS
 
     /// <summary>
@@ -171,12 +179,12 @@ public static class ScriptDynamicFiltering
                 : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + model.Value.ToString().Replace(",", ".") + "m" + ")";
 
         if (model.StringDataType == "Nullable<DateTime>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == BaseUserHelper.ParseDate(\"" + model.Value.ToString() + "\"))";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
 
         if (model.DataType == typeof(DateTime))
             return isJustZeroLevel
-                ? "x." + propertySelector + " == BaseUserHelper.ParseDate(\"" + model.Value.ToString() + "\")"
-                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == BaseUserHelper.ParseDate(\"" + model.Value.ToString() + "\"))";
+                ? "x." + propertySelector + " == ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\")"
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
 
         //-------------------------------------------------------------------------------------------------------
 
@@ -228,12 +236,12 @@ public static class ScriptDynamicFiltering
                 : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + model.Value.ToString().Replace(",", ".") + "m" + ")";
 
         if (model.StringDataType == "Nullable<DateTime>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != BaseUserHelper.ParseDate(\"" + model.Value.ToString() + "\"))";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
 
         if (model.DataType == typeof(DateTime))
             return isJustZeroLevel
-                ? "x." + propertySelector + " != BaseUserHelper.ParseDate(\"" + model.Value.ToString() + "\")"
-                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != BaseUserHelper.ParseDate(\"" + model.Value.ToString() + "\"))";
+                ? "x." + propertySelector + " != ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\")"
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
 
         //-------------------------------------------------------------------------------------------------------
 
@@ -319,12 +327,12 @@ public static class ScriptDynamicFiltering
             : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + model.Value.ToString().Replace(",", ".") + "m)";
 
         if (model.StringDataType == "Nullable<DateTime>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " BaseUserHelper.ParseDate(\"" + model.Value.ToString() + "\"))";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
 
         if (model.DataType == typeof(DateTime))
             return isJustZeroLevel
-                ? "x." + propertySelector + " " + theOperator + " BaseUserHelper.ParseDate(\"" + model.Value.ToString() + "\")"
-                : "(x." + GetPropertyNullEvaluation(model, true) + "&& x." + propertySelector + " " + theOperator + " BaseUserHelper.ParseDate(\"" + model.Value.ToString() + "\"))";
+                ? "x." + propertySelector + " " + theOperator + " ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\")"
+                : "(x." + GetPropertyNullEvaluation(model, true) + "&& x." + propertySelector + " " + theOperator + " ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
 
         //-------------------------------------------------------------------------------------------------------
 

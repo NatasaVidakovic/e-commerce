@@ -22,7 +22,11 @@ public static class ProductMappingExtensions
             ProductTypeId = product.ProductTypeId > 0 ? product.ProductTypeId : 1, // Fallback to 1 if ProductTypeId is 0
             Brand = product.Brand,
             QuantityInStock = product.QuantityInStock,
-            Id = product.Id
+            Id = product.Id,
+            Rating = product.Reviews != null && product.Reviews.Any() 
+                ? (float)Math.Round(product.Reviews.Average(r => (double)r.Rating), 2) 
+                : 0,
+            ReviewsCount = product.Reviews?.Count ?? 0
         };
 
         // Find active discount
@@ -108,9 +112,12 @@ public static class ProductMappingExtensions
             Rating = CalculateEffectiveRating(product, reviews),
             Images = product.Images?.OrderBy(i => i.DisplayOrder).Select(i => new ProductImageDto
             {
-                Id = i.Id,
-                Url = i.Url,
-                DisplayOrder = i.DisplayOrder
+                Id           = i.Id,
+                Url          = i.Url,
+                ThumbnailUrl = string.IsNullOrEmpty(i.ThumbnailUrl) ? DeriveThumbnailUrl(i.Url) : i.ThumbnailUrl,
+                DisplayOrder = i.DisplayOrder,
+                IsPrimary    = i.IsPrimary,
+                AltText      = i.AltText
             }).ToList() ?? []
         };
 
@@ -145,5 +152,12 @@ public static class ProductMappingExtensions
     private static float CalculateEffectiveRating(Product product, List<ReviewDto> reviews)
     {
         return reviews.Count > 0 ? (float)Math.Round(reviews.Average(r => r.Rating), 2) : 0;
+    }
+
+    private static string DeriveThumbnailUrl(string url)
+    {
+        if (url.Contains("-large.webp"))  return url.Replace("-large.webp",  "-thumb.webp");
+        if (url.Contains("-medium.webp")) return url.Replace("-medium.webp", "-thumb.webp");
+        return url;
     }
 }

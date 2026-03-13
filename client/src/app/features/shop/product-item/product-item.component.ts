@@ -32,6 +32,7 @@ import { AccountService } from '../../../core/services/account.service';
 export class ProductItemComponent {
   @Input() product?: Product;
   @Input() isFavourite: boolean = false;
+  @Input() viewMode: 'grid' | 'list' = 'grid';
   @Output() favoriteToggled = new EventEmitter<{ id: number, isFavorite: boolean }>();
   cartService = inject(CartService);
   favouritesService = inject(FavouritesService);

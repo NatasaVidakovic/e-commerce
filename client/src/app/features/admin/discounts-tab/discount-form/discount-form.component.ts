@@ -129,7 +129,7 @@ export class DiscountFormComponent implements OnInit {
       next: (response) => {
         this.availableProducts = response.data || [];
       },
-      error: (error: any) => console.error('Error loading products:', error)
+      error: (error: any) => { console.error('Error loading products:', error); this.snackbar.errorFrom(error, 'Error loading products'); }
     });
   }
 

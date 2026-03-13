@@ -37,19 +37,24 @@
   <!-- Products Table -->
   <products-tab
     #productsTab
-    [products]="filteredProducts"
+    [products]="products"
     [brands]="brands"
     [types]="types"
     [isAdmin]="true"
     [enableAddFromExisting]="true"
     [enableEdit]="false"
     [enableDelete]="true"
-    [serverSide]="false"
+    [serverSide]="true"
+    [totalCount]="totalCount"
+    [pageNumber]="pageNumber"
+    [pageSize]="pageSize"
+    [showInternalFilters]="false"
     [showActionBar]="false"
     (selectedProductChange)="selectedProduct = $event"
     (productUpdated)="loadProducts()"
     (productDeleted)="onProductDeleted($event)"
-    (addFromExisting)="onAddFromExisting($event)">
+    (addFromExisting)="onAddFromExisting($event)"
+    (pageChanged)="onPageChanged($event)">
   </products-tab>
 
 </div>

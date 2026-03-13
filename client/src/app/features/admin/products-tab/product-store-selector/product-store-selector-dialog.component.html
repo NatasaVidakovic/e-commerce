@@ -1,74 +1,86 @@
-<h2 mat-dialog-title class="text-xl font-semibold">{{ data.title }}</h2>
-
-<div mat-dialog-content class="flex flex-col gap-4">
-  <mat-form-field appearance="outline" class="search-field">
-    <mat-label>{{ 'FORM.SEARCH_PRODUCT' | translate }}</mat-label>
-    <input matInput (input)="applyFilter($event)" [placeholder]="'FORM.SEARCH_PRODUCT' | translate" />
-    <mat-icon matSuffix>search</mat-icon>
-  </mat-form-field>
-
-  <div class="table-wrapper">
-    <table mat-table [dataSource]="dataSource" class="product-table" style="background-color: var(--color-surface);">
-      <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef class="select-column">
-          <mat-checkbox
-            [checked]="isAllSelected()"
-            (change)="toggleAll()"
-            color="primary">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let p" class="select-column">
-          <mat-checkbox
-            [disabled]="isPreselected(p)"
-            [checked]="selection.isSelected(p) || isPreselected(p)"
-            (click)="$event.stopPropagation()"
-            (change)="toggleRow(p)"
-            color="primary">
-          </mat-checkbox>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef class="id-column">{{ 'COMMON.ID' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="id-column">{{ p.id }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="pictureUrl">
-        <th mat-header-cell *matHeaderCellDef class="image-column">{{ 'PRODUCT.IMAGE' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="image-column">
-          <img [src]="p.pictureUrl" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: p.name }" class="product-image" />
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef class="name-column">{{ 'PRODUCT.NAME' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="name-column">{{ p.name }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="brand">
-        <th mat-header-cell *matHeaderCellDef class="brand-column">{{ 'COMMON.BRAND' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="brand-column">{{ p.brand }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef class="type-column">{{ 'COMMON.TYPE' | translate }}</th>
-        <td mat-cell *matCellDef="let p" class="type-column">{{ p.type }}</td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header"></tr>
-      <tr
-        mat-row
-        *matRowDef="let row; columns: displayedColumns;"
-        (click)="toggleRow(row)"
-        [class.selected-row]="selection.isSelected(row)"
-        [class.preselected-row]="isPreselected(row)"
-        class="table-row">
-      </tr>
-    </table>
+<!-- Fixed header: title + search (mat-dialog-title keeps Material flex layout correct) -->
+<div mat-dialog-title class="dialog-sticky-header">
+  <div class="title-row">
+    <h2 class="dialog-title">{{ data.title }}</h2>
+    <span *ngIf="selection.selected.length > 0" class="selection-badge">
+      {{ selection.selected.length }} selected
+    </span>
+  </div>
+  <div class="search-bar">
+    <mat-icon class="search-icon">search</mat-icon>
+    <input
+      class="search-input"
+      (input)="applyFilter($event)"
+      placeholder="{{ 'FORM.SEARCH_PRODUCT' | translate }}" />
+    <span class="result-count">{{ dataSource.filteredData.length }}</span>
   </div>
 </div>
 
-<div mat-dialog-actions align="end" class="flex gap-2">
+<!-- mat-dialog-content: overflow:hidden flex column — column headers fixed, rows scroll -->
+<div mat-dialog-content class="dialog-content">
+
+  <!-- Fixed column header row — never scrolls -->
+  <div class="col-headers">
+    <div class="col-select">
+      <mat-checkbox
+        [checked]="isAllSelected()"
+        [indeterminate]="selection.selected.length > 0 && !isAllSelected()"
+        (change)="toggleAll()"
+        color="primary">
+      </mat-checkbox>
+    </div>
+    <div class="col-id">{{ 'COMMON.ID' | translate }}</div>
+    <div class="col-img">{{ 'PRODUCT.IMAGE' | translate }}</div>
+    <div class="col-name">{{ 'PRODUCT.NAME' | translate }}</div>
+    <div class="col-brand">{{ 'COMMON.BRAND' | translate }}</div>
+    <div class="col-type">{{ 'COMMON.TYPE' | translate }}</div>
+  </div>
+
+  <!-- Scrollable product rows -->
+  <div class="rows-scroll">
+    <div *ngIf="loading" class="loading-state">
+      <mat-icon class="spin-icon">sync</mat-icon>
+      Loading products…
+    </div>
+
+    <div *ngIf="!loading && dataSource.filteredData.length === 0" class="empty-state">
+      <mat-icon>search_off</mat-icon>
+      <span>No products found</span>
+    </div>
+
+    <div
+      *ngFor="let p of dataSource.filteredData"
+      class="product-row"
+      [class.selected-row]="selection.isSelected(p)"
+      [class.preselected-row]="isPreselected(p)"
+      (click)="toggleRow(p)">
+      <div class="col-select">
+        <mat-checkbox
+          [disabled]="isPreselected(p)"
+          [checked]="selection.isSelected(p) || isPreselected(p)"
+          (click)="$event.stopPropagation()"
+          (change)="toggleRow(p)"
+          color="primary">
+        </mat-checkbox>
+      </div>
+      <div class="col-id">{{ p.id }}</div>
+      <div class="col-img">
+        <img [src]="p.pictureUrl" [alt]="p.name" class="product-image" />
+      </div>
+      <div class="col-name">{{ p.name }}</div>
+      <div class="col-brand">{{ p.brand }}</div>
+      <div class="col-type">{{ p.type }}</div>
+    </div>
+  </div>
+
+</div>
+
+<div mat-dialog-actions align="end" class="dialog-actions">
+  <span *ngIf="selection.selected.length > 0" class="actions-hint">
+    {{ selection.selected.length }} product(s) will be added
+  </span>
   <button mat-stroked-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
-  <button mat-flat-button color="primary" (click)="save()">{{ 'COMMON.SAVE' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="save()" [disabled]="selection.selected.length === 0">
+    {{ 'COMMON.SAVE' | translate }}
+  </button>
 </div>

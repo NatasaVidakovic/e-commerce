@@ -1,59 +1,148 @@
 @if (product) {
-<mat-card appearance="raised" routerLink="/shop/{{product.id}}" class="product-card">
+<mat-card 
+  appearance="raised" 
+  routerLink="/shop/{{product.id}}" 
+  class="product-card" 
+  [class.list-mode]="viewMode === 'list'"
+  [attr.aria-label]="'View details for ' + product.name"
+  role="article">
+
+  <!-- Image -->
   <div class="relative">
     @if (product.hasActiveDiscount && product.discountPercentage) {
       <div class="product-badges">
-        <span class="product-badge product-badge--discount">{{product.discountPercentage | number:'1.0-0'}}</span>
+        <span class="product-badge product-badge--discount">
+          {{product.discountPercentage | number:'1.0-0'}}
+        </span>
       </div>
     }
     <img src="{{product.pictureUrl}}" class="rounded-t-lg" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: product.name }" loading="lazy">
   </div>
+
+  <!-- Content (center in list mode, full in grid mode) -->
   <mat-card-content class="mt-2">
-    <div class="flex justify-between items-center">
+    <div class="product-header">
       <div class="flex-1">
-        <h2 class="text-sm font-semibold uppercase">{{product.name}}</h2>
-        
-        @if (product.hasActiveDiscount && product.originalPrice) {
-          <!-- Discount Name Badge -->
-          @if (product.discountName) {
-            <div class="inline-block px-2 py-0.5 rounded text-xs font-semibold mt-1 mb-1" style="background-color: var(--color-badge-discount); color: var(--color-badge-text);">
-              {{product.discountName}}
+
+        <!-- Brand / Type tags -->
+        <div class="product-meta">
+          @if (product.brand) {
+            <span class="product-brand">{{product.brand}}</span>
+          }
+          @if (product.type) {
+            <span class="product-type">{{product.type}}</span>
+          }
+        </div>
+
+        <!-- Name -->
+        <h2 class="product-name">{{product.name}}</h2>
+
+        <!-- Description — both modes -->
+        @if (product.description) {
+          <p class="product-description">{{product.description}}</p>
+        }
+
+        <!-- Price block — grid mode only -->
+        @if (viewMode !== 'list') {
+          @if (product.hasActiveDiscount && product.originalPrice) {
+            <div class="product-price">
+              <span class="product-price__original">{{product.originalPrice | currency}}</span>
+              <span class="product-price__current">{{product.price | currency}}</span>
+              <span class="product-price__save">Save {{product.originalPrice! - product.price | currency}}</span>
+            </div>
+          } @else {
+            <div class="product-price">
+              <span class="product-price__regular">{{product.price | currency}}</span>
             </div>
           }
-          
-          <!-- Price Display with Discount -->
-          <div class="product-price mt-1">
-            <div class="product-price__original">
-              {{product.originalPrice | currency}}
+        }
+
+        <!-- Rating row — list mode only (in content column) -->
+        @if (viewMode === 'list') {
+          <div class="product-rating-row">
+            <div class="product-rating-stars">
+              @for (s of [1,2,3,4,5]; track s) {
+                <mat-icon class="product-rating-star">
+                  {{ (product.rating || 0) >= s ? 'star' : (product.rating || 0) >= s - 0.5 ? 'star_half' : 'star_border' }}
+                </mat-icon>
+              }
             </div>
-            <div class="product-price__current">
-              {{product.price | currency}}
-            </div>
-            <div class="product-price__save">
-              {{product.originalPrice! - product.price | currency}}
-            </div>
-          </div>
-        } @else {
-          <div class="product-price mt-2">
-            <div class="product-price__regular">{{product.price | currency}}</div>
+            <span class="product-review-count">
+              ({{product.reviewsCount || 0}} {{ (product.reviewsCount || 0) === 1 ? 'review' : 'reviews' }})
+            </span>
           </div>
         }
+
       </div>
-      
-      <button mat-icon-button *ngIf="loggedIn && !accountService.isAdmin()" 
+
+      <!-- Favourite button -->
+      <button 
+        mat-icon-button 
+        *ngIf="loggedIn && !accountService.isAdmin()" 
         [class.text-favorite]="isFavourite" 
         [class.text-gray-400]="!isFavourite"
+        [attr.aria-label]="isFavourite ? 'Remove from favorites' : 'Add to favorites'"
         (click)="$event.stopPropagation(); toggleFavorite()">
         <mat-icon>{{isFavourite ? 'favorite' : 'favorite_border'}}</mat-icon>
       </button>
     </div>
   </mat-card-content>
+
+  <!-- Actions -->
   <mat-card-actions (click)="$event.stopPropagation()">
-    <button *ngIf="!accountService.isAdmin()" mat-stroked-button class="w-full" 
-      (click)="cartService.addItemToCart(product)">
-      <mat-icon>add_shopping_cart</mat-icon>
-      {{ 'BUTTONS.ADD_TO_CART' | translate }}
-    </button>
+
+    <!-- Grid mode: just the button -->
+    @if (viewMode !== 'list') {
+      <button 
+        *ngIf="!accountService.isAdmin()" 
+        mat-stroked-button 
+        class="w-full add-to-cart-btn" 
+        [attr.aria-label]="'Add ' + product.name + ' to cart'"
+        (click)="cartService.addItemToCart(product)">
+        <mat-icon>add_shopping_cart</mat-icon>
+        {{ 'BUTTONS.ADD_TO_CART' | translate }}
+      </button>
+    }
+
+    <!-- List mode: right panel with price + stock + button -->
+    @if (viewMode === 'list') {
+      <div class="list-actions-panel">
+
+        <!-- Price section -->
+        @if (product.hasActiveDiscount && product.originalPrice) {
+          <span class="list-price-original">{{product.originalPrice | currency}}</span>
+          <span class="list-price-current">{{product.price | currency}}</span>
+          <span class="list-price-save">Save {{product.originalPrice! - product.price | currency}}</span>
+        } @else {
+          <span class="list-price-regular">{{product.price | currency}}</span>
+        }
+
+        <!-- Stock status -->
+        @if (product.quantityInStock > 0) {
+          <span class="list-stock-in">
+            <mat-icon>check_circle</mat-icon>
+            In Stock
+          </span>
+        } @else {
+          <span class="list-stock-out">
+            <mat-icon>cancel</mat-icon>
+            Out of Stock
+          </span>
+        }
+
+        <!-- Add to Cart -->
+        <button 
+          *ngIf="!accountService.isAdmin()" 
+          class="list-cart-btn"
+          [attr.aria-label]="'Add ' + product.name + ' to cart'"
+          (click)="cartService.addItemToCart(product)">
+          <mat-icon>add_shopping_cart</mat-icon>
+          {{ 'BUTTONS.ADD_TO_CART' | translate }}
+        </button>
+
+      </div>
+    }
+
   </mat-card-actions>
 </mat-card>
 }

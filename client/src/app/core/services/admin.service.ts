@@ -4,6 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Order, UpdateOrderStatusDto, OrderTrackingDto, AddCommentDto, SendEmailDto, OrderComment } from '../../shared/models/order';
 import { BaseDataViewModelRequest, BaseDataViewModelResponse } from '../../shared/models/dynamic-filtering';
 import { ProductTypeDto, CreateProductTypeDto, UpdateProductTypeDto } from '../../shared/models/product-type.model';
+import { Pagination } from '../../shared/models/pagination';
 
 @Injectable({
   providedIn: 'root'
@@ -86,8 +87,16 @@ export class AdminService {
   }
 
   // User Management
-  getUsers() {
-    return this.http.get<any[]>(this.baseUrl + 'admin/users');
+  getUsers(pageIndex: number = 1, pageSize: number = 10, search?: string, role?: string, emailConfirmed?: string, sortColumn?: string, sortAscending?: boolean) {
+    let params = new HttpParams()
+      .set('pageIndex', pageIndex)
+      .set('pageSize', pageSize);
+    if (search?.trim()) params = params.set('search', search.trim());
+    if (role) params = params.set('role', role);
+    if (emailConfirmed) params = params.set('emailConfirmed', emailConfirmed);
+    if (sortColumn) params = params.set('sortColumn', sortColumn);
+    if (sortAscending !== undefined) params = params.set('sortAscending', sortAscending);
+    return this.http.get<Pagination<any>>(this.baseUrl + 'admin/users', { params });
   }
 
   // Delivery Method Management

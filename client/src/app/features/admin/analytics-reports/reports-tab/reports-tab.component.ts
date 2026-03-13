@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,6 +21,11 @@ import { Order } from '../../../../shared/models/order';
 import { Product } from '../../../../shared/models/product';
 import { forkJoin } from 'rxjs';
 
+export interface ActiveFilterChip {
+  keys: string[];
+  label: string;
+}
+
 @Component({
   selector: 'app-reports-tab',
   standalone: true,
@@ -40,6 +45,8 @@ import { forkJoin } from 'rxjs';
   styleUrl: './reports-tab.component.scss'
 })
 export class ReportsTabComponent implements OnInit {
+  @ViewChild(DynamicFilterBarComponent) filterBar?: DynamicFilterBarComponent;
+
   constructor(
     private adminService: AdminService,
     private shopService: ShopService,
@@ -49,6 +56,8 @@ export class ReportsTabComponent implements OnInit {
   selectedReportType: string = '';
   selectedFormat: string = 'pdf';
   loading = false;
+  filterBarVisible = false;
+  currentFilterValues: Record<string, any> = {};
 
   // Report display data
   reportColumns: ReportColumn[] = [];
@@ -79,11 +88,63 @@ export class ReportsTabComponent implements OnInit {
     this.setupReportData();
   }
 
+  get activeChips(): ActiveFilterChip[] {
+    const chips: ActiveFilterChip[] = [];
+    const vals = this.currentFilterValues;
+    if (!vals || this.filterDefinitions.length === 0) return chips;
+
+    const skipKeys = new Set<string>();
+
+    for (const def of this.filterDefinitions) {
+      if (def.controlType === 'dateRange') {
+        const startKey = def.key + 'Start';
+        const endKey = def.key + 'End';
+        const startVal = vals[startKey];
+        const endVal = vals[endKey];
+        const hasStart = startVal !== '' && startVal !== null && startVal !== undefined;
+        const hasEnd = endVal !== '' && endVal !== null && endVal !== undefined;
+        if (hasStart || hasEnd) {
+          const fmtDate = (v: any): string => {
+            if (!v) return '';
+            const d = v instanceof Date ? v : new Date(v);
+            return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+          };
+          let label = def.label + ': ';
+          if (hasStart && hasEnd) label += `${fmtDate(startVal)} \u2013 ${fmtDate(endVal)}`;
+          else if (hasStart) label += `from ${fmtDate(startVal)}`;
+          else label += `until ${fmtDate(endVal)}`;
+          chips.push({ keys: [startKey, endKey], label });
+        }
+        skipKeys.add(startKey);
+        skipKeys.add(endKey);
+      }
+    }
+
+    for (const def of this.filterDefinitions) {
+      if (skipKeys.has(def.key) || def.controlType === 'dateRange') continue;
+      const raw = vals[def.key];
+      const isEmpty = raw === '' || raw === null || raw === undefined ||
+        (Array.isArray(raw) && raw.length === 0);
+      if (isEmpty) continue;
+      const displayVal = Array.isArray(raw) ? raw.join(', ') : String(raw);
+      chips.push({ keys: [def.key], label: `${def.label}: ${displayVal}` });
+    }
+
+    return chips;
+  }
+
+  get hasActiveFilters(): boolean {
+    return this.activeChips.length > 0;
+  }
+
   selectReportType(reportTypeId: string): void {
     this.selectedReportType = reportTypeId;
     this.currentFilters = [];
     this.currentSort = null;
+    this.currentFilterValues = {};
+    this.filterBarVisible = false;
     this.setupReportData();
+    setTimeout(() => { this.filterBarVisible = true; }, 0);
   }
 
   private setupReportData(): void {
@@ -779,6 +840,7 @@ export class ReportsTabComponent implements OnInit {
   clearFilters(): void {
     this.currentFilters = [];
     this.currentSort = null;
+    this.currentFilterValues = {};
     this.refreshReportData();
   }
 
@@ -803,6 +865,35 @@ export class ReportsTabComponent implements OnInit {
       inventory: 'Inventory levels and stock analysis'
     };
     return descriptions[reportType] || 'Report analysis';
+  }
+
+  onRawValuesChanged(values: Record<string, any>): void {
+    this.currentFilterValues = { ...values };
+  }
+
+  onClearAllFilters(): void {
+    if (this.filterBar) {
+      this.filterBar.onReset();
+    } else {
+      this.clearFilters();
+    }
+  }
+
+  clearChip(chip: ActiveFilterChip): void {
+    if (!this.filterBar) return;
+    for (const key of chip.keys) {
+      const dateRangeDef = this.filterDefinitions.find(
+        d => d.controlType === 'dateRange' && (d.key + 'Start' === key || d.key + 'End' === key)
+      );
+      if (dateRangeDef) {
+        this.filterBar.clearDateRange(dateRangeDef.key);
+        break;
+      } else {
+        this.filterBar.clearFilter(key, true);
+      }
+    }
+    this.currentFilterValues = { ...this.filterBar.form.value };
+    this.filterBar.applyFilters();
   }
 
   onDynamicFilterChange(event: { filters: FilterViewModel[][], sort: DynamicSortOption }): void {

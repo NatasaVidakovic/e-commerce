@@ -30,15 +30,61 @@ public class AdminController(IUnitOfWork unit, IPaymentService paymentService,
     private readonly UserManager<AppUser> _userManager = userManager;
 
     [HttpGet("users")]
-    public async Task<ActionResult> GetUsers()
+    public async Task<ActionResult> GetUsers(
+        [FromQuery] int pageIndex = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null,
+        [FromQuery] string? role = null,
+        [FromQuery] string? emailConfirmed = null,
+        [FromQuery] string? sortColumn = null,
+        [FromQuery] bool sortAscending = true)
     {
-        var users = await _context.Users
+        var query = _context.Users
             .Include(u => u.Address)
-            .OrderBy(u => u.Email)
-            .ToListAsync();
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+            query = query.Where(u =>
+                (u.Email != null && u.Email.ToLower().Contains(term)) ||
+                (u.FirstName != null && u.FirstName.ToLower().Contains(term)) ||
+                (u.LastName != null && u.LastName.ToLower().Contains(term)) ||
+                (u.PhoneNumber != null && u.PhoneNumber.Contains(term))
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(emailConfirmed) && bool.TryParse(emailConfirmed, out var confirmed))
+        {
+            query = query.Where(u => u.EmailConfirmed == confirmed);
+        }
+
+        var allUsers = await query.ToListAsync();
+
+        if (!string.IsNullOrWhiteSpace(role))
+        {
+            var filtered = new List<AppUser>();
+            foreach (var u in allUsers)
+            {
+                var roles = await _userManager.GetRolesAsync(u);
+                if (roles.Contains(role)) filtered.Add(u);
+            }
+            allUsers = filtered;
+        }
+
+        IEnumerable<AppUser> sorted = (sortColumn, sortAscending) switch
+        {
+            ("Email", true)     => allUsers.OrderBy(u => u.Email),
+            ("Email", false)    => allUsers.OrderByDescending(u => u.Email),
+            _                   => allUsers.OrderBy(u => u.Email)
+        };
+        allUsers = sorted.ToList();
+
+        var totalCount = allUsers.Count;
+        var paged = allUsers.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
         var userDtos = new List<object>();
-        foreach (var user in users)
+        foreach (var user in paged)
         {
             var roles = await _userManager.GetRolesAsync(user);
             userDtos.Add(new
@@ -61,7 +107,8 @@ public class AdminController(IUnitOfWork unit, IPaymentService paymentService,
             });
         }
 
-        return Ok(userDtos);
+        var pagination = new Pagination<object>(pageIndex, pageSize, totalCount, userDtos);
+        return Ok(pagination);
     }
 
     [HttpPost("orders/filter")]
