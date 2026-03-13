@@ -110,6 +110,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    window.scrollTo({ top: 0, behavior: 'instant' });
     this.activatedRoute.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const id = params.get('id');
       if (!id) return;
@@ -207,6 +208,27 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       this.product.rating = parseFloat((sum / reviews.length).toFixed(1));
     } else {
       this.product.rating = 0;
+    }
+  }
+
+  goBackToShop() {
+    const returnUrl = sessionStorage.getItem('shop_return_url');
+    sessionStorage.removeItem('shop_return_url');
+
+    if (returnUrl) {
+      try {
+        const url = new URL(returnUrl);
+        const queryParams: Record<string, string> = {};
+        url.searchParams.forEach((value, key) => {
+          queryParams[key] = value;
+        });
+        const hasParams = Object.keys(queryParams).length > 0;
+        this.router.navigate([url.pathname], hasParams ? { queryParams } : {});
+      } catch {
+        this.router.navigate(['/shop']);
+      }
+    } else {
+      this.router.navigate(['/shop']);
     }
   }
 }

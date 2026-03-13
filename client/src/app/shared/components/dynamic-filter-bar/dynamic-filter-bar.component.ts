@@ -89,6 +89,7 @@ export class DynamicFilterBarComponent implements OnInit {
   }
 
   @Input() viewLayout: 'grid' | 'list' = 'grid';
+  @Input() showViewLayoutToggle: boolean = false;
   
   @Output() changed = new EventEmitter<{ filters: FilterViewModel[][]; sort: DynamicSortOption }>();
   @Output() reset = new EventEmitter<void>();

@@ -211,12 +211,16 @@ export class DiscountFormComponent implements OnInit {
     this.loading = true;
     const formValue = this.discountForm.value;
     
-    // Normalize dates to noon UTC to avoid timezone issues
-    const dateFrom = new Date(formValue.dateFrom);
-    dateFrom.setHours(12, 0, 0, 0);
+    // Format dates as YYYY-MM-DD to avoid timezone conversion issues
+    const formatDate = (date: Date): string => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}T00:00:00`;
+    };
     
+    const dateFrom = new Date(formValue.dateFrom);
     const dateTo = new Date(formValue.dateTo);
-    dateTo.setHours(12, 0, 0, 0);
     
     const discountData = {
       name: formValue.name,
@@ -224,8 +228,8 @@ export class DiscountFormComponent implements OnInit {
       value: formValue.value,
       isPercentage: formValue.isPercentage,
       isActive: formValue.isActive,
-      dateFrom: dateFrom.toISOString(),
-      dateTo: dateTo.toISOString(),
+      dateFrom: formatDate(dateFrom),
+      dateTo: formatDate(dateTo),
       productIds: formValue.productIds || [],
       types: formValue.types || []
     };

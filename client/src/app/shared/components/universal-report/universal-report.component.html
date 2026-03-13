@@ -53,20 +53,12 @@
           <tr>
             <th>Metric</th>
             <th>Value</th>
-            <th>Change</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let metric of summaryMetrics; trackBy: trackByFn">
             <td>{{ metric.label }}</td>
             <td>{{ metric.value }}</td>
-            <td>
-              <span class="trend" 
-                    [class.positive]="metric.change && metric.change.startsWith('+')"
-                    [class.negative]="metric.change && metric.change.startsWith('-')">
-                {{ metric.change || '-' }}
-              </span>
-            </td>
           </tr>
         </tbody>
       </table>

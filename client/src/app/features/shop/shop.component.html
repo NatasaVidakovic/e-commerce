@@ -10,6 +10,7 @@
       [minPriceRange]="minPrice"
       [maxPriceRange]="maxPrice"
       [viewLayout]="viewLayout"
+      [showViewLayoutToggle]="true"
       (changed)="onDynamicChanged($event)"
       (reset)="onDynamicReset()"
       (rawValuesChanged)="onRawValuesChanged($event)"
@@ -72,6 +73,7 @@
             [product]="product"
             [isFavourite]="product.isFavourite"
             [viewMode]="viewLayout"
+            [isHighlighted]="isProductHighlighted(product.id)"
             (favoriteToggled)="onFavoriteToggled($event)">
           </app-product-item>
         }

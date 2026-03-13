@@ -236,12 +236,12 @@ public static class ScriptDynamicFiltering
                 : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + model.Value.ToString().Replace(",", ".") + "m" + ")";
 
         if (model.StringDataType == "Nullable<DateTime>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != DateTime(\"" + model.Value.ToString() + "\"))";
 
         if (model.DataType == typeof(DateTime))
             return isJustZeroLevel
-                ? "x." + propertySelector + " != ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\")"
-                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
+                ? "x." + propertySelector + " != DateTime(\"" + model.Value.ToString() + "\")"
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != DateTime(\"" + model.Value.ToString() + "\"))";
 
         //-------------------------------------------------------------------------------------------------------
 
@@ -327,12 +327,12 @@ public static class ScriptDynamicFiltering
             : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + model.Value.ToString().Replace(",", ".") + "m)";
 
         if (model.StringDataType == "Nullable<DateTime>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " DateTime(\"" + model.Value.ToString() + "\"))";
 
         if (model.DataType == typeof(DateTime))
             return isJustZeroLevel
-                ? "x." + propertySelector + " " + theOperator + " ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\")"
-                : "(x." + GetPropertyNullEvaluation(model, true) + "&& x." + propertySelector + " " + theOperator + " ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
+                ? "x." + propertySelector + " " + theOperator + " DateTime(\"" + model.Value.ToString() + "\")"
+                : "(x." + GetPropertyNullEvaluation(model, true) + "&& x." + propertySelector + " " + theOperator + " DateTime(\"" + model.Value.ToString() + "\"))";
 
         //-------------------------------------------------------------------------------------------------------
 
@@ -526,7 +526,11 @@ public static class ScriptDynamicFiltering
             return initialQuery;
 
         finalExpression = finalExpression[0..^3];
-        return initialQuery.Where(finalExpression);
+        
+        var config = ParsingConfig.Default;
+        config.ResolveTypesBySimpleName = true;
+        
+        return initialQuery.Where(config, finalExpression);
     }
 
     /// <summary>

@@ -23,6 +23,12 @@
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
   }
+
+  &--full-width {
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
 }
 
 // ── LEFT: Form column ─────────────────────────────────

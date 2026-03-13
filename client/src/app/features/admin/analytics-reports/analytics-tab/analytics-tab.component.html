@@ -14,9 +14,6 @@
       <div class="tab" [class.active]="selectedStatistic === 'customers'" (click)="selectStatistic('customers')">
         <mat-icon>people</mat-icon><span>Customers</span>
       </div>
-      <div class="tab" [class.active]="selectedStatistic === 'categories'" (click)="selectStatistic('categories')">
-        <mat-icon>category</mat-icon><span>Categories</span>
-      </div>
     </div>
   </div>
 
@@ -29,8 +26,8 @@
   <!-- Selected Section -->
   <div class="analytics-body" *ngIf="selectedStatistic && !loading">
 
-    <!-- Date Range Filter Bar -->
-    <div class="filter-strip">
+    <!-- Date Range Filter Bar (hidden for Products tab) -->
+    <div class="filter-strip" *ngIf="selectedStatistic !== 'products'">
       <app-dynamic-filter-bar
         [filterDefinitions]="filterDefinitions"
         [sortOptions]="sortOptions"
@@ -174,42 +171,12 @@
       </mat-card>
     </div>
 
-    <!-- Categories Charts -->
-    <div class="charts-grid" *ngIf="selectedStatistic === 'categories'">
-      <mat-card class="chart-card wide">
-        <div class="chart-header">
-          <mat-icon>pie_chart</mat-icon>
-          <span>Category Distribution</span>
-        </div>
-        <div class="chart-body">
-          <canvas baseChart
-            [data]="categoryChartData"
-            [options]="categoryChartOptions"
-            type="pie">
-          </canvas>
-        </div>
-      </mat-card>
-      <mat-card class="chart-card">
-        <div class="chart-header">
-          <mat-icon>inventory_2</mat-icon>
-          <span>Top Products by Stock</span>
-        </div>
-        <div class="chart-body tall">
-          <canvas baseChart
-            [data]="productStockChartData"
-            [options]="productStockChartOptions"
-            type="bar">
-          </canvas>
-        </div>
-      </mat-card>
-    </div>
-
   </div>
 
   <!-- No Selection State -->
   <div class="no-selection" *ngIf="!selectedStatistic && !loading">
     <mat-icon>analytics</mat-icon>
     <h2>Select a category to view analytics</h2>
-    <p>Choose from Revenue, Orders, Products, Customers or Categories above</p>
+    <p>Choose from Revenue, Orders, Products, or Customers above</p>
   </div>
 </div>

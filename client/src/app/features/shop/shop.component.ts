@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShopService } from '../../core/services/shop.service';
 import { FavouritesService } from '../../core/services/favourites.service';
@@ -33,8 +33,13 @@ export interface ActiveFilterChip {
   templateUrl: './shop.component.html',
   styleUrls: ['./shop.component.scss']
 })
-export class ShopComponent implements OnInit {
+export class ShopComponent implements OnInit, OnDestroy {
   @ViewChild(DynamicFilterBarComponent) filterBar?: DynamicFilterBarComponent;
+
+  lastViewedProductId: number | null = null;
+  private readonly SCROLL_KEY = 'shop_scroll_position';
+  private readonly LAST_PRODUCT_KEY = 'shop_last_product_id';
+  private readonly VIEW_LAYOUT_KEY = 'shop_view_layout';
 
   constructor(
     private shopService: ShopService,
@@ -67,7 +72,7 @@ export class ShopComponent implements OnInit {
   pageSize = 20;
   totalCount = 0;
   pageSizeOptions = [20, 50, 100];
-  viewLayout: 'grid' | 'list' = 'grid';
+  viewLayout: 'grid' | 'list' = this.loadViewLayout();
 
   initialFilterValues: Record<string, any> = {};
   currentFilterValues: Record<string, any> = {};
@@ -130,6 +135,16 @@ export class ShopComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Load last viewed product ID for highlighting
+    const lastProductId = sessionStorage.getItem(this.LAST_PRODUCT_KEY);
+    if (lastProductId) {
+      this.lastViewedProductId = Number(lastProductId);
+      sessionStorage.removeItem(this.LAST_PRODUCT_KEY);
+      setTimeout(() => {
+        this.lastViewedProductId = null;
+      }, 3000);
+    }
+
     const params = this.route.snapshot.queryParams;
     this.initialFilterValues = this.urlParamsToFormValues(params);
     this.lastFilters = this.urlParamsToFilters(params);
@@ -225,6 +240,8 @@ export class ShopComponent implements OnInit {
           count: response.dataCount,
           data: mappedData
         };
+        // Restore scroll after products are rendered in DOM
+        setTimeout(() => this.restoreScrollPosition(), 100);
       },
       error: (error) => { this.loading = false; console.error(error); this.snackbar.errorFrom(error, 'Failed to load products'); }
     });
@@ -281,8 +298,63 @@ export class ShopComponent implements OnInit {
     this.updateUrl();
   }
 
+  ngOnDestroy() {
+    // Save scroll position when leaving the component
+    this.saveScrollPosition();
+  }
+
   toggleViewLayout(layout: 'grid' | 'list') {
     this.viewLayout = layout;
+    this.saveViewLayout(layout);
+  }
+
+  private loadViewLayout(): 'grid' | 'list' {
+    const saved = localStorage.getItem(this.VIEW_LAYOUT_KEY);
+    return (saved === 'list' || saved === 'grid') ? saved : 'grid';
+  }
+
+  private saveViewLayout(layout: 'grid' | 'list') {
+    localStorage.setItem(this.VIEW_LAYOUT_KEY, layout);
+  }
+
+  private saveScrollPosition() {
+    const y = window.scrollY || document.documentElement.scrollTop;
+    const x = window.scrollX || document.documentElement.scrollLeft;
+    sessionStorage.setItem(this.SCROLL_KEY, JSON.stringify([x, y]));
+  }
+
+  private restoreScrollPosition() {
+    // If we have a highlighted product, scroll to it
+    if (this.lastViewedProductId) {
+      requestAnimationFrame(() => {
+        const productElement = document.querySelector(`[data-product-id="${this.lastViewedProductId}"]`);
+        if (productElement) {
+          productElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+        // Fallback to saved position if element not found
+        this.scrollToSavedPosition();
+      });
+    } else {
+      this.scrollToSavedPosition();
+    }
+  }
+
+  private scrollToSavedPosition() {
+    const saved = sessionStorage.getItem(this.SCROLL_KEY);
+    if (saved) {
+      try {
+        const [x, y] = JSON.parse(saved) as [number, number];
+        sessionStorage.removeItem(this.SCROLL_KEY);
+        window.scrollTo({ top: y, left: x, behavior: 'instant' });
+      } catch (e) {
+        console.warn('Failed to restore scroll position', e);
+      }
+    }
+  }
+
+  isProductHighlighted(productId: number): boolean {
+    return this.lastViewedProductId === productId;
   }
 
   private updateUrl() {

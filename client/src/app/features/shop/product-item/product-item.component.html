@@ -4,7 +4,10 @@
   routerLink="/shop/{{product.id}}" 
   class="product-card" 
   [class.list-mode]="viewMode === 'list'"
+  [class.product-highlighted]="isHighlighted"
+  [attr.data-product-id]="product.id"
   [attr.aria-label]="'View details for ' + product.name"
+  (click)="onProductClick()"
   role="article">
 
   <!-- Image -->

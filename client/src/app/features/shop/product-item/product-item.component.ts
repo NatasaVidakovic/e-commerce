@@ -33,6 +33,7 @@ export class ProductItemComponent {
   @Input() product?: Product;
   @Input() isFavourite: boolean = false;
   @Input() viewMode: 'grid' | 'list' = 'grid';
+  @Input() isHighlighted: boolean = false;
   @Output() favoriteToggled = new EventEmitter<{ id: number, isFavorite: boolean }>();
   cartService = inject(CartService);
   favouritesService = inject(FavouritesService);
@@ -40,6 +41,13 @@ export class ProductItemComponent {
 
   get loggedIn() {
     return this.accountService.isLoggedIn();
+  }
+
+  onProductClick(): void {
+    if (this.product) {
+      sessionStorage.setItem('shop_last_product_id', this.product.id.toString());
+      sessionStorage.setItem('shop_return_url', window.location.href);
+    }
   }
 
   toggleFavorite(): void {

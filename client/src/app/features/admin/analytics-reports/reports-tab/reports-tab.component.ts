@@ -926,7 +926,7 @@ export class ReportsTabComponent implements OnInit {
     };
     this.adminService.getOrdersWithFilters(request).subscribe({
       next: (response: BaseDataViewModelResponse<Order>) => {
-        this.reportData = response.data.map(order => ({
+        this.reportData = (response.data || []).map(order => ({
           id: order.id,
           buyerEmail: order.buyerEmail || 'N/A',
           status: order.status || 'Unknown',
@@ -938,7 +938,7 @@ export class ReportsTabComponent implements OnInit {
         }));
 
         // Update summary metrics
-        this.updateOrdersSummaryMetrics(response.data);
+        this.updateOrdersSummaryMetrics(response.data || []);
         this.loading = false;
       },
       error: () => { this.reportData = []; this.loading = false; }
@@ -959,7 +959,7 @@ export class ReportsTabComponent implements OnInit {
     };
     this.shopService.filterProducts(request).subscribe({
       next: (response: BaseDataViewModelResponse<Product>) => {
-        this.reportData = response.data.map(product => ({
+        this.reportData = (response.data || []).map(product => ({
           id: product.id,
           name: product.name || 'Unknown Product',
           type: product.type || 'Uncategorized',
@@ -970,7 +970,7 @@ export class ReportsTabComponent implements OnInit {
         }));
 
         // Update summary metrics
-        this.updateProductsSummaryMetrics(response.data);
+        this.updateProductsSummaryMetrics(response.data || []);
         
         this.loading = false;
       },
@@ -1069,7 +1069,7 @@ export class ReportsTabComponent implements OnInit {
         // Extract unique customers from orders
         const customerMap = new Map<string, any>();
         
-        response.data.forEach(order => {
+        (response.data || []).forEach(order => {
           const email = order.buyerEmail;
           if (email && !customerMap.has(email)) {
             customerMap.set(email, {
@@ -1117,7 +1117,7 @@ export class ReportsTabComponent implements OnInit {
     };
     this.adminService.getOrdersWithFilters(request).subscribe({
       next: (response: BaseDataViewModelResponse<Order>) => {
-        this.reportData = response.data.map(order => ({
+        this.reportData = (response.data || []).map(order => ({
           id: order.id,
           type: 'Income', // All orders are income
           paymentType: order.paymentType || 'Unknown',
@@ -1126,7 +1126,7 @@ export class ReportsTabComponent implements OnInit {
         }));
 
         // Update summary metrics
-        this.updateFinancialSummaryMetrics(response.data);
+        this.updateFinancialSummaryMetrics(response.data || []);
         this.loading = false;
       },
       error: () => { this.reportData = []; this.loading = false; }
@@ -1147,7 +1147,7 @@ export class ReportsTabComponent implements OnInit {
     };
     this.shopService.filterProducts(request).subscribe({
       next: (response: BaseDataViewModelResponse<Product>) => {
-        this.reportData = response.data.map(product => ({
+        this.reportData = (response.data || []).map(product => ({
           id: product.id,
           name: product.name || 'Unknown Product',
           quantityInStock: product.quantityInStock || 0,
@@ -1157,7 +1157,7 @@ export class ReportsTabComponent implements OnInit {
         }));
 
         // Update summary metrics
-        this.updateInventorySummaryMetrics(response.data);
+        this.updateInventorySummaryMetrics(response.data || []);
         this.loading = false;
       },
       error: () => this.fetchProductsFallback()

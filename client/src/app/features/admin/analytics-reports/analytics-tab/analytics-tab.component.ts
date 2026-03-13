@@ -1,5 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -172,26 +174,22 @@ export class AnalyticsTabComponent implements OnInit {
     });
   }
 
-  private async loadAllData(): Promise<void> {
+  private loadAllData(): void {
     this.loading = true;
-    try {
-      const req: BaseDataViewModelRequest = { currentPage: 1, pageSize: 2000, column: 'orderDate', accessor: 'orderDate', ascending: false, descending: true, filters: [] };
-      const [ordersResp, productsResp] = await Promise.all([
-        this.adminService.getOrdersWithFilters(req).toPromise(),
-        this.shopService.filterProducts({ ...req, column: '', accessor: '' }).toPromise()
-      ]);
-      this.allOrders = ordersResp?.data || [];
+    const ordersReq: BaseDataViewModelRequest = { currentPage: 1, pageSize: 2000, column: '', accessor: '', ascending: false, descending: true, filters: [] };
+    const productsReq: BaseDataViewModelRequest = { currentPage: 1, pageSize: 2000, column: '', accessor: '', ascending: true, descending: false, filters: [] };
+
+    forkJoin({
+      orders: this.adminService.getOrdersWithFilters(ordersReq).pipe(catchError(() => of(null))),
+      products: this.shopService.filterProducts(productsReq).pipe(catchError(() => of(null)))
+    }).subscribe(({ orders, products }) => {
+      this.allOrders = orders?.data || [];
       this.orders = [...this.allOrders];
-      this.allProducts = productsResp?.data || [];
+      this.allProducts = products?.data || [];
       this.products = [...this.allProducts];
-    } catch {
-      this.allOrders = [];
-      this.orders = [];
-      this.allProducts = [];
-      this.products = [];
-    }
-    this.loading = false;
-    this.updateCharts();
+      this.loading = false;
+      this.updateCharts();
+    });
   }
 
   private updateCharts(): void {
@@ -241,12 +239,6 @@ export class AnalyticsTabComponent implements OnInit {
         { title: 'Orders Placed', value: orders.length, icon: 'receipt_long', accent: '#10b981' },
         { title: 'Avg Orders/Customer', value: uniqueCustomers ? (orders.length / uniqueCustomers).toFixed(1) : '0', icon: 'repeat', accent: '#8b5cf6' },
         { title: 'Total Spent', value: '$' + totalRevenue.toFixed(2), icon: 'payments', accent: '#f59e0b' }
-      ],
-      categories: [
-        { title: 'Total Categories', value: new Set(products.map(p => p.type || 'Other')).size, icon: 'category', accent: '#3b82f6' },
-        { title: 'Total Products', value: products.length, icon: 'inventory_2', accent: '#10b981' },
-        { title: 'Avg per Category', value: products.length ? (products.length / Math.max(1, new Set(products.map(p => p.type || 'Other')).size)).toFixed(1) : '0', icon: 'bar_chart', accent: '#8b5cf6' },
-        { title: 'Total Stock Value', value: '$' + products.reduce((s, p) => s + (p.price || 0) * (p.quantityInStock || 0), 0).toFixed(2), icon: 'attach_money', accent: '#f59e0b' }
       ]
     };
     this.kpiCards = cards[this.selectedStatistic!] || [];

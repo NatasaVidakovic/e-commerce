@@ -2,7 +2,7 @@
   <span>{{ error }}</span>
 </div>
 
-<div class="rv-layout">
+<div class="rv-layout" [class.rv-layout--full-width]="!loggedIn || accountService.isAdmin()">
 
   <!-- LEFT: Leave a Review form -->
   <div class="rv-form-col" *ngIf="loggedIn && !accountService.isAdmin()">
