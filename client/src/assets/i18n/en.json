@@ -401,7 +401,7 @@
       "YOUR_REVIEW": "Your Review",
       "SUBMIT_REVIEW": "Submit Review",
       "SUBMITTING": "Submitting...",
-      "NO_REVIEWS": "No reviews yet. Be the first to review this product!",
+      "NO_REVIEWS": "No reviews yet.",
       "LOADING_REVIEWS": "Loading reviews...",
       "ADMIN_NO_REVIEWS": "Administrators cannot leave reviews.",
       "STAR": "{{count}} star",

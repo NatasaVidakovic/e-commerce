@@ -51,8 +51,7 @@
             <div class="product-price">
               <span class="product-price__original">{{product.originalPrice | currency}}</span>
               <span class="product-price__current">{{product.price | currency}}</span>
-              <span class="product-price__save">Save {{product.originalPrice! - product.price | currency}}</span>
-            </div>
+           </div>
           } @else {
             <div class="product-price">
               <span class="product-price__regular">{{product.price | currency}}</span>
@@ -115,7 +114,6 @@
         @if (product.hasActiveDiscount && product.originalPrice) {
           <span class="list-price-original">{{product.originalPrice | currency}}</span>
           <span class="list-price-current">{{product.price | currency}}</span>
-          <span class="list-price-save">Save {{product.originalPrice! - product.price | currency}}</span>
         } @else {
           <span class="list-price-regular">{{product.price | currency}}</span>
         }

@@ -519,15 +519,19 @@ table.mat-table {
   }
   
   &:hover {
-    background-color: var(--color-bg-hover) !important;
+    background-color: transparent !important;
+    
+    .mdc-tab__text-label {
+      color: var(--color-primary) !important;
+    }
   }
 }
 
 .mat-mdc-tab.mdc-tab--active {
-  background-color: var(--color-filter-active-bg) !important;
+  background-color: transparent !important;
 
   .mdc-tab__text-label {
-    color: var(--color-filter-active-text) !important;
+    color: var(--color-primary) !important;
     font-weight: 600 !important;
   }
 }

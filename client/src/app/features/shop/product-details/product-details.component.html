@@ -188,12 +188,6 @@
                   <span class="pd-sug-brand">{{ p.brand }}</span>
                 </div>
                 <p class="pd-suggested-name">{{ p.name }}</p>
-                <div class="pd-suggested-stars">
-                  <ng-container *ngFor="let star of [1,2,3,4,5]">
-                    <mat-icon class="pd-sug-star">{{ (p.rating || 0) >= star ? 'star' : (p.rating || 0) >= star - 0.5 ? 'star_half' : 'star_border' }}</mat-icon>
-                  </ng-container>
-                  <span class="pd-sug-rating" *ngIf="p.rating">({{ p.rating | number:'1.1-1' }}</span>
-                </div>
                 <div class="pd-suggested-price">
                   @if (p.hasActiveDiscount && p.originalPrice) {
                     <span class="pd-sug-price-original">{{ p.originalPrice | currency }}</span>

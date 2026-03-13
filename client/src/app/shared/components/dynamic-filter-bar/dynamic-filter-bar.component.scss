@@ -179,7 +179,7 @@
   font-weight: 700;
 
   .active & {
-    background-color: #fff;
+    background-color: var(--color-surface);
     color: var(--color-primary);
   }
 }

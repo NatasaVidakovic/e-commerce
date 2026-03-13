@@ -31,9 +31,10 @@
       min-width: auto;
       padding: $spacing-1 $spacing-3;
       font-size: 0.8125rem;
-      color: var(--color-text-secondary) !important;
+      color: var(--color-text-primary) !important;
       opacity: 1 !important;
       font-weight: 500;
+      background-color: transparent;
       
       @include md {
         padding: $spacing-2 $spacing-3;
@@ -41,8 +42,8 @@
       }
       
       &:hover {
-        background-color: var(--color-bg-hover);
-        color: var(--color-text-primary) !important;
+        background-color: transparent;
+        color: var(--color-primary) !important;
       }
       
       &.mdc-tab--active {

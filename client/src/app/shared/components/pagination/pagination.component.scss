@@ -188,13 +188,13 @@
 // Dark mode specific button hover - darker background
 [data-theme="dark"] .pagination-btn {
   &:hover:not(:disabled) {
-    background-color: #0F1419;
-    border-color: #90CAF9;
-    color: #90CAF9;
+    background-color: var(--color-bg-hover);
+    border-color: var(--color-primary-light);
+    color: var(--color-primary-light);
   }
   
   &:active:not(:disabled) {
-    background-color: #0A0E12;
+    background-color: var(--color-bg-active);
   }
 }
 

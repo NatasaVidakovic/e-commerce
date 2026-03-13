@@ -46,12 +46,12 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   
   welcomeImageSrc = computed(() => {
     const config = this.themeService.themeConfig();
-    return config.welcomeImageUrl || '../images/hero1.jpg';
+    return config.welcomeImageUrl || '';
   });
 
   showWelcomeImage = computed(() => {
     const config = this.themeService.themeConfig();
-    return config.showWelcomeImage !== false;
+    return config.showWelcomeImage !== false && !!config.welcomeImageUrl;
   });
 
   heroTitle = computed(() => this.siteConfigService.siteConfig().heroTitle || '');

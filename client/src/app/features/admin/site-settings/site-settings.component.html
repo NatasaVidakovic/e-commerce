@@ -102,10 +102,13 @@
       </div>
 
       <div *ngIf="showWelcomeImage" class="form-group">
-        <label class="field-label">{{ 'ADMIN.SITE_SETTINGS_IMAGE_URL' | translate }}</label>
+        <label class="field-label">
+          {{ 'ADMIN.SITE_SETTINGS_IMAGE_URL' | translate }} 
+          <span class="required-indicator">*</span>
+        </label>
         <div class="input-with-action">
           <input type="text" [(ngModel)]="welcomeImageUrl" placeholder="{{ 'ADMIN.SITE_SETTINGS_IMAGE_PLACEHOLDER' | translate }}"
-                 class="field-input">
+                 class="field-input" required>
           <button mat-raised-button color="primary" type="button" (click)="welcomeFileInput.click()">
             <mat-icon>upload_file</mat-icon>
             {{ 'ADMIN.SITE_SETTINGS_UPLOAD' | translate }}
@@ -114,6 +117,10 @@
                  style="display: none;">
         </div>
         <span class="field-hint">{{ 'ADMIN.SITE_SETTINGS_WELCOME_IMAGE_HINT' | translate }}</span>
+        <span *ngIf="showWelcomeImage && !welcomeImageUrl" class="validation-error">
+          <mat-icon>error</mat-icon>
+          Image is required when "Show welcome image" is enabled
+        </span>
 
         <div *ngIf="welcomeImageUrl" class="image-preview">
           <img [src]="welcomeImageUrl" [alt]="'ADMIN.SITE_SETTINGS_WELCOME_IMAGE_PREVIEW' | translate">

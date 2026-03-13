@@ -97,7 +97,16 @@ export class AnalyticsTabComponent implements OnInit {
   orderStatusChartOptions: ChartOptions<'doughnut'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { position: 'right' } }
+    plugins: { 
+      legend: { 
+        position: 'bottom',
+        labels: {
+          boxWidth: 12,
+          padding: 10,
+          font: { size: 11 }
+        }
+      } 
+    }
   };
 
   productStockChartData: ChartData<'bar'> = { labels: [], datasets: [] };
@@ -113,7 +122,16 @@ export class AnalyticsTabComponent implements OnInit {
   categoryChartOptions: ChartOptions<'pie'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { position: 'right' } }
+    plugins: { 
+      legend: { 
+        position: 'bottom',
+        labels: {
+          boxWidth: 12,
+          padding: 10,
+          font: { size: 11 }
+        }
+      } 
+    }
   };
 
   customerOrderChartData: ChartData<'bar'> = { labels: [], datasets: [] };
@@ -128,7 +146,32 @@ export class AnalyticsTabComponent implements OnInit {
   revenueByPaymentChartOptions: ChartOptions<'pie'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { position: 'right' } }
+    plugins: { 
+      legend: { 
+        position: 'bottom',
+        labels: {
+          boxWidth: 12,
+          padding: 10,
+          font: { size: 11 }
+        }
+      } 
+    }
+  };
+
+  userStatusChartData: ChartData<'doughnut'> = { labels: [], datasets: [] };
+  userStatusChartOptions: ChartOptions<'doughnut'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { 
+      legend: { 
+        position: 'bottom',
+        labels: {
+          boxWidth: 12,
+          padding: 10,
+          font: { size: 11 }
+        }
+      } 
+    }
   };
 
   ngOnInit(): void {
@@ -201,6 +244,7 @@ export class AnalyticsTabComponent implements OnInit {
     this.buildCategoryChart();
     this.buildCustomerOrderChart();
     this.buildRevenueByPaymentChart();
+    this.buildUserStatusChart();
   }
 
   private buildKpiCards(): void {
@@ -259,13 +303,25 @@ export class AnalyticsTabComponent implements OnInit {
   }
 
   private buildOrderStatusChart(): void {
+    // Define all possible order statuses
+    const allStatuses = [
+      'New', 'Confirmed', 'Preparing', 'ReadyToShip', 'Shipped', 
+      'OutForDelivery', 'Delivered', 'Returned', 'Cancelled', 
+      'OnHold', 'FraudReview', 'PaymentFailed', 'PaymentMismatch'
+    ];
+    
+    // Initialize map with all statuses set to 0
     const statusMap = new Map<string, number>();
+    allStatuses.forEach(status => statusMap.set(status, 0));
+    
+    // Count actual orders
     this.orders.forEach(o => {
       const s = o.status || 'Unknown';
       statusMap.set(s, (statusMap.get(s) || 0) + 1);
     });
+    
     const entries = Array.from(statusMap.entries());
-    const palette = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+    const palette = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f43f5e', '#84cc16', '#14b8a6', '#a855f7', '#ec4899', '#f97316', '#6366f1'];
     this.orderStatusChartData = {
       labels: entries.map(([k]) => k),
       datasets: [{ data: entries.map(([, v]) => v), backgroundColor: palette.slice(0, entries.length) }]
@@ -285,7 +341,7 @@ export class AnalyticsTabComponent implements OnInit {
   private buildCategoryChart(): void {
     const catMap = new Map<string, number>();
     this.allProducts.forEach(p => {
-      const cat = p.type || 'Other';
+      const cat = p.productType?.name || p.type || 'Other';
       catMap.set(cat, (catMap.get(cat) || 0) + 1);
     });
     const entries = Array.from(catMap.entries());
@@ -319,6 +375,45 @@ export class AnalyticsTabComponent implements OnInit {
     this.revenueByPaymentChartData = {
       labels: entries.map(([k]) => k),
       datasets: [{ data: entries.map(([, v]) => v), backgroundColor: palette.slice(0, entries.length) }]
+    };
+  }
+
+  private buildUserStatusChart(): void {
+    // Get unique customers from orders
+    const uniqueEmails = new Set(this.orders.map(o => o.buyerEmail).filter(e => e));
+    const totalCustomers = uniqueEmails.size;
+    
+    // For demo purposes, we'll categorize customers based on order behavior
+    // Active: customers with 3+ orders
+    // Regular: customers with 2 orders
+    // New: customers with 1 order
+    const customerOrderCount = new Map<string, number>();
+    this.orders.forEach(o => {
+      if (o.buyerEmail) {
+        customerOrderCount.set(o.buyerEmail, (customerOrderCount.get(o.buyerEmail) || 0) + 1);
+      }
+    });
+    
+    let activeCustomers = 0;
+    let regularCustomers = 0;
+    let newCustomers = 0;
+    
+    customerOrderCount.forEach((count) => {
+      if (count >= 3) activeCustomers++;
+      else if (count === 2) regularCustomers++;
+      else newCustomers++;
+    });
+    
+    const statusData = [
+      { label: 'Active Customers (3+ orders)', count: activeCustomers },
+      { label: 'Regular Customers (2 orders)', count: regularCustomers },
+      { label: 'New Customers (1 order)', count: newCustomers }
+    ];
+    
+    const palette = ['#10b981', '#3b82f6', '#f59e0b'];
+    this.userStatusChartData = {
+      labels: statusData.map(s => s.label),
+      datasets: [{ data: statusData.map(s => s.count), backgroundColor: palette }]
     };
   }
 }

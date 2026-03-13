@@ -146,6 +146,12 @@ export class SiteSettingsComponent implements OnInit {
 
   // --- Welcome Image ---
   saveWelcomeImage(): void {
+    if (this.showWelcomeImage && !this.welcomeImageUrl) {
+      this.snackbar.error('Please upload an image or provide an image URL when "Show welcome image" is enabled');
+      this.showWelcomeImage = false;
+      return;
+    }
+    
     this.themeService.setCustomColors({
       welcomeImageUrl: this.welcomeImageUrl,
       showWelcomeImage: this.showWelcomeImage

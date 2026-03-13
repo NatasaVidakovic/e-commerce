@@ -129,7 +129,7 @@
       <mat-card class="chart-card">
         <div class="chart-header">
           <mat-icon>pie_chart</mat-icon>
-          <span>Products by Category</span>
+          <span>Products by Type</span>
         </div>
         <div class="chart-body">
           <canvas baseChart
@@ -159,12 +159,12 @@
       <mat-card class="chart-card">
         <div class="chart-header">
           <mat-icon>donut_large</mat-icon>
-          <span>Orders by Status</span>
+          <span>Customers by Status</span>
         </div>
         <div class="chart-body">
           <canvas baseChart
-            [data]="orderStatusChartData"
-            [options]="orderStatusChartOptions"
+            [data]="userStatusChartData"
+            [options]="userStatusChartOptions"
             type="doughnut">
           </canvas>
         </div>
