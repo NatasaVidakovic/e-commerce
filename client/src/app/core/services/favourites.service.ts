@@ -29,6 +29,6 @@ export class FavouritesService {
     }
 
     isProductInFavourites(productId: number): Observable<boolean> {
-        return this.http.get<boolean>(this.baseUrl + 'check', { params: { productId } });
+        return this.http.get<boolean>(this.baseUrl + '/check', { params: { productId } });
     }
 }

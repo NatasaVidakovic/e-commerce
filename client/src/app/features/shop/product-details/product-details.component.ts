@@ -12,6 +12,7 @@ import { AccountService } from '../../../core/services/account.service';
 import { ProductReviewsComponent } from '../product-reviews/product-reviews';
 import { TranslateModule } from '@ngx-translate/core';
 import { SnackbarService } from '../../../core/services/snackbar.service';
+import { FavouritesService } from '../../../core/services/favourites.service';
 
 @Component({
   selector: 'app-product-details',
@@ -34,6 +35,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   private activatedRoute = inject(ActivatedRoute);
   private router = inject(Router);
   private snackbar = inject(SnackbarService);
+  private favouritesService = inject(FavouritesService);
   product?: Product & { reviews?: any[] };
   quantityInCart = 0;
   quantity = 1;
@@ -43,6 +45,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   activeTab: 'description' | 'reviews' = 'description';
   suggestedProducts: Product[] = [];
   public accountService = inject(AccountService);
+  isFavourite: boolean = false;
 
   get allImages(): string[] {
     if (!this.product) return [];
@@ -138,6 +141,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         console.log('Reviews:', product.reviews);
         this.updateQuantityInBasket();
         this.loadSuggestedProducts(product);
+        this.checkFavoriteStatus(id);
       },
       error: error => { console.error('Failed to load product:', error); this.snackbar.errorFrom(error, 'Failed to load product'); }
     });
@@ -208,6 +212,46 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       this.product.rating = parseFloat((sum / reviews.length).toFixed(1));
     } else {
       this.product.rating = 0;
+    }
+  }
+
+  checkFavoriteStatus(productId: number): void {
+    this.favouritesService.getFavouriteProducts().subscribe({
+      next: (favorites: any[]) => {
+        this.isFavourite = favorites.some(fav => fav.productId === productId);
+      },
+      error: () => {
+        // If there's an error getting favorites, assume it's not a favorite
+        this.isFavourite = false;
+      }
+    });
+  }
+
+  toggleFavorite(): void {
+    if (!this.product) return;
+
+    const productId = this.product.id;
+
+    if (!this.isFavourite) {
+      this.favouritesService.addToFavourites(productId).subscribe({
+        next: () => {
+          this.isFavourite = true;
+          this.snackbar.success('Product added to favorites');
+        },
+        error: (error) => {
+          this.snackbar.errorFrom(error, 'Failed to add to favorites');
+        }
+      });
+    } else {
+      this.favouritesService.removeFromFavourites(productId).subscribe({
+        next: () => {
+          this.isFavourite = false;
+          this.snackbar.success('Product removed from favorites');
+        },
+        error: (error) => {
+          this.snackbar.errorFrom(error, 'Failed to remove from favorites');
+        }
+      });
     }
   }
 

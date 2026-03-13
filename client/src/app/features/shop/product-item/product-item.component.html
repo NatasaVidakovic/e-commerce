@@ -41,20 +41,41 @@
         <h2 class="product-name">{{product.name}}</h2>
 
         <!-- Description — both modes -->
+        @if (viewMode == 'list') {
         @if (product.description) {
           <p class="product-description">{{product.description}}</p>
         }
+      }
 
         <!-- Price block — grid mode only -->
         @if (viewMode !== 'list') {
           @if (product.hasActiveDiscount && product.originalPrice) {
-            <div class="product-price">
-              <span class="product-price__original">{{product.originalPrice | currency}}</span>
-              <span class="product-price__current">{{product.price | currency}}</span>
+            <div class="product-price grid-mode" 
+                 [style.display]="'flex !important'" 
+                 [style.align-items]="'center !important'" 
+                 [style.justify-content]="'center !important'"
+                 [style.gap]="'0.25rem !important'" 
+                 [style.flex-wrap]="'nowrap !important'"
+                 [style.flex-direction]="'row !important'"
+                 [style.white-space]="'nowrap !important'">
+              <span class="product-price__current" 
+                    [style.display]="'inline !important'" 
+                    [style.margin]="'0 !important'"
+                    [style.padding]="'0 !important'">{{product.price | currency}}</span>
+              <span class="product-price__original" 
+                    [style.display]="'inline !important'" 
+                    [style.margin]="'0 !important'"
+                    [style.padding]="'0 !important'">{{product.originalPrice | currency}}</span>
            </div>
           } @else {
-            <div class="product-price">
-              <span class="product-price__regular">{{product.price | currency}}</span>
+            <div class="product-price grid-mode" 
+                 [style.display]="'flex !important'" 
+                 [style.align-items]="'center !important'"
+                 [style.justify-content]="'center !important'">
+              <span class="product-price__regular" 
+                    [style.display]="'inline !important'" 
+                    [style.margin]="'0 !important'"
+                    [style.padding]="'0 !important'">{{product.price | currency}}</span>
             </div>
           }
         }

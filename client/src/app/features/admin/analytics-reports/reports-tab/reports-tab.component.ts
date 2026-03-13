@@ -493,7 +493,6 @@ export class ReportsTabComponent implements OnInit {
 
     switch (format) {
       case 'csv':   this.exportCsv(name);   break;
-      case 'excel': this.exportExcel(name, title); break;
       case 'pdf':   this.exportPdf(name, title);   break;
     }
   }
@@ -513,37 +512,7 @@ export class ReportsTabComponent implements OnInit {
     );
   }
 
-  private exportExcel(filename: string, title: string): void {
-    const esc = (v: any) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const headerCells = this.reportColumns
-      .map(c => `<Cell><Data ss:Type="String">${esc(c.label)}</Data></Cell>`)
-      .join('');
-    const dataRows = this.reportData.map(row => {
-      const cells = this.reportColumns.map(col => {
-        const val = row[col.key] ?? '';
-        const type = (col.type === 'number' || col.type === 'currency') && typeof val === 'number'
-          ? 'Number' : 'String';
-        return `<Cell><Data ss:Type="${type}">${esc(val)}</Data></Cell>`;
-      }).join('');
-      return `<Row>${cells}</Row>`;
-    }).join('');
-
-    const xml = `<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>
-<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
-  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
-  <Worksheet ss:Name="${esc(title)}">
-    <Table>
-      <Row>${headerCells}</Row>
-      ${dataRows}
-    </Table>
-  </Worksheet>
-</Workbook>`;
-    this.triggerDownload(
-      new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8;' }),
-      `${filename}.xls`
-    );
-  }
-
+  
   printReport(): void {
     if (!this.reportData.length) return;
     const title = this.getReportTitle(this.selectedReportType);

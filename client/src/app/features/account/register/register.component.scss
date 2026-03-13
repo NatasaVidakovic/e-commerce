@@ -1,0 +1,21 @@
+@import '../../../../styles/breakpoints';
+@import '../../../../styles/spacing';
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--color-error-light);
+  border: 1px solid var(--color-error);
+  border-radius: 8px;
+  color: var(--color-error);
+  font-size: 0.85rem;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}

@@ -392,11 +392,11 @@ mat-divider {
 }
 
 .preview-secondary-btn {
-  background-color: var(--color-secondary) !important;
+  background-color: var(--color-primary) !important;
   color: var(--color-text-inverse) !important;
   
   &:hover {
-    background-color: var(--color-secondary-hover) !important;
+    background-color: var(--color-primary-hover) !important;
   }
 }
 

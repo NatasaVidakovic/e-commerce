@@ -83,9 +83,8 @@
             <!-- Price block -->
             <div class="pd-price-block">
               @if (product.hasActiveDiscount && product.originalPrice) {
-                <span class="pd-price-original">{{ product.originalPrice | currency }}</span>
                 <span class="pd-price-discounted">{{ product.price | currency }}</span>
-                <span class="pd-price-save">Save {{ product.originalPrice - product.price | currency }}</span>
+                <span class="pd-price-original">{{ product.originalPrice | currency }}</span>
               } @else {
                 <span class="pd-price-current">{{ product.price | currency }}</span>
               }
@@ -109,8 +108,8 @@
                 {{ getButtonText() | translate }}
               </button>
 
-              <button class="pd-wishlist-btn" mat-icon-button [class.active]="product.isFavourite" aria-label="Wishlist">
-                <mat-icon>{{ product.isFavourite ? 'favorite' : 'favorite_border' }}</mat-icon>
+              <button class="pd-wishlist-btn" [class.text-favorite]="isFavourite" [class.text-gray-400]="!isFavourite" (click)="toggleFavorite()" aria-label="Wishlist">
+                <mat-icon>{{ isFavourite ? 'favorite' : 'favorite_border' }}</mat-icon>
               </button>
             </div>
 

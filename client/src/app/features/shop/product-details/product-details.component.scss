@@ -460,40 +460,33 @@
 }
 
 .pd-wishlist-btn {
-  width: 42px;
-  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-border-primary);
-  border-radius: 8px;
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
   flex-shrink: 0;
-
+  padding: 0;
+  
   mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
   }
+}
 
-  &.active {
-    color: var(--color-error);
-    border-color: var(--color-error);
-  }
-
-  &:hover {
-    color: var(--color-error);
-  }
+.text-favorite {
+  color: var(--color-error) !important;
 }
 
 // Buy Now
 .pd-buy-now-btn {
   width: 100%;
   height: 44px;
-  background: var(--color-secondary);
+  background: var(--color-primary);
   color: white;
   font-size: 0.95rem;
   font-weight: 700;
@@ -537,7 +530,7 @@
 
   &--green { color: var(--color-success); }
   &--blue  { color: var(--color-primary); }
-  &--purple{ color: var(--color-secondary); }
+  &--purple{ color: var(--color-primary); }
 }
 
 .pd-perk-text {
