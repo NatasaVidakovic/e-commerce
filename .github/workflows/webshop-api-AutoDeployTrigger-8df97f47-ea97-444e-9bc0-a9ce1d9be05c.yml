@@ -27,10 +27,8 @@
         - name: Azure Login
           uses: azure/login@v2
           with:
-            client-id: ${{ secrets.WEBSHOPAPI_AZURE_CLIENT_ID }}
-            tenant-id: ${{ secrets.WEBSHOPAPI_AZURE_TENANT_ID }}
-            subscription-id: ${{ secrets.WEBSHOPAPI_AZURE_SUBSCRIPTION_ID }}
-            client-secret: ${{ secrets.WEBSHOPAPI_AZURE_CLIENT_SECRET }}  
+            creds: ${{ secrets.WEBSHOPAPI_AZURE_CREDENTIALS }}  # SAMO OVO!
+
 
         - name: Build and push container image to registry
           uses: azure/container-apps-deploy-action@v2
