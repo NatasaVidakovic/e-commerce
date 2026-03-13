@@ -44,6 +44,11 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   discounts: Discount[] = [];
   showDiscountNavigation = false;
   
+  // Interactive discount section
+  selectedDiscount: Discount | null = null;
+  discountProducts: Product[] = [];
+  isLoadingDiscountProducts = false;
+  
   welcomeImageSrc = computed(() => {
     const config = this.themeService.themeConfig();
     return config.welcomeImageUrl || '';
@@ -82,6 +87,10 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
 
     this.discountService.getDiscounts().subscribe(discounts => {
       this.discounts = discounts.filter(discount => discount.state === 'Active');
+      // Auto-select first discount
+      if (this.discounts.length > 0) {
+        this.selectDiscount(this.discounts[0]);
+      }
       this.startCountdown();
     });
 
@@ -161,6 +170,33 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
           expired: false
         };
       }
+    }
+  }
+
+  // Interactive discount methods
+  selectDiscount(discount: Discount): void {
+    this.selectedDiscount = discount;
+    // Clear products immediately to prevent showing old products
+    this.discountProducts = [];
+    this.loadDiscountProducts(discount.id);
+  }
+
+  loadDiscountProducts(discountId: number): void {
+    this.isLoadingDiscountProducts = true;
+    this.discountService.getDiscountById(discountId).subscribe(discount => {
+      this.discountProducts = discount.products || [];
+      this.isLoadingDiscountProducts = false;
+    }, error => {
+      console.error('Error loading discount products:', error);
+      this.discountProducts = [];
+      this.isLoadingDiscountProducts = false;
+    });
+  }
+
+  viewAllDiscountProducts(): void {
+    if (this.selectedDiscount) {
+      // Navigate to shop page with discount filter
+      window.location.href = `/shop?discountId=${this.selectedDiscount.id}`;
     }
   }
 

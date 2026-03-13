@@ -11,6 +11,12 @@
     "BEST_SELLING_PRODUCTS": "Best Selling Products",
     "FAVOURITE_PRODUCTS": "Favourite Products",
     "SUGGESTED_PRODUCTS": "Suggested Products",
+    "PRODUCTS_IN_DISCOUNT": "Products in Discount",
+    "LOADING_PRODUCTS": "Loading products...",
+    "NO_PRODUCTS_IN_DISCOUNT": "No products available in this discount",
+    "NO_PRODUCTS_MESSAGE": "Check back later or browse other discounts",
+    "VIEW_ALL_PRODUCTS": "View All Products in This Discount",
+    "DISCOUNT_EXPIRED": "Discount Expired",
     "COUNTDOWN": {
       "DAYS": "days",
       "HOURS": "hrs",

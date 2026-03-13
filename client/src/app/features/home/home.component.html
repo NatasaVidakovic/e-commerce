@@ -27,7 +27,7 @@
 </div>
 
 <div class="home-content">
-        <!-- ACTIVE DISCOUNTS -->
+        <!-- INTERACTIVE DISCOUNT SECTION -->
         <section *ngIf="discounts && discounts.length > 0" class="section-spacing relative">
             <h2 class="section-title">{{ 'HOME.ACTIVE_DISCOUNTS' | translate }}</h2>
 
@@ -42,7 +42,9 @@
                  [config]="discountSwiperConfig">
                 <div class="swiper-wrapper">
                     <div *ngFor="let discount of discounts" class="swiper-slide">
-                        <div class="discount-card">
+                        <div class="discount-card" 
+                             [class.active]="selectedDiscount?.id === discount.id"
+                             (click)="selectDiscount(discount)">
                             <div class="discount-header">
                                 <div class="discount-overlay"></div>
                                 <div class="discount-value-container">
@@ -88,6 +90,45 @@
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
             </div>
+            
+            <!-- Discounted Products Section -->
+            <section *ngIf="selectedDiscount" class="product-carousel-section">
+                <h2 class="section-title">{{ selectedDiscount.name }} - {{ 'HOME.PRODUCTS_IN_DISCOUNT' | translate }}</h2>
+
+                <!-- Loading State -->
+                <div *ngIf="isLoadingDiscountProducts" class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>{{ 'HOME.LOADING_PRODUCTS' | translate }}</p>
+                </div>
+
+                <!-- Swiper Product Carousel -->
+                <div *ngIf="!isLoadingDiscountProducts && discountProducts.length > 0" class="swiper product-carousel-swiper" 
+                     swiper
+                     [navigation]="true"
+                     [pagination]="false"
+                     [loop]="false"
+                     [config]="productSwiperConfig">
+                    <div class="swiper-wrapper product-carousel">
+                        <app-product-item 
+                            *ngFor="let product of discountProducts" 
+                            [product]="product"
+                            [isFavourite]="product.isFavourite" 
+                            class="swiper-slide product-carousel-item">
+                        </app-product-item>
+                    </div>
+                    
+                    <!-- Navigation buttons -->
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+
+                <!-- Empty State -->
+                <div *ngIf="!isLoadingDiscountProducts && discountProducts.length === 0" class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <h4>{{ 'HOME.NO_PRODUCTS_IN_DISCOUNT' | translate }}</h4>
+                    <p>{{ 'HOME.NO_PRODUCTS_MESSAGE' | translate }}</p>
+                </div>
+            </section>
         </section>
 
         <!-- BEST REVIEWED -->
