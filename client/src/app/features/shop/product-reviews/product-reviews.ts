@@ -109,7 +109,7 @@ export class ProductReviewsComponent implements OnChanges {
                 this.reviewsChanged.emit(this.reviews);
             },
             error: (err) => {
-                this.error = 'Došlo je do greške pri učitavanju komentara. Molimo pokušajte ponovo.';
+                this.error = this.translate.instant('ERROR_MESSAGES.ERROR_LOADING_REVIEWS');
                 console.error('Error loading reviews:', err);
             }
         });
@@ -120,7 +120,7 @@ export class ProductReviewsComponent implements OnChanges {
 
         const currentUser = this.accountService.currentUser();
         if (!currentUser) {
-            this.error = 'Morate biti prijavljeni da biste ostavili recenziju.';
+            this.error = this.translate.instant('ERROR_MESSAGES.MUST_BE_LOGGED_IN_FOR_REVIEW');
             return;
         }
 
@@ -142,7 +142,7 @@ export class ProductReviewsComponent implements OnChanges {
                 this.newCommentRating = 5;
             },
             error: (err) => {
-                this.error = 'Došlo je do greške pri slanju komentara. Molimo pokušajte ponovo.';
+                this.error = this.translate.instant('ERROR_MESSAGES.ERROR_ADDING_REVIEW');
                 console.error('Error adding review:', err);
                 this.loading = false;
             }

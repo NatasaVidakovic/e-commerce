@@ -10,11 +10,13 @@
           <dd class="font-medium" style="color: var(--color-text-primary);">{{cartService.totals()?.subtotal
             | currency}}</dd>
         </dl>
+        @if (cartService.totals()?.discount && cartService.totals()!.discount > 0) {
         <dl class="flex items-center justify-between gap-4">
           <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.DISCOUNT' | translate }}</dt>
           <dd class="font-medium" style="color: var(--color-success);">
             -{{cartService.totals()?.discount | currency}}</dd>
         </dl>
+        }
         <dl class="flex items-center justify-between gap-4">
           <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.SHIPPING' | translate }}</dt>
           <dd class="font-medium" style="color: var(--color-text-primary);">{{cartService.totals()?.shipping
@@ -58,6 +60,13 @@
         <input [disabled]="!!cartService.cart()?.voucher" [(ngModel)]="code"
             name="code" type="text" matInput>
       </mat-form-field>
+
+      @if (voucherError) {
+        <div class="flex items-center gap-1 mt-1 ml-2">
+          <mat-icon class="text-red-500" style="color: var(--color-error, #ef4444); font-size: 14px; height: 14px; width: 14px;">error_outline</mat-icon>
+          <span class="text-red-600 text-xs" style="color: var(--color-error, #dc2626);">{{ voucherError }}</span>
+        </div>
+      }
 
       <button 
         [disabled]="!!cartService.cart()?.voucher"

@@ -1242,5 +1242,27 @@
     "NO_VOUCHERS": "Nema kreiranih kupona.",
     "CODE_PLACEHOLDER": "npr. LETO2026",
     "DESCRIPTION_PLACEHOLDER": "Opis"
+  },
+  "ARIA_LABELS": {
+    "GRID_VIEW": "Prikaz rešetke",
+    "LIST_VIEW": "Prikaz liste", 
+    "BACK_TO_SHOP": "Nazad u prodavnicu",
+    "PREVIOUS_IMAGE": "Prethodna slika",
+    "NEXT_IMAGE": "Sledeća slika",
+    "DECREASE_QUANTITY": "Smanji količinu",
+    "INCREASE_QUANTITY": "Povećaj količinu",
+    "WISHLIST": "Lista želja",
+    "CLOSE": "Zatvori",
+    "PREVIOUS": "Prethodno",
+    "NEXT": "Sledeće"
+  },
+  "ERROR_MESSAGES": {
+    "PLEASE_UPLOAD_IMAGE": "Molimo otpremite sliku ili navedite URL slike kada je opcija \"Prikaži sliku dobrodošlice\" uključena",
+    "WELCOME_IMAGE_SETTINGS_SAVED": "Podešavanja slike dobrodošlice sačuvana",
+    "ERROR_LOADING_REVIEWS": "Greška pri učitavanju recenzija",
+    "ERROR_ADDING_REVIEW": "Greška pri dodavanju recenzije",
+    "MUST_BE_LOGGED_IN_FOR_REVIEW": "Morate biti prijavljeni da biste ostavili recenziju",
+    "LOCATION_REQUEST_TIMED_OUT": "Zahtev za lokaciju je istekao. Pokušajte ponovo.",
+    "ERROR_UPDATING_SHOP_LOCATION": "Greška pri ažuriranju lokacije prodavnice"
   }
 }

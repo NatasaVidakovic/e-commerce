@@ -1258,5 +1258,27 @@
     "NO_VOUCHERS": "No vouchers created yet.",
     "CODE_PLACEHOLDER": "e.g. SUMMER2026",
     "DESCRIPTION_PLACEHOLDER": "Description"
+  },
+  "ARIA_LABELS": {
+    "GRID_VIEW": "Grid View",
+    "LIST_VIEW": "List View", 
+    "BACK_TO_SHOP": "Back to shop",
+    "PREVIOUS_IMAGE": "Previous image",
+    "NEXT_IMAGE": "Next image",
+    "DECREASE_QUANTITY": "Decrease quantity",
+    "INCREASE_QUANTITY": "Increase quantity",
+    "WISHLIST": "Wishlist",
+    "CLOSE": "Close",
+    "PREVIOUS": "Previous",
+    "NEXT": "Next"
+  },
+  "ERROR_MESSAGES": {
+    "PLEASE_UPLOAD_IMAGE": "Please upload an image or provide an image URL when \"Show welcome image\" is enabled",
+    "WELCOME_IMAGE_SETTINGS_SAVED": "Welcome image settings saved",
+    "ERROR_LOADING_REVIEWS": "Error loading reviews",
+    "ERROR_ADDING_REVIEW": "Error adding review",
+    "MUST_BE_LOGGED_IN_FOR_REVIEW": "You must be logged in to leave a review",
+    "LOCATION_REQUEST_TIMED_OUT": "Location request timed out. Please try again.",
+    "ERROR_UPDATING_SHOP_LOCATION": "Error updating shop location"
   }
 }

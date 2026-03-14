@@ -32,9 +32,11 @@ export class OrderSummaryComponent {
   private stripeService = inject(StripeService);
   location = inject(Location);
   code?: string;
+  voucherError?: string;
 
   applyVoucherCode() {
     if (!this.code) return;
+    this.voucherError = undefined; // Clear previous error
     this.cartService.applyDiscount(this.code).subscribe({
       next: async voucher => {
         const cart = this.cartService.cart();
@@ -47,6 +49,9 @@ export class OrderSummaryComponent {
         if (this.location.path() === '/checkout') {
           await firstValueFrom(this.stripeService.createOrUpdatePaymentIntent());
         }
+      },
+      error: (err) => {
+        this.voucherError = err.message || 'Invalid or inactive voucher code';
       }
     });
   }
@@ -55,6 +60,7 @@ export class OrderSummaryComponent {
     const cart = this.cartService.cart();
     if (!cart) return;
     if (cart.voucher) cart.voucher = undefined;
+    this.voucherError = undefined; // Clear error when voucher is removed
     await firstValueFrom(this.cartService.setCart(cart));
     if (this.location.path() === '/checkout') {
       await firstValueFrom(this.stripeService.createOrUpdatePaymentIntent());

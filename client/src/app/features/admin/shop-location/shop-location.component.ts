@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { TranslateService } from '@ngx-translate/core';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { ShopLocationService, UpdateShopLocation, ShopLocation } from '../../../core/services/shop-location.service';
 
@@ -27,6 +28,7 @@ export class ShopLocationComponent implements OnInit {
   private shopLocationService = inject(ShopLocationService);
   private fb = inject(FormBuilder);
   private snackbar = inject(SnackbarService);
+  private translate = inject(TranslateService);
 
   shopLocation = this.shopLocationService.shopLocation;
   loading = this.shopLocationService.loading;
@@ -85,7 +87,7 @@ export class ShopLocationComponent implements OnInit {
       error: (err: any) => {
         this.saving.set(false);
         console.error('Error updating shop location:', err);
-        this.snackbar.errorFrom(err, 'Failed to update shop location');
+        this.snackbar.errorFrom(err, this.translate.instant('ERROR_MESSAGES.ERROR_UPDATING_SHOP_LOCATION'));
       }
     });
   }
@@ -114,7 +116,7 @@ export class ShopLocationComponent implements OnInit {
         } else if (error.code === 2) {
           errorMessage = 'Location unavailable. Please try again.';
         } else if (error.code === 3) {
-          errorMessage = 'Location request timed out. Please try again.';
+          errorMessage = this.translate.instant('ERROR_MESSAGES.LOCATION_REQUEST_TIMED_OUT');
         }
         console.error('Geolocation error:', error);
         this.snackbar.error(errorMessage, { duration: 5000 });

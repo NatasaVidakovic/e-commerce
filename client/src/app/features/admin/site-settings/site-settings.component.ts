@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SiteConfigService, SocialMediaLink, PaymentMethodOption } from '../../../core/services/site-config.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
@@ -40,6 +40,7 @@ export class SiteSettingsComponent implements OnInit {
   private themeService = inject(ThemeService);
   private snackbar = inject(SnackbarService);
   private adminService = inject(AdminService);
+  private translate = inject(TranslateService);
 
   companyName = '';
   companyDescription = '';
@@ -147,7 +148,7 @@ export class SiteSettingsComponent implements OnInit {
   // --- Welcome Image ---
   saveWelcomeImage(): void {
     if (this.showWelcomeImage && !this.welcomeImageUrl) {
-      this.snackbar.error('Please upload an image or provide an image URL when "Show welcome image" is enabled');
+      this.snackbar.error(this.translate.instant('ERROR_MESSAGES.PLEASE_UPLOAD_IMAGE'));
       this.showWelcomeImage = false;
       return;
     }
@@ -156,7 +157,7 @@ export class SiteSettingsComponent implements OnInit {
       welcomeImageUrl: this.welcomeImageUrl,
       showWelcomeImage: this.showWelcomeImage
     });
-    this.snackbar.success('Welcome image settings saved');
+    this.snackbar.success(this.translate.instant('ERROR_MESSAGES.WELCOME_IMAGE_SETTINGS_SAVED'));
   }
 
   onWelcomeFileSelected(event: Event): void {

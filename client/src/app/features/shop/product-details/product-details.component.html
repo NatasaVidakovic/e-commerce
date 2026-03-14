@@ -5,7 +5,7 @@
 
       <!-- Back button column -->
       <div class="pd-back-col">
-        <button class="pd-back-btn" (click)="goBackToShop()" aria-label="Back to shop">
+        <button class="pd-back-btn" (click)="goBackToShop()" [attr.aria-label]="'ARIA_LABELS.BACK_TO_SHOP' | translate">
           <mat-icon>arrow_back</mat-icon>
         </button>
       </div>
@@ -34,11 +34,11 @@
                 <span class="gallery-discount-badge" *ngIf="product.hasActiveDiscount && product.discountPercentage">
                   -{{ product.discountPercentage | number:'1.0-0' }}% OFF
                 </span>
-                <button *ngIf="allImages.length > 1" class="gallery-nav gallery-nav--left" (click)="prevImage()" aria-label="Previous image">
+                <button *ngIf="allImages.length > 1" class="gallery-nav gallery-nav--left" (click)="prevImage()" [attr.aria-label]="'ARIA_LABELS.PREVIOUS_IMAGE' | translate">
                   <mat-icon>chevron_left</mat-icon>
                 </button>
                 <img class="gallery-main-img gallery-main-img--clickable" [src]="currentImage" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: product.name }" loading="lazy" (click)="openLightbox(currentImageIndex)" />
-                <button *ngIf="allImages.length > 1" class="gallery-nav gallery-nav--right" (click)="nextImage()" aria-label="Next image">
+                <button *ngIf="allImages.length > 1" class="gallery-nav gallery-nav--right" (click)="nextImage()" [attr.aria-label]="'ARIA_LABELS.NEXT_IMAGE' | translate">
                   <mat-icon>chevron_right</mat-icon>
                 </button>
                 <div *ngIf="allImages.length > 1" class="gallery-counter">
@@ -93,11 +93,11 @@
             <!-- Quantity + Add to Cart + Wishlist -->
             <div class="pd-actions-row" *ngIf="!accountService.isAdmin()">
               <div class="pd-qty-control">
-                <button class="pd-qty-btn" (click)="decrementQuantity()" [disabled]="quantity <= 1" aria-label="Decrease quantity">
+                <button class="pd-qty-btn" (click)="decrementQuantity()" [disabled]="quantity <= 1" [attr.aria-label]="'ARIA_LABELS.DECREASE_QUANTITY' | translate">
                   <mat-icon>remove</mat-icon>
                 </button>
                 <span class="pd-qty-value">{{ quantity }}</span>
-                <button class="pd-qty-btn" (click)="incrementQuantity()" [disabled]="quantity >= product.quantityInStock" aria-label="Increase quantity">
+                <button class="pd-qty-btn" (click)="incrementQuantity()" [disabled]="quantity >= product.quantityInStock" [attr.aria-label]="'ARIA_LABELS.INCREASE_QUANTITY' | translate">
                   <mat-icon>add</mat-icon>
                 </button>
               </div>
@@ -108,7 +108,7 @@
                 {{ getButtonText() | translate }}
               </button>
 
-              <button class="pd-wishlist-btn" *ngIf="accountService.currentUser() && !accountService.isAdmin()" [class.text-favorite]="isFavourite" [class.text-gray-400]="!isFavourite" (click)="toggleFavorite()" aria-label="Wishlist">
+              <button class="pd-wishlist-btn" *ngIf="accountService.currentUser() && !accountService.isAdmin()" [class.text-favorite]="isFavourite" [class.text-gray-400]="!isFavourite" (click)="toggleFavorite()" [attr.aria-label]="'ARIA_LABELS.WISHLIST' | translate">
                 <mat-icon>{{ isFavourite ? 'favorite' : 'favorite_border' }}</mat-icon>
               </button>
             </div>
@@ -212,18 +212,18 @@
 <div class="lb-backdrop" (click)="closeLightbox()" role="dialog" aria-modal="true">
   <div class="lb-panel" (click)="$event.stopPropagation()">
 
-    <button class="lb-close" (click)="closeLightbox()" aria-label="Close">
+    <button class="lb-close" (click)="closeLightbox()" [attr.aria-label]="'ARIA_LABELS.CLOSE' | translate">
       <mat-icon>close</mat-icon>
     </button>
 
     <div class="lb-counter">{{ lightboxIndex + 1 }} / {{ allImages.length }}</div>
 
     <div class="lb-image-area">
-      <button class="lb-nav lb-nav--left" (click)="lightboxPrev()" *ngIf="allImages.length > 1" aria-label="Previous">
+      <button class="lb-nav lb-nav--left" (click)="lightboxPrev()" *ngIf="allImages.length > 1" [attr.aria-label]="'ARIA_LABELS.PREVIOUS' | translate">
         <mat-icon>chevron_left</mat-icon>
       </button>
       <img class="lb-img" [src]="allImages[lightboxIndex]" [alt]="product?.name" />
-      <button class="lb-nav lb-nav--right" (click)="lightboxNext()" *ngIf="allImages.length > 1" aria-label="Next">
+      <button class="lb-nav lb-nav--right" (click)="lightboxNext()" *ngIf="allImages.length > 1" [attr.aria-label]="'ARIA_LABELS.NEXT' | translate">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>

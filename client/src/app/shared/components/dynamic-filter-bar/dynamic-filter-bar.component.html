@@ -63,7 +63,7 @@
             class="view-toggle-btn"
             [class.active]="viewLayout === 'grid'"
             (click)="onViewLayoutChange('grid')"
-            aria-label="Grid View">
+            [attr.aria-label]="'ARIA_LABELS.GRID_VIEW' | translate">
             <mat-icon>grid_view</mat-icon>
           </button>
           <button
@@ -71,7 +71,7 @@
             class="view-toggle-btn"
             [class.active]="viewLayout === 'list'"
             (click)="onViewLayoutChange('list')"
-            aria-label="List View">
+            [attr.aria-label]="'ARIA_LABELS.LIST_VIEW' | translate">
             <mat-icon>view_list</mat-icon>
           </button>
         </div>
