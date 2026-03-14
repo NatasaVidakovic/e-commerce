@@ -5,11 +5,12 @@ using Core.Entities.OrderAggregate;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace API.Controllers;
 
 [Authorize]
-public class RefundController(IRefundService refundService) : BaseApiController
+public class RefundController(IRefundService refundService, ILogger<RefundController> logger) : BaseApiController
 {
     [HttpPost("request")]
     public async Task<ActionResult<RefundDto>> RequestRefund([FromBody] CreateRefundRequestDto dto)
@@ -20,13 +21,18 @@ public class RefundController(IRefundService refundService) : BaseApiController
             var refund = await refundService.CreateRefundRequestAsync(dto.OrderId, email, dto);
             return Ok(MapToDto(refund));
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedAccessException)
         {
-            return Unauthorized(ex.Message);
+            return Unauthorized(new { success = false, message = "You are not authorized to request this refund" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            logger.LogError(ex, "Error creating refund request for order {OrderId}", dto.OrderId);
+            return StatusCode(500, new { success = false, message = "An error occurred while processing your refund request" });
         }
     }
 
@@ -79,9 +85,14 @@ public class RefundController(IRefundService refundService) : BaseApiController
             var refund = await refundService.ProcessRefundRequestAsync(id, adminEmail, dto);
             return Ok(MapToDto(refund));
         }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            logger.LogError(ex, "Error processing refund {RefundId}", id);
+            return StatusCode(500, new { success = false, message = "An error occurred while processing the refund" });
         }
     }
 
@@ -95,9 +106,14 @@ public class RefundController(IRefundService refundService) : BaseApiController
             var refund = await refundService.ConfirmCodRefundCompletedAsync(id, adminEmail, dto);
             return Ok(MapToDto(refund));
         }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            logger.LogError(ex, "Error confirming COD refund {RefundId}", id);
+            return StatusCode(500, new { success = false, message = "An error occurred while confirming the refund" });
         }
     }
 

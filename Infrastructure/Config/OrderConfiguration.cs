@@ -24,5 +24,16 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             x => DateTime.SpecifyKind(x, DateTimeKind.Utc)
         );
         builder.HasMany(x => x.AuditLogs).WithOne().OnDelete(DeleteBehavior.Cascade);
+
+        // Performance indexes for frequently queried columns
+        builder.HasIndex(o => o.BuyerEmail);
+        builder.HasIndex(o => o.Status);
+        builder.HasIndex(o => o.PaymentStatus);
+        builder.HasIndex(o => o.DeliveryStatus);
+        builder.HasIndex(o => o.OrderDate);
+        builder.HasIndex(o => o.PaymentIntentId);
+        
+        // Composite index for common queries
+        builder.HasIndex(o => new { o.BuyerEmail, o.Status });
     }
 }

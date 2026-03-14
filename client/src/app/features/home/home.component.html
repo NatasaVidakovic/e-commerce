@@ -41,7 +41,7 @@
                  [loop]="false"
                  [config]="discountSwiperConfig">
                 <div class="swiper-wrapper">
-                    <div *ngFor="let discount of discounts" class="swiper-slide">
+                    <div *ngFor="let discount of discounts; trackBy: trackByDiscountId" class="swiper-slide">
                         <div class="discount-card" 
                              [class.active]="selectedDiscount?.id === discount.id"
                              (click)="selectDiscount(discount)">
@@ -110,7 +110,7 @@
                      [config]="productSwiperConfig">
                     <div class="swiper-wrapper product-carousel">
                         <app-product-item 
-                            *ngFor="let product of discountProducts" 
+                            *ngFor="let product of discountProducts; trackBy: trackByProductId" 
                             [product]="product"
                             [isFavourite]="product.isFavourite" 
                             class="swiper-slide product-carousel-item">
@@ -143,7 +143,7 @@
                  [loop]="false"
                  [config]="productSwiperConfig">
                 <div class="swiper-wrapper product-carousel">
-                    <app-product-item *ngFor="let product of bestReviewedProducts" [product]="product"
+                    <app-product-item *ngFor="let product of bestReviewedProducts; trackBy: trackByProductId" [product]="product"
                         [isFavourite]="product.isFavourite" class="swiper-slide product-carousel-item">
                     </app-product-item>
                 </div>
@@ -166,7 +166,7 @@
                  [loop]="false"
                  [config]="productSwiperConfig">
                 <div class="swiper-wrapper product-carousel">
-                    <app-product-item *ngFor="let product of favouriteProducts" [product]="product"
+                    <app-product-item *ngFor="let product of favouriteProducts; trackBy: trackByProductId" [product]="product"
                         [isFavourite]="product.isFavourite" class="swiper-slide product-carousel-item">
                     </app-product-item>
                 </div>
@@ -189,7 +189,7 @@
                  [loop]="false"
                  [config]="productSwiperConfig">
                 <div class="swiper-wrapper product-carousel">
-                    <app-product-item *ngFor="let product of suggestedProducts" [product]="product"
+                    <app-product-item *ngFor="let product of suggestedProducts; trackBy: trackByProductId" [product]="product"
                         [isFavourite]="product.isFavourite" class="swiper-slide product-carousel-item">
                     </app-product-item>
                 </div>

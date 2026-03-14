@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { Product } from '../../../shared/models/product';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
@@ -27,7 +27,8 @@ import { AccountService } from '../../../core/services/account.service';
     CommonModule
   ],
   templateUrl: './product-item.component.html',
-  styleUrl: './product-item.component.scss'
+  styleUrl: './product-item.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductItemComponent {
   @Input() product?: Product;
@@ -38,6 +39,7 @@ export class ProductItemComponent {
   cartService = inject(CartService);
   favouritesService = inject(FavouritesService);
   accountService = inject(AccountService);
+  private cdr = inject(ChangeDetectorRef);
 
   get loggedIn() {
     return this.accountService.isLoggedIn();
@@ -60,6 +62,7 @@ export class ProductItemComponent {
         next: () => {
           this.isFavourite = true;
           this.favoriteToggled.emit({ id: productId, isFavorite: true });
+          this.cdr.markForCheck();
         }
       });
     } else {
@@ -67,6 +70,7 @@ export class ProductItemComponent {
         next: () => {
           this.isFavourite = false;
           this.favoriteToggled.emit({ id: productId, isFavorite: false });
+          this.cdr.markForCheck();
         }
       });
     }

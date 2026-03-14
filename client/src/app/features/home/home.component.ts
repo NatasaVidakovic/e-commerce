@@ -8,11 +8,12 @@ import { BestReviewedService } from '../../core/services/bestReviewed.service';
 import { DiscountService } from '../../core/services/discount.service';
 import { SuggestedProductsService } from '../../core/services/suggested.service';
 import { BestSellingService } from '../../core/services/best-selling.service';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ThemeService } from '../../core/services/theme.service';
 import { SiteConfigService } from '../../core/services/site-config.service';
 import { computed, inject } from '@angular/core';
 import { SwiperDirective } from '../../shared/directives/swiper.directive';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -73,7 +74,8 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
     private bestReviewedService: BestReviewedService,
     private discountService: DiscountService,
     private suggestedProductsService: SuggestedProductsService,
-    private bestSellingService: BestSellingService
+    private bestSellingService: BestSellingService,
+    private router: Router
   ) {}
   
   ngAfterViewInit(): void {
@@ -81,26 +83,23 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.bestReviewedService.getBestReviewedProducts().subscribe(products => {
-      this.bestReviewedProducts = products;
-    });
-
-    this.discountService.getDiscounts().subscribe(discounts => {
-      this.discounts = discounts.filter(discount => discount.state === 'Active');
-      // Auto-select first discount
-      if (this.discounts.length > 0) {
-        this.selectDiscount(this.discounts[0]);
-      }
-      this.startCountdown();
-    });
-
-    this.suggestedProductsService.getSuggestedProducts().subscribe(products => {
-      this.suggestedProducts = products;
-    });
-
-    // Load best selling products (admin-curated list)
-    this.bestSellingService.getBestSellingProducts().subscribe(products => {
-      this.favouriteProducts = products;
+    forkJoin({
+      bestReviewed: this.bestReviewedService.getBestReviewedProducts(),
+      discounts: this.discountService.getDiscounts(),
+      suggested: this.suggestedProductsService.getSuggestedProducts(),
+      bestSelling: this.bestSellingService.getBestSellingProducts()
+    }).subscribe({
+      next: ({ bestReviewed, discounts, suggested, bestSelling }) => {
+        this.bestReviewedProducts = bestReviewed;
+        this.discounts = discounts.filter(d => d.state === 'Active');
+        this.suggestedProducts = suggested;
+        this.favouriteProducts = bestSelling;
+        if (this.discounts.length > 0) {
+          this.selectDiscount(this.discounts[0]);
+        }
+        this.startCountdown();
+      },
+      error: () => {}
     });
   }
 
@@ -195,9 +194,16 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
 
   viewAllDiscountProducts(): void {
     if (this.selectedDiscount) {
-      // Navigate to shop page with discount filter
-      window.location.href = `/shop?discountId=${this.selectedDiscount.id}`;
+      this.router.navigate(['/shop'], { queryParams: { discountId: this.selectedDiscount.id } });
     }
+  }
+
+  trackByDiscountId(_index: number, discount: Discount): number {
+    return discount.id;
+  }
+
+  trackByProductId(_index: number, product: Product): number {
+    return product.id;
   }
 
   ngOnDestroy(): void {

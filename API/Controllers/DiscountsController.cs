@@ -11,7 +11,7 @@ namespace API.Controllers;
 
 public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvider, IDiscountService discountService, IProductService productService) : BaseApiController
 {
-    //[Cached(1)] // POPRAVI obrisi komentare u dokumetnu
+    [Cached(60)]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<DiscountDto>>> GetAllDiscounts()
     {
@@ -137,6 +137,7 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         return Ok(discounts);
     }
 
+    [Cached(60)]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<DiscountDto>> GetDiscountById(int id)
     {
@@ -169,6 +170,7 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         return Ok(dto);
     }
 
+    [Cached(60)]
     [HttpGet("name/{name}")]
     public async Task<ActionResult<Discount>> GetDiscountByName(string name)
     {
@@ -187,7 +189,7 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
     }
 
     [InvalidateCache("api/discounts|")]
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<DiscountDto>> CreateDiscount(CreateDiscountDto discount)
     {
@@ -234,11 +236,12 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while creating the discount", details = ex.Message });
+            return StatusCode(500, new { success = false, message = "An error occurred while creating the discount" });
         }
     }
 
     [InvalidateCache("api/discounts|")]
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateDiscount(int id, CreateDiscountDto discount)
     {
@@ -287,20 +290,20 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         }
         catch (KeyNotFoundException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(new { message = "Discount not found" });
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(new { message = "Invalid operation" });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while updating the discount", details = ex.Message });
+            return StatusCode(500, new { success = false, message = "An error occurred while updating the discount" });
         }
     }
 
     [InvalidateCache("api/discounts|")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteDiscount(int id)
     {
@@ -319,12 +322,12 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while deleting the discount", details = ex.Message });
+            return StatusCode(500, new { success = false, message = "An error occurred while deleting the discount" });
         }
     }
 
     [InvalidateCache("api/discounts|")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("{id}/disable")]
     public async Task<IActionResult> DisableDiscount(int id)
     {
@@ -343,7 +346,7 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while disabling the discount", details = ex.Message });
+            return StatusCode(500, new { success = false, message = "An error occurred while disabling the discount" });
         }
     }
 }

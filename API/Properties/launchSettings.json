@@ -9,10 +9,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "REDIS_CACHING": "true",
-        "FILTER_CONTROLLERS" : "false",
-        "ADMIN_USER_PASSWORD": "Pa$$w0rd",
-        "TEST_USER_PASSWORD": "Pa$$w0rd",
-        "ConnectionStrings__Redis": "localhost:6379,password=devredis123,abortConnect=false"
+        "FILTER_CONTROLLERS": "false"
       }
     },
     "Kestrel": {
@@ -24,10 +21,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000",
         "REDIS_CACHING": "true",
-        "FILTER_CONTROLLERS": "false",
-        "ADMIN_USER_PASSWORD": "Pa$$w0rd",
-        "TEST_USER_PASSWORD": "Pa$$w0rd",
-        "ConnectionStrings__Redis": "localhost:6379,password=devredis123,abortConnect=false"
+        "FILTER_CONTROLLERS": "false"
       }
     }
   }

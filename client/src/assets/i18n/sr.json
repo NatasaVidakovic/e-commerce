@@ -487,6 +487,7 @@
     "INCREASE_QUANTITY": "Povećaj količinu",
     "REMOVE_ITEM": "Ukloni iz korpe",
     "DISCOUNT_APPLIED": "{{percent}}% popusta",
+    "PRODUCT": "Proizvod",
     "QUANTITY": "Količina",
     "CHECKOUT": "Nastavi ka plaćanju",
     "EMPTY": "Vaša korpa je prazna.",

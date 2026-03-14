@@ -210,7 +210,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("BuyerEmail")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -219,7 +219,12 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("AppUserId");
 
+                    b.HasIndex("BuyerEmail");
+
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("BuyerEmail", "ProductId")
+                        .IsUnique();
 
                     b.ToTable("Favourites");
                 });
@@ -237,7 +242,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("BuyerEmail")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Currency")
                         .IsRequired()
@@ -262,7 +267,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentIntentId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("int");
@@ -281,7 +286,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Subtotal")
                         .HasColumnType("decimal(18,2)");
@@ -294,7 +299,21 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BuyerEmail");
+
                     b.HasIndex("DeliveryMethodId");
+
+                    b.HasIndex("DeliveryStatus");
+
+                    b.HasIndex("OrderDate");
+
+                    b.HasIndex("PaymentIntentId");
+
+                    b.HasIndex("PaymentStatus");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("BuyerEmail", "Status");
 
                     b.ToTable("Orders");
                 });
@@ -523,7 +542,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Brand")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -557,7 +576,19 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Brand");
+
+                    b.HasIndex("IsBestReviewed");
+
+                    b.HasIndex("IsBestSelling");
+
+                    b.HasIndex("IsSuggested");
+
+                    b.HasIndex("Price");
+
                     b.HasIndex("ProductTypeId");
+
+                    b.HasIndex("ProductTypeId", "Brand");
 
                     b.ToTable("Products");
                 });
@@ -711,6 +742,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
+
+                    b.HasIndex("ParentCommentId");
 
                     b.HasIndex("ProductId");
 

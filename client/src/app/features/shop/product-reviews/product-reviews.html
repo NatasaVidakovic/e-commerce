@@ -67,7 +67,7 @@
     </p>
 
     <div class="rv-reviews-list">
-      <div *ngFor="let review of reviewsWithComments" class="rv-review-card">
+      <div *ngFor="let review of reviewsWithComments; trackBy: trackByReviewId" class="rv-review-card">
         <div class="rv-review-header">
           <div class="rv-review-stars">
             <mat-icon

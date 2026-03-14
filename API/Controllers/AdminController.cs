@@ -61,15 +61,22 @@ public class AdminController(IUnitOfWork unit, IPaymentService paymentService,
 
         var allUsers = await query.ToListAsync();
 
+        // Fetch ALL user roles in a single query — eliminates N+1
+        var allUserIds = allUsers.Select(u => u.Id).ToList();
+        var userRoleMap = await _context.UserRoles
+            .Where(ur => allUserIds.Contains(ur.UserId))
+            .Join(_context.Roles,
+                ur => ur.RoleId,
+                r => r.Id,
+                (ur, r) => new { ur.UserId, RoleName = r.Name })
+            .GroupBy(x => x.UserId)
+            .ToDictionaryAsync(g => g.Key, g => (IList<string>)g.Select(x => x.RoleName).ToList());
+
         if (!string.IsNullOrWhiteSpace(role))
         {
-            var filtered = new List<AppUser>();
-            foreach (var u in allUsers)
-            {
-                var roles = await _userManager.GetRolesAsync(u);
-                if (roles.Contains(role)) filtered.Add(u);
-            }
-            allUsers = filtered;
+            allUsers = allUsers
+                .Where(u => userRoleMap.TryGetValue(u.Id, out var roles) && roles.Contains(role))
+                .ToList();
         }
 
         IEnumerable<AppUser> sorted = (sortColumn, sortAscending) switch
@@ -83,29 +90,24 @@ public class AdminController(IUnitOfWork unit, IPaymentService paymentService,
         var totalCount = allUsers.Count;
         var paged = allUsers.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-        var userDtos = new List<object>();
-        foreach (var user in paged)
+        var userDtos = paged.Select(user => (object)new
         {
-            var roles = await _userManager.GetRolesAsync(user);
-            userDtos.Add(new
+            user.Id,
+            user.Email,
+            user.FirstName,
+            user.LastName,
+            user.PhoneNumber,
+            user.EmailConfirmed,
+            Roles = userRoleMap.TryGetValue(user.Id, out var roles) ? roles : (IList<string>)Array.Empty<string>(),
+            Address = user.Address != null ? new
             {
-                user.Id,
-                user.Email,
-                user.FirstName,
-                user.LastName,
-                user.PhoneNumber,
-                user.EmailConfirmed,
-                Roles = roles,
-                Address = user.Address != null ? new
-                {
-                    user.Address.Line1,
-                    user.Address.Line2,
-                    user.Address.City,
-                    user.Address.PostalCode,
-                    user.Address.Country
-                } : null
-            });
-        }
+                user.Address.Line1,
+                user.Address.Line2,
+                user.Address.City,
+                user.Address.PostalCode,
+                user.Address.Country
+            } : null
+        }).ToList();
 
         var pagination = new Pagination<object>(pageIndex, pageSize, totalCount, userDtos);
         return Ok(pagination);
@@ -195,7 +197,7 @@ public class AdminController(IUnitOfWork unit, IPaymentService paymentService,
         catch (Exception ex)
         {
             logger.LogError(ex, "Error updating order {OrderId}", id);
-            return BadRequest($"Error updating order status: {ex.Message}");
+            return StatusCode(500, new { success = false, message = "An error occurred while updating order status" });
         }
     }
 
@@ -217,7 +219,8 @@ public class AdminController(IUnitOfWork unit, IPaymentService paymentService,
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error updating tracking: {ex.Message}");
+            logger.LogError(ex, "Error updating tracking for order {OrderId}", id);
+            return StatusCode(500, new { success = false, message = "An error occurred while updating tracking" });
         }
     }
 
@@ -237,7 +240,8 @@ public class AdminController(IUnitOfWork unit, IPaymentService paymentService,
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error adding comment: {ex.Message}");
+            logger.LogError(ex, "Error adding comment to order {OrderId}", id);
+            return StatusCode(500, new { success = false, message = "An error occurred while adding comment" });
         }
     }
 
@@ -276,7 +280,8 @@ public class AdminController(IUnitOfWork unit, IPaymentService paymentService,
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error sending email: {ex.Message}");
+            logger.LogError(ex, "Error sending email for order {OrderId}", id);
+            return StatusCode(500, new { success = false, message = "An error occurred while sending email" });
         }
     }
 

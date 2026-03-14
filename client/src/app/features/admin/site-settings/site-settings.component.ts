@@ -314,4 +314,12 @@ export class SiteSettingsComponent implements OnInit {
     reader.onerror = () => this.snackbar.error('Failed to read image file');
     reader.readAsDataURL(file);
   }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
+
+  trackByDeliveryId(_index: number, dm: any): number {
+    return dm.id;
+  }
 }

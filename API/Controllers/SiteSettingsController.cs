@@ -1,3 +1,4 @@
+using API.RequestHelpers;
 using Core.Entities;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ namespace API.Controllers;
 
 public class SiteSettingsController(ISiteSettingsService siteSettingsService) : BaseApiController
 {
+    [Cached(300)]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<SiteSettings>>> GetAll()
     {
@@ -14,6 +16,7 @@ public class SiteSettingsController(ISiteSettingsService siteSettingsService) : 
         return Ok(settings);
     }
 
+    [Cached(300)]
     [HttpGet("{key}")]
     public async Task<ActionResult<SiteSettings>> GetByKey(string key)
     {
@@ -22,6 +25,7 @@ public class SiteSettingsController(ISiteSettingsService siteSettingsService) : 
         return Ok(setting);
     }
 
+    [InvalidateCache("api/sitesettings|")]
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<SiteSettings>> Set([FromBody] SiteSettingsDto dto)
@@ -33,6 +37,7 @@ public class SiteSettingsController(ISiteSettingsService siteSettingsService) : 
         return Ok(setting);
     }
 
+    [InvalidateCache("api/sitesettings|")]
     [Authorize(Roles = "Admin")]
     [HttpPost("batch")]
     public async Task<ActionResult> SetMany([FromBody] List<SiteSettingsDto> items)
@@ -50,6 +55,7 @@ public class SiteSettingsController(ISiteSettingsService siteSettingsService) : 
         return Ok();
     }
 
+    [InvalidateCache("api/sitesettings|")]
     [Authorize(Roles = "Admin")]
     [HttpDelete("{key}")]
     public async Task<ActionResult> Delete(string key)

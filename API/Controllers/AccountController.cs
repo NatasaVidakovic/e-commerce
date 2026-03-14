@@ -1,4 +1,5 @@
 using API.Extensions;
+using Core.Configuration;
 using Core.DTOs;
 using Core.Entities;
 using Core.Interfaces;
@@ -8,19 +9,21 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
-
 
 namespace API.Controllers;
 
 public class AccountController(
     SignInManager<AppUser> signInManager,
-    IConfiguration configuration,
+    IOptions<AppSettings> appSettings,
     ILogger<AccountController> _logger,
     IEmailService emailService) : BaseApiController
 {
     #region Forgot / Reset Password
 
+    [EnableRateLimiting("auth")]
     [HttpPost("forgot-password")]
     public async Task<ActionResult> ForgotPassword(ForgotPasswordDto dto)
     {
@@ -42,8 +45,7 @@ public class AccountController(
         }
 
         var token = await signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
-        var frontendUrl = configuration["FRONTEND_URL"] ?? "https://localhost:4200";
-        var resetLink = $"{frontendUrl}/account/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
+        var resetLink = $"{appSettings.Value.FrontendUrl}/account/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
 
         await emailService.SendPasswordResetEmailAsync(user.Email!, resetLink, user.FirstName ?? "");
 
@@ -71,6 +73,7 @@ public class AccountController(
 
     #endregion
 
+    [EnableRateLimiting("auth")]
     [HttpPost("login-with-feedback")]
     public async Task<ActionResult> LoginWithFeedback([FromBody] LoginDto dto)
     {
@@ -99,6 +102,7 @@ public class AccountController(
         return Ok(new { email = user.Email, firstName = user.FirstName, lastName = user.LastName });
     }
 
+    [EnableRateLimiting("auth")]
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterDto registerDto)
     {
@@ -214,7 +218,7 @@ public class AccountController(
     {
 
         var returnUrlValue = returnUrl ?? "/shop";
-        var baseUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "https://localhost:4200";
+        var baseUrl = appSettings.Value.FrontendUrl;
 
         _logger.LogInformation("=== GoogleResponse method called ===");
         

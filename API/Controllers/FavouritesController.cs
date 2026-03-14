@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Core.DTOs;
 namespace API.Controllers;
 
-// [Authorize]
+[Authorize]
 public class FavouritesController(IFavouriteService favouriteService) : BaseApiController
 {
 

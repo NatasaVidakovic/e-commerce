@@ -133,7 +133,25 @@ export class AboutComponent implements OnInit, AfterViewInit {
     };
     if ((window as any).google && (window as any).google.maps) {
       this.loadMap();
+    } else {
+      this.loadGoogleMapsScript();
     }
+  }
+
+  private loadGoogleMapsScript(): void {
+    const key = environment.googleMapsApiKey;
+    if (!key) {
+      return;
+    }
+    if (document.querySelector('script[data-maps-api]')) {
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    script.setAttribute('data-maps-api', 'true');
+    document.head.appendChild(script);
   }
 
   private loadShopLocation(): void {
@@ -228,18 +246,11 @@ export class AboutComponent implements OnInit, AfterViewInit {
     if (this.errors.name || this.errors.email || this.errors.message) return;
 
     this.sending = true;
-    const adminEmail = this.config().contactEmail;
-    if (!adminEmail) {
-      this.snackbar.error('Contact email is not configured. Please try again later.');
-      this.sending = false;
-      return;
-    }
 
     this.http.post(environment.baseUrl + 'contact', {
       name: this.contactName,
       email: this.contactEmail,
-      message: this.contactMessage,
-      adminEmail: adminEmail
+      message: this.contactMessage
     }).subscribe({
       next: () => {
         this.sending = false;
@@ -261,5 +272,13 @@ export class AboutComponent implements OnInit, AfterViewInit {
 
   private isValidEmail(email: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  getSafeUrl(url: string): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return 'https://' + url;
   }
 }

@@ -6,6 +6,10 @@
 # dotenv files
 .env
 
+# Local development secrets — never commit these
+API/appsettings.Development.json
+client/src/environments/environment.development.ts
+
 # User-specific files
 *.rsuser
 *.suo

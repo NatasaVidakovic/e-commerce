@@ -1,6 +1,6 @@
 import { provideTranslateService, provideTranslateLoader } from "@ngx-translate/core";
 import { provideTranslateHttpLoader } from "@ngx-translate/http-loader";
-import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
 import { provideRouter, withPreloading, PreloadAllModules, withViewTransitions } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -14,6 +14,7 @@ import { lastValueFrom } from 'rxjs';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { GlobalErrorHandler } from './core/services/global-error-handler.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -45,6 +46,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
       useValue: { autoFocus: 'dialog', restoreFocus: true }
-    }
+    },
+    { provide: ErrorHandler, useClass: GlobalErrorHandler }
   ],
 };

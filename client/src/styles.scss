@@ -589,7 +589,8 @@ table.mat-table {
 }
 
 .mdc-notched-outline__notch {
-  border-right-style: none !important;
+  border-left: none !important;
+  border-right: none !important;
 }
 
 // Dark-theme fixes for Tailwind light utility classes used across templates

@@ -49,7 +49,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         router.navigateByUrl('/not-found');
       }
       if (err.status === 500) {
-        const navigationExtras: NavigationExtras = {state: {error: err.error}};
+        const navigationExtras: NavigationExtras = {state: {error: { message: 'A server error occurred. Please try again later.' }}};
         router.navigateByUrl('/server-error', navigationExtras);
       }
       return throwError(() => err)

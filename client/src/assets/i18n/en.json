@@ -493,6 +493,7 @@
     "INCREASE_QUANTITY": "Increase quantity",
     "REMOVE_ITEM": "Remove from cart",
     "DISCOUNT_APPLIED": "{{percent}}% discount applied",
+    "PRODUCT": "Product",
     "QUANTITY": "Quantity",
     "CHECKOUT": "Proceed to Checkout",
     "EMPTY": "Your shopping cart is empty.",

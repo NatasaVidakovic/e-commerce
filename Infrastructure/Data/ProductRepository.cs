@@ -124,11 +124,16 @@ public class ProductRepository(StoreContext context) : IProductRepository
             .Where(p => p.Reviews.Any())
             .ToListAsync();
 
+        // Use already-loaded p.Reviews — avoids re-querying context.Reviews for every product
         IList<(Product, float, int)> ret = reviewedProducts
-            .GroupJoin(context.Reviews,
-                p => p.Id,
-                r => r.ProductId,
-                (p, r) => new { Product = p, Avg = r.Any() ? (float)Math.Round((double)r.Average(r1 => r1.Rating), 2) : 0f, Total = r.Count() })
+            .Select(p => new
+            {
+                Product = p,
+                Avg = p.Reviews.Count > 0
+                    ? (float)Math.Round(p.Reviews.Average(r => (double)(r.Rating ?? 0)), 2)
+                    : 0f,
+                Total = p.Reviews.Count
+            })
             .OrderByDescending(x => x.Avg)
             .Select(x => (x.Product, x.Avg, x.Total))
             .ToList();

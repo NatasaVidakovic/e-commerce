@@ -21,7 +21,7 @@
             <div class="gallery-layout">
               <!-- Vertical thumbnails -->
               <div class="gallery-thumbs-col" *ngIf="allImages.length > 1">
-                <img *ngFor="let img of allImages; let i = index"
+                <img *ngFor="let img of allImages; let i = index; trackBy: trackByIndex"
                      [src]="img"
                      [class.active]="i === currentImageIndex"
                      (click)="selectImage(i)"
@@ -175,7 +175,7 @@
         <div class="pd-suggested-section" *ngIf="suggestedProducts.length > 0">
           <h2 class="pd-suggested-title">{{ 'PRODUCT.YOU_MAY_ALSO_LIKE' | translate }}</h2>
           <div class="pd-suggested-grid">
-            <a *ngFor="let p of suggestedProducts" [routerLink]="['/shop', p.id]" class="pd-suggested-card">
+            <a *ngFor="let p of suggestedProducts; trackBy: trackByProductId" [routerLink]="['/shop', p.id]" class="pd-suggested-card">
               <div class="pd-suggested-img-wrap">
                 <img [src]="p.pictureUrl" [alt]="p.name" loading="lazy" class="pd-suggested-img" />
                 <span class="pd-suggested-badge" *ngIf="p.hasActiveDiscount && p.discountPercentage">
@@ -229,7 +229,7 @@
     </div>
 
     <div class="lb-thumbs" *ngIf="allImages.length > 1">
-      <img *ngFor="let img of allImages; let i = index"
+      <img *ngFor="let img of allImages; let i = index; trackBy: trackByIndex"
            [src]="img"
            [class.lb-thumb--active]="i === lightboxIndex"
            class="lb-thumb"

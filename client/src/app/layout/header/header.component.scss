@@ -96,9 +96,10 @@
   min-width: 2.75rem;
   
   .mat-badge-content {
-    width: 1.25rem;
+    min-width: 1.25rem;
     height: 1.25rem;
-    font-size: 0.75rem;
+    padding: 0 0.25rem;
+    font-size: 0.7rem;
     line-height: 1.25rem;
     background-color: var(--color-primary);
   }
@@ -153,9 +154,10 @@
   
   // Badge styling for mobile
   .mat-badge-content {
-    width: 1.25rem;
+    min-width: 1.25rem;
     height: 1.25rem;
-    font-size: 0.75rem;
+    padding: 0 0.25rem;
+    font-size: 0.7rem;
     line-height: 1.25rem;
     background-color: var(--color-primary);
     position: absolute;

@@ -1,38 +1,26 @@
-<div class="rounded-lg border p-4 shadow-sm mb-4 cart-item-card">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-6 cart-item-content">
-        <a routerLink="/shop/{{item().productId}}" class="shrink order-1 md:order-none cart-item-image">
-            <img class="h-20 w-20" src="{{item().pictureUrl}}" alt="{{ 'PRODUCT.IMAGE_ALT' | translate:{name: item().productName} }}">
-        </a>
-        <div class="flex flex-1 flex-col md:flex-row items-center justify-between gap-6 cart-item-details">
-            <div class="flex-1">
-                <a routerLink="/shop/{{item().productId}}" class="font-medium cart-item-name">
-                    {{item().productName}}
-                </a>
-                <div class="cart-item-price">
-                    <p class="font-bold text-xl price-label" style="color: var(--color-text-secondary);">{{ 'COMMON.PRICE' | translate }}:</p>
-                    <p class="font-bold text-xl price-value" style="color: var(--color-text-primary);">{{item().price | currency}}</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-4 cart-item-actions">
-                <div class="flex items-center align-middle gap-3 quantity-controls">
-                    <button mat-icon-button (click)="decrementQuantity()" class="quantity-btn">
-                        <mat-icon class="text-red-600">remove_circle_outline</mat-icon>
-                    </button>
+<div class="cart-list-row">
+    <a routerLink="/shop/{{item().productId}}" class="cart-thumb">
+        <img [src]="item().pictureUrl" alt="{{ 'PRODUCT.IMAGE_ALT' | translate:{name: item().productName} }}">
+    </a>
 
-                    <div class="font-semibold text-xl mb-1 w-8 text-center quantity-display">
-                        {{item().quantity}}
-                    </div>
-
-                    <button mat-icon-button (click)="incrementQuantity()" class="quantity-btn">
-                        <mat-icon class="text-green-600">add_circle_outline</mat-icon>
-                    </button>
-                </div>
-
-                <button (click)="removeItemFromCart()" mat-button class="text-red-700 flex gap-2 items-center remove-btn">
-                    <mat-icon>delete</mat-icon>
-                    <span>{{ 'CART.DELETE' | translate }}</span>
-                </button>
-            </div>
-        </div>
+    <div class="cart-info">
+        <a routerLink="/shop/{{item().productId}}" class="cart-name">{{item().productName}}</a>
+        <span class="cart-price">{{item().price | currency}}</span>
     </div>
+
+    <div class="cart-qty">
+        <button mat-icon-button (click)="decrementQuantity()" class="qty-btn">
+            <mat-icon>remove</mat-icon>
+        </button>
+        <span class="qty-value">{{item().quantity}}</span>
+        <button mat-icon-button (click)="incrementQuantity()" class="qty-btn">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+
+    <span class="cart-subtotal">{{(item().price * item().quantity) | currency}}</span>
+
+    <button mat-icon-button (click)="removeItemFromCart()" class="cart-delete">
+        <mat-icon>delete_outline</mat-icon>
+    </button>
 </div>

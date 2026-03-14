@@ -15,7 +15,7 @@ using API.Extensions;
 
 namespace API.Controllers;
 
-public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManager, IReviewService reviewService, IProductService productService, IImageStorageService imageStorageService) : BaseApiController
+public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManager, IReviewService reviewService, IProductService productService, IImageStorageService imageStorageService, ILogger<ProductsController> logger) : BaseApiController
 {
     [Cached(1)]
     [HttpGet]
@@ -28,6 +28,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
     }
 
     #region BestSelling
+    [Cached(300)]
     [HttpGet("best-selling")]
     public async Task<IActionResult> GetBestSellingProducts()
     {
@@ -59,7 +60,8 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+            logger.LogError(ex, "Error filtering best selling products");
+            return StatusCode(500, new { success = false, message = "Failed to retrieve products" });
         }
     }
 
@@ -242,6 +244,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
     }
 
     #region Discounts
+    [Cached(300)]
     [HttpGet("discounts")]
     public async Task<IActionResult> GetDiscountProductList()
     {
@@ -251,6 +254,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
     #endregion
 
     #region BestReviewed
+    [Cached(300)]
     [HttpGet("best-reviewed")]
     public async Task<IActionResult> GetBestReviewedProducts()
     {
@@ -326,12 +330,14 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+            logger.LogError(ex, "Error filtering best reviewed products");
+            return StatusCode(500, new { success = false, message = "Failed to retrieve products" });
         }
     }
     #endregion
 
     #region Suggested
+    [Cached(300)]
     [HttpGet("suggested")]
     public async Task<IActionResult> GetSuggestedProducts()
     {
@@ -363,7 +369,8 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+            logger.LogError(ex, "Error filtering suggested products");
+            return StatusCode(500, new { success = false, message = "Failed to retrieve products" });
         }
     }
 

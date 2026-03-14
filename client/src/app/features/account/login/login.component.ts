@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatCard } from '@angular/material/card';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -11,7 +11,7 @@ import { AccountService } from '../../../core/services/account.service';
 import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, MatCard, MatFormField, MatInput, MatButton, MatLabel, MatIcon, RouterLink, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, MatCard, MatFormField, MatInput, MatButton, MatIconButton, MatLabel, MatSuffix, MatIcon, RouterLink, TranslatePipe],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -22,6 +22,7 @@ export class LoginComponent {
   private activatedRoute = inject(ActivatedRoute);
   returnUrl = '/shop';
   errorMessage = '';
+  hidePassword = true;
 
   constructor() {
     const url = this.activatedRoute.snapshot.queryParams['returnUrl'];

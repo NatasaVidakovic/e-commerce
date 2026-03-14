@@ -148,4 +148,8 @@ export class ProductReviewsComponent implements OnChanges {
             }
         });
     }
+
+    trackByReviewId(_index: number, review: ProductReview): number {
+        return review.id;
+    }
 }

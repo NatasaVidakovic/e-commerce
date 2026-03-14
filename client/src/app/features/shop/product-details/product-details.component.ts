@@ -5,7 +5,6 @@ import { takeUntil } from 'rxjs/operators';
 import { ShopService } from '../../../core/services/shop.service';
 import { Product } from '../../../shared/models/product';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { CartService } from '../../../core/services/cart.service';
 import { AccountService } from '../../../core/services/account.service';
@@ -18,7 +17,6 @@ import { FavouritesService } from '../../../core/services/favourites.service';
   selector: 'app-product-details',
   imports: [
     MatIcon,
-    MatIconButton,
     CurrencyPipe,
     CommonModule,
     ProductReviewsComponent,
@@ -277,5 +275,13 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     } else {
       this.router.navigate(['/shop']);
     }
+  }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
+
+  trackByProductId(_index: number, product: Product): number {
+    return product.id;
   }
 }

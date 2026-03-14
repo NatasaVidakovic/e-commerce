@@ -137,13 +137,12 @@
                 <div class="info-card__body">
                     <div class="social-links">
                         <a *ngFor="let link of config().socialMediaLinks"
-                           [href]="link.url" target="_blank" rel="noopener noreferrer"
+                           [href]="getSafeUrl(link.url)" target="_blank" rel="noopener noreferrer"
                            class="social-link" [attr.aria-label]="link.platform">
                             <span class="social-link__icon">
                                 <mat-icon>{{ link.icon }}</mat-icon>
                             </span>
                             <span class="social-link__name">{{ link.platform }}</span>
-                            <mat-icon class="social-link__arrow">arrow_forward</mat-icon>
                         </a>
                     </div>
                 </div>
