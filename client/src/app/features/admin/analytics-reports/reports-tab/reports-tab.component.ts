@@ -1,5 +1,3 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -58,6 +56,7 @@ export class ReportsTabComponent implements OnInit {
   selectedReportType: string = '';
   selectedFormat: string = 'pdf';
   loading = false;
+  pdfGenerating = false;
   filterBarVisible = false;
   currentFilterValues: Record<string, any> = {};
 
@@ -537,86 +536,43 @@ export class ReportsTabComponent implements OnInit {
     };
   }
 
-  private exportPdf(filename: string, title: string): void {
-    const desc    = this.getReportDescription(this.selectedReportType);
-    const doc     = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
-    const pw      = doc.internal.pageSize.getWidth();
-    const ph      = doc.internal.pageSize.getHeight();
-    const now     = new Date();
-    const genDate = now.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
-    const genTime = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-
-    // Header band
-    doc.setFillColor(30, 41, 59);
-    doc.rect(0, 0, pw, 20, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(14); doc.setFont('helvetica', 'bold');
-    doc.text('WebShop', 10, 13);
-    doc.setFontSize(12);
-    doc.text(title, pw - 10, 13, { align: 'right' });
-
-    // Subtitle
-    doc.setTextColor(100, 116, 139);
-    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-    doc.text(desc, 10, 27);
-    doc.text(`Generated: ${genDate} at ${genTime}   |   ${this.reportData.length} records`, pw - 10, 27, { align: 'right' });
-    doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.3);
-    doc.line(10, 30, pw - 10, 30);
-
-    let y = 36;
-
-    // Summary metric cards
-    if (this.reportSummaryMetrics.length > 0) {
-      const count = this.reportSummaryMetrics.length;
-      const cardW = (pw - 20 - (count - 1) * 4) / count;
-      const cardH = 22;
-      this.reportSummaryMetrics.forEach((m, i) => {
-        const x = 10 + i * (cardW + 4);
-        doc.setFillColor(248, 250, 252);
-        doc.setDrawColor(226, 232, 240);
-        doc.roundedRect(x, y, cardW, cardH, 2, 2, 'FD');
-        doc.setTextColor(100, 116, 139);
-        doc.setFontSize(7); doc.setFont('helvetica', 'bold');
-        doc.text(m.label.toUpperCase(), x + 4, y + 7);
-        doc.setTextColor(26, 32, 44);
-        doc.setFontSize(15); doc.setFont('helvetica', 'bold');
-        doc.text(String(m.value), x + 4, y + 17);
-      });
-      y += cardH + 8;
-    }
-
-    // Data table
-    autoTable(doc, {
-      head: [this.reportColumns.map(c => c.label.toUpperCase())],
-      body: this.reportData.map(row =>
-        this.reportColumns.map(col => String(row[col.key] ?? ''))
-      ),
-      startY: y,
-      margin: { left: 10, right: 10 },
-      theme: 'grid',
-      headStyles: {
-        fillColor: [30, 41, 59],
-        textColor: [241, 245, 249],
-        fontSize: 8,
-        fontStyle: 'bold',
-        cellPadding: { top: 4, bottom: 4, left: 4, right: 4 },
+  openReportDesigner(): void {
+    // Use the designer URL from the API — open via <a> tag to avoid popup blocker
+    this.http.get<{url: string}>(environment.baseUrl + 'reports/designer-url').subscribe({
+      next: (res) => {
+        window.open(res.url, '_blank');
       },
-      bodyStyles: {
-        fontSize: 9,
-        textColor: [26, 32, 44],
-        cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
-      },
-      alternateRowStyles: { fillColor: [248, 250, 252] },
-      didDrawPage: (data: any) => {
-        const pageNum = (doc as any).internal.getNumberOfPages();
-        doc.setFontSize(7);
-        doc.setTextColor(148, 163, 184);
-        doc.text(`${title} — ${genDate}`, 10, ph - 5);
-        doc.text(`Page ${pageNum}   |   WebShop Admin — Confidential`, pw - 10, ph - 5, { align: 'right' });
-      },
+      error: () => {
+        const fallbackUrl = environment.production
+          ? 'https://jsreport.ambitiousbeach-cb1f5a83.westeurope.azurecontainerapps.io/studio'
+          : 'http://localhost:5488/studio';
+        window.open(fallbackUrl, '_blank');
+      }
     });
+  }
 
-    doc.save(`${filename}.pdf`);
+  private exportPdf(filename: string, title: string): void {
+    if (this.pdfGenerating) return;
+    this.pdfGenerating = true;
+    const payload = {
+      reportType: this.selectedReportType,
+      title,
+      description: this.getReportDescription(this.selectedReportType),
+      columns: this.reportColumns.map(c => ({ key: c.key, label: c.label })),
+      data: this.reportData,
+      metrics: this.reportSummaryMetrics.map(m => ({
+        label: m.label,
+        value: m.value,
+        change: m.change ?? null
+      }))
+    };
+    this.http.post(environment.baseUrl + 'reports/pdf', payload, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        this.triggerDownload(blob, `${filename}.pdf`);
+        this.pdfGenerating = false;
+      },
+      error: () => { this.pdfGenerating = false; }
+    });
   }
 
   private buildReportHtml(title: string, description: string): string {

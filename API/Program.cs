@@ -230,6 +230,8 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>(); 
 builder.Services.AddScoped<IResponseCacheService, ResponseCacheService>();
+builder.Services.AddScoped<IJsReportService, JsReportService>();
+builder.Services.AddHttpClient("JsReport");
 
 builder.Services.AddAuthentication()
     .AddCookie("Cookies")  

@@ -66,11 +66,14 @@
             <mat-option value="csv">CSV</mat-option>
           </mat-select>
         </mat-form-field>
-        <button mat-icon-button (click)="onExportClick(selectedFormat)" [matTooltip]="'ADMIN.DOWNLOAD' | translate">
+        <button mat-icon-button (click)="onExportClick(selectedFormat)" [matTooltip]="'ADMIN.DOWNLOAD' | translate" [disabled]="pdfGenerating && selectedFormat === 'pdf'">
           <mat-icon>download</mat-icon>
         </button>
         <button mat-icon-button (click)="printReport()" matTooltip="Print report">
           <mat-icon>print</mat-icon>
+        </button>
+        <button mat-icon-button (click)="openReportDesigner()" matTooltip="Open Report Designer">
+          <mat-icon>design_services</mat-icon>
         </button>
       </div>
     </div>

@@ -315,3 +315,42 @@
   font-size: 0.8rem;
   color: var(--color-text-secondary, #6b7280);
 }
+
+/* Currency preview */
+.currency-preview {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: var(--color-surface-secondary, #f9fafb);
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border-primary, #e5e7eb);
+}
+
+.preview-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.5rem 0;
+}
+
+.preview-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.preview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.preview-label {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.preview-value {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}

@@ -12,6 +12,10 @@
           <mat-icon>edit</mat-icon>
           {{ 'COMMON.EDIT' | translate }}
         </button>
+        <button mat-raised-button (click)="downloadProductSheet()" [disabled]="!product">
+          <mat-icon>picture_as_pdf</mat-icon>
+          {{ 'PRODUCT.DOWNLOAD_SHEET' | translate }}
+        </button>
         <button mat-raised-button color="warn" (click)="deleteProduct()" [disabled]="!product">
           <mat-icon>delete</mat-icon>
           {{ 'COMMON.DELETE' | translate }}

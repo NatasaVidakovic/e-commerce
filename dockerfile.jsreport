@@ -1,0 +1,12 @@
+FROM jsreport/jsreport:latest
+
+# Disable authentication for easier integration
+ENV extensions_authentication_enabled=false
+ENV extensions_assets_allowedFiles=**/*.+(js|css|html|jpg|jpeg|png|svg|ttf)
+
+# Expose port
+EXPOSE 5488
+
+# Create data directory for persistence
+RUN mkdir -p /app/data
+VOLUME ["/app/data"]

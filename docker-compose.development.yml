@@ -13,6 +13,7 @@ services:
       - "ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pem"
       - "ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/https/localhost-key.pem"
       - "DEFAULT_USER_PASSWORD=Pa$$w0rd"
+      - "JsReport__Url=http://jsreport:5488"
       - "Cors__AllowedOrigins__0=https://localhost:4200"
       - "Cors__AllowedOrigins__1=https://localhost"
     volumes:
@@ -60,6 +61,19 @@ services:
     networks:
       - webshop-network
 
+  jsreport:
+    image: jsreport/jsreport:latest
+    ports:
+      - "5488:5488"
+    environment:
+      - "extensions_authentication_enabled=false"
+      - "extensions_assets_allowedFiles=**/*.+(js|css|html|jpg|jpeg|png|svg|ttf)"
+      - "allowLocalFilesAccess=true"
+    volumes:
+      - jsreport-data:/jsreport
+    networks:
+      - webshop-network
+
 networks:
   webshop-network:
     driver: bridge
@@ -67,3 +81,4 @@ networks:
 volumes:
   sql-data:
   redis-data:
+  jsreport-data:

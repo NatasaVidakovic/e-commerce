@@ -58,9 +58,12 @@
         <label class="field-label">{{ 'ADMIN.SITE_SETTINGS_CURRENCY_SELECT' | translate }}</label>
         <mat-form-field appearance="outline" class="w-full">
           <mat-select [(value)]="currentCurrency" (selectionChange)="onCurrencyChange()" class="currency-select">
+            <mat-select-trigger>
+              {{ currentCurrency.name }} ({{ currentCurrency.code }}) - {{ currentCurrency.symbol }}
+            </mat-select-trigger>
             <mat-option *ngFor="let currency of availableCurrencies" [value]="currency">
               <div class="currency-option">
-                <span class="currency-name">{{ currency.name }} ({{ currency.code }})</span>
+                <span class="currency-name">{{ currency.name }} ({{ currency.code }}) - {{ currency.symbol }}</span>
               </div>
             </mat-option>
           </mat-select>
@@ -69,7 +72,7 @@
       </div>
 
       <div class="currency-preview">
-        <h4>{{ 'ADMIN.SITE_SETTINGS_CURRENCY_PREVIEW' | translate }}</h4>
+        <h5 class="preview-title">{{ 'ADMIN.SITE_SETTINGS_CURRENCY_PREVIEW' | translate }}</h5>
         <div class="preview-examples">
           <div class="preview-item">
             <span class="preview-label">Sample Price:</span>

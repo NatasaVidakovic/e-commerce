@@ -6,7 +6,12 @@
             <h2 class="text-xl sm:text-2xl font-semibold" style="color: var(--color-text-primary);">
                 {{ 'ORDER_DETAILS.TITLE' | translate: { orderId: order.id } }}
             </h2>
-            <button (click)="onReturnClick()" mat-stroked-button class="w-full sm:w-auto">{{ 'ORDER_DETAILS.RETURN_BUTTON' | translate }}</button>
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button mat-stroked-button (click)="downloadInvoice()" class="flex-1 sm:flex-none">
+                    <mat-icon>receipt_long</mat-icon> {{ 'ORDER_DETAILS.DOWNLOAD_INVOICE' | translate }}
+                </button>
+                <button (click)="onReturnClick()" mat-stroked-button class="flex-1 sm:flex-none">{{ 'ORDER_DETAILS.RETURN_BUTTON' | translate }}</button>
+            </div>
         </div>
 
         <!-- Status Banner -->

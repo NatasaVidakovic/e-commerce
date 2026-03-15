@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AdminService } from '../../../../core/services/admin.service';
+import { ReportingService } from '../../../../core/services/reporting.service';
 import { Order, OrderAuditLog } from '../../../../shared/models/order';
 
 export interface OrderDetailsDialogData {
@@ -29,6 +30,7 @@ export interface OrderDetailsDialogData {
 export class OrderDetailsDialogComponent implements OnInit {
   private adminService = inject(AdminService);
   private dialogRef = inject(MatDialogRef<OrderDetailsDialogComponent>);
+  private reportingService = inject(ReportingService);
 
   order?: Order;
   loading = true;
@@ -118,5 +120,17 @@ export class OrderDetailsDialogComponent implements OnInit {
     if (fieldChanged === 'PaymentStatus') return 'type-payment';
     if (fieldChanged === 'DeliveryStatus') return 'type-delivery';
     return 'type-default';
+  }
+
+  downloadInvoice(): void {
+    if (this.order) {
+      this.reportingService.downloadInvoice(this.order.id);
+    }
+  }
+
+  downloadOrderSummary(): void {
+    if (this.order) {
+      this.reportingService.downloadOrderSummary(this.order.id);
+    }
   }
 }

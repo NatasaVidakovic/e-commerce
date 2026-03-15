@@ -28,6 +28,15 @@ public class SupabaseImageStorageService : IImageStorageService
     public SupabaseImageStorageService(IOptions<SupabaseStorageSettings> options, IHttpClientFactory httpClientFactory)
     {
         _settings = options.Value;
+
+        if (string.IsNullOrWhiteSpace(_settings.ProjectUrl))
+            throw new InvalidOperationException(
+                "Supabase:ProjectUrl is not configured. Set the 'Supabase__ProjectUrl' environment variable.");
+
+        if (string.IsNullOrWhiteSpace(_settings.ServiceRoleKey))
+            throw new InvalidOperationException(
+                "Supabase:ServiceRoleKey is not configured. Set the 'Supabase__ServiceRoleKey' environment variable.");
+
         _http = httpClientFactory.CreateClient("Supabase");
         _http.BaseAddress = new Uri(_settings.ProjectUrl.TrimEnd('/') + "/storage/v1/");
         _http.DefaultRequestHeaders.Authorization =
@@ -137,7 +146,13 @@ public class SupabaseImageStorageService : IImageStorageService
         request.Headers.Add("x-upsert", "true");
 
         var response = await _http.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException(
+                $"Supabase storage upload failed ({(int)response.StatusCode}): {body}");
+        }
 
         // Return the public URL
         return $"{_settings.ProjectUrl.TrimEnd('/')}/storage/v1/object/public/{_settings.Bucket}/{objectPath}";

@@ -18,7 +18,7 @@ export class CurrencyService {
     name: 'Konvertibilna Marka',
     decimalPlaces: 2,
     symbolPosition: 'after',
-    spaceBetween: false
+    spaceBetween: true
   };
 
   private currentCurrencySubject = new BehaviorSubject<Currency>(this.defaultCurrency);
@@ -79,11 +79,9 @@ export class CurrencyService {
     const formattedValue = value.toFixed(curr.decimalPlaces);
     
     if (curr.symbolPosition === 'before') {
-      const space = curr.spaceBetween ? ' ' : '';
-      return `${curr.symbol}${space}${formattedValue}`;
+      return `${curr.symbol} ${formattedValue}`;
     } else {
-      const space = curr.spaceBetween ? ' ' : '';
-      return `${formattedValue}${space}${curr.symbol}`;
+      return `${formattedValue} ${curr.symbol}`;
     }
   }
 
@@ -109,7 +107,7 @@ export class CurrencyService {
         name: 'Konvertibilna Marka',
         decimalPlaces: 2,
         symbolPosition: 'after',
-        spaceBetween: false
+        spaceBetween: true
       },
       {
         code: 'USD',
@@ -117,7 +115,7 @@ export class CurrencyService {
         name: 'US Dollar',
         decimalPlaces: 2,
         symbolPosition: 'before',
-        spaceBetween: false
+        spaceBetween: true
       },
       {
         code: 'EUR',
@@ -133,7 +131,7 @@ export class CurrencyService {
         name: 'British Pound',
         decimalPlaces: 2,
         symbolPosition: 'before',
-        spaceBetween: false
+        spaceBetween: true
       },
       {
         code: 'RSD',

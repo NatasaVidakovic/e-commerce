@@ -9,6 +9,18 @@
         <mat-icon class="mr-2">refresh</mat-icon>
         Refresh Orders
       </button>
+      @if (selectedOrder) {
+        <button mat-raised-button (click)="downloadInvoice(selectedOrder)"
+          class="bg-purple-600 text-white hover:bg-purple-700">
+          <mat-icon class="mr-2">receipt_long</mat-icon>
+          {{ 'ORDER_DETAILS.DOWNLOAD_INVOICE' | translate }} #{{selectedOrder.id}}
+        </button>
+        <button mat-raised-button (click)="downloadOrderSummary(selectedOrder)"
+          class="bg-indigo-600 text-white hover:bg-indigo-700">
+          <mat-icon class="mr-2">summarize</mat-icon>
+          {{ 'ORDER_DETAILS.DOWNLOAD_ORDER_SUMMARY' | translate }} #{{selectedOrder.id}}
+        </button>
+      }
       <div class="header-email-toggle"
         matTooltip="Enable/disable automatic email notifications to customers when order status changes"
         matTooltipPosition="below">
@@ -139,7 +151,9 @@
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" (dblclick)="openOrderDetails(row)"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        [class.selected-row]="selectedOrder?.id === row.id"
+        (click)="selectOrder(row)" (dblclick)="openOrderDetails(row)"></tr>
     </table>
   </div>
 

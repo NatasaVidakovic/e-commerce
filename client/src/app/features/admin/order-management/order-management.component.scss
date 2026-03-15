@@ -450,3 +450,25 @@
     padding: 1px !important;
   }
 }
+
+tr.selected-row {
+  background-color: rgba(99, 102, 241, 0.12) !important;
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: -2px;
+
+  td {
+    border-bottom-color: rgba(99, 102, 241, 0.3);
+  }
+
+  td:first-child {
+    border-left: 3px solid #6366f1;
+  }
+}
+
+tr.mat-mdc-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(99, 102, 241, 0.04);
+  }
+}

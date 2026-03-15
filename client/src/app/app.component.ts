@@ -1,9 +1,5 @@
 import {Component, inject} from '@angular/core';
-import {
-    TranslateService,
-    TranslatePipe,
-    TranslateDirective
-} from "@ngx-translate/core";
+import { TranslateService } from "@ngx-translate/core";
 import { HeaderComponent } from './layout/header/header.component';
 import { FooterComponent } from './layout/footer/footer.component';
 import { RouterOutlet } from '@angular/router';
@@ -12,7 +8,7 @@ import { SignalrService } from './core/services/signalr.service';
 
 @Component({
   selector: 'app-root',
-  imports: [HeaderComponent, FooterComponent, RouterOutlet, TranslatePipe, TranslateDirective],
+  imports: [HeaderComponent, FooterComponent, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -29,17 +25,14 @@ export class AppComponent {
     }
 
     ngOnInit() {
-    // ✅ Proveri da li je Google vratio user-a
-    this.accountService.getAuthState().subscribe(state => {
-        if (state.isAuthenticated) {
-            // Ako je došao od Google-a, handle callback
-            const googleReturnUrl = sessionStorage.getItem('googleLoginReturnUrl');
-            if (googleReturnUrl) {
-            this.accountService.handleGoogleCallback(state);
-            } else {
-                this.signalrService.createHubConnection();
+        this.accountService.getAuthState().subscribe(state => {
+            if (state.isAuthenticated) {
+                this.accountService.getUserInfo().subscribe({
+                    next: () => {
+                        this.signalrService.createHubConnection();
+                    }
+                });
             }
-        }
-    });
-}
+        });
+    }
 }

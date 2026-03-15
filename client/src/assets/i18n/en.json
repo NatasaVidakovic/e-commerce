@@ -482,7 +482,8 @@
     "FIRST_IMAGE_IS_MAIN": "The first image will be used as the main product image in the shop.",
     "ADD_URL": "Add URL",
     "UPLOAD": "Upload",
-    "MAIN": "Main"
+    "MAIN": "Main",
+    "DOWNLOAD_SHEET": "Product Sheet"
   },
   "CART": {
     "TOTAL": "Total",
@@ -1248,7 +1249,9 @@
     "EMAIL_ADDRESS": "Email Address",
     "INVOICE": "Invoice",
     "ORDER_SUMMARY": "Order Summary",
-    "SPECIAL_NOTES": "Special Notes"
+    "SPECIAL_NOTES": "Special Notes",
+    "DOWNLOAD_INVOICE": "Download Invoice",
+    "DOWNLOAD_ORDER_SUMMARY": "Order Summary PDF"
   },
   "VOUCHER": {
     "TITLE": "Voucher Codes",

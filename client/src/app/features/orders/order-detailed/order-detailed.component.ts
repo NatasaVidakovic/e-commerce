@@ -10,6 +10,7 @@ import { AddressPipe } from '../../../shared/pipes/address-pipe';
 import { PaymentCardPipe } from '../../../shared/pipes/payment-card-pipe';
 import { AccountService } from '../../../core/services/account.service';
 import { AdminService } from '../../../core/services/admin.service';
+import { ReportingService } from '../../../core/services/reporting.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SignalrService } from '../../../core/services/signalr.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
@@ -55,6 +56,7 @@ export class OrderDetailedComponent implements OnInit, OnDestroy {
   private snackbar = inject(SnackbarService);
   private currencyService = inject(CurrencyService);
   private router = inject(Router);
+  private reportingService = inject(ReportingService);
   order?: Order;
 
   getOrderCurrency(code: string): Currency {
@@ -174,6 +176,18 @@ export class OrderDetailedComponent implements OnInit, OnDestroy {
       next: (r) => this.refund = r || null,
       error: () => this.refund = null
     });
+  }
+
+  downloadInvoice(): void {
+    if (this.order) {
+      this.reportingService.downloadInvoice(this.order.id);
+    }
+  }
+
+  downloadOrderSummary(): void {
+    if (this.order) {
+      this.reportingService.downloadOrderSummary(this.order.id);
+    }
   }
 
   submitRefundRequest() {

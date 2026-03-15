@@ -11,6 +11,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { Product } from '../../../../shared/models/product';
 import { ShopService } from '../../../../core/services/shop.service';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { ReportingService } from '../../../../core/services/reporting.service';
 import { DeleteProductDialogComponent } from '../product-delete/product-delete-dialog.component';
 
 @Component({
@@ -36,6 +37,7 @@ export class AdminProductDetailsComponent implements OnInit {
 
   private dialog = inject(MatDialog);
   private snackbar = inject(SnackbarService);
+  private reportingService = inject(ReportingService);
 
   constructor(
     private route: ActivatedRoute,
@@ -80,6 +82,12 @@ export class AdminProductDetailsComponent implements OnInit {
   editProduct() {
     if (this.product) {
       this.router.navigate(['/admin/catalog', this.product.id, 'edit']);
+    }
+  }
+
+  downloadProductSheet() {
+    if (this.product) {
+      this.reportingService.downloadProductSheet(this.product.id);
     }
   }
 

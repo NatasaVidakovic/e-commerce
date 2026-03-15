@@ -84,17 +84,4 @@ export class AccountService {
   getAuthState() {
     return this.http.get<{ isAuthenticated: boolean }>(this.baseUrl + 'account/auth-status');
   }
-
-  handleGoogleCallback(user: any) {
-    if (user) {
-        // SignalR connection
-        this.signalrService.createHubConnection();
-        
-        // ✅ Pročitaj returnUrl i redirect
-        const returnUrl = sessionStorage.getItem('googleLoginReturnUrl') || user.returnUrl || '/shop';
-        sessionStorage.removeItem('googleLoginReturnUrl');  // Cleanup
-        
-        this.router.navigateByUrl(returnUrl);
-    }
-}
 }

@@ -22,6 +22,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { Currency } from '../../../shared/models/currency';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCardModule } from '@angular/material/card';
+import { ReportingService } from '../../../core/services/reporting.service';
 
 @Component({
   selector: 'app-order-management',
@@ -48,6 +49,7 @@ export class OrderManagementComponent implements OnInit {
   private dialog = inject(MatDialog);
   private snackbar = inject(SnackbarService);
   private currencyService = inject(CurrencyService);
+  private reportingService = inject(ReportingService);
 
   getOrderCurrency(code: string): Currency {
     return this.currencyService.getCurrencyByCode(code);
@@ -64,6 +66,7 @@ export class OrderManagementComponent implements OnInit {
   ordersWithRefunds: Set<number> = new Set();
   refundStatuses: Map<number, string> = new Map();
   loading = false;
+  selectedOrder: Order | null = null;
 
   // Email notification toggle
   sendEmailNotifications = false;
@@ -144,6 +147,18 @@ export class OrderManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOrders();
+  }
+
+  selectOrder(order: Order): void {
+    this.selectedOrder = this.selectedOrder?.id === order.id ? null : order;
+  }
+
+  downloadInvoice(order: Order): void {
+    this.reportingService.downloadInvoice(order.id);
+  }
+
+  downloadOrderSummary(order: Order): void {
+    this.reportingService.downloadOrderSummary(order.id);
   }
 
   openOrderDetails(order: Order): void {

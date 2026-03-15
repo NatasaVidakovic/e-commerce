@@ -1,0 +1,54 @@
+name: Trigger auto deployment for jsreport
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - 'Infrastructure/Services/JsReportService.cs'
+    - 'Core/Interfaces/IJsReportService.cs'
+    - 'docker-compose.development.yml'
+    - '.github/workflows/jsreport-deploy.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.WEBSHOPAPI_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: .                           
+          dockerfilePath: dockerfile.jsreport        
+          registryUrl: webshopacr.azurecr.io
+          registryUsername: ${{ secrets.WEBSHOPAPI_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.WEBSHOPAPI_REGISTRY_PASSWORD }}
+          containerAppName: jsreport
+          resourceGroup: WebShopRG
+          imageToBuild: webshopacr.azurecr.io/jsreport:${{ github.sha }}
+
+      - name: Configure scale-to-zero
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az containerapp update \
+              --name jsreport \
+              --resource-group WebShopRG \
+              --min-replicas 0 \
+              --max-replicas 1

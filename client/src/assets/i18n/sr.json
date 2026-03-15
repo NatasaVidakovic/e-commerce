@@ -476,7 +476,8 @@
     "FIRST_IMAGE_IS_MAIN": "Prva slika će biti korišćena kao glavna slika proizvoda u prodavnici.",
     "ADD_URL": "Dodaj URL",
     "UPLOAD": "Otpremi",
-    "MAIN": "Glavna"
+    "MAIN": "Glavna",
+    "DOWNLOAD_SHEET": "List proizvoda"
   },
   "CART": {
     "TOTAL": "Ukupno",
@@ -1232,7 +1233,9 @@
     "EMAIL_ADDRESS": "Email adresa",
     "INVOICE": "Faktura",
     "ORDER_SUMMARY": "Rezime narudžbe",
-    "SPECIAL_NOTES": "Posebne napomene"
+    "SPECIAL_NOTES": "Posebne napomene",
+    "DOWNLOAD_INVOICE": "Preuzmi fakturu",
+    "DOWNLOAD_ORDER_SUMMARY": "Rezime narudžbe PDF"
   },
   "VOUCHER": {
     "TITLE": "Kodovi za popust",
