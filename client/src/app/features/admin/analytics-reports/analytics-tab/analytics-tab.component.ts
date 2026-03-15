@@ -9,12 +9,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslatePipe } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 
 import { AdminService } from '../../../../core/services/admin.service';
 import { ShopService } from '../../../../core/services/shop.service';
+import { CurrencyService } from '../../../../core/services/currency.service';
 import { DynamicFilterBarComponent } from '../../../../shared/components/dynamic-filter-bar/dynamic-filter-bar.component';
 import { BaseDataViewModelRequest } from '../../../../shared/models/dynamic-filtering';
 import { DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../../../shared/models/dynamic-filtering';
@@ -41,7 +41,6 @@ export interface KpiCard {
     MatFormFieldModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    TranslatePipe,
     BaseChartDirective,
     DynamicFilterBarComponent
   ],
@@ -51,6 +50,7 @@ export interface KpiCard {
 export class AnalyticsTabComponent implements OnInit {
   private adminService = inject(AdminService);
   private shopService = inject(ShopService);
+  private currencyService = inject(CurrencyService);
 
   selectedStatistic: string | null = null;
   loading = false;
@@ -90,7 +90,7 @@ export class AnalyticsTabComponent implements OnInit {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true, ticks: { callback: (v: number | string) => '$' + v } } }
+    scales: { y: { beginAtZero: true, ticks: { callback: (v: number | string) => this.currencyService.formatCurrency(Number(v)) } } }
   };
 
   orderStatusChartData: ChartData<'doughnut'> = { labels: [], datasets: [] };
@@ -261,8 +261,8 @@ export class AnalyticsTabComponent implements OnInit {
 
     const cards: Record<string, KpiCard[]> = {
       revenue: [
-        { title: 'Total Revenue', value: '$' + totalRevenue.toFixed(2), icon: 'payments', accent: '#10b981' },
-        { title: 'Avg Order Value', value: '$' + avgOrder.toFixed(2), icon: 'trending_up', accent: '#3b82f6' },
+        { title: 'Total Revenue', value: this.currencyService.formatCurrency(totalRevenue), icon: 'payments', accent: '#10b981' },
+        { title: 'Avg Order Value', value: this.currencyService.formatCurrency(avgOrder), icon: 'trending_up', accent: '#3b82f6' },
         { title: 'Total Orders', value: orders.length, icon: 'receipt_long', accent: '#8b5cf6' },
         { title: 'Unique Customers', value: uniqueCustomers, icon: 'people', accent: '#f59e0b' }
       ],
@@ -282,7 +282,7 @@ export class AnalyticsTabComponent implements OnInit {
         { title: 'Total Customers', value: uniqueCustomers, icon: 'people', accent: '#3b82f6' },
         { title: 'Orders Placed', value: orders.length, icon: 'receipt_long', accent: '#10b981' },
         { title: 'Avg Orders/Customer', value: uniqueCustomers ? (orders.length / uniqueCustomers).toFixed(1) : '0', icon: 'repeat', accent: '#8b5cf6' },
-        { title: 'Total Spent', value: '$' + totalRevenue.toFixed(2), icon: 'payments', accent: '#f59e0b' }
+        { title: 'Total Spent', value: this.currencyService.formatCurrency(totalRevenue), icon: 'payments', accent: '#f59e0b' }
       ]
     };
     this.kpiCards = cards[this.selectedStatistic!] || [];

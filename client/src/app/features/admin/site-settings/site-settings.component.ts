@@ -8,12 +8,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SiteConfigService, SocialMediaLink, PaymentMethodOption } from '../../../core/services/site-config.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { AdminService } from '../../../core/services/admin.service';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { Currency } from '../../../shared/models/currency';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-site-settings',
@@ -29,6 +32,7 @@ import { CurrencyPipe } from '@angular/common';
     MatInputModule,
     MatDividerModule,
     MatSlideToggleModule,
+    MatSelectModule,
     TranslatePipe,
     CurrencyPipe
   ],
@@ -41,6 +45,7 @@ export class SiteSettingsComponent implements OnInit {
   private snackbar = inject(SnackbarService);
   private adminService = inject(AdminService);
   private translate = inject(TranslateService);
+  private currencyService = inject(CurrencyService);
 
   companyName = '';
   companyDescription = '';
@@ -54,6 +59,10 @@ export class SiteSettingsComponent implements OnInit {
   logoUrl = '';
   welcomeImageUrl = '';
   showWelcomeImage = true;
+
+  // Currency settings
+  currentCurrency: Currency = this.currencyService.getCurrentCurrency();
+  availableCurrencies: Currency[] = this.currencyService.getAvailableCurrencies();
 
   // Delivery methods
   deliveryMethods: any[] = [];
@@ -294,6 +303,17 @@ export class SiteSettingsComponent implements OnInit {
   savePaymentMethods(): void {
     this.siteConfigService.updateConfig({ paymentMethods: this.paymentMethods });
     this.snackbar.success('Payment methods saved');
+  }
+
+  // --- Currency Settings ---
+  saveCurrencySettings(): void {
+    this.currencyService.setCurrency(this.currentCurrency);
+    this.snackbar.success('Currency settings saved');
+  }
+
+  onCurrencyChange(): void {
+    // Update the currency when selection changes
+    this.saveCurrencySettings();
   }
 
   // --- Helpers ---

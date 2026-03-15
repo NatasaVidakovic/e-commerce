@@ -15,7 +15,7 @@
     <div class="filter-main-row">
 
       <!-- Search Field -->
-      <div *ngIf="searchDefinition" class="filter-search-field">
+      <div *ngIf="searchDefinition && form.contains(searchDefinition.key)" class="filter-search-field">
         <mat-icon class="search-icon-inline">search</mat-icon>
         <input
           type="text"
@@ -210,7 +210,7 @@
     
     <div class="mobile-drawer-content">
       <!-- Search field -->
-      <div *ngIf="searchDefinition" class="mb-4">
+      <div *ngIf="searchDefinition && form.contains(searchDefinition.key)" class="mb-4">
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>{{ searchDefinition.label }}</mat-label>
           <input matInput type="text" [formControlName]="searchDefinition.key" />

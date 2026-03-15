@@ -5,7 +5,7 @@
 
     <div class="cart-info">
         <a routerLink="/shop/{{item().productId}}" class="cart-name">{{item().productName}}</a>
-        <span class="cart-price">{{item().price | currency}}</span>
+        <span class="cart-price">{{item().price | appCurrency}}</span>
     </div>
 
     <div class="cart-qty">
@@ -18,7 +18,7 @@
         </button>
     </div>
 
-    <span class="cart-subtotal">{{(item().price * item().quantity) | currency}}</span>
+    <span class="cart-subtotal">{{(item().price * item().quantity) | appCurrency}}</span>
 
     <button mat-icon-button (click)="removeItemFromCart()" class="cart-delete">
         <mat-icon>delete_outline</mat-icon>

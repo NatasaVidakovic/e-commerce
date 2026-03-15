@@ -20,10 +20,12 @@
             <div class="forgot-password-row">
                 <a routerLink="/account/forgot-password" class="forgot-password-link">Forgot Password?</a>
             </div>
-            <div *ngIf="errorMessage" class="error-message">
-                <mat-icon>error_outline</mat-icon>
-                <span>{{ errorMessage }}</span>
-            </div>
+            @if (errorMessage) {
+                <div class="error-message">
+                    <mat-icon>error_outline</mat-icon>
+                    <span>{{ errorMessage }}</span>
+                </div>
+            }
             <button mat-flat-button type="submit" color="primary" class="submit-btn">
                 {{ 'NAVIGATION.SUBMITT' | translate }}
             </button>

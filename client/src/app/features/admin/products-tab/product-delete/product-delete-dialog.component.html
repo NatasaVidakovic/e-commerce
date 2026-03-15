@@ -10,7 +10,7 @@
     <div class="flex-1 min-w-0">
       <p class="font-medium truncate">{{ data.name }}</p>
       <p class="text-sm" style="color: var(--color-text-secondary);">{{ data.brand }} • {{ data.productType?.name || data.type }}</p>
-      <p class="text-sm font-medium">{{ data.price | currency:'EUR' }}</p>
+      <p class="text-sm font-medium">{{ data.price | appCurrency }}</p>
     </div>
   </div>
 

@@ -8,9 +8,12 @@ public static class ProductMappingExtensions
 {
     public static ProductDto ToDto(this Product product)
     {
-        var pictureUrl = !string.IsNullOrEmpty(product.PictureUrl) 
-            ? product.PictureUrl 
-            : product.Images?.OrderBy(i => i.DisplayOrder).FirstOrDefault()?.Url ?? "";
+        var primaryImageUrl = product.Images?.OrderBy(i => i.DisplayOrder).FirstOrDefault()?.Url;
+        var pictureUrl = !string.IsNullOrEmpty(primaryImageUrl)
+            ? RewriteLocalImageUrl(primaryImageUrl)
+            : IsValidImageUrl(product.PictureUrl)
+                ? RewriteLocalImageUrl(product.PictureUrl)
+                : "/images/placeholder.png";
 
         var dto = new ProductDto
         {
@@ -93,9 +96,12 @@ public static class ProductMappingExtensions
     // add mappings for ProductDetailsDto
     public static ProductDetailsDto ToProductDetailsDto(this Product product, List<ReviewDto> reviews)
     {
-        var pictureUrl = !string.IsNullOrEmpty(product.PictureUrl) 
-            ? product.PictureUrl 
-            : product.Images?.OrderBy(i => i.DisplayOrder).FirstOrDefault()?.Url ?? "";
+        var primaryImageUrl = product.Images?.OrderBy(i => i.DisplayOrder).FirstOrDefault()?.Url;
+        var pictureUrl = !string.IsNullOrEmpty(primaryImageUrl)
+            ? RewriteLocalImageUrl(primaryImageUrl)
+            : IsValidImageUrl(product.PictureUrl)
+                ? RewriteLocalImageUrl(product.PictureUrl)
+                : "/images/placeholder.png";
 
         var dto = new ProductDetailsDto
         {
@@ -113,8 +119,8 @@ public static class ProductMappingExtensions
             Images = product.Images?.OrderBy(i => i.DisplayOrder).Select(i => new ProductImageDto
             {
                 Id           = i.Id,
-                Url          = i.Url,
-                ThumbnailUrl = string.IsNullOrEmpty(i.ThumbnailUrl) ? DeriveThumbnailUrl(i.Url) : i.ThumbnailUrl,
+                Url          = RewriteLocalImageUrl(i.Url),
+                ThumbnailUrl = RewriteLocalImageUrl(string.IsNullOrEmpty(i.ThumbnailUrl) ? DeriveThumbnailUrl(i.Url) : i.ThumbnailUrl),
                 DisplayOrder = i.DisplayOrder,
                 IsPrimary    = i.IsPrimary,
                 AltText      = i.AltText
@@ -158,6 +164,26 @@ public static class ProductMappingExtensions
     {
         if (url.Contains("-large.webp"))  return url.Replace("-large.webp",  "-thumb.webp");
         if (url.Contains("-medium.webp")) return url.Replace("-medium.webp", "-thumb.webp");
+        return url;
+    }
+
+    private static bool IsValidImageUrl(string? url)
+    {
+        if (string.IsNullOrEmpty(url)) return false;
+        return url.StartsWith("/") || url.Contains("supabase.co");
+    }
+
+    private static string RewriteLocalImageUrl(string url)
+    {
+        if (string.IsNullOrEmpty(url)) return url;
+        // Rewrite old local URLs: /images/products/{id}/{file} → /api/products/local-images/{id}/{file}
+        // Only rewrite if URL has a product ID subdirectory (e.g., "1003/abc-large.webp")
+        if (url.StartsWith("/images/products/", StringComparison.OrdinalIgnoreCase))
+        {
+            var remainder = url["/images/products/".Length..];
+            if (remainder.Contains('/'))
+                return $"/api/products/local-images/{remainder}";
+        }
         return url;
     }
 }

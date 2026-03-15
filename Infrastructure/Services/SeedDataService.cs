@@ -105,7 +105,10 @@ public class SeedDataService : ISeedDataService
 
                 // Mailjet
                 ["MailjetSenderEmail"] = "natasa.vidakovic97@gmail.com",
-                ["MailjetSenderName"] = "WebShop"
+                ["MailjetSenderName"] = "WebShop",
+
+                // Currency
+                ["Currency"] = "{\"code\":\"BAM\",\"symbol\":\"KM\",\"name\":\"Konvertibilna Marka\",\"decimalPlaces\":2,\"symbolPosition\":\"after\",\"spaceBetween\":false}"
             };
 
             foreach (var kvp in defaults)
@@ -114,6 +117,20 @@ public class SeedDataService : ISeedDataService
             }
 
             await context.SaveChangesAsync();
+        }
+        else
+        {
+            // Upsert Currency for existing databases that were seeded before it was added
+            var currencySetting = context.SiteSettings.FirstOrDefault(s => s.Key == "Currency");
+            if (currencySetting == null)
+            {
+                context.SiteSettings.Add(new SiteSettings
+                {
+                    Key = "Currency",
+                    Value = "{\"code\":\"BAM\",\"symbol\":\"KM\",\"name\":\"Konvertibilna Marka\",\"decimalPlaces\":2,\"symbolPosition\":\"after\",\"spaceBetween\":false}"
+                });
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

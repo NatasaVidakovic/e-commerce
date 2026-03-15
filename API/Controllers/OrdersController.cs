@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 namespace API.Controllers;
 
 [Authorize]
-public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfiguration config, IVoucherService _voucherService) : BaseApiController
+public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfiguration config, IVoucherService _voucherService, ISiteSettingsService siteSettingsService) : BaseApiController
 {
     [HttpPost]
     public async Task<ActionResult<Order>> CreateOrder(CreateOrderDto orderDto)
@@ -119,6 +119,19 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
 
         var orderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
 
+        var currencyJson = await siteSettingsService.GetValueAsync("Currency");
+        var currencyCode = "BAM";
+        if (!string.IsNullOrEmpty(currencyJson))
+        {
+            try
+            {
+                var currencyObj = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(currencyJson);
+                if (currencyObj.TryGetProperty("code", out var codeProp))
+                    currencyCode = codeProp.GetString() ?? "BAM";
+            }
+            catch { }
+        }
+
         var order = new Order
         {
             OrderItems = items,
@@ -138,7 +151,8 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
             SpecialNotes = orderDto.SpecialNotes,
             VoucherCode = discountType == "Voucher" ? discountCode : null,
             // CouponCode = discountType == "Coupon" ? discountCode : null,
-            AppliedDiscountType = discountType
+            AppliedDiscountType = discountType,
+            Currency = currencyCode
         };
 
         unit.Repository<Order>().Add(order);

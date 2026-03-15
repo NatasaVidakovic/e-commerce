@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';

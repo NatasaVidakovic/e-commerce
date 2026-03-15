@@ -88,7 +88,7 @@
                     <h4 class="font-semibold" style="color: var(--color-text-primary);">{{ 'ORDER_DETAILS.DELIVERY_METHOD' | translate }}</h4>
                 </div>
                 <p class="text-sm font-medium" style="color: var(--color-text-primary);">{{ order.deliveryMethod }}</p>
-                <p class="text-sm" style="color: var(--color-text-secondary);">{{ order.shippingPrice | currency }}</p>
+                <p class="text-sm" style="color: var(--color-text-secondary);">{{ order.shippingPrice | appCurrency: getOrderCurrency(order.currency) }}</p>
                 @if (order.tracking?.trackingNumber) {
                     <div class="mt-2 pt-2" style="border-top: 1px solid var(--color-border-primary);">
                         <div class="text-xs" style="color: var(--color-text-secondary);">{{ 'ORDER_DETAILS.TRACKING' | translate }}</div>
@@ -164,7 +164,7 @@
                                 </div>
                             </td>
                             <td class="p-2 sm:p-4" style="color: var(--color-text-secondary);">x{{ item.quantity }}</td>
-                            <td class="p-2 sm:p-4 text-right" style="color: var(--color-text-primary);">{{ item.price | currency }}</td>
+                            <td class="p-2 sm:p-4 text-right" style="color: var(--color-text-primary);">{{ item.price | appCurrency: getOrderCurrency(order.currency) }}</td>
                         </tr>
                         }
                     </tbody>
@@ -179,23 +179,23 @@
                 <div class="space-y-2">
                     <dl class="flex items-center justify-between gap-4">
                         <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.SUBTOTAL' | translate }}</dt>
-                        <dd class="font-medium" style="color: var(--color-text-primary);">{{ order.subtotal | currency }}</dd>
+                        <dd class="font-medium" style="color: var(--color-text-primary);">{{ order.subtotal | appCurrency: getOrderCurrency(order.currency) }}</dd>
                     </dl>
                     @if (order.discount) {
                         <dl class="flex items-center justify-between gap-4">
                             <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.DISCOUNT' | translate }}</dt>
-                            <dd class="font-medium" style="color: var(--color-success);">-{{ order.discount | currency }}</dd>
+                            <dd class="font-medium" style="color: var(--color-success);">-{{ order.discount | appCurrency: getOrderCurrency(order.currency) }}</dd>
                         </dl>
                     }
                     <dl class="flex items-center justify-between gap-4">
                         <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.SHIPPING' | translate }}</dt>
-                        <dd class="font-medium" style="color: var(--color-text-primary);">{{ order.shippingPrice | currency }}</dd>
+                        <dd class="font-medium" style="color: var(--color-text-primary);">{{ order.shippingPrice | appCurrency: getOrderCurrency(order.currency) }}</dd>
                     </dl>
                 </div>
 
                 <dl class="flex items-center justify-between gap-4 pt-2" style="border-top: 1px solid var(--color-border-primary);">
                     <dt class="font-semibold text-lg" style="color: var(--color-text-primary);">{{ 'CART.TOTAL' | translate }}</dt>
-                    <dd class="font-bold text-lg" style="color: var(--color-text-primary);">{{ order.total | currency }}</dd>
+                    <dd class="font-bold text-lg" style="color: var(--color-text-primary);">{{ order.total | appCurrency: getOrderCurrency(order.currency) }}</dd>
                 </dl>
             </div>
         </div>
@@ -228,7 +228,7 @@
                     <span class="font-semibold text-lg">{{ 'REFUND.REFUND_STATUS_LABEL' | translate }} {{ refund.status }}</span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                    <p><strong>{{ 'ADMIN.REFUND_DIALOG.AMOUNT' | translate }}:</strong> {{ refund.amount | currency }}</p>
+                    <p><strong>{{ 'ADMIN.REFUND_DIALOG.AMOUNT' | translate }}:</strong> {{ refund.amount | appCurrency: getOrderCurrency(order.currency) }}</p>
                     <p><strong>{{ 'ADMIN.REFUND_DIALOG.REASON' | translate }}:</strong> {{ refund.reason }}</p>
                     @if (refund.reasonDetails) {
                         <p class="md:col-span-2"><strong>{{ 'ADMIN.REFUND_DIALOG.DETAILS' | translate }}:</strong> {{ refund.reasonDetails }}</p>
@@ -247,7 +247,7 @@
                         <div class="md:col-span-2 mt-2">
                             <p class="font-medium mb-1">{{ 'REFUND.RETURNED_PRODUCTS' | translate }}:</p>
                             @for (item of refund.items; track item.productId) {
-                                <p class="ml-2">• {{ item.productName }} x{{ item.quantity }} — {{ item.price * item.quantity | currency }}</p>
+                                <p class="ml-2">• {{ item.productName }} x{{ item.quantity }} — {{ item.price * item.quantity | appCurrency: getOrderCurrency(order.currency) }}</p>
                             }
                         </div>
                     }
@@ -335,7 +335,7 @@
                                                     }
                                                 </td>
                                                 <td class="px-3 py-2 text-right" style="color: var(--color-text-primary);">
-                                                    {{ item.price | currency }}
+                                                    {{ item.price | appCurrency: getOrderCurrency(order.currency) }}
                                                 </td>
                                             </tr>
                                         }
@@ -347,7 +347,7 @@
                         <!-- Refund amount display -->
                         <p class="text-sm mb-3" style="color: var(--color-text-secondary);">
                             {{ 'REFUND.REFUND_AMOUNT_LABEL' | translate }}:
-                            <strong style="color: var(--color-text-primary);">{{ refundAmount | currency }}</strong>
+                            <strong style="color: var(--color-text-primary);">{{ refundAmount | appCurrency: getOrderCurrency(order.currency) }}</strong>
                             @if (refundType === 'full') {
                                 <span class="text-xs" style="color: var(--color-text-tertiary);">({{ 'REFUND.FULL_ORDER' | translate }})</span>
                             }

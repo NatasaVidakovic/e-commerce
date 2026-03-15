@@ -8,7 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { AdminService } from '../../../../core/services/admin.service';
 import { Order } from '../../../../shared/models/order';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '../../../../shared/pipes/currency.pipe';
+import { CurrencyService } from '../../../../core/services/currency.service';
+import { Currency } from '../../../../shared/models/currency';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
 
 export interface OrderRefundDialogData {
@@ -25,7 +28,8 @@ export interface OrderRefundDialogData {
     MatInputModule,
     MatIconModule,
     FormsModule,
-    TranslateModule
+    TranslateModule,
+    CurrencyPipe
   ],
   templateUrl: './order-refund-dialog.component.html',
   styleUrl: './order-refund-dialog.component.scss'
@@ -34,6 +38,11 @@ export class OrderRefundDialogComponent implements OnInit {
   private adminService = inject(AdminService);
   private dialogRef = inject(MatDialogRef<OrderRefundDialogComponent>);
   private snackbar = inject(SnackbarService);
+  private currencyService = inject(CurrencyService);
+
+  getOrderCurrency(code: string): Currency {
+    return this.currencyService.getCurrencyByCode(code);
+  }
 
   existingRefund: any = null;
   loading = true;

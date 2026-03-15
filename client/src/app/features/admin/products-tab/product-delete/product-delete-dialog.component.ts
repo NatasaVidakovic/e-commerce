@@ -3,7 +3,8 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/materia
 import { Product } from '../../../../shared/models/product';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { CurrencyPipe } from '../../../../shared/pipes/currency.pipe';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({

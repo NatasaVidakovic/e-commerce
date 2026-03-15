@@ -151,7 +151,7 @@
                         @if (loading) {
                             <mat-spinner diameter="20"></mat-spinner>
                         } @else {
-                            <span>{{ paymentMethod === 'cash' ? ('CHECKOUT.CONFIRM_ORDER' | translate) : ('CHECKOUT.PAY_AMOUNT' | translate: { amount: (cartService.totals()?.total | currency) }) }}</span>
+                            <span>{{ paymentMethod === 'cash' ? ('CHECKOUT.CONFIRM_ORDER' | translate) : ('CHECKOUT.PAY_AMOUNT' | translate: { amount: (cartService.totals()?.total | appCurrency) }) }}</span>
                         }
                     </button>
                 </div>

@@ -16,7 +16,7 @@ import { AccountService } from '../../core/services/account.service';
 import { CheckoutDeliveryComponent } from "./checkout-delivery/checkout-delivery.component";
 import { CheckoutReviewComponent } from "./checkout-review/checkout-review.component";
 import { CartService } from '../../core/services/cart.service';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe } from '../../shared/pipes/currency.pipe';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { OrderToCreate, ShippingAddress } from '../../shared/models/order';
 import { OrderService } from '../../core/services/order.service';

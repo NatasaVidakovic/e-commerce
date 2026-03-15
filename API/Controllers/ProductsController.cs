@@ -473,6 +473,84 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
 
     [InvalidateCache("api/products|")]
     [Authorize(Roles = "Admin")]
+    [EnableRateLimiting("image-upload")]
+    [HttpPost("{productId}/images/upload-multiple")]
+    [RequestSizeLimit(50 * 1024 * 1024)] // 50 MB total
+    public async Task<ActionResult<List<ProductImageDto>>> UploadProductImages(
+        int productId, [FromForm] List<IFormFile> files)
+    {
+        if (files == null || files.Count == 0)
+            return BadRequest("No files provided.");
+
+        if (files.Count > 10)
+            return BadRequest("Maximum 10 images per upload.");
+
+        var product = await unit.Repository<Product>()
+            .ListAllQueryiableAsync()
+            .Include(p => p.Images)
+            .FirstOrDefaultAsync(p => p.Id == productId);
+
+        if (product == null) return NotFound();
+
+        var uploadedImages = new List<ProductImageDto>();
+        var currentMaxOrder = product.Images.Any()
+            ? product.Images.Max(i => i.DisplayOrder)
+            : -1;
+        var hasExistingImages = product.Images.Any();
+
+        // Upload all files in parallel for speed
+        var uploadTasks = files.Select(async file =>
+        {
+            if (file.Length == 0) return null;
+
+            var request = new ImageUploadRequest(
+                FileStream:  file.OpenReadStream(),
+                FileName:    file.FileName,
+                ContentType: file.ContentType,
+                AltText:     ""
+            );
+
+            return await imageStorageService.SaveProductImageAsync(request, productId);
+        }).ToArray();
+
+        ImageUploadResult?[] results;
+        try
+        {
+            results = await Task.WhenAll(uploadTasks);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        for (var i = 0; i < results.Length; i++)
+        {
+            var result = results[i];
+            if (result == null) continue;
+
+            currentMaxOrder++;
+            var isPrimary = !hasExistingImages && i == 0;
+
+            var image = new ProductImage
+            {
+                Url          = result.Url,
+                ThumbnailUrl = result.ThumbnailUrl,
+                DisplayOrder = currentMaxOrder,
+                IsPrimary    = isPrimary,
+                AltText      = "",
+                ProductId    = productId
+            };
+            unit.Repository<ProductImage>().Add(image);
+
+            if (await unit.Complete())
+                uploadedImages.Add(MapImageDto(image, result.ThumbnailUrl));
+        }
+
+        return Ok(uploadedImages);
+    }
+
+    [InvalidateCache("api/products|")]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{productId}/images/{imageId}")]
     public async Task<IActionResult> DeleteProductImage(int productId, int imageId)
     {
@@ -544,11 +622,42 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
         return NoContent();
     }
 
+    [HttpGet("local-images/{productId}/{fileName}")]
+    [ResponseCache(Duration = 86400)]
+    public IActionResult ServeLocalImage(int productId, string fileName)
+    {
+        var webRoot = Path.Combine(
+            HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().ContentRootPath,
+            "wwwroot");
+        var filePath = Path.Combine(webRoot, "images", "products", productId.ToString(), fileName);
+
+        // Prevent directory traversal
+        var fullPath = Path.GetFullPath(filePath);
+        var expectedBase = Path.GetFullPath(Path.Combine(webRoot, "images", "products"));
+        if (!fullPath.StartsWith(expectedBase, StringComparison.OrdinalIgnoreCase))
+            return BadRequest();
+
+        if (!System.IO.File.Exists(fullPath))
+            return NotFound();
+
+        var ext = Path.GetExtension(fileName).ToLowerInvariant();
+        var contentType = ext switch
+        {
+            ".webp" => "image/webp",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            _ => "application/octet-stream"
+        };
+
+        return PhysicalFile(fullPath, contentType);
+    }
+
     private static ProductImageDto MapImageDto(ProductImage i, string? thumbnailUrl = null) => new()
     {
         Id           = i.Id,
-        Url          = i.Url,
-        ThumbnailUrl = thumbnailUrl ?? (string.IsNullOrEmpty(i.ThumbnailUrl) ? DeriveThumbnailUrl(i.Url) : i.ThumbnailUrl),
+        Url          = RewriteLocalImageUrl(i.Url),
+        ThumbnailUrl = RewriteLocalImageUrl(thumbnailUrl ?? (string.IsNullOrEmpty(i.ThumbnailUrl) ? DeriveThumbnailUrl(i.Url) : i.ThumbnailUrl)),
         DisplayOrder = i.DisplayOrder,
         IsPrimary    = i.IsPrimary,
         AltText      = i.AltText
@@ -560,6 +669,18 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
             return url.Replace("-large.webp", "-thumb.webp");
         if (url.Contains("-medium.webp"))
             return url.Replace("-medium.webp", "-thumb.webp");
+        return url;
+    }
+
+    private static string RewriteLocalImageUrl(string url)
+    {
+        if (string.IsNullOrEmpty(url)) return url;
+        if (url.StartsWith("/images/products/", StringComparison.OrdinalIgnoreCase))
+        {
+            var remainder = url["/images/products/".Length..];
+            if (remainder.Contains('/'))
+                return $"/api/products/local-images/{remainder}";
+        }
         return url;
     }
 

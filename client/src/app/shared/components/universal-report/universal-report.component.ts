@@ -1,7 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 export interface ReportColumn {
   key: string;
@@ -41,6 +42,8 @@ export class UniversalReportComponent {
   @Input() summaryMetrics: SummaryMetric[] = [];
   @Input() loading: boolean = false;
 
+  private currencyService = inject(CurrencyService);
+
   constructor(
     private datePipe: DatePipe
   ) {}
@@ -50,7 +53,7 @@ export class UniversalReportComponent {
     
     switch (column.type) {
       case 'currency':
-        return typeof value === 'number' ? `$${value.toFixed(2)}` : value;
+        return typeof value === 'number' ? this.currencyService.formatCurrency(value) : value;
       case 'date':
         return this.datePipe.transform(value, 'yyyy-MM-dd') || value;
       case 'number':

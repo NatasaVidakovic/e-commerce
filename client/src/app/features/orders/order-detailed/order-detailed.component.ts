@@ -2,7 +2,7 @@ import { Component, effect, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../shared/models/order';
-import { CommonModule, CurrencyPipe, DatePipe, NgClass } from '@angular/common';
+import { CommonModule, DatePipe, NgClass } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
@@ -19,6 +19,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconButton } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { Currency } from '../../../shared/models/currency';
 
 @Component({
   selector: 'app-order-detailed',
@@ -50,8 +53,13 @@ export class OrderDetailedComponent implements OnInit, OnDestroy {
   private adminService = inject(AdminService);
   private signalrService = inject(SignalrService);
   private snackbar = inject(SnackbarService);
+  private currencyService = inject(CurrencyService);
   private router = inject(Router);
   order?: Order;
+
+  getOrderCurrency(code: string): Currency {
+    return this.currencyService.getCurrencyByCode(code);
+  }
   refund: any = null;
   buttonText = this.accountService.isAdmin() ? 'Return to admin' : 'Return to orders';
 

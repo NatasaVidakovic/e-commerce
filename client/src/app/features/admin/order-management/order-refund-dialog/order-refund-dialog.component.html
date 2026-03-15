@@ -28,7 +28,7 @@
         <div class="order-meta">
           <span>{{ data.order.buyerEmail }}</span>
           <span class="separator">•</span>
-          <span>{{ data.order.total | currency }}</span>
+          <span>{{ data.order.total | appCurrency: getOrderCurrency(data.order.currency) }}</span>
           <span class="separator">•</span>
           <span>{{ data.order.paymentType }}</span>
         </div>
@@ -61,7 +61,7 @@
       <div class="detail-item amount">
         <span class="detail-label">{{ 'ADMIN.REFUND_DIALOG.AMOUNT' | translate }}</span>
         <div class="amount-container">
-          <span class="detail-value amount-value">{{ existingRefund.amount | currency }}</span>
+          <span class="detail-value amount-value">{{ existingRefund.amount | appCurrency: getOrderCurrency(data.order.currency) }}</span>
           <span class="amount-percentage" *ngIf="existingRefund.isPartialRefund">
             {{ (existingRefund.amount / data.order.total * 100) | number:'1.0-1' }}%
           </span>
@@ -103,7 +103,7 @@
           <div class="item-row" *ngFor="let item of existingRefund.items">
             <span class="item-name">{{ item.productName }}</span>
             <span class="item-qty">x{{ item.quantity }}</span>
-            <span class="item-price">{{ item.price * item.quantity | currency }}</span>
+            <span class="item-price">{{ item.price * item.quantity | appCurrency: getOrderCurrency(data.order.currency) }}</span>
           </div>
         </div>
       </div>

@@ -49,7 +49,7 @@
                                 <div class="discount-overlay"></div>
                                 <div class="discount-value-container">
                                     <div class="discount-value-text">
-                                        {{ discount.isPercentage ? discount.value + '%' : '$' + discount.value }}
+                                        {{ discount.isPercentage ? discount.value + '%' : (discount.value | appCurrency) }}
                                     </div>
                                 </div>
                             </div>

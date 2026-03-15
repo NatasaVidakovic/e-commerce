@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ShopService } from '../../../core/services/shop.service';
 import { Product } from '../../../shared/models/product';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { CartService } from '../../../core/services/cart.service';
 import { AccountService } from '../../../core/services/account.service';
@@ -12,6 +12,7 @@ import { ProductReviewsComponent } from '../product-reviews/product-reviews';
 import { TranslateModule } from '@ngx-translate/core';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { FavouritesService } from '../../../core/services/favourites.service';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-product-details',
