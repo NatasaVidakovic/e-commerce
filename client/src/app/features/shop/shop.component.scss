@@ -32,6 +32,10 @@
   max-width: 1440px;
   margin: 0 auto;
   position: relative;
+
+  @include max-sm {
+    padding-top: $spacing-4;
+  }
 }
 
 .products-content {
