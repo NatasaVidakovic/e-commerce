@@ -61,11 +61,11 @@
               <span class="product-price__current" 
                     [style.display]="'inline !important'" 
                     [style.margin]="'0 !important'"
-                    [style.padding]="'0 !important'">{{product.price | currency}}</span>
+                    [style.padding]="'0 !important'">{{product.price | appCurrency}}</span>
               <span class="product-price__original" 
                     [style.display]="'inline !important'" 
                     [style.margin]="'0 !important'"
-                    [style.padding]="'0 !important'">{{product.originalPrice | currency}}</span>
+                    [style.padding]="'0 !important'">{{product.originalPrice | appCurrency}}</span>
            </div>
           } @else {
             <div class="product-price grid-mode" 
@@ -75,7 +75,7 @@
               <span class="product-price__regular" 
                     [style.display]="'inline !important'" 
                     [style.margin]="'0 !important'"
-                    [style.padding]="'0 !important'">{{product.price | currency}}</span>
+                    [style.padding]="'0 !important'">{{product.price | appCurrency}}</span>
             </div>
           }
         }
@@ -133,10 +133,10 @@
 
         <!-- Price section -->
         @if (product.hasActiveDiscount && product.originalPrice) {
-          <span class="list-price-original">{{product.originalPrice | currency}}</span>
-          <span class="list-price-current">{{product.price | currency}}</span>
+          <span class="list-price-original">{{product.originalPrice | appCurrency}}</span>
+          <span class="list-price-current">{{product.price | appCurrency}}</span>
         } @else {
-          <span class="list-price-regular">{{product.price | currency}}</span>
+          <span class="list-price-regular">{{product.price | appCurrency}}</span>
         }
 
         <!-- Stock status -->

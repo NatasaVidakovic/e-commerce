@@ -1,7 +1,7 @@
 import { Component, inject, output } from '@angular/core';
 import { CheckoutService } from '../../../core/services/checkout.service';
 import { MatRadioModule } from "@angular/material/radio";
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 import { CartService } from '../../../core/services/cart.service';
 import { DeliveryMethod } from '../../../shared/models/deliveryMethod';
 import { firstValueFrom } from 'rxjs';

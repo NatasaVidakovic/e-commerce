@@ -14,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
 import { AdminService } from '../../../../core/services/admin.service';
 import { ShopService } from '../../../../core/services/shop.service';
 import { environment } from '../../../../../environments/environment';
+import { CurrencyService } from '../../../../core/services/currency.service';
 import { UniversalReportComponent, ReportColumn, ReportData, SummaryMetric } from '../../../../shared/components/universal-report/universal-report.component';
 import { DynamicFilterBarComponent } from '../../../../shared/components/dynamic-filter-bar/dynamic-filter-bar.component';
 import { BaseDataViewModelRequest, BaseDataViewModelResponse, DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../../../shared/models/dynamic-filtering';
@@ -50,7 +51,8 @@ export class ReportsTabComponent implements OnInit {
   constructor(
     private adminService: AdminService,
     private shopService: ShopService,
-    private http: HttpClient
+    private http: HttpClient,
+    private currencyService: CurrencyService
   ) {}
 
   selectedReportType: string = '';
@@ -411,7 +413,7 @@ export class ReportsTabComponent implements OnInit {
     this.reportSummaryMetrics = [
       { key: 'totalProducts', label: 'Total Products', value: '0', change: '+0' },
       { key: 'lowStock', label: 'Low Stock', value: '0', change: '0' },
-      { key: 'totalValue', label: 'Total Value', value: '$0', change: '+0%' }
+      { key: 'totalValue', label: 'Total Value', value: this.currencyService.formatCurrency(0), change: '+0%' }
     ];
 
     // Fetch real products data
@@ -447,9 +449,9 @@ export class ReportsTabComponent implements OnInit {
     ];
 
     this.reportSummaryMetrics = [
-      { key: 'totalRevenue', label: 'Total Revenue', value: '$0', change: '+0%' },
-      { key: 'totalCosts', label: 'Total Costs', value: '$0', change: '+0%' },
-      { key: 'netProfit', label: 'Net Profit', value: '$0', change: '+0%' }
+      { key: 'totalRevenue', label: 'Total Revenue', value: this.currencyService.formatCurrency(0), change: '+0%' },
+      { key: 'totalCosts', label: 'Total Costs', value: this.currencyService.formatCurrency(0), change: '+0%' },
+      { key: 'netProfit', label: 'Net Profit', value: this.currencyService.formatCurrency(0), change: '+0%' }
     ];
 
     // Fetch real financial data from orders
@@ -467,7 +469,7 @@ export class ReportsTabComponent implements OnInit {
 
     this.reportSummaryMetrics = [
       { key: 'totalItems', label: 'Total Items', value: '0', change: '+0' },
-      { key: 'totalValue', label: 'Total Value', value: '$0', change: '+0%' },
+      { key: 'totalValue', label: 'Total Value', value: this.currencyService.formatCurrency(0), change: '+0%' },
       { key: 'turnoverRate', label: 'Turnover Rate', value: '0x', change: '+0x' }
     ];
 
@@ -993,9 +995,9 @@ export class ReportsTabComponent implements OnInit {
       ];
     } else if (this.selectedReportType === 'financial') {
       this.reportSummaryMetrics = [
-        { key: 'totalRevenue', label: 'Total Revenue', value: `$${totalRevenue.toFixed(2)}`, change: '+12.5%' },
-        { key: 'totalCosts', label: 'Total Costs', value: '$0.00', change: '+8.3%' },
-        { key: 'netProfit', label: 'Net Profit', value: `$${totalRevenue.toFixed(2)}`, change: '+18.7%' }
+        { key: 'totalRevenue', label: 'Total Revenue', value: this.currencyService.formatCurrency(totalRevenue), change: '+12.5%' },
+        { key: 'totalCosts', label: 'Total Costs', value: this.currencyService.formatCurrency(0), change: '+8.3%' },
+        { key: 'netProfit', label: 'Net Profit', value: this.currencyService.formatCurrency(totalRevenue), change: '+18.7%' }
       ];
     }
   }
@@ -1009,13 +1011,13 @@ export class ReportsTabComponent implements OnInit {
       this.reportSummaryMetrics = [
         { key: 'totalProducts', label: 'Total Products', value: totalProducts.toString(), change: '+12' },
         { key: 'lowStock', label: 'Low Stock', value: lowStockItems.toString(), change: `-${lowStockItems}` },
-        { key: 'totalValue', label: 'Total Value', value: `$${totalValue.toFixed(2)}`, change: '+15.2%' }
+        { key: 'totalValue', label: 'Total Value', value: this.currencyService.formatCurrency(totalValue), change: '+15.2%' }
       ];
     } else if (this.selectedReportType === 'inventory') {
       const totalItems = products.reduce((sum, p) => sum + (p.quantityInStock || 0), 0);
       this.reportSummaryMetrics = [
         { key: 'totalItems', label: 'Total Items', value: totalItems.toString(), change: '+12' },
-        { key: 'totalValue', label: 'Total Value', value: `$${totalValue.toFixed(2)}`, change: '+15.3%' },
+        { key: 'totalValue', label: 'Total Value', value: this.currencyService.formatCurrency(totalValue), change: '+15.3%' },
         { key: 'lowStockItems', label: 'Low Stock Items', value: lowStockItems.toString(), change: '-3' }
       ];
     }

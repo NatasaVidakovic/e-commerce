@@ -58,7 +58,7 @@
 
       <ng-container matColumnDef="total">
         <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.COLUMNS.TOTAL' | translate }}</th>
-        <td mat-cell *matCellDef="let order">{{order.total | currency}}</td>
+        <td mat-cell *matCellDef="let order">{{order.total | appCurrency: getOrderCurrency(order.currency)}}</td>
       </ng-container>
 
       <ng-container matColumnDef="paymentType">

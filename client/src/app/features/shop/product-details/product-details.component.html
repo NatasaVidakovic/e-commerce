@@ -83,10 +83,10 @@
             <!-- Price block -->
             <div class="pd-price-block">
               @if (product.hasActiveDiscount && product.originalPrice) {
-                <span class="pd-price-discounted">{{ product.price | currency }}</span>
-                <span class="pd-price-original">{{ product.originalPrice | currency }}</span>
+                <span class="pd-price-discounted">{{ product.price | appCurrency }}</span>
+                <span class="pd-price-original">{{ product.originalPrice | appCurrency }}</span>
               } @else {
-                <span class="pd-price-current">{{ product.price | currency }}</span>
+                <span class="pd-price-current">{{ product.price | appCurrency }}</span>
               }
             </div>
 
@@ -189,10 +189,10 @@
                 <p class="pd-suggested-name">{{ p.name }}</p>
                 <div class="pd-suggested-price">
                   @if (p.hasActiveDiscount && p.originalPrice) {
-                    <span class="pd-sug-price-original">{{ p.originalPrice | currency }}</span>
-                    <span class="pd-sug-price-current pd-sug-price--discounted">{{ p.price | currency }}</span>
+                    <span class="pd-sug-price-original">{{ p.originalPrice | appCurrency }}</span>
+                    <span class="pd-sug-price-current pd-sug-price--discounted">{{ p.price | appCurrency }}</span>
                   } @else {
-                    <span class="pd-sug-price-current">{{ p.price | currency }}</span>
+                    <span class="pd-sug-price-current">{{ p.price | appCurrency }}</span>
                   }
                 </div>
               </div>

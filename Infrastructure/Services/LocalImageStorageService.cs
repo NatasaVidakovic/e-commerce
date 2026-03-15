@@ -54,7 +54,7 @@ public class LocalImageStorageService(IOptions<ImageStorageOptions> options) : I
                 var filePath = Path.Combine(folder, fileName);
                 await resized.SaveAsync(filePath, encoder);
                 writtenFiles.Add(filePath);
-                urlDict[suffix] = $"/images/products/{productId}/{fileName}";
+                urlDict[suffix] = $"/api/products/local-images/{productId}/{fileName}";
             }
         }
         catch
@@ -106,17 +106,22 @@ public class LocalImageStorageService(IOptions<ImageStorageOptions> options) : I
 
     private void DeleteFilesWithSlug(string url)
     {
-        // url example: /images/products/3/abc123-large.webp
-        // Delete all variants: thumb, small, medium, large + original
+        // url formats:
+        //   new: /api/products/local-images/{productId}/{slug}-large.webp
+        //   old: /images/products/{productId}/{slug}-large.webp
         var fileName = Path.GetFileNameWithoutExtension(url); // "abc123-large"
         var lastDash = fileName.LastIndexOf('-');
         if (lastDash < 0) return;
 
         var slug = fileName[..lastDash]; // "abc123"
-        var dir = Path.GetDirectoryName(url)?.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
-        if (dir == null) return;
 
-        var folder = Path.Combine(WebRoot, dir);
+        // Extract productId from URL
+        var segments = url.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        // Find the segment before the filename (that's the productId)
+        if (segments.Length < 2) return;
+        var productId = segments[^2]; // second-to-last segment
+
+        var folder = Path.Combine(WebRoot, "images", "products", productId);
         if (!Directory.Exists(folder)) return;
 
         foreach (var file in Directory.GetFiles(folder, $"{slug}-*"))

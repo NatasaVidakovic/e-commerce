@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { CurrencyPipe } from '../../../../shared/pipes/currency.pipe';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';

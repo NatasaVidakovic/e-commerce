@@ -1,11 +1,14 @@
-import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { OrderService } from '../../core/services/order.service';
 import { Order } from '../../shared/models/order';
+import { CurrencyService } from '../../core/services/currency.service';
+import { Currency } from '../../shared/models/currency';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
+import { CurrencyPipe } from '../../shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-order',
@@ -23,6 +26,11 @@ import { MatButton } from '@angular/material/button';
 })
 export class OrderComponent {
   private orderService = inject(OrderService);
+  private currencyService = inject(CurrencyService);
+
+  getOrderCurrency(code: string): Currency {
+    return this.currencyService.getCurrencyByCode(code);
+  }
   orders: Order[] = [];
   orderNumberMap = new Map<number, number>();
 

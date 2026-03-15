@@ -4,12 +4,13 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatInput } from '@angular/material/input';
-import { CurrencyPipe, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { StripeService } from '../../../core/services/stripe.service';
 import { FormsModule } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 
 @Component({
   selector: 'app-order-summary',

@@ -11,6 +11,8 @@ import { BestSellingService } from '../../core/services/best-selling.service';
 import { Router, RouterModule } from '@angular/router';
 import { ThemeService } from '../../core/services/theme.service';
 import { SiteConfigService } from '../../core/services/site-config.service';
+import { CurrencyService } from '../../core/services/currency.service';
+import { CurrencyPipe } from '../../shared/pipes/currency.pipe';
 import { computed, inject } from '@angular/core';
 import { SwiperDirective } from '../../shared/directives/swiper.directive';
 import { forkJoin } from 'rxjs';
@@ -22,7 +24,8 @@ import { forkJoin } from 'rxjs';
     TranslatePipe,
     CommonModule,
     RouterModule,
-    SwiperDirective
+    SwiperDirective,
+    CurrencyPipe
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
@@ -37,6 +40,7 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   
   private themeService = inject(ThemeService);
   private siteConfigService = inject(SiteConfigService);
+  private currencyService = inject(CurrencyService);
   
   loggedIn = true;
   bestReviewedProducts: Product[] = [];

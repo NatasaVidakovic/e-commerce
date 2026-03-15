@@ -8,27 +8,26 @@
         <dl class="flex items-center justify-between gap-4">
           <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.SUBTOTAL' | translate }}</dt>
           <dd class="font-medium" style="color: var(--color-text-primary);">{{cartService.totals()?.subtotal
-            | currency}}</dd>
+            | appCurrency}}</dd>
         </dl>
         @if (cartService.totals()?.discount && cartService.totals()!.discount > 0) {
         <dl class="flex items-center justify-between gap-4">
           <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.DISCOUNT' | translate }}</dt>
           <dd class="font-medium" style="color: var(--color-success);">
-            -{{cartService.totals()?.discount | currency}}</dd>
+            -{{cartService.totals()?.discount | appCurrency}}</dd>
         </dl>
         }
         <dl class="flex items-center justify-between gap-4">
           <dt class="font-medium" style="color: var(--color-text-secondary);">{{ 'CART.SHIPPING' | translate }}</dt>
           <dd class="font-medium" style="color: var(--color-text-primary);">{{cartService.totals()?.shipping
-            | currency}}</dd>
+            | appCurrency}}</dd>
         </dl>
       </div>
       <dl
           class="flex items-center justify-between gap-4 border-t pt-2"
           style="border-color: var(--color-border-primary);">
         <dt class="font-bold" style="color: var(--color-text-primary);">{{ 'CART.TOTAL' | translate }}</dt>
-        <dd class="font-semibold" style="color: var(--color-text-primary);">{{cartService.totals()?.total |
-          currency}}</dd>
+        <dd class="font-semibold" style="color: var(--color-text-primary);">{{cartService.totals()?.total | appCurrency}}</dd>
       </dl>
     </div>
 

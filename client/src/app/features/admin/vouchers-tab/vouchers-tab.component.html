@@ -90,7 +90,7 @@
       <ng-container matColumnDef="value">
         <th mat-header-cell *matHeaderCellDef>{{ 'DISCOUNT.VALUE' | translate }}</th>
         <td mat-cell *matCellDef="let v">
-          <span *ngIf="v.amountOff">{{ v.amountOff | currency }}</span>
+          <span *ngIf="v.amountOff">{{ v.amountOff | appCurrency }}</span>
           <span *ngIf="v.percentOff">{{ v.percentOff }}%</span>
           <span *ngIf="!v.amountOff && !v.percentOff">—</span>
         </td>

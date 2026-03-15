@@ -146,25 +146,20 @@ export class AdminProductEditComponent implements OnInit {
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || !this.productId) return;
-    this.uploadingImage = true;
     const files = Array.from(input.files);
     input.value = '';
-    this.uploadFilesSequentially(files, 0);
-  }
+    if (files.length === 0) return;
 
-  private uploadFilesSequentially(files: File[], index: number): void {
-    if (index >= files.length) {
-      this.uploadingImage = false;
-      return;
-    }
-    this.shopService.uploadProductImage(this.productId, files[index]).subscribe({
-      next: (img) => {
-        this.productImages.push(img);
-        this.uploadFilesSequentially(files, index + 1);
+    this.uploadingImage = true;
+    this.shopService.uploadProductImages(this.productId, files).subscribe({
+      next: (images) => {
+        this.productImages.push(...images);
+        this.uploadingImage = false;
       },
       error: (err) => {
-        console.error('Failed to upload image:', err);
-        this.uploadFilesSequentially(files, index + 1);
+        console.error('Failed to upload images:', err);
+        this.snackbar.errorFrom(err, 'Failed to upload images');
+        this.uploadingImage = false;
       }
     });
   }

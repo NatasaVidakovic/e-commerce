@@ -112,12 +112,13 @@ builder.Services.AddScoped<ISeedDataService, SeedDataService>();
 builder.Services.AddScoped<IRefundService, RefundService>();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
 builder.Services.AddScoped<IShopSettingsService, ShopSettingsService>();
-// Image storage: set provider = "cloudinary" in appsettings to use cloud storage in production
+// Image storage: set ImageStorage:Provider to "supabase" or "local" in appsettings
+builder.Services.AddHttpClient("Supabase");
 var imageProvider = builder.Configuration.GetValue<string>("ImageStorage:Provider") ?? "local";
-if (string.Equals(imageProvider, "cloudinary", StringComparison.OrdinalIgnoreCase))
+if (string.Equals(imageProvider, "supabase", StringComparison.OrdinalIgnoreCase))
 {
-    builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
-    builder.Services.AddScoped<IImageStorageService, CloudinaryImageStorageService>();
+    builder.Services.Configure<SupabaseStorageSettings>(builder.Configuration.GetSection("Supabase"));
+    builder.Services.AddScoped<IImageStorageService, SupabaseImageStorageService>();
 }
 else
 {
@@ -278,13 +279,6 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseRouting();
-app.UseCors("FrontendPolicy");
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseRateLimiter();
 app.UseDefaultFiles();
 
 // Only serve image files from wwwroot/images — block everything else
@@ -308,6 +302,14 @@ app.UseStaticFiles(new StaticFileOptions
                 : "public, max-age=2592000";
     }
 });
+
+app.UseRouting();
+app.UseCors("FrontendPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseRateLimiter();
 
 if (!app.Environment.IsDevelopment())
 {

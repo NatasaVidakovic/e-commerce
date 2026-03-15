@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } 
 import { Product } from '../../../shared/models/product';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../../core/services/cart.service';
@@ -10,6 +10,7 @@ import { FavouritesService } from '../../../core/services/favourites.service';
 import { Output, EventEmitter } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AccountService } from '../../../core/services/account.service';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 
 
 @Component({

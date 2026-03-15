@@ -4,6 +4,7 @@ import { Order, UpdateOrderStatusDto } from '../../../shared/models/order';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { PaginationComponent, PaginationEvent } from '../../../shared/components/pagination/pagination.component';
 import { CommonModule } from '@angular/common';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,6 +18,8 @@ import { OrderEmailDialogComponent } from './order-email-dialog/order-email-dial
 import { OrderRefundDialogComponent } from './order-refund-dialog/order-refund-dialog.component';
 import { OrderDetailsDialogComponent } from './order-details-dialog/order-details-dialog.component';
 import { SnackbarService } from '../../../core/services/snackbar.service';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { Currency } from '../../../shared/models/currency';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCardModule } from '@angular/material/card';
 
@@ -34,7 +37,8 @@ import { MatCardModule } from '@angular/material/card';
     TranslatePipe,
     DynamicFilterBarComponent,
     MatSlideToggleModule,
-    MatCardModule
+    MatCardModule,
+    CurrencyPipe
   ],
   templateUrl: './order-management.component.html',
   styleUrl: './order-management.component.scss'
@@ -43,6 +47,11 @@ export class OrderManagementComponent implements OnInit {
   private adminService = inject(AdminService);
   private dialog = inject(MatDialog);
   private snackbar = inject(SnackbarService);
+  private currencyService = inject(CurrencyService);
+
+  getOrderCurrency(code: string): Currency {
+    return this.currencyService.getCurrencyByCode(code);
+  }
   
   displayedColumns: string[] = ['id', 'buyerEmail', 'orderDate', 'total', 'paymentType', 'paymentStatus', 'status', 'deliveryStatus', 'action'];
 

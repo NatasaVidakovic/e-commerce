@@ -42,7 +42,7 @@
                                 }
                             </td>
                             <td class="px-2 sm:px-4 py-3 sm:py-4 text-right font-medium text-sm" style="color: var(--color-text-primary);">
-                                {{order.total | currency}}
+                                {{order.total | appCurrency: getOrderCurrency(order.currency)}}
                             </td>
                             <td class="px-2 sm:px-4 py-3 sm:py-4 text-center">
                                 <div class="flex flex-col items-center gap-1">

@@ -45,7 +45,8 @@
         <ng-container matColumnDef="pictureUrl">
             <th mat-header-cell *matHeaderCellDef>{{ 'PRODUCT.IMAGE' | translate }}</th>
             <td mat-cell *matCellDef="let p" [attr.data-label]="'PRODUCT.IMAGE' | translate">
-                <img [src]="p.pictureUrl" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: p.name }" class="w-12 h-12 object-cover rounded">
+                <img [src]="p.pictureUrl" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: p.name }" class="w-12 h-12 object-cover rounded"
+                     (error)="$any($event.target).src = 'images/placeholder.png'; $any($event.target).onerror = null">
             </td>
         </ng-container>
 
@@ -70,7 +71,7 @@
 
         <ng-container matColumnDef="price">
             <th mat-header-cell *matHeaderCellDef>{{ 'PRODUCT.PRICE' | translate }}</th>
-            <td mat-cell *matCellDef="let p" [attr.data-label]="'PRODUCT.PRICE' | translate">{{ p.price | currency:'EUR' }}</td>
+            <td mat-cell *matCellDef="let p" [attr.data-label]="'PRODUCT.PRICE' | translate">{{ p.price | appCurrency }}</td>
         </ng-container>
 
         <ng-container matColumnDef="quantityInStock">

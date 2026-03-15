@@ -155,16 +155,16 @@ export class AdminProductAddComponent implements OnInit {
   }
 
   private uploadPendingImages(productId: number, index: number, callback: () => void): void {
-    if (index >= this.pendingImages.length) {
-      this.uploadingImages = false;
-      callback();
-      return;
-    }
-    this.shopService.uploadProductImage(productId, this.pendingImages[index].file).subscribe({
-      next: () => this.uploadPendingImages(productId, index + 1, callback),
+    const files = this.pendingImages.map(img => img.file);
+    this.shopService.uploadProductImages(productId, files).subscribe({
+      next: () => {
+        this.uploadingImages = false;
+        callback();
+      },
       error: (err) => {
-        console.error('Failed to upload image:', err);
-        this.uploadPendingImages(productId, index + 1, callback);
+        console.error('Failed to upload images:', err);
+        this.uploadingImages = false;
+        callback();
       }
     });
   }

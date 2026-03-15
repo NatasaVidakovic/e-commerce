@@ -45,6 +45,50 @@
     </mat-card-content>
   </mat-card>
 
+  <!-- Currency Settings -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title class="card-title">
+        <mat-icon class="title-icon">currency_exchange</mat-icon>
+        {{ 'ADMIN.SITE_SETTINGS_CURRENCY' | translate }}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-group">
+        <label class="field-label">{{ 'ADMIN.SITE_SETTINGS_CURRENCY_SELECT' | translate }}</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-select [(value)]="currentCurrency" (selectionChange)="onCurrencyChange()" class="currency-select">
+            <mat-option *ngFor="let currency of availableCurrencies" [value]="currency">
+              <div class="currency-option">
+                <span class="currency-name">{{ currency.name }} ({{ currency.code }})</span>
+              </div>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <span class="field-hint">{{ 'ADMIN.SITE_SETTINGS_CURRENCY_HINT' | translate }}</span>
+      </div>
+
+      <div class="currency-preview">
+        <h4>{{ 'ADMIN.SITE_SETTINGS_CURRENCY_PREVIEW' | translate }}</h4>
+        <div class="preview-examples">
+          <div class="preview-item">
+            <span class="preview-label">Sample Price:</span>
+            <span class="preview-value">{{ 1234.56 | appCurrency }}</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Discount Value:</span>
+            <span class="preview-value">{{ 100 | appCurrency }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button mat-flat-button color="primary" (click)="saveCurrencySettings()" class="save-btn">
+        <mat-icon>save</mat-icon>
+        {{ 'ADMIN.SITE_SETTINGS_SAVE_CURRENCY' | translate }}
+      </button>
+    </mat-card-content>
+  </mat-card>
+
   <!-- Logo -->
   <mat-card class="settings-card">
     <mat-card-header>
@@ -242,7 +286,7 @@
           <div class="flex-1">
             <div class="font-semibold" style="color: var(--color-text-primary);">{{ dm.shortName }}</div>
             <div class="text-sm" style="color: var(--color-text-secondary);">{{ dm.description }}</div>
-            <div class="text-xs" style="color: var(--color-text-secondary);">{{ dm.deliveryTime }} &middot; {{ dm.price | currency }}</div>
+            <div class="text-xs" style="color: var(--color-text-secondary);">{{ dm.deliveryTime }} &middot; {{ dm.price | appCurrency }}</div>
           </div>
           <button mat-icon-button color="warn" (click)="deleteDeliveryMethod(dm.id)">
             <mat-icon>delete</mat-icon>

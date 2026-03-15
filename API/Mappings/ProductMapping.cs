@@ -9,8 +9,8 @@ public class ProductMapping : BaseMapping<ProductDto, Product>
     public override ProductDto ToDto(Product product)
     {
         var pictureUrl = !string.IsNullOrEmpty(product.PictureUrl) 
-            ? product.PictureUrl 
-            : product.Images?.OrderBy(i => i.DisplayOrder).FirstOrDefault()?.Url ?? "";
+            ? RewriteLocalImageUrl(product.PictureUrl) 
+            : RewriteLocalImageUrl(product.Images?.OrderBy(i => i.DisplayOrder).FirstOrDefault()?.Url ?? "");
 
         var dto = new ProductDto
         {
@@ -90,5 +90,17 @@ public class ProductMapping : BaseMapping<ProductDto, Product>
             QuantityInStock = productDto.QuantityInStock,
             Id = productDto.Id
         };
+    }
+
+    private static string RewriteLocalImageUrl(string url)
+    {
+        if (string.IsNullOrEmpty(url)) return url;
+        if (url.StartsWith("/images/products/", StringComparison.OrdinalIgnoreCase))
+        {
+            var remainder = url["/images/products/".Length..];
+            if (remainder.Contains('/'))
+                return $"/api/products/local-images/{remainder}";
+        }
+        return url;
     }
 }

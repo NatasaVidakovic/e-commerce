@@ -2,9 +2,9 @@ import { Component, inject, input } from '@angular/core';
 import { CartItem } from '../../../shared/models/cart';
 import { RouterLink } from '@angular/router';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 import { CartService } from '../../../core/services/cart.service';
-import { MatButton } from '@angular/material/button';
+import { MatIconButton } from '@angular/material/button';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -13,7 +13,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     RouterLink,
     MatIcon,
     CurrencyPipe,
-    MatButton,
+    MatIconButton,
     TranslatePipe
   ],
   templateUrl: './cart-item.component.html',

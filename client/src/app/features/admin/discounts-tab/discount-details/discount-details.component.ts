@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { CurrencyPipe } from '../../../../shared/pipes/currency.pipe';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -24,7 +25,8 @@ import { DeleteDiscountDialogComponent } from '../discount-delete/discount-delet
     MatCardModule,
     MatTableModule,
     MatDialogModule,
-    TranslatePipe
+    TranslatePipe,
+    CurrencyPipe
   ],
   templateUrl: './discount-details.component.html',
   styleUrls: ['./discount-details.component.scss']

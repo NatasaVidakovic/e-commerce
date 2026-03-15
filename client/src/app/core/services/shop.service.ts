@@ -75,6 +75,12 @@ export class ShopService {
     return this.http.post<ProductImage>(this.baseUrl + 'products/' + productId + '/images/upload', formData);
   }
 
+  uploadProductImages(productId: number, files: File[]) {
+    const formData = new FormData();
+    files.forEach(file => formData.append('files', file));
+    return this.http.post<ProductImage[]>(this.baseUrl + 'products/' + productId + '/images/upload-multiple', formData);
+  }
+
   deleteProductImage(productId: number, imageId: number) {
     return this.http.delete(this.baseUrl + 'products/' + productId + '/images/' + imageId);
   }
