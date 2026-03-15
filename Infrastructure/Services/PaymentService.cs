@@ -9,13 +9,15 @@ public class PaymentService : IPaymentService
 {
     private readonly ICartService cartService;
     private readonly IUnitOfWork unit;
+    private readonly ISiteSettingsService siteSettingsService;
 
     public PaymentService(IConfiguration config, ICartService cartService,
-        IUnitOfWork unit)
+        IUnitOfWork unit, ISiteSettingsService siteSettingsService)
     {
         StripeConfiguration.ApiKey = config["StripeSettings:SecretKey"];
         this.cartService = cartService;
         this.unit = unit;
+        this.siteSettingsService = siteSettingsService;
     }
 
     public async Task<ShoppingCart?> CreateOrUpdatePaymentIntent(string cartId)
@@ -36,7 +38,9 @@ public class PaymentService : IPaymentService
 
         var total = subtotal + shippingPrice;
 
-        await CreateUpdatePaymentIntentAsync(cart, total);
+        var currencyCode = await GetCurrencyCodeAsync();
+
+        await CreateUpdatePaymentIntentAsync(cart, total, currencyCode);
 
         await cartService.SetCartAsync(cart);
 
@@ -57,7 +61,7 @@ public class PaymentService : IPaymentService
     }
 
     private async Task CreateUpdatePaymentIntentAsync(ShoppingCart cart,
-        long total)
+        long total, string currency)
     {
         var service = new PaymentIntentService();
 
@@ -66,7 +70,7 @@ public class PaymentService : IPaymentService
             var options = new PaymentIntentCreateOptions
             {
                 Amount = total,
-                Currency = "usd",
+                Currency = currency,
                 PaymentMethodTypes = ["card"]
             };
             var intent = await service.CreateAsync(options);
@@ -81,6 +85,27 @@ public class PaymentService : IPaymentService
             };
             await service.UpdateAsync(cart.PaymentIntentId, options);
         }
+    }
+
+    private async Task<string> GetCurrencyCodeAsync()
+    {
+        var currencyJson = await siteSettingsService.GetValueAsync("Currency");
+        if (!string.IsNullOrEmpty(currencyJson))
+        {
+            try
+            {
+                var currencyObj = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(currencyJson);
+                if (currencyObj.TryGetProperty("code", out var codeProp))
+                {
+                    var code = codeProp.GetString();
+                    if (!string.IsNullOrEmpty(code))
+                        return code.ToLowerInvariant();
+                }
+            }
+            catch { }
+        }
+
+        return "usd";
     }
 
     private async Task<long> ApplyDiscountAsync(Voucher voucher, 
