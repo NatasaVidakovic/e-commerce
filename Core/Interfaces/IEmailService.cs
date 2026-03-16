@@ -6,7 +6,7 @@ namespace Core.Interfaces;
 public interface IEmailService
 {
     Task SendOrderConfirmationEmailAsync(Order order);
-    Task SendOrderStatusChangeEmailAsync(Order order, string oldStatus, string newStatus);
+    Task SendOrderStatusChangeEmailAsync(Order order, string oldStatus, string newStatus, string? adminNotes = null);
     Task SendPaymentStatusChangeEmailAsync(Order order, string oldStatus, string newStatus);
     Task SendDeliveryStatusChangeEmailAsync(Order order, string oldStatus, string newStatus);
     Task SendOrderRefundEmailAsync(Order order);

@@ -42,10 +42,10 @@ public class EmailService : IEmailService
             order.BuyerEmail, order.Id);
     }
 
-    public async Task SendOrderStatusChangeEmailAsync(Order order, string oldStatus, string newStatus)
+    public async Task SendOrderStatusChangeEmailAsync(Order order, string oldStatus, string newStatus, string? adminNotes = null)
     {
         var subject = $"Order Status Update - {order.OrderNumber ?? order.Id.ToString()}";
-        var body = BuildOrderStatusChangeEmailBody(order, oldStatus, newStatus);
+        var body = BuildOrderStatusChangeEmailBody(order, oldStatus, newStatus, adminNotes);
         
         await SendEmailAsync(order.BuyerEmail, subject, body);
         _logger.LogInformation("Order status change email sent to {Email} for order {OrderId}", 
@@ -249,8 +249,12 @@ WebShop Team
 ";
     }
 
-    private string BuildOrderStatusChangeEmailBody(Order order, string oldStatus, string newStatus)
+    private string BuildOrderStatusChangeEmailBody(Order order, string oldStatus, string newStatus, string? adminNotes = null)
     {
+        var adminNotesSection = !string.IsNullOrEmpty(adminNotes) 
+            ? $"\n\nAdmin Notes:\n{adminNotes}" 
+            : "";
+
         return $@"
 Dear Customer,
 
@@ -258,7 +262,7 @@ Your order status has been updated.
 
 Order Number: {order.OrderNumber ?? order.Id.ToString()}
 Previous Status: {oldStatus}
-New Status: {newStatus}
+New Status: {newStatus}{adminNotesSection}
 
 {GetStatusMessage(newStatus)}
 

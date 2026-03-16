@@ -262,7 +262,7 @@ public class AdminController(IUnitOfWork unit, IPaymentService paymentService,
                     break;
                 case "status":
                     await emailService.SendOrderStatusChangeEmailAsync(order, 
-                        emailDto.OldValue ?? "", order.Status.ToString());
+                        emailDto.OldValue ?? "", order.Status.ToString(), emailDto.AdminNotes);
                     break;
                 case "payment":
                     await emailService.SendPaymentStatusChangeEmailAsync(order, 
