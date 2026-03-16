@@ -342,17 +342,28 @@ try
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<StoreContext>();
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
-    try
+    
+    // Only apply migrations in development environment
+    if (app.Environment.IsDevelopment())
     {
-        await ApplyMigrationsWithRetryAsync(context, logger);
-
-
-        await context.SeedDataAsync(services);
-        logger.LogInformation("Seeding completed successfully.");
+        try
+        {
+            await ApplyMigrationsWithRetryAsync(context, logger);
+            await context.SeedDataAsync(services);
+            logger.LogInformation("Database setup completed successfully.");
+        }
+        catch (SqlException ex) when (ex.Number == 1801) // Database already exists
+        {
+            logger.LogWarning("Database already exists. Continuing with startup.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Database setup failed. Application will continue without database operations.");
+        }
     }
-    catch (SqlException ex) when (ex.Number == 1801) // Database already exists
+    else
     {
-        // Database already exists, continue
+        logger.LogInformation("Production environment detected. Skipping automatic migrations.");
     }
 }
 catch (Exception e)
@@ -365,11 +376,15 @@ app.Run();
 
 static async Task ApplyMigrationsWithRetryAsync(StoreContext context, ILogger logger)
 {
-    const int maxAttempts = 20;
+    const int maxAttempts = 3; // Reduced for faster startup
     for (int attempt = 0; attempt < maxAttempts; attempt++)
     {
         try
         {
+            // Test database connection first
+            await context.Database.CanConnectAsync();
+            
+            // Apply migrations
             await context.Database.MigrateAsync();
             logger.LogInformation("Migrations applied successfully.");
             return;
@@ -381,11 +396,20 @@ static async Task ApplyMigrationsWithRetryAsync(StoreContext context, ILogger lo
 
             var conflicting = pending.First();
             logger.LogWarning("Migration '{Migration}' skipped — object already exists in database.", conflicting);
+            
+            // Get the actual EF Core version from context
+            var efVersion = typeof(Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade).Assembly.GetName().Version?.ToString() ?? "9.0.0";
+            
             await context.Database.ExecuteSqlRawAsync(
                 "IF NOT EXISTS (SELECT 1 FROM [__EFMigrationsHistory] WHERE [MigrationId] = {0}) " +
                 "INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES ({0}, {1})",
-                conflicting, "9.0.0");
+                conflicting, efVersion);
+        }
+        catch (Exception ex) when (attempt < maxAttempts - 1)
+        {
+            logger.LogWarning(ex, "Migration attempt {Attempt} failed. Retrying in 3 seconds...", attempt + 1);
+            await Task.Delay(3000); // Wait 3 seconds before retry
         }
     }
-    throw new InvalidOperationException("Could not apply all migrations after maximum retry attempts.");
+    throw new InvalidOperationException("Could not apply migrations after maximum retry attempts.");
 }
