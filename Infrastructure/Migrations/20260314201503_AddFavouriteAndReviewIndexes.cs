@@ -10,6 +10,10 @@ namespace Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Safely drop indexes that might exist before altering columns
+            migrationBuilder.Sql("IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Products_Brand' AND object_id = OBJECT_ID(N'[Products]')) DROP INDEX [IX_Products_Brand] ON [Products];");
+            migrationBuilder.Sql("IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Products_ProductTypeId_Brand' AND object_id = OBJECT_ID(N'[Products]')) DROP INDEX [IX_Products_ProductTypeId_Brand] ON [Products];");
+
             migrationBuilder.AlterColumn<string>(
                 name: "Brand",
                 table: "Products",
