@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,6 +13,9 @@ import { AdminService } from '../../../../core/services/admin.service';
 import { ShopService } from '../../../../core/services/shop.service';
 import { environment } from '../../../../../environments/environment';
 import { CurrencyService } from '../../../../core/services/currency.service';
+import { Currency } from '../../../../shared/models/currency';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import { UniversalReportComponent, ReportColumn, ReportData, SummaryMetric } from '../../../../shared/components/universal-report/universal-report.component';
 import { DynamicFilterBarComponent } from '../../../../shared/components/dynamic-filter-bar/dynamic-filter-bar.component';
 import { BaseDataViewModelRequest, BaseDataViewModelResponse, DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../../../shared/models/dynamic-filtering';
@@ -43,20 +46,13 @@ export interface ActiveFilterChip {
   templateUrl: './reports-tab.component.html',
   styleUrl: './reports-tab.component.scss'
 })
-export class ReportsTabComponent implements OnInit {
+export class ReportsTabComponent implements OnInit, OnDestroy {
   @ViewChild(DynamicFilterBarComponent) filterBar?: DynamicFilterBarComponent;
-
-  constructor(
-    private adminService: AdminService,
-    private shopService: ShopService,
-    private http: HttpClient,
-    private currencyService: CurrencyService
-  ) {}
 
   selectedReportType: string = '';
   selectedFormat: string = 'pdf';
-  loading = false;
   pdfGenerating = false;
+  loading = false;
   filterBarVisible = false;
   currentFilterValues: Record<string, any> = {};
 
@@ -74,8 +70,69 @@ export class ReportsTabComponent implements OnInit {
   // Lookup data for filter options
   productTypes: string[] = [];
   productBrands: string[] = [];
+  
+  // Data storage
+  orders: Order[] = [];
+  products: Product[] = [];
+  customers: any[] = [];
+  financials: any[] = [];
+
+  private destroy$ = new Subject<void>();
+  currentCurrency: Currency | null = null;
+
+  // Method to get currency for orders based on payment type
+  private getOrderCurrency(order: Order): Currency {
+    // If order has PayPal payment type, use USD
+    if (order.paymentType?.toLowerCase().includes('paypal') || order.paymentType?.toLowerCase().includes('card')) {
+      return {
+        code: 'USD',
+        symbol: '$',
+        name: 'US Dollar',
+        decimalPlaces: 2,
+        symbolPosition: 'before',
+        spaceBetween: false
+      };
+    }
+    
+    // For other payment types, use the order's currency if available, otherwise app currency
+    if (order.currency) {
+      const orderCurrency = this.currencyService.getCurrencyByCode(order.currency);
+      return orderCurrency;
+    }
+    
+    // Default to app currency
+    return this.currentCurrency || this.currencyService.getCurrentCurrency();
+  }
+
+  // Method to format currency based on order payment
+  private formatOrderCurrency(value: number, order: Order): string {
+    const currency = this.getOrderCurrency(order);
+    const formattedValue = value.toFixed(currency.decimalPlaces);
+    
+    if (currency.symbolPosition === 'before') {
+      return currency.spaceBetween ? `${currency.symbol} ${formattedValue}` : `${currency.symbol}${formattedValue}`;
+    } else {
+      return currency.spaceBetween ? `${formattedValue} ${currency.symbol}` : `${formattedValue}${currency.symbol}`;
+    }
+  }
+
+  constructor(
+    private adminService: AdminService,
+    private shopService: ShopService,
+    private http: HttpClient,
+    private currencyService: CurrencyService
+  ) {}
 
   ngOnInit(): void {
+    // Subscribe to currency changes
+    this.currencyService.currentCurrency$.pipe(takeUntil(this.destroy$)).subscribe((currency: Currency | null) => {
+      this.currentCurrency = currency;
+      // Refresh report data when currency changes to update formatting
+      if (this.selectedReportType) {
+        this.setupReportData();
+      }
+    });
+
     forkJoin({
       types: this.shopService.fetchTypes(),
       brands: this.shopService.fetchBrands()
@@ -87,6 +144,11 @@ export class ReportsTabComponent implements OnInit {
       error: () => {}
     });
     this.setupReportData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get activeChips(): ActiveFilterChip[] {
@@ -502,7 +564,25 @@ export class ReportsTabComponent implements OnInit {
     const headers = this.reportColumns.map(c => `"${c.label}"`).join(',');
     const rows = this.reportData.map(row =>
       this.reportColumns.map(col => {
-        const val = row[col.key] ?? '';
+        let val = row[col.key] ?? '';
+        // Format currency values for CSV
+        if (col.type === 'currency') {
+          const numericValue = String(val).replace(/[^\d.-]/g, '');
+          const numValue = parseFloat(numericValue) || 0;
+          
+          // For orders report, use order-specific currency
+          if (this.selectedReportType === 'orders') {
+            const order = this.orders.find((o: Order) => o.id === (row as any)['id']);
+            if (order) {
+              val = this.formatOrderCurrency(numValue, order);
+            } else {
+              val = this.currencyService.formatCurrency(numValue);
+            }
+          } else {
+            // For other reports, use app currency
+            val = this.currencyService.formatCurrency(numValue);
+          }
+        }
         return `"${String(val).replace(/"/g, '""')}"`;
       }).join(',')
     );
@@ -536,21 +616,6 @@ export class ReportsTabComponent implements OnInit {
     };
   }
 
-  openReportDesigner(): void {
-    // Use the designer URL from the API — open via <a> tag to avoid popup blocker
-    this.http.get<{url: string}>(environment.baseUrl + 'reports/designer-url').subscribe({
-      next: (res) => {
-        window.open(res.url, '_blank');
-      },
-      error: () => {
-        const fallbackUrl = environment.production
-          ? 'https://jsreport.ambitiousbeach-cb1f5a83.westeurope.azurecontainerapps.io/studio'
-          : 'http://localhost:5488/studio';
-        window.open(fallbackUrl, '_blank');
-      }
-    });
-  }
-
   private exportPdf(filename: string, title: string): void {
     if (this.pdfGenerating) return;
     this.pdfGenerating = true;
@@ -578,26 +643,65 @@ export class ReportsTabComponent implements OnInit {
   private buildReportHtml(title: string, description: string): string {
     const esc = (v: any) => String(v ?? '')
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    const formatValue = (value: any, columnType: string, rowData?: any) => {
+      if (columnType === 'currency') {
+        // Remove any existing currency symbols and convert to number
+        const numericValue = String(value).replace(/[^\d.-]/g, '');
+        const numValue = parseFloat(numericValue) || 0;
+        
+        // For orders report, use order-specific currency
+        if (this.selectedReportType === 'orders' && rowData) {
+          const order = this.orders.find((o: Order) => o.id === (rowData as any)['id']);
+          if (order) {
+            return this.formatOrderCurrency(numValue, order);
+          }
+        }
+        
+        // For other reports, use app currency
+        return this.currencyService.formatCurrency(numValue);
+      }
+      return esc(value);
+    };
 
     const now       = new Date();
     const genDate   = now.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
     const genTime   = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     const recordCount = this.reportData.length;
+    const currentCurrency = this.currencyService.getCurrentCurrency();
 
-    const summaryRows = this.reportSummaryMetrics.map(m => `
+    const summaryRows = this.reportSummaryMetrics.map(m => {
+      let formattedValue = esc(m.value);
+      // Check if the metric label contains currency-related terms and format accordingly
+      if (m.label.toLowerCase().includes('revenue') || 
+          m.label.toLowerCase().includes('cost') || 
+          m.label.toLowerCase().includes('profit') || 
+          m.label.toLowerCase().includes('value') ||
+          m.label.toLowerCase().includes('total')) {
+        // Extract numeric value and format with currency
+        const numericValue = String(m.value).replace(/[^\d.-]/g, '');
+        const numValue = parseFloat(numericValue) || 0;
+        formattedValue = this.currencyService.formatCurrency(numValue);
+      }
+      return `
       <div class="metric-card">
         <span class="metric-label">${esc(m.label)}</span>
-        <span class="metric-value">${esc(m.value)}</span>
+        <span class="metric-value">${formattedValue}</span>
         ${m.change ? `<span class="metric-change ${m.change.startsWith('-') ? 'neg' : 'pos'}">${esc(m.change)}</span>` : ''}
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
     const headerCells = this.reportColumns
       .map(c => `<th>${esc(c.label)}</th>`).join('');
     const dataRows = this.reportData.map((row, i) => {
       const cells = this.reportColumns
-        .map(col => `<td>${esc(row[col.key] ?? '')}</td>`).join('');
+        .map(col => `<td>${formatValue(row[col.key], col.type || '', row)}</td>`).join('');
       return `<tr class="${i % 2 === 1 ? 'alt' : ''}">${cells}</tr>`;
     }).join('');
+
+    // Add currency info note for orders report
+    const currencyNote = this.selectedReportType === 'orders' ? 
+      '<p style="font-size: 10px; color: #666; margin-top: 10px;">* Currency shown based on payment method (PayPal/Card = USD, Others = App Currency)</p>' : '';
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -711,6 +815,9 @@ export class ReportsTabComponent implements OnInit {
     justify-content: space-between;
     page-break-inside: avoid;
   }
+  
+  /* ── Currency formatting ── */
+  .currency { font-weight: 600; color: #1e293b; }
 </style>
 </head>
 <body>
@@ -720,7 +827,7 @@ export class ReportsTabComponent implements OnInit {
       <div class="brand-icon">&#x1F6D2;</div>
       <div>
         <div class="brand-name">WebShop</div>
-        <div class="brand-sub">Admin &amp; Reports Portal</div>
+        <div class="brand-sub">Admin &amp; Reports Portal (${currentCurrency.code})</div>
       </div>
     </div>
     <div class="report-info">
@@ -742,11 +849,12 @@ export class ReportsTabComponent implements OnInit {
       <thead><tr>${headerCells}</tr></thead>
       <tbody>${dataRows}</tbody>
     </table>
+    ${currencyNote}
   </div>
 
   <div class="print-footer">
     <span>${esc(title)} &mdash; ${genDate}</span>
-    <span>WebShop Admin &mdash; Confidential</span>
+    <span>WebShop Admin &mdash; Confidential | Currency: ${currentCurrency.code} (${currentCurrency.symbol})</span>
   </div>
 </div>
 
@@ -1112,9 +1220,9 @@ export class ReportsTabComponent implements OnInit {
     const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
 
     this.reportSummaryMetrics = [
-      { key: 'totalRevenue', label: 'Total Revenue', value: `$${totalRevenue.toFixed(2)}`, change: '+12.5%' },
-      { key: 'totalCosts', label: 'Total Costs', value: '$0.00', change: '+8.3%' },
-      { key: 'netProfit', label: 'Net Profit', value: `$${totalRevenue.toFixed(2)}`, change: '+18.7%' }
+      { key: 'totalRevenue', label: 'Total Revenue', value: this.currencyService.formatCurrency(totalRevenue), change: '+12.5%' },
+      { key: 'totalCosts', label: 'Total Costs', value: this.currencyService.formatCurrency(0), change: '+8.3%' },
+      { key: 'netProfit', label: 'Net Profit', value: this.currencyService.formatCurrency(totalRevenue), change: '+18.7%' }
     ];
   }
 
@@ -1125,7 +1233,7 @@ export class ReportsTabComponent implements OnInit {
 
     this.reportSummaryMetrics = [
       { key: 'totalItems', label: 'Total Items', value: totalItems.toString(), change: `+${totalItems}` },
-      { key: 'totalValue', label: 'Total Value', value: `$${totalValue.toFixed(2)}`, change: '+15.3%' },
+      { key: 'totalValue', label: 'Total Value', value: this.currencyService.formatCurrency(totalValue), change: '+15.3%' },
       { key: 'turnoverRate', label: 'Turnover Rate', value: '4.2x', change: '+0.3x' }
     ];
   }
