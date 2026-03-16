@@ -32,7 +32,7 @@ export class AccountService {
     )
   }
 
-  googleLogin(returnUrl: string = '/shop') {
+  googleLogin(returnUrl: string = '/') {
     sessionStorage.setItem('googleLoginReturnUrl', returnUrl);
     window.location.href = this.baseUrl + 'account/google-login?returnUrl=' + encodeURIComponent(returnUrl);
   }

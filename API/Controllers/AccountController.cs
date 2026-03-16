@@ -216,11 +216,14 @@ public class AccountController(
     [HttpGet("google-complete")]
     public async Task<IActionResult> LoginResult(string returnUrl = null)
     {
-
-        var returnUrlValue = returnUrl ?? "/shop";
+        var returnUrlValue = returnUrl ?? "/";
         var baseUrl = appSettings.Value.FrontendUrl;
 
-        _logger.LogInformation("=== GoogleResponse method called ===");
+        _logger.LogInformation("=== Google OAuth Callback ===");
+        _logger.LogInformation($"ReturnUrl parameter: {returnUrl}");
+        _logger.LogInformation($"Final ReturnUrl: {returnUrlValue}");
+        _logger.LogInformation($"BaseUrl: {baseUrl}");
+        _logger.LogInformation($"Will redirect to: {baseUrl}{returnUrlValue}");
         
         var info = await signInManager.GetExternalLoginInfoAsync();
         if (info == null) 
@@ -228,27 +231,30 @@ public class AccountController(
             _logger.LogError("Error: External login info is null");
             return BadRequest("Error loading external login information");
         }
-        _logger.LogInformation($"External login info received for provider: {info.LoginProvider}, email: {info.Principal.FindFirstValue(ClaimTypes.Email)}");
+        
+        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+        _logger.LogInformation($"External login info received for provider: {info.LoginProvider}, email: {email}");
 
         var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
         
         if (result.Succeeded)
         {
-            _logger.LogInformation("User successfully signed in");
+            _logger.LogInformation("User successfully signed in with existing account");
             var user = await signInManager.UserManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
             
             if (user != null)
             {
                 await signInManager.SignInAsync(user, isPersistent: false);
-                
-                return Redirect($"{baseUrl}{returnUrlValue}");
+                _logger.LogInformation($"User {user.Email} signed in successfully");
+                var redirectUrl = $"{baseUrl}{returnUrlValue}";
+                _logger.LogInformation($"Redirecting to: {redirectUrl}");
+                return Redirect(redirectUrl);
             }
         }
 
 
         // Handle first-time Google login - create user account
         _logger.LogInformation("Creating new user account from Google login");
-        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
         var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
         var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
 

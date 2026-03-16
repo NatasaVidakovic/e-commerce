@@ -135,6 +135,9 @@ export class ShopComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    console.log('=== ShopComponent ngOnInit ===');
+    console.log('User logged in:', this.accountService.isLoggedIn());
+    
     // Load last viewed product ID for highlighting
     const lastProductId = sessionStorage.getItem(this.LAST_PRODUCT_KEY);
     if (lastProductId) {
@@ -163,17 +166,20 @@ export class ShopComponent implements OnInit, OnDestroy {
       this.currentFilterValues = { ...this.initialFilterValues };
     }
 
+    console.log('Loading brands and types...');
     forkJoin({
       brands: this.shopService.fetchBrands(),
       types: this.shopService.fetchTypes()
     }).subscribe({
       next: ({ brands, types }) => {
+        console.log('Brands and types loaded successfully');
         this.brands = brands;
         this.types = types;
         this.initializeFilterDefinitions();
         this.loadFavourites();
       },
-      error: () => {
+      error: (error) => {
+        console.error('Error loading brands and types:', error);
         this.initializeFilterDefinitions();
         this.loadFavourites();
       }
@@ -214,6 +220,8 @@ export class ShopComponent implements OnInit, OnDestroy {
   }
 
   loadProducts() {
+    console.log('=== Loading products ===');
+    console.log('Current authentication state:', this.accountService.isLoggedIn());
     this.loading = true;
     this.shopService.filterProducts({
       filters: this.lastFilters,
@@ -225,6 +233,7 @@ export class ShopComponent implements OnInit, OnDestroy {
       descending: this.lastSort.descending
     }).subscribe({
       next: (response) => {
+        console.log('Products loaded successfully:', response.data?.length || 0, 'products');
         this.loading = false;
         this.pageNumber = response.currentPage;
         this.pageSize = response.pageSize;
@@ -243,7 +252,11 @@ export class ShopComponent implements OnInit, OnDestroy {
         // Restore scroll after products are rendered in DOM
         setTimeout(() => this.restoreScrollPosition(), 100);
       },
-      error: (error) => { this.loading = false; console.error(error); this.snackbar.errorFrom(error, 'Failed to load products'); }
+      error: (error) => { 
+        console.error('Error loading products:', error);
+        this.loading = false; 
+        this.snackbar.errorFrom(error, 'Failed to load products'); 
+      }
     });
   }
 

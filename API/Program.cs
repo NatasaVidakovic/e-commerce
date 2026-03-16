@@ -253,8 +253,12 @@ builder.Services.AddIdentityApiEndpoints<AppUser>()
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
+        ? CookieSecurePolicy.None 
+        : CookieSecurePolicy.Always;
+    options.Cookie.SameSite = builder.Environment.IsDevelopment() 
+        ? SameSiteMode.Lax 
+        : SameSiteMode.Strict;
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
     options.SlidingExpiration = true;
 });
