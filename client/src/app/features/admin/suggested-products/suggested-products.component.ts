@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TrackByFunction } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShopService } from '../../../core/services/shop.service';
 import { SuggestedProductsService } from '../../../core/services/suggested.service';
@@ -11,6 +11,9 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import { forkJoin } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { CommonModule, DecimalPipe } from '@angular/common';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 
 @Component({
     selector: 'suggested-products',
@@ -19,7 +22,11 @@ import { MatIconModule } from '@angular/material/icon';
         TranslatePipe,
         DynamicFilterBarComponent,
         MatButtonModule,
-        MatIconModule
+        MatIconModule,
+        CommonModule,
+        DecimalPipe,
+        PaginationComponent,
+        CurrencyPipe
     ],
     templateUrl: './suggested-products.component.html',
     styleUrl: './suggested-products.component.scss',
@@ -150,8 +157,8 @@ export class SuggestedProductsComponent implements OnInit, OnDestroy {
         this.loadProducts();
     }
 
-    onPageChanged(event: { pageNumber: number; pageSize: number }) {
-        this.pageNumber = event.pageNumber;
+    onPageChanged(event: any) {
+        this.pageNumber = event.pageIndex + 1;
         this.pageSize = event.pageSize;
         this.loadProducts();
     }
@@ -194,5 +201,9 @@ export class SuggestedProductsComponent implements OnInit, OnDestroy {
 
     onWindowResize() {
         this.screenWidth = window.innerWidth;
+    }
+
+    trackByProductId: TrackByFunction<Product> = (index: number, product: Product): number => {
+        return product.id;
     }
 }

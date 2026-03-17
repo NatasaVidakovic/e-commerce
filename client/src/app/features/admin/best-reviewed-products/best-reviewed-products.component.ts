@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, TrackByFunction } from '@angular/core';
 import { ShopService } from '../../../core/services/shop.service';
 import { BestReviewedService } from '../../../core/services/bestReviewed.service';
 import { Product } from '../../../shared/models/product';
@@ -10,6 +10,9 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import { forkJoin } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { CommonModule, DecimalPipe } from '@angular/common';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 
 @Component({
     selector: 'best-reviewed-products',
@@ -18,7 +21,11 @@ import { MatIconModule } from '@angular/material/icon';
         TranslatePipe,
         DynamicFilterBarComponent,
         MatButtonModule,
-        MatIconModule
+        MatIconModule,
+        CommonModule,
+        DecimalPipe,
+        PaginationComponent,
+        CurrencyPipe
     ],
     templateUrl: './best-reviewed-products.component.html',
     styleUrl: './best-reviewed-products.component.scss',
@@ -144,8 +151,8 @@ import { MatIconModule } from '@angular/material/icon';
         this.loadProducts();
     }
 
-    onPageChanged(event: { pageNumber: number; pageSize: number }) {
-        this.pageNumber = event.pageNumber;
+    onPageChanged(event: any) {
+        this.pageNumber = event.pageIndex + 1;
         this.pageSize = event.pageSize;
         this.loadProducts();
     }
@@ -157,6 +164,10 @@ import { MatIconModule } from '@angular/material/icon';
 
     onWindowResize() {
         this.screenWidth = window.innerWidth;
+    }
+
+    trackByProductId: TrackByFunction<Product> = (index: number, product: Product): number => {
+        return product.id;
     }
 
 }

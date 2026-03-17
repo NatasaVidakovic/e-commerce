@@ -69,6 +69,119 @@
   margin-bottom: 1rem;
 }
 
+/* Vouchers container with dual view system */
+.vouchers-container {
+  width: 100%;
+
+  .desktop-view {
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+
+  .mobile-view {
+    display: none;
+
+    @media (max-width: 767px) {
+      display: block;
+    }
+
+    .vouchers-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .voucher-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-primary);
+      border-radius: 6px;
+      padding: 8px 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px) translateX(-50%);
+        left: 50%;
+        position: relative;
+      }
+
+      .card-main-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+        flex-wrap: wrap;
+
+        .voucher-code {
+          font-family: monospace;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--color-text-primary);
+          line-height: 1.2;
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .voucher-value {
+          font-size: 16px;
+          font-weight: 700;
+          color: var(--color-primary);
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .voucher-status {
+          flex-shrink: 0;
+        }
+      }
+
+      .card-second-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: space-between;
+
+        .voucher-description {
+          margin: 0;
+          font-size: 12px;
+          color: var(--color-text-secondary);
+          line-height: 1.2;
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .card-actions {
+          display: flex;
+          gap: 4px;
+          flex-shrink: 0;
+
+          button[mat-icon-button] {
+            width: 28px !important;
+            height: 28px !important;
+            line-height: 28px !important;
+
+            mat-icon {
+              font-size: 16px !important;
+              width: 16px !important;
+              height: 16px !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 /* Table container — horizontal scroll on narrow screens */
 .table-container {
   width: 100%;

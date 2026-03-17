@@ -22,74 +22,124 @@
     </app-dynamic-filter-bar>
   </div>
 
-  <!-- Users Table -->
-  <div class="table-container mt-4">
-    <table mat-table [dataSource]="users" class="w-full users-table compact-table">
+  <!-- Users Display -->
+  <div class="users-container">
+    <!-- Desktop Table View -->
+    <div class="desktop-view">
+      <div class="table-container mt-4">
+        <table mat-table [dataSource]="users" class="w-full users-table compact-table">
 
-      <!-- Email -->
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef>Email</th>
-        <td mat-cell *matCellDef="let user">
-          <span class="email-text">{{ user.email }}</span>
-        </td>
-      </ng-container>
+          <!-- Email -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let user">
+              <span class="email-text">{{ user.email }}</span>
+            </td>
+          </ng-container>
 
-      <!-- Name -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let user">
-          <span class="name-text">{{ getUserName(user) }}</span>
-        </td>
-      </ng-container>
+          <!-- Name -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let user">
+              <span class="name-text">{{ getUserName(user) }}</span>
+            </td>
+          </ng-container>
 
-      <!-- Phone -->
-      <ng-container matColumnDef="phone">
-        <th mat-header-cell *matHeaderCellDef>Phone</th>
-        <td mat-cell *matCellDef="let user">
-          <span class="muted-text">{{ user.phoneNumber || '—' }}</span>
-        </td>
-      </ng-container>
+          <!-- Phone -->
+          <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef>Phone</th>
+            <td mat-cell *matCellDef="let user">
+              <span class="muted-text">{{ user.phoneNumber || '—' }}</span>
+            </td>
+          </ng-container>
 
-      <!-- Roles -->
-      <ng-container matColumnDef="roles">
-        <th mat-header-cell *matHeaderCellDef>Roles</th>
-        <td mat-cell *matCellDef="let user">
-          <div class="role-chips">
-            <span *ngFor="let role of user.roles"
-              class="role-chip"
-              [ngClass]="{ 'role-admin': role === 'Admin', 'role-customer': role === 'Customer' }">
-              {{ role }}
-            </span>
+          <!-- Roles -->
+          <ng-container matColumnDef="roles">
+            <th mat-header-cell *matHeaderCellDef>Roles</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="role-chips">
+                <span *ngFor="let role of user.roles"
+                  class="role-chip"
+                  [ngClass]="{ 'role-admin': role === 'Admin', 'role-customer': role === 'Customer' }">
+                  {{ role }}
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Email Confirmed -->
+          <ng-container matColumnDef="emailConfirmed">
+            <th mat-header-cell *matHeaderCellDef>Verified</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="status-badge"
+                [class.status-verified]="user.emailConfirmed"
+                [class.status-unverified]="!user.emailConfirmed">
+                <mat-icon>{{ user.emailConfirmed ? 'check_circle' : 'schedule' }}</mat-icon>
+                <span>{{ user.emailConfirmed ? 'Verified' : 'Pending' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Address -->
+          <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef>Address</th>
+            <td mat-cell *matCellDef="let user">
+              <span class="address-text" [matTooltip]="getAddressString(user)" matTooltipPosition="above">
+                {{ getAddressString(user) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-view">
+      <div class="users-grid">
+        <div class="user-card" *ngFor="let user of users; trackBy: trackByUserId">
+          <div class="card-header">
+            <div class="user-avatar" [style.background-color]="getAvatarColor(user)">
+              {{ getInitials(user) }}
+            </div>
+            <div class="user-info">
+              <h3 class="user-name">{{ getUserName(user) }}</h3>
+              <p class="user-email">{{ user.email }}</p>
+            </div>
+            <div class="user-status">
+              <div class="status-badge"
+                [class.status-verified]="user.emailConfirmed"
+                [class.status-unverified]="!user.emailConfirmed">
+                <mat-icon>{{ user.emailConfirmed ? 'check_circle' : 'schedule' }}</mat-icon>
+              </div>
+            </div>
           </div>
-        </td>
-      </ng-container>
-
-      <!-- Email Confirmed -->
-      <ng-container matColumnDef="emailConfirmed">
-        <th mat-header-cell *matHeaderCellDef>Verified</th>
-        <td mat-cell *matCellDef="let user">
-          <div class="status-badge"
-            [class.status-verified]="user.emailConfirmed"
-            [class.status-unverified]="!user.emailConfirmed">
-            <mat-icon>{{ user.emailConfirmed ? 'check_circle' : 'schedule' }}</mat-icon>
-            <span>{{ user.emailConfirmed ? 'Verified' : 'Pending' }}</span>
+          
+          <div class="card-content">
+            <div class="user-details">
+              <div class="detail-item" *ngIf="user.phoneNumber">
+                <mat-icon class="detail-icon">phone</mat-icon>
+                <span class="detail-text">{{ user.phoneNumber }}</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon class="detail-icon">location_on</mat-icon>
+                <span class="detail-text">{{ getAddressString(user) }}</span>
+              </div>
+            </div>
+            
+            <div class="user-roles">
+              <span *ngFor="let role of user.roles"
+                class="role-chip"
+                [ngClass]="{ 'role-admin': role === 'Admin', 'role-customer': role === 'Customer' }">
+                {{ role }}
+              </span>
+            </div>
           </div>
-        </td>
-      </ng-container>
-
-      <!-- Address -->
-      <ng-container matColumnDef="address">
-        <th mat-header-cell *matHeaderCellDef>Address</th>
-        <td mat-cell *matCellDef="let user">
-          <span class="address-text" [matTooltip]="getAddressString(user)" matTooltipPosition="above">
-            {{ getAddressString(user) }}
-          </span>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+        </div>
+      </div>
+    </div>
   </div>
 
   @if (loading) {

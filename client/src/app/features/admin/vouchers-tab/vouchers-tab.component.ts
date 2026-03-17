@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, TrackByFunction } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 import { FormsModule } from '@angular/forms';
@@ -220,5 +220,9 @@ export class VouchersTabComponent implements OnInit {
       width: '700px',
       data: { voucherId: voucher.id, voucherCode: voucher.code }
     });
+  }
+
+  trackByVoucherId: TrackByFunction<Voucher> = (index: number, voucher: Voucher): number => {
+    return voucher.id;
   }
 }

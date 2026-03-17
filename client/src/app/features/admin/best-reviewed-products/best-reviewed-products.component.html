@@ -24,23 +24,66 @@
     </app-dynamic-filter-bar>
   </div>
 
-  <!-- Products Table -->
-  <products-tab
-    [products]="products"
-    [brands]="brands"
-    [types]="types"
-    [isAdmin]="true"
-    [enableAddFromExisting]="false"
-    [enableEdit]="false"
-    [enableDelete]="false"
-    [showRating]="true"
-    [serverSide]="true"
-    [totalCount]="totalCount"
-    [pageNumber]="pageNumber"
-    [pageSize]="pageSize"
-    [showInternalFilters]="false"
-    [showActionBar]="false"
-    (pageChanged)="onPageChanged($event)">
-  </products-tab>
+  <!-- Products Display -->
+  <div class="products-container">
+    <!-- Desktop Table View -->
+    <div class="desktop-view">
+      <products-tab
+        [products]="products"
+        [brands]="brands"
+        [types]="types"
+        [isAdmin]="true"
+        [enableAddFromExisting]="false"
+        [enableEdit]="false"
+        [enableDelete]="false"
+        [showRating]="true"
+        [serverSide]="true"
+        [totalCount]="totalCount"
+        [pageNumber]="pageNumber"
+        [pageSize]="pageSize"
+        [showInternalFilters]="false"
+        [showActionBar]="false"
+        (pageChanged)="onPageChanged($event)">
+      </products-tab>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-view">
+      <div class="products-grid">
+        <div class="product-card" *ngFor="let product of products; trackBy: trackByProductId">
+          <div class="card-image">
+            <img [src]="product.pictureUrl" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: product.name }"
+                 (error)="$any($event.target).src = 'images/placeholder.png'; $any($event.target).onerror = null">
+          </div>
+          <div class="card-content">
+            <h3 class="product-name">{{ product.name }}</h3>
+            <p class="product-brand" *ngIf="product.brand">{{ product.brand }}</p>
+            <div class="card-rating">
+              <ng-container *ngFor="let star of [1,2,3,4,5]">
+                <mat-icon class="rating-star" [ngStyle]="{'color': star <= (product.rating || 0) ? '#facc15' : '#d1d5db'}">
+                  {{ star <= (product.rating || 0) ? 'star' : (star - 0.5 <= (product.rating || 0) ? 'star_half' : 'star_border') }}
+                </mat-icon>
+              </ng-container>
+              <span class="rating-number">{{ (product.rating || 0) | number:'1.1-1' }}</span>
+            </div>
+            <div class="card-price">{{ product.price | appCurrency }}</div>
+            <div class="card-type" *ngIf="product.productType?.name || product.type">
+              {{ product.productType?.name || product.type }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Pagination -->
+      <app-pagination
+        [length]="totalCount"
+        [pageSize]="pageSize"
+        [pageIndex]="pageNumber - 1"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [showFirstLastButtons]="true"
+        (page)="onPageChanged($event)">
+      </app-pagination>
+    </div>
+  </div>
 
 </div>

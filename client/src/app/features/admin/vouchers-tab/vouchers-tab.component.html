@@ -68,69 +68,118 @@
     </app-dynamic-filter-bar>
   </div>
 
-  <!-- Vouchers Table -->
-  <div class="table-container mt-4">
-    <table mat-table [dataSource]="vouchers" class="w-full vouchers-table compact-table">
+  <!-- Vouchers Display -->
+  <div class="vouchers-container">
+    <!-- Desktop Table View -->
+    <div class="desktop-view">
+      <div class="table-container mt-4">
+        <table mat-table [dataSource]="vouchers" class="w-full vouchers-table compact-table">
 
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ID' | translate }}</th>
-        <td mat-cell *matCellDef="let v">{{ v.id }}</td>
-      </ng-container>
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ID' | translate }}</th>
+            <td mat-cell *matCellDef="let v">{{ v.id }}</td>
+          </ng-container>
 
-      <ng-container matColumnDef="code">
-        <th mat-header-cell *matHeaderCellDef>{{ 'VOUCHER.CODE' | translate }}</th>
-        <td mat-cell *matCellDef="let v"><span class="font-mono font-semibold">{{ v.code }}</span></td>
-      </ng-container>
+          <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef>{{ 'VOUCHER.CODE' | translate }}</th>
+            <td mat-cell *matCellDef="let v"><span class="font-mono font-semibold">{{ v.code }}</span></td>
+          </ng-container>
 
-      <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef>{{ 'VOUCHER.DESCRIPTION' | translate }}</th>
-        <td mat-cell *matCellDef="let v">{{ v.description }}</td>
-      </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>{{ 'VOUCHER.DESCRIPTION' | translate }}</th>
+            <td mat-cell *matCellDef="let v">{{ v.description }}</td>
+          </ng-container>
 
-      <ng-container matColumnDef="value">
-        <th mat-header-cell *matHeaderCellDef>{{ 'DISCOUNT.VALUE' | translate }}</th>
-        <td mat-cell *matCellDef="let v">
-          <span *ngIf="v.amountOff">{{ v.amountOff | appCurrency }}</span>
-          <span *ngIf="v.percentOff">{{ v.percentOff }}%</span>
-          <span *ngIf="!v.amountOff && !v.percentOff">—</span>
-        </td>
-      </ng-container>
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef>{{ 'DISCOUNT.VALUE' | translate }}</th>
+            <td mat-cell *matCellDef="let v">
+              <span *ngIf="v.amountOff">{{ v.amountOff | appCurrency }}</span>
+              <span *ngIf="v.percentOff">{{ v.percentOff }}%</span>
+              <span *ngIf="!v.amountOff && !v.percentOff">—</span>
+            </td>
+          </ng-container>
 
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
-        <td mat-cell *matCellDef="let v">
-          <span class="voucher-status-badge"
-                [class.badge-active]="v.isActive"
-                [class.badge-inactive]="!v.isActive">
-            {{ v.isActive ? ('VOUCHER.ACTIVE' | translate) : ('VOUCHER.INACTIVE' | translate) }}
-          </span>
-        </td>
-      </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+            <td mat-cell *matCellDef="let v">
+              <span class="voucher-status-badge"
+                    [class.badge-active]="v.isActive"
+                    [class.badge-inactive]="!v.isActive">
+                {{ v.isActive ? ('VOUCHER.ACTIVE' | translate) : ('VOUCHER.INACTIVE' | translate) }}
+              </span>
+            </td>
+          </ng-container>
 
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
-        <td mat-cell *matCellDef="let v">
-          <div class="flex gap-1">
-            <button *ngIf="!v.isActive" mat-icon-button color="primary"
-                    (click)="activateVoucher(v)"
-                    matTooltip="{{ 'VOUCHER.ACTIVATE' | translate }}">
-              <mat-icon>check_circle</mat-icon>
-            </button>
-            <button *ngIf="v.isActive" mat-icon-button color="warn"
-                    (click)="deactivateVoucher(v)"
-                    matTooltip="{{ 'VOUCHER.DEACTIVATE' | translate }}">
-              <mat-icon>block</mat-icon>
-            </button>
-            <button mat-icon-button (click)="openVoucherHistory(v)" matTooltip="View Status History">
-              <mat-icon>history</mat-icon>
-            </button>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
+            <td mat-cell *matCellDef="let v">
+              <div class="flex gap-1">
+                <button *ngIf="!v.isActive" mat-icon-button color="primary"
+                        (click)="activateVoucher(v)"
+                        matTooltip="{{ 'VOUCHER.ACTIVATE' | translate }}">
+                  <mat-icon>check_circle</mat-icon>
+                </button>
+                <button *ngIf="v.isActive" mat-icon-button color="warn"
+                        (click)="deactivateVoucher(v)"
+                        matTooltip="{{ 'VOUCHER.DEACTIVATE' | translate }}">
+                  <mat-icon>block</mat-icon>
+                </button>
+                <button mat-icon-button (click)="openVoucherHistory(v)" matTooltip="View Status History">
+                  <mat-icon>history</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="voucherColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: voucherColumns;"></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-view">
+      <div class="vouchers-grid">
+        <div class="voucher-card" *ngFor="let v of vouchers; trackBy: trackByVoucherId">
+          <div class="card-main-line">
+            <div class="voucher-code">{{ v.code }}</div>
+            <div class="voucher-value">
+              <span *ngIf="v.amountOff">{{ v.amountOff | appCurrency }}</span>
+              <span *ngIf="v.percentOff">{{ v.percentOff }}%</span>
+              <span *ngIf="!v.amountOff && !v.percentOff">—</span>
+            </div>
+            <div class="voucher-status">
+              <span class="voucher-status-badge"
+                    [class.badge-active]="v.isActive"
+                    [class.badge-inactive]="!v.isActive">
+                {{ v.isActive ? ('VOUCHER.ACTIVE' | translate) : ('VOUCHER.INACTIVE' | translate) }}
+              </span>
+            </div>
           </div>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="voucherColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: voucherColumns;"></tr>
-    </table>
+          
+          <div class="card-second-line">
+            <p class="voucher-description" *ngIf="v.description">
+              {{ v.description }}
+            </p>
+            <div class="card-actions">
+              <button *ngIf="!v.isActive" mat-icon-button color="primary"
+                      (click)="activateVoucher(v)"
+                      matTooltip="{{ 'VOUCHER.ACTIVATE' | translate }}">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button *ngIf="v.isActive" mat-icon-button color="warn"
+                      (click)="deactivateVoucher(v)"
+                      matTooltip="{{ 'VOUCHER.DEACTIVATE' | translate }}">
+                <mat-icon>block</mat-icon>
+              </button>
+              <button mat-icon-button (click)="openVoucherHistory(v)" matTooltip="View Status History">
+                <mat-icon>history</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   @if (vouchers.length === 0) {

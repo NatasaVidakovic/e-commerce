@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, TrackByFunction } from '@angular/core';
 import { AdminService } from '../../../core/services/admin.service';
 import { Order, UpdateOrderStatusDto } from '../../../shared/models/order';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -469,5 +469,9 @@ export class OrderManagementComponent implements OnInit {
         this.dataSource.data = this.dataSource.data.map(o => o.id === order.id ? result.order : o);
       }
     });
+  }
+
+  trackByOrderId: TrackByFunction<Order> = (index: number, order: Order): number => {
+    return order.id;
   }
 }

@@ -28,6 +28,139 @@
   margin-bottom: 1rem;
 }
 
+/* Discounts container with dual view system */
+.discounts-container {
+  width: 100%;
+
+  .desktop-view {
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+
+  .mobile-view {
+    display: none;
+
+    @media (max-width: 767px) {
+      display: block;
+    }
+
+    .discounts-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .discount-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-primary);
+      border-radius: 6px;
+      padding: 8px 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+      }
+
+      &.selected {
+        background-color: var(--color-bg-active, rgba(99, 102, 241, 0.08));
+        border-color: var(--color-primary);
+      }
+
+      .card-main-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+        flex-wrap: wrap;
+
+        .discount-name {
+          margin: 0;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--color-text-primary);
+          line-height: 1.2;
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .card-value {
+          font-size: 16px;
+          font-weight: 700;
+          color: var(--color-primary);
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .card-status {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          flex-shrink: 0;
+
+          .state-badge {
+            // State badge styles are inherited from main definition
+          }
+
+          .used-indicator {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: rgba(147, 51, 234, 0.1);
+            color: #9333ea;
+            border-radius: 50%;
+
+            mat-icon {
+              font-size: 10px !important;
+              width: 10px !important;
+              height: 10px !important;
+            }
+          }
+        }
+      }
+
+      .card-second-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: space-between;
+
+        .discount-description {
+          margin: 0;
+          font-size: 12px;
+          color: var(--color-text-secondary);
+          line-height: 1.2;
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .card-dates {
+          flex-shrink: 0;
+
+          .date-range {
+            font-size: 11px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+}
+
 /* Table container — horizontal scroll on narrow screens */
 .table-container {
   width: 100%;
@@ -53,12 +186,26 @@
     padding: 8px 10px;
     white-space: nowrap;
     background: transparent !important;
+
+    @media (max-width: 767px) {
+      padding: 4px 6px !important;
+      font-size: 0.65rem !important;
+    }
   }
 
   .mat-mdc-cell {
     padding: 6px 10px;
     font-size: 0.825rem;
     background: transparent !important;
+
+    @media (max-width: 767px) {
+      padding: 3px 6px !important;
+      font-size: 0.7rem !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    min-width: 600px !important; // Reduce minimum width on mobile
   }
 }
 
@@ -75,6 +222,11 @@
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
+
+  @media (max-width: 767px) {
+    padding: 0.1rem 0.3rem !important;
+    font-size: 0.65rem !important;
+  }
 
   &.state-draft {
     background: rgba(99, 102, 241, 0.1);

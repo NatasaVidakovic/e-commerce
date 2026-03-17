@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, TrackByFunction } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -270,5 +270,9 @@ export class DiscountsTabComponent implements OnInit {
       return 'Cannot delete: Disabled discounts must be retained';
     }
     return 'Cannot delete this discount';
+  }
+
+  trackByDiscountId: TrackByFunction<Discount> = (index: number, discount: Discount): number => {
+    return discount.id;
   }
 }

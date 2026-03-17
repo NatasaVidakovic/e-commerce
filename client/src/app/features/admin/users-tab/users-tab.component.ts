@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, TrackByFunction } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -184,5 +184,9 @@ export class UsersTabComponent implements OnInit {
     const colors = ['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#06b6d4'];
     const index = (user.email?.charCodeAt(0) ?? 0) % colors.length;
     return colors[index];
+  }
+
+  trackByUserId: TrackByFunction<UserInfo> = (index: number, user: UserInfo): string => {
+    return user.id;
   }
 }

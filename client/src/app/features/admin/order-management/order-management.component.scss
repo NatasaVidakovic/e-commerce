@@ -70,6 +70,167 @@
   margin-bottom: 1rem;
 }
 
+/* Orders container with dual view system */
+.orders-container {
+  width: 100%;
+
+  .desktop-view {
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+
+  .mobile-view {
+    display: none;
+
+    @media (max-width: 767px) {
+      display: block;
+    }
+
+    .orders-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .order-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-primary);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+      }
+
+      &.selected-row {
+        background-color: rgba(99, 102, 241, 0.12);
+        border-color: #6366f1;
+        outline: 2px solid rgba(99, 102, 241, 0.5);
+        outline-offset: -2px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+
+        .order-info {
+          flex: 1;
+          min-width: 0;
+
+          .order-id-link {
+            font-size: 16px;
+            font-weight: 600;
+            color: #3b82f6;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 4px;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+
+          .order-customer {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+
+        .order-total {
+          font-size: 18px;
+          font-weight: 700;
+          color: var(--color-primary);
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+      }
+
+      .card-content {
+        .order-meta {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 12px;
+
+          .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+
+            .meta-icon {
+              font-size: 14px !important;
+              width: 14px !important;
+              height: 14px !important;
+              color: var(--color-text-secondary);
+            }
+
+            .meta-text {
+              color: var(--color-text-secondary);
+            }
+          }
+        }
+
+        .order-statuses {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-bottom: 12px;
+
+          .status-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .status-label {
+              font-size: 12px;
+              font-weight: 500;
+              color: var(--color-text-secondary);
+              min-width: 60px;
+              flex-shrink: 0;
+            }
+
+            .mobile-select {
+              flex: 1;
+              min-width: 0;
+              max-width: none;
+            }
+          }
+        }
+
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 8px;
+
+          button[mat-icon-button] {
+            width: 32px !important;
+            height: 32px !important;
+            line-height: 32px !important;
+
+            mat-icon {
+              font-size: 18px !important;
+              width: 18px !important;
+              height: 18px !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 /* Email Toggle in Header */
 .header-email-toggle {
   display: flex;
