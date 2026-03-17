@@ -935,7 +935,7 @@
     "PRODUCT_TYPE_MANAGEMENT": "Product Type Management",
     "PRODUCT_TYPE": {
       "TITLE": "Product Type Management",
-      "ADD_NEW": "Add New Product Type",
+      "ADD_NEW": "Add",
       "ID": "ID",
       "NAME": "Name",
       "DESCRIPTION": "Description",

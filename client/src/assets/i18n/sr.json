@@ -920,7 +920,7 @@
     "PRODUCT_TYPE_MANAGEMENT": "Upravljanje tipovima proizvoda",
     "PRODUCT_TYPE": {
       "TITLE": "Upravljanje tipovima proizvoda",
-      "ADD_NEW": "Dodaj novi tip proizvoda",
+      "ADD_NEW": "Dodaj",
       "ID": "ID",
       "NAME": "Naziv",
       "DESCRIPTION": "Opis",
