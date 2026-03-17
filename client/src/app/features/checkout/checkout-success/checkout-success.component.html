@@ -37,7 +37,7 @@
             <dl class="flex items-center justify-between gap-4">
                 <dt style="color: var(--color-text-secondary);">{{ 'CHECKOUT.AMOUNT' | translate }}</dt>
                 <dd class="font-medium text-end" style="color: var(--color-text-primary);">
-                    {{order.total | appCurrency: getOrderCurrency(order.currency)}}
+                    {{(order?.subtotal || 0) + (order?.shippingPrice || 0) - (order?.discount || 0) | appCurrency}}
                 </dd>
             </dl>
         </div>

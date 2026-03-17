@@ -1,0 +1,10 @@
+@media (max-width: 348px) {
+  .space-x-4 {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .space-x-4 button {
+    width: 100%;
+  }
+}

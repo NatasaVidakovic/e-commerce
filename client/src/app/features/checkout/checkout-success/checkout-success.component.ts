@@ -11,6 +11,7 @@ import { OrderService } from '../../../core/services/order.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { Currency } from '../../../shared/models/currency';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-checkout-success',
@@ -22,7 +23,8 @@ import { Currency } from '../../../shared/models/currency';
     AddressPipe,
     CurrencyPipe,
     PaymentCardPipe,
-    TranslatePipe
+    TranslatePipe,
+    JsonPipe
   ],
   templateUrl: './checkout-success.component.html',
   styleUrl: './checkout-success.component.scss'
