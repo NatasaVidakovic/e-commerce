@@ -89,8 +89,35 @@ export class AnalyticsTabComponent implements OnInit {
   revenueChartOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true, ticks: { callback: (v: number | string) => this.currencyService.formatCurrency(Number(v)) } } }
+    plugins: { 
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const value = context.parsed.y;
+            return `Revenue: ${this.currencyService.formatCurrency(value || 0)}`;
+          }
+        }
+      }
+    },
+    scales: { 
+      y: { 
+        beginAtZero: true,
+        ticks: { 
+          callback: (v: number | string) => this.currencyService.formatCurrency(Number(v)) 
+        },
+        title: {
+          display: true,
+          text: 'Revenue'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Month'
+        }
+      }
+    }
   };
 
   orderStatusChartData: ChartData<'doughnut'> = { labels: [], datasets: [] };
@@ -114,8 +141,35 @@ export class AnalyticsTabComponent implements OnInit {
     responsive: true,
     maintainAspectRatio: false,
     indexAxis: 'y' as const,
-    plugins: { legend: { display: false } },
-    scales: { x: { beginAtZero: true } }
+    plugins: { 
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const value = context.parsed.x;
+            return `Stock: ${Math.round(value || 0)} units`;
+          }
+        }
+      }
+    },
+    scales: { 
+      x: { 
+        beginAtZero: true,
+        ticks: {
+          callback: (v: number | string) => Math.round(Number(v)).toString()
+        },
+        title: {
+          display: true,
+          text: 'Stock Quantity'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Products'
+        }
+      }
+    }
   };
 
   categoryChartData: ChartData<'pie'> = { labels: [], datasets: [] };
@@ -138,8 +192,36 @@ export class AnalyticsTabComponent implements OnInit {
   customerOrderChartOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true } }
+    plugins: { 
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const value = context.parsed.y;
+            return `Orders: ${Math.round(value || 0)}`;
+          }
+        }
+      }
+    },
+    scales: { 
+      y: { 
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+          callback: (v: number | string) => Math.round(Number(v)).toString()
+        },
+        title: {
+          display: true,
+          text: 'Number of Orders'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Customers'
+        }
+      }
+    }
   };
 
   revenueByPaymentChartData: ChartData<'pie'> = { labels: [], datasets: [] };
@@ -295,10 +377,30 @@ export class AnalyticsTabComponent implements OnInit {
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       monthMap.set(key, (monthMap.get(key) || 0) + (order.total || 0));
     });
-    const sorted = Array.from(monthMap.entries()).sort(([a], [b]) => a.localeCompare(b)).slice(-12);
+    
+    // Show last 18 months instead of 12 for more detail
+    const sorted = Array.from(monthMap.entries()).sort(([a], [b]) => a.localeCompare(b)).slice(-18);
+    
+    // Format month labels for better readability
+    const labels = sorted.map(([key]) => {
+      const [year, month] = key.split('-');
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${monthNames[parseInt(month) - 1]} ${year.slice(2)}`;
+    });
+    
+    // Round revenue values to 2 decimal places
+    const data = sorted.map(([, value]) => Math.round(value * 100) / 100);
+    
     this.revenueChartData = {
-      labels: sorted.map(([k]) => k),
-      datasets: [{ data: sorted.map(([, v]) => v), backgroundColor: '#3b82f6', borderRadius: 4, label: 'Revenue' }]
+      labels: labels,
+      datasets: [{ 
+        data: data, 
+        backgroundColor: '#3b82f6', 
+        borderRadius: 4, 
+        label: 'Revenue',
+        borderWidth: 1,
+        borderColor: '#2563eb'
+      }]
     };
   }
 
@@ -329,12 +431,31 @@ export class AnalyticsTabComponent implements OnInit {
   }
 
   private buildProductStockChart(): void {
-    const top10 = [...this.allProducts]
+    // Show top 15 products instead of 10 for more detail
+    const topProducts = [...this.allProducts]
       .sort((a, b) => (b.quantityInStock || 0) - (a.quantityInStock || 0))
-      .slice(0, 10);
+      .slice(0, 15);
+    
+    // Format product names for better readability
+    const labels = topProducts.map(p => {
+      const name = p.name || 'Unknown';
+      // Truncate long product names
+      return name.length > 20 ? name.substring(0, 17) + '...' : name;
+    });
+    
+    // Round the stock quantities to whole numbers
+    const data = topProducts.map(p => Math.round(p.quantityInStock || 0));
+    
     this.productStockChartData = {
-      labels: top10.map(p => p.name || 'Unknown'),
-      datasets: [{ data: top10.map(p => p.quantityInStock || 0), backgroundColor: '#10b981', label: 'Stock' }]
+      labels: labels,
+      datasets: [{ 
+        data: data, 
+        backgroundColor: '#10b981', 
+        label: 'Stock',
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#059669'
+      }]
     };
   }
 
@@ -357,10 +478,31 @@ export class AnalyticsTabComponent implements OnInit {
     this.orders.forEach(o => {
       if (o.buyerEmail) custMap.set(o.buyerEmail, (custMap.get(o.buyerEmail) || 0) + 1);
     });
-    const top10 = Array.from(custMap.entries()).sort(([, a], [, b]) => b - a).slice(0, 10);
+    
+    // Show top 15 customers instead of 10 for more detail
+    const topCustomers = Array.from(custMap.entries()).sort(([, a], [, b]) => b - a).slice(0, 15);
+    
+    // Format labels to show first part of email for better readability
+    const labels = topCustomers.map(([email]) => {
+      const emailParts = email.split('@');
+      const username = emailParts[0];
+      // Truncate long usernames
+      return username.length > 15 ? username.substring(0, 12) + '...' : username;
+    });
+    
+    // Round the order counts to whole numbers
+    const data = topCustomers.map(([, count]) => Math.round(count));
+    
     this.customerOrderChartData = {
-      labels: top10.map(([email]) => email.split('@')[0]),
-      datasets: [{ data: top10.map(([, v]) => v), backgroundColor: '#8b5cf6', label: 'Orders' }]
+      labels: labels,
+      datasets: [{ 
+        data: data, 
+        backgroundColor: '#8b5cf6', 
+        label: 'Orders',
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#7c3aed'
+      }]
     };
   }
 
