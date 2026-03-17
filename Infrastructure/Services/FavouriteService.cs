@@ -16,6 +16,10 @@ public class FavouriteService(IFavouriteRepository favouriteRepository, IProduct
     }
 
     public async Task AddFavourite(string buyerEmail, int productId){
+        // Check if favorite already exists
+        var existingFavourite = await _favouriteRepository.GetFavouriteAsync(buyerEmail, productId);
+        if (existingFavourite != null) return; // Already favorited, do nothing
+        
         var favourite = new Favourite{BuyerEmail = buyerEmail, ProductId = productId};
         _favouriteRepository.AddFavourite(favourite);
         await _favouriteRepository.SaveChangesAsync();

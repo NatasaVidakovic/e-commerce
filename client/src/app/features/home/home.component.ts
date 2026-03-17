@@ -16,6 +16,8 @@ import { CurrencyPipe } from '../../shared/pipes/currency.pipe';
 import { computed, inject } from '@angular/core';
 import { SwiperDirective } from '../../shared/directives/swiper.directive';
 import { forkJoin } from 'rxjs';
+import { FavouritesService } from '../../core/services/favourites.service';
+import { AccountService } from '../../core/services/account.service';
 
 @Component({
   selector: 'app-home',
@@ -41,6 +43,8 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   private siteConfigService = inject(SiteConfigService);
   private currencyService = inject(CurrencyService);
+  private favouritesService = inject(FavouritesService);
+  private accountService = inject(AccountService);
   
   loggedIn = true;
   bestReviewedProducts: Product[] = [];
@@ -48,6 +52,7 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   suggestedProducts: Product[] = [];
   discounts: Discount[] = [];
   showDiscountNavigation = false;
+  userFavorites: number[] = [];
   
   // Interactive discount section
   selectedDiscount: Discount | null = null;
@@ -87,6 +92,18 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Load user favorites first
+    if (this.accountService.isLoggedIn()) {
+      this.favouritesService.getFavouriteProducts().subscribe(favorites => {
+        this.userFavorites = favorites.map(f => f.productId);
+        this.loadProductLists();
+      });
+    } else {
+      this.loadProductLists();
+    }
+  }
+
+  private loadProductLists(): void {
     forkJoin({
       bestReviewed: this.bestReviewedService.getBestReviewedProducts(),
       discounts: this.discountService.getDiscounts(),
@@ -94,10 +111,10 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
       bestSelling: this.bestSellingService.getBestSellingProducts()
     }).subscribe({
       next: ({ bestReviewed, discounts, suggested, bestSelling }) => {
-        this.bestReviewedProducts = bestReviewed;
+        this.bestReviewedProducts = this.setFavoriteStatus(bestReviewed);
         this.discounts = discounts.filter(d => d.state === 'Active');
-        this.suggestedProducts = suggested;
-        this.favouriteProducts = bestSelling;
+        this.suggestedProducts = this.setFavoriteStatus(suggested);
+        this.favouriteProducts = this.setFavoriteStatus(bestSelling);
         if (this.discounts.length > 0) {
           this.selectDiscount(this.discounts[0]);
         }
@@ -105,6 +122,13 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
       },
       error: () => {}
     });
+  }
+
+  private setFavoriteStatus(products: Product[]): Product[] {
+    return products.map(product => ({
+      ...product,
+      isFavourite: this.userFavorites.includes(product.id)
+    }));
   }
 
   scrollLeft(container: HTMLElement) {
@@ -187,7 +211,7 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   loadDiscountProducts(discountId: number): void {
     this.isLoadingDiscountProducts = true;
     this.discountService.getDiscountById(discountId).subscribe(discount => {
-      this.discountProducts = discount.products || [];
+      this.discountProducts = this.setFavoriteStatus(discount.products || []);
       this.isLoadingDiscountProducts = false;
     }, error => {
       console.error('Error loading discount products:', error);

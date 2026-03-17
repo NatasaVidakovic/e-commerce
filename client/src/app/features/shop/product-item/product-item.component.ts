@@ -42,6 +42,17 @@ export class ProductItemComponent {
   accountService = inject(AccountService);
   private cdr = inject(ChangeDetectorRef);
 
+  get allImages(): string[] {
+    if (!this.product) return [];
+    const imgs = this.product.images?.map(i => i.url) || [];
+    if (imgs.length === 0) return [this.product.pictureUrl];
+    return imgs;
+  }
+
+  get currentImage(): string {
+    return this.allImages[0] || this.product?.pictureUrl || '';
+  }
+
   get loggedIn() {
     return this.accountService.isLoggedIn();
   }
