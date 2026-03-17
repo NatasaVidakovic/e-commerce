@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnInit, ViewChild, Renderer2, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CatalogComponent } from "./catalog/catalog.component";
@@ -40,6 +40,8 @@ import { UsersTabComponent } from './users-tab/users-tab.component';
 export class AdminComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private renderer = inject(Renderer2);
+  private elementRef = inject(ElementRef);
   
   activeTabIndex = 0;
 
@@ -53,6 +55,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.ensureActiveTabLoaded();
+    this.setupMobileScrolling();
   }
 
   ngOnInit(): void {
@@ -135,5 +138,64 @@ export class AdminComponent implements OnInit, AfterViewInit {
   getTabName(index: number): string {
     const tabNames = ['', 'catalog', 'product-types', 'best-reviewed', 'best-selling', 'suggested'];
     return tabNames[index] || 'catalog';
+  }
+
+  private setupMobileScrolling(): void {
+    // Wait for DOM to be ready
+    setTimeout(() => {
+      const tabLabels = this.elementRef.nativeElement.querySelector('.mat-mdc-tab-labels');
+      if (tabLabels) {
+        // Force mobile scrolling with touch events
+        let isDown = false;
+        let startX: number;
+        let scrollLeft: number;
+
+        const handleTouchStart = (e: TouchEvent) => {
+          isDown = true;
+          startX = e.touches[0].pageX - tabLabels.offsetLeft;
+          scrollLeft = tabLabels.scrollLeft;
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.touches[0].pageX - tabLabels.offsetLeft;
+          const walk = (x - startX) * 2;
+          tabLabels.scrollLeft = scrollLeft - walk;
+        };
+
+        const handleTouchEnd = () => {
+          isDown = false;
+        };
+
+        // Add touch event listeners
+        tabLabels.addEventListener('touchstart', handleTouchStart, { passive: false });
+        tabLabels.addEventListener('touchmove', handleTouchMove, { passive: false });
+        tabLabels.addEventListener('touchend', handleTouchEnd);
+
+        // Also add mouse events for desktop testing
+        tabLabels.addEventListener('mousedown', (e: MouseEvent) => {
+          isDown = true;
+          startX = e.pageX - tabLabels.offsetLeft;
+          scrollLeft = tabLabels.scrollLeft;
+        });
+
+        tabLabels.addEventListener('mousemove', (e: MouseEvent) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - tabLabels.offsetLeft;
+          const walk = (x - startX) * 2;
+          tabLabels.scrollLeft = scrollLeft - walk;
+        });
+
+        tabLabels.addEventListener('mouseup', () => {
+          isDown = false;
+        });
+
+        tabLabels.addEventListener('mouseleave', () => {
+          isDown = false;
+        });
+      }
+    }, 100);
   }
 }

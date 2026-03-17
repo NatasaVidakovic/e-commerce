@@ -3,6 +3,7 @@
 
 .admin-container {
   padding: $spacing-3;
+  overflow-x: hidden; // Prevent horizontal scroll on container
   
   @include sm {
     padding: $spacing-4;
@@ -16,11 +17,70 @@
 ::ng-deep {
   .mat-mdc-tab-group {
     .mat-mdc-tab-labels {
-      overflow-x: auto;
+      overflow-x: auto !important;
       -webkit-overflow-scrolling: touch;
       background-color: var(--color-bg-primary);
       border-bottom: 1px solid var(--color-border-primary);
       width: 100% !important;
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-border-primary) var(--color-bg-primary);
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      position: relative;
+      
+      // Enhanced mobile touch scrolling
+      touch-action: pan-x pan-y pinch-zoom !important;
+      -webkit-overflow-scrolling: touch !important;
+      scroll-behavior: smooth;
+      
+      // Force disable Material's touch handling on mobile
+      pointer-events: auto !important;
+      
+      // Custom scrollbar for webkit browsers
+      &::-webkit-scrollbar {
+        height: 8px !important;
+        width: 8px !important;
+        display: block !important;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: var(--color-bg-primary);
+        display: block !important;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: var(--color-border-primary);
+        border-radius: 4px;
+        display: block !important;
+        
+        &:hover {
+          background: var(--color-text-secondary);
+        }
+      }
+      
+      // Force scrolling on all small screens
+      @media (max-width: 1023px) {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        touch-action: pan-x pan-y pinch-zoom !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+      
+      // Specific mobile fixes - more aggressive
+      @media (max-width: 767px) {
+        overflow-x: scroll !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-x pan-y pinch-zoom !important;
+        scroll-behavior: smooth;
+        pointer-events: auto !important;
+        
+        // Force visible scrollbar on mobile
+        &::-webkit-scrollbar {
+          display: block !important;
+          height: 8px !important;
+          width: 8px !important;
+        }
+      }
       
       @include md {
         overflow-x: visible;
@@ -29,12 +89,21 @@
     
     .mat-mdc-tab-label {
       min-width: auto;
-      padding: $spacing-1 $spacing-3;
-      font-size: 0.8125rem;
+      max-width: none !important;
+      padding: $spacing-1 $spacing-2;
+      font-size: 0.75rem;
       color: var(--color-text-primary) !important;
       opacity: 1 !important;
       font-weight: 500;
       background-color: transparent;
+      white-space: nowrap;
+      flex-shrink: 0 !important;
+      flex-grow: 0 !important;
+      
+      @include sm {
+        padding: $spacing-1 $spacing-3;
+        font-size: 0.8125rem;
+      }
       
       @include md {
         padding: $spacing-2 $spacing-3;
@@ -86,10 +155,39 @@
     .mat-mdc-tab-header {
       width: 100% !important;
       --mdc-secondary-navigation-tab-container-height: 40px;
+      overflow: hidden !important;
+      position: relative;
+      
+      // Disable Material's swipe gestures on mobile
+      .mat-mdc-tab-header-pagination {
+        display: none !important;
+      }
+      
+      // Mobile specific fixes
+      @media (max-width: 767px) {
+        touch-action: pan-x pan-y pinch-zoom !important;
+        -webkit-overflow-scrolling: touch !important;
+        pointer-events: auto !important;
+      }
     }
     
     .mat-mdc-tab-label-container {
       width: 100% !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      position: relative;
+      
+      // Disable Material's touch handling
+      pointer-events: auto !important;
+      
+      // Mobile specific fixes
+      @media (max-width: 767px) {
+        overflow-x: scroll !important;
+        touch-action: pan-x pan-y pinch-zoom !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-behavior: smooth;
+        pointer-events: auto !important;
+      }
     }
   }
   
