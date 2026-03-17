@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 interface SidebarItem {
   key: string;
@@ -29,6 +30,14 @@ interface SidebarItem {
 })
 export class AdminLayoutComponent {
   collapsed = signal(false);
+  isMobile = signal(false);
+
+  constructor(private breakpointObserver: BreakpointObserver) {
+    this.breakpointObserver.observe(['(max-width: 768px)'])
+      .subscribe(result => {
+        this.isMobile.set(result.matches);
+      });
+  }
 
   navItems: SidebarItem[] = [
     { key: 'orders',        route: '/admin/orders',         icon: 'shopping_bag',        labelKey: 'ADMIN.ORDERS' },
