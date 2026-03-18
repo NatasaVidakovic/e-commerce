@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Product } from './../../../shared/models/product';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -35,7 +35,7 @@ import { ProductStoreSelectorDialogComponent, ProductStoreSelectorDialogData } f
   ],
   templateUrl: './products-tab.component.html',
 })
-export class ProductsTabComponent implements OnChanges, AfterViewInit {
+export class ProductsTabComponent implements OnChanges, AfterViewInit, OnInit, OnDestroy {
 
   @Input() title = '';
   @Input() products: Product[] = [];
@@ -72,7 +72,22 @@ export class ProductsTabComponent implements OnChanges, AfterViewInit {
 
   selectedProduct: Product | null = null;
 
+  screenWidth: number = window.innerWidth;
+
   constructor(private dialog: MatDialog, private router: Router) {
+    this.updateColumns();
+  }
+
+  ngOnInit() {
+    window.addEventListener('resize', this.onWindowResize.bind(this));
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('resize', this.onWindowResize.bind(this));
+  }
+
+  private onWindowResize() {
+    this.screenWidth = window.innerWidth;
     this.updateColumns();
   }
 
@@ -86,10 +101,28 @@ export class ProductsTabComponent implements OnChanges, AfterViewInit {
   }
 
   private updateColumns() {
-    const base = ['id', 'pictureUrl', 'name', 'brand', 'type', 'price', 'quantityInStock'];
-    if (this.showRating) {
-      base.push('rating');
+    // Responsive columns - always show core columns, hide others on small screens
+    const base = ['pictureUrl', 'price', 'actions'];
+    
+    // Add name on small screens and up
+    if (this.screenWidth >= 640) { // sm breakpoint
+      base.push('name');
     }
+    
+    // Add type on medium screens and up
+    if (this.screenWidth >= 768) { // md breakpoint
+      base.push('quantityInStock');
+      base.push('type');
+    }
+    
+    // Add brand and rating on large screens and up
+    if (this.screenWidth >= 1024) { // lg breakpoint
+      base.push('brand');
+      if (this.showRating) {
+        base.push('rating');
+      }
+    }
+    
     this.displayedColumns = base;
   }
 

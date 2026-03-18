@@ -22,6 +22,36 @@
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+
+  // Ensure proper scrolling on mobile
+  @media (max-width: 767px) {
+    overflow-x: scroll !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    
+    // Force horizontal scrolling
+    position: relative;
+    
+    // Custom scrollbar for mobile
+    &::-webkit-scrollbar {
+      height: 6px !important;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1 !important;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #888 !important;
+      border-radius: 3px !important;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+      background: #555 !important;
+    }
+  }
 }
 
 ::ng-deep {
@@ -32,10 +62,12 @@
 
   table.mat-mdc-table {
     width: 100%;
-    min-width: 640px; // ensures content is readable before scroll kicks in
+    min-width: 900px; // Increased to ensure horizontal scroll on mobile
 
     @media (max-width: 767px) {
       font-size: 0.75rem;
+      min-width: 850px; // Ensure scroll on mobile devices
+      width: 850px !important; // Force width on mobile
 
       th.mat-mdc-header-cell {
         padding: $spacing-1 $spacing-2;
@@ -49,8 +81,8 @@
       }
 
       .mat-column-pictureUrl img {
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
       }
 
       .mat-mdc-icon-button {

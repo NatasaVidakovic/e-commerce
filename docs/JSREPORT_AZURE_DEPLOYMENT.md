@@ -14,7 +14,7 @@ Angular Frontend → .NET API → jsReport Service → PDF Generation
 - **jsReport**: Azure Container Apps (jsreport)
 - **Registry**: Azure Container Registry (webshopacr)
 
-## Deployment Files Created
+## Deployment Files
 
 ### 1. jsReport Dockerfile
 - **File**: `dockerfile.jsreport`
@@ -102,8 +102,3 @@ You can also trigger deployment manually via GitHub Actions.
 - Azure Container Apps provides built-in monitoring
 - Check logs in Azure Portal for troubleshooting
 - Health endpoints can be added if needed
-
-## Troubleshooting
-1. **jsReport not accessible**: Check container app deployment status
-2. **PDF generation fails**: Verify API can reach jsReport service
-3. **Designer not opening**: Check network connectivity and CORS settings

@@ -155,6 +155,8 @@ $sidebar-collapsed-width: 60px;
   min-width: 0;
   transition: margin-left 0.25s ease;
   padding: $spacing-3 $spacing-4;
+  overflow-x: auto;
+  overflow-y: auto;
 
   @include md {
     padding: $spacing-4 $spacing-6;
@@ -234,5 +236,8 @@ $sidebar-collapsed-width: 60px;
   .admin-content {
     margin-left: 0;
     padding: $spacing-3;
+    overflow-x: auto;
+    overflow-y: auto;
+    height: calc(100vh - 3.5rem - 60px); // Full height minus header and sidebar
   }
 }
