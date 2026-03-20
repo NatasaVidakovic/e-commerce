@@ -3,10 +3,11 @@ using Core.Entities;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers;
 
-public class SiteSettingsController(ISiteSettingsService siteSettingsService) : BaseApiController
+public class SiteSettingsController(ISiteSettingsService siteSettingsService, IImageStorageService imageStorageService) : BaseApiController
 {
     [Cached(300)]
     [HttpGet]
@@ -64,10 +65,134 @@ public class SiteSettingsController(ISiteSettingsService siteSettingsService) : 
         if (!result) return NotFound();
         return NoContent();
     }
+
+    // Gallery Image Upload Endpoints
+    [InvalidateCache("api/sitesettings|")]
+    [Authorize(Roles = "Admin")]
+    [EnableRateLimiting("image-upload")]
+    [HttpPost("gallery/upload")]
+    public async Task<ActionResult<GalleryImageDto>> UploadGalleryImage(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file provided.");
+
+        try
+        {
+            var request = new ImageUploadRequest(
+                FileStream: file.OpenReadStream(),
+                FileName: file.FileName,
+                ContentType: file.ContentType
+            );
+
+            var result = await imageStorageService.SaveGalleryImageAsync(request);
+
+            return new GalleryImageDto
+            {
+                Url = result.Url,
+                ThumbnailUrl = result.ThumbnailUrl,
+                SmallUrl = result.SmallUrl,
+                MediumUrl = result.MediumUrl,
+                LargeUrl = result.LargeUrl
+            };
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [InvalidateCache("api/sitesettings|")]
+    [Authorize(Roles = "Admin")]
+    [HttpPost("gallery/upload-multiple")]
+    [RequestSizeLimit(50 * 1024 * 1024)] // 50 MB total
+    public async Task<ActionResult<List<GalleryImageDto>>> UploadGalleryImages([FromForm] List<IFormFile> files)
+    {
+        if (files == null || files.Count == 0)
+            return BadRequest("No files provided.");
+
+        if (files.Count > 10)
+            return BadRequest("Maximum 10 images per upload.");
+
+        var uploadedImages = new List<GalleryImageDto>();
+
+        // Upload all files in parallel for speed
+        var uploadTasks = files.Select(async file =>
+        {
+            if (file.Length == 0) return null;
+
+            var request = new ImageUploadRequest(
+                FileStream: file.OpenReadStream(),
+                FileName: file.FileName,
+                ContentType: file.ContentType
+            );
+
+            return await imageStorageService.SaveGalleryImageAsync(request);
+        }).ToArray();
+
+        ImageUploadResult?[] results;
+        try
+        {
+            results = await Task.WhenAll(uploadTasks);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        foreach (var result in results)
+        {
+            if (result != null)
+            {
+                uploadedImages.Add(new GalleryImageDto
+                {
+                    Url = result.Url,
+                    ThumbnailUrl = result.ThumbnailUrl,
+                    SmallUrl = result.SmallUrl,
+                    MediumUrl = result.MediumUrl,
+                    LargeUrl = result.LargeUrl
+                });
+            }
+        }
+
+        return Ok(uploadedImages);
+    }
+
+    [InvalidateCache("api/sitesettings|")]
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("gallery")]
+    public async Task<ActionResult> DeleteGalleryImage([FromBody] DeleteGalleryImageDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Url))
+            return BadRequest("URL is required.");
+
+        try
+        {
+            await imageStorageService.DeleteGalleryImageAsync(dto.Url);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Failed to delete image: {ex.Message}");
+        }
+    }
 }
 
 public class SiteSettingsDto
 {
     public string Key { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
+}
+
+public class GalleryImageDto
+{
+    public string Url { get; set; } = string.Empty;
+    public string ThumbnailUrl { get; set; } = string.Empty;
+    public string SmallUrl { get; set; } = string.Empty;
+    public string MediumUrl { get; set; } = string.Empty;
+    public string LargeUrl { get; set; } = string.Empty;
+}
+
+public class DeleteGalleryImageDto
+{
+    public string Url { get; set; } = string.Empty;
 }

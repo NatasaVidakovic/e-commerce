@@ -115,4 +115,21 @@ export class AdminService {
   deleteDeliveryMethod(id: number) {
     return this.http.delete(this.baseUrl + 'admin/delivery-methods/' + id);
   }
+
+  // Gallery Image Management
+  uploadGalleryImage(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<any>(this.baseUrl + 'sitesettings/gallery/upload', formData);
+  }
+
+  uploadGalleryImages(files: File[]) {
+    const formData = new FormData();
+    files.forEach(file => formData.append('files', file));
+    return this.http.post<any[]>(this.baseUrl + 'sitesettings/gallery/upload-multiple', formData);
+  }
+
+  deleteGalleryImage(url: string) {
+    return this.http.delete(this.baseUrl + 'sitesettings/gallery', { body: { url } });
+  }
 }

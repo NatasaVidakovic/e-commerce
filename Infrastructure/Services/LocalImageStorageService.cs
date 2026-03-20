@@ -88,6 +88,64 @@ public class LocalImageStorageService(IOptions<ImageStorageOptions> options) : I
         return Task.CompletedTask;
     }
 
+    public async Task<ImageUploadResult> SaveGalleryImageAsync(ImageUploadRequest request)
+    {
+        ValidateFile(request);
+
+        var folder = Path.Combine(WebRoot, "images", "gallery");
+        Directory.CreateDirectory(folder);
+
+        var slug = Guid.NewGuid().ToString("N")[..12];
+
+        // Load image bytes into memory once so the stream can be read multiple times
+        request.FileStream.Position = 0;
+        using var image = await Image.LoadAsync(request.FileStream);
+
+        var encoder = new WebpEncoder { Quality = 82 };
+        var urlDict = new Dictionary<string, string>();
+        var writtenFiles = new List<string>();
+
+        try
+        {
+            foreach (var (suffix, width) in Sizes)
+            {
+                var height = (int)Math.Round(image.Height * ((double)width / image.Width));
+                using var resized = image.Clone(ctx => ctx.Resize(new ResizeOptions
+                {
+                    Size = new Size(width, height),
+                    Mode = ResizeMode.Max
+                }));
+
+                var fileName = $"{slug}-{suffix}.webp";
+                var filePath = Path.Combine(folder, fileName);
+                await resized.SaveAsync(filePath, encoder);
+                writtenFiles.Add(filePath);
+                urlDict[suffix] = $"/images/gallery/{fileName}";
+            }
+        }
+        catch
+        {
+            // Clean up any partially-written files so no orphans remain on disk
+            foreach (var f in writtenFiles)
+                if (File.Exists(f)) File.Delete(f);
+            throw;
+        }
+
+        return new ImageUploadResult(
+            Url: urlDict["large"],
+            ThumbnailUrl: urlDict["thumb"],
+            SmallUrl: urlDict["small"],
+            MediumUrl: urlDict["medium"],
+            LargeUrl: urlDict["large"]
+        );
+    }
+
+    public Task DeleteGalleryImageAsync(string url)
+    {
+        DeleteGalleryFilesWithSlug(url);
+        return Task.CompletedTask;
+    }
+
     // ── helpers ────────────────────────────────────────────────────────────────
 
     private static void ValidateFile(ImageUploadRequest req)
@@ -122,6 +180,22 @@ public class LocalImageStorageService(IOptions<ImageStorageOptions> options) : I
         var productId = segments[^2]; // second-to-last segment
 
         var folder = Path.Combine(WebRoot, "images", "products", productId);
+        if (!Directory.Exists(folder)) return;
+
+        foreach (var file in Directory.GetFiles(folder, $"{slug}-*"))
+            File.Delete(file);
+    }
+
+    private void DeleteGalleryFilesWithSlug(string url)
+    {
+        // url format: /images/gallery/{slug}-large.webp
+        var fileName = Path.GetFileNameWithoutExtension(url); // "abc123-large"
+        var lastDash = fileName.LastIndexOf('-');
+        if (lastDash < 0) return;
+
+        var slug = fileName[..lastDash]; // "abc123"
+
+        var folder = Path.Combine(WebRoot, "images", "gallery");
         if (!Directory.Exists(folder)) return;
 
         foreach (var file in Directory.GetFiles(folder, $"{slug}-*"))

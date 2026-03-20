@@ -214,11 +214,20 @@ export class SiteSettingsComponent implements OnInit {
   onGalleryFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files) {
-      Array.from(input.files).forEach(file => {
-        this.handleImageUpload(file, (base64) => {
-          this.galleryImages.push(base64);
+      const files = Array.from(input.files);
+      
+      // Upload files to server instead of converting to base64
+      this.adminService.uploadGalleryImages(files).subscribe({
+        next: (uploadedImages) => {
+          uploadedImages.forEach(image => {
+            this.galleryImages.push(image.url);
+          });
           this.saveGallery();
-        });
+          this.snackbar.success(`Successfully uploaded ${uploadedImages.length} gallery image(s)`);
+        },
+        error: (err) => {
+          this.snackbar.errorFrom(err, 'Failed to upload gallery images');
+        }
       });
     }
     input.value = '';
@@ -232,6 +241,18 @@ export class SiteSettingsComponent implements OnInit {
   }
 
   removeGalleryImage(index: number): void {
+    const imageUrl = this.galleryImages[index];
+    
+    // Delete from Supabase if it's a Supabase URL
+    if (imageUrl.includes('/storage/v1/object/public/')) {
+      this.adminService.deleteGalleryImage(imageUrl).subscribe({
+        error: (err) => {
+          console.warn('Failed to delete image from storage:', err);
+          // Still remove from gallery even if storage deletion fails
+        }
+      });
+    }
+    
     this.galleryImages.splice(index, 1);
     this.saveGallery();
   }

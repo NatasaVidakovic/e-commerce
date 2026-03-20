@@ -20,4 +20,7 @@ public interface IImageStorageService
     Task<ImageUploadResult> SaveProductImageAsync(ImageUploadRequest request, int productId);
     Task DeleteProductImageAsync(string url);
     Task DeleteAllProductImagesAsync(int productId);
+    
+    Task<ImageUploadResult> SaveGalleryImageAsync(ImageUploadRequest request);
+    Task DeleteGalleryImageAsync(string url);
 }

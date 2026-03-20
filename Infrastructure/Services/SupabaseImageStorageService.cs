@@ -132,6 +132,71 @@ public class SupabaseImageStorageService : IImageStorageService
             await DeleteFromSupabase(paths);
     }
 
+    public async Task<ImageUploadResult> SaveGalleryImageAsync(ImageUploadRequest request)
+    {
+        ValidateFile(request);
+
+        request.FileStream.Position = 0;
+        using var image = await Image.LoadAsync(request.FileStream);
+
+        var slug = Guid.NewGuid().ToString("N")[..12];
+        var folder = "gallery";
+        var encoder = new WebpEncoder { Quality = 82 };
+        var urlDict = new Dictionary<string, string>();
+
+        // Upload all size variants in parallel for speed
+        var uploadTasks = Sizes.Select(async sizeInfo =>
+        {
+            var (suffix, width) = sizeInfo;
+            var height = (int)Math.Round(image.Height * ((double)width / image.Width));
+            using var resized = image.Clone(ctx => ctx.Resize(new ResizeOptions
+            {
+                Size = new Size(width, height),
+                Mode = ResizeMode.Max
+            }));
+
+            using var ms = new MemoryStream();
+            await resized.SaveAsync(ms, encoder);
+            ms.Position = 0;
+
+            var objectPath = $"{folder}/{slug}-{suffix}.webp";
+            var url = await UploadToSupabase(objectPath, ms, "image/webp");
+            return (suffix, url);
+        }).ToArray();
+
+        var results = await Task.WhenAll(uploadTasks);
+        foreach (var (suffix, url) in results)
+            urlDict[suffix] = url;
+
+        return new ImageUploadResult(
+            Url: urlDict["large"],
+            ThumbnailUrl: urlDict["thumb"],
+            SmallUrl: urlDict["small"],
+            MediumUrl: urlDict["medium"],
+            LargeUrl: urlDict["large"]
+        );
+    }
+
+    public async Task DeleteGalleryImageAsync(string url)
+    {
+        var objectPath = ExtractObjectPath(url);
+        if (string.IsNullOrEmpty(objectPath)) return;
+
+        // Extract slug from path to delete all variants
+        var fileName = Path.GetFileNameWithoutExtension(objectPath);
+        var lastDash = fileName.LastIndexOf('-');
+        if (lastDash < 0) return;
+
+        var slug = fileName[..lastDash];
+        var dir = Path.GetDirectoryName(objectPath)?.Replace('\\', '/') ?? "";
+
+        var pathsToDelete = Sizes
+            .Select(s => $"{dir}/{slug}-{s.Suffix}.webp")
+            .ToList();
+
+        await DeleteFromSupabase(pathsToDelete);
+    }
+
     // ── helpers ────────────────────────────────────────────────────────────────
 
     private async Task<string> UploadToSupabase(string objectPath, Stream content, string contentType)
