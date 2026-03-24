@@ -288,8 +288,27 @@ export class ShopComponent implements OnInit, OnDestroy {
   }
 
   onDynamicReset() {
+    // Reset the filter bar form to clear all input values
+    if (this.filterBar) {
+      // Manually reset the form without emitting the reset event to avoid circular calls
+      const resetValue: Record<string, any> = { sort: 0 };
+      for (const d of this.filterBar.filterDefinitions) {
+        if (d.controlType === 'dateRange') {
+          resetValue[d.key + 'Start'] = '';
+          resetValue[d.key + 'End'] = '';
+        } else {
+          resetValue[d.key] = d.controlType === 'select' && d.multiple ? [] : '';
+        }
+      }
+      this.filterBar.form.reset(resetValue);
+      this.filterBar.closeFilters();
+      this.filterBar.closeMobileDrawer();
+    }
+    
+    // Update parent component state
     this.lastFilters = [];
     this.lastSort = this.sortOptions[0];
+    this.currentFilterValues = {};
     this.pageNumber = 1;
     this.loadProducts();
     this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
