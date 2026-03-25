@@ -39,7 +39,8 @@ dotnet ef migrations list -p Infrastructure -s API --context StoreContext
 2. Pozvati komantu update sa nazivom pretposljednje migracije. Posljedna migracija ide u stanje Pending, brise se izmjena iz baze
 ```bash
 # dotnet ef database update NazivPretposljednjeMigracije -p Infrastructure -s API
-dotnet ef database update 0 -p Infrastructure -s API
+dotnet ef database update 0 -p Infrastructure -s APIAPI
+dotnet ef database update -p Infrastructure -s API
 
 dotnet ef database update 20260110184200_AddIsActiveToDiscount -p Infrastructure -s API
 ```

@@ -51,7 +51,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.AppUser", b =>
@@ -155,7 +155,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryMethods");
+                    b.ToTable("DeliveryMethods", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Discount", b =>
@@ -194,7 +194,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Discounts");
+                    b.ToTable("Discounts", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Favourite", b =>
@@ -226,7 +226,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("BuyerEmail", "ProductId")
                         .IsUnique();
 
-                    b.ToTable("Favourites");
+                    b.ToTable("Favourites", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.OrderAggregate.Order", b =>
@@ -315,7 +315,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("BuyerEmail", "Status");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.OrderAggregate.OrderAuditLog", b =>
@@ -361,7 +361,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderAuditLog");
+                    b.ToTable("OrderAuditLog", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.OrderAggregate.OrderComment", b =>
@@ -393,7 +393,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderComment");
+                    b.ToTable("OrderComment", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.OrderAggregate.OrderItem", b =>
@@ -429,7 +429,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.OrderAggregate.Refund", b =>
@@ -495,7 +495,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("Refunds");
+                    b.ToTable("Refunds", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.OrderAggregate.RefundItem", b =>
@@ -526,7 +526,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RefundId");
 
-                    b.ToTable("RefundItem");
+                    b.ToTable("RefundItem", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Product", b =>
@@ -590,7 +590,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductTypeId", "Brand");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.ProductImage", b =>
@@ -629,7 +629,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.ProductType", b =>
@@ -662,7 +662,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductTypes");
+                    b.ToTable("ProductTypes", (string)null);
 
                     b.HasData(
                         new
@@ -747,7 +747,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.ShopSettings", b =>
@@ -775,7 +775,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("ShopSettings");
+                    b.ToTable("ShopSettings", (string)null);
 
                     b.HasData(
                         new
@@ -809,7 +809,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("SiteSettings");
+                    b.ToTable("SiteSettings", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Voucher", b =>
@@ -841,7 +841,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vouchers");
+                    b.ToTable("Vouchers", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.VoucherStatusHistory", b =>
@@ -869,7 +869,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VoucherStatusHistory");
+                    b.ToTable("VoucherStatusHistory", (string)null);
                 });
 
             modelBuilder.Entity("DiscountProduct", b =>
@@ -1064,31 +1064,6 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("Core.Entities.OrderAggregate.OrderTracking", "Tracking", b1 =>
-                        {
-                            b1.Property<int>("OrderId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("CourierName")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<DateTime?>("EstimatedDeliveryDate")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("TrackingNumber")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<string>("TrackingUrl")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("OrderId");
-
-                            b1.ToTable("Orders");
-
-                            b1.WithOwner()
-                                .HasForeignKey("OrderId");
-                        });
-
                     b.OwnsOne("Core.Entities.OrderAggregate.PaymentSummary", "PaymentSummary", b1 =>
                         {
                             b1.Property<int>("OrderId")
@@ -1109,7 +1084,7 @@ namespace Infrastructure.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Orders");
+                            b1.ToTable("Orders", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -1145,7 +1120,32 @@ namespace Infrastructure.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Orders");
+                            b1.ToTable("Orders", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.OwnsOne("Core.Entities.OrderAggregate.OrderTracking", "Tracking", b1 =>
+                        {
+                            b1.Property<int>("OrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("CourierName")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime?>("EstimatedDeliveryDate")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("TrackingNumber")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("TrackingUrl")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -1204,7 +1204,7 @@ namespace Infrastructure.Migrations
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItems");
+                            b1.ToTable("OrderItems", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");
