@@ -16,16 +16,21 @@ services:
       - "JsReport__Url=http://jsreport:5488"
       - "Cors__AllowedOrigins__0=https://localhost:4200"
       - "Cors__AllowedOrigins__1=https://localhost"
+      - "Cors__AllowedOrigins__2=http://localhost:4200"
     volumes:
       - ./ssl:/https:ro
     depends_on:
-      - sql
-      - redis
+      sql:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - webshop-network
 
   frontend:
-    image: webshopacr.azurecr.io/webshop-frontend:latest
+    build:
+      context: .
+      dockerfile: dockerfile.development.frontend
     ports:
       - "4200:443"
     volumes:
@@ -47,6 +52,12 @@ services:
       - "1433:1433"
     volumes:
       - sql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Password@1 -Q 'SELECT 1' || exit 0"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     networks:
       - webshop-network
 

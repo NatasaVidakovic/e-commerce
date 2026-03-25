@@ -20,4 +20,4 @@ COPY --from=build /app/publish .
 # 🔥 FIX 2: Kopiraj SeedData  
 COPY Infrastructure/Data/SeedData/ ./Data/SeedData/
 ENTRYPOINT ["dotnet", "API.dll"]
-EXPOSE 80
+EXPOSE 443

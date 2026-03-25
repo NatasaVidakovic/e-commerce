@@ -1,12 +1,4 @@
-# WebShop - Azure Container Services Deployment Guide
-
-## Overview
-
-WebShop is a modern e-commerce application built with .NET 9.0 backend, Angular 20 frontend, and designed for containerized deployment on Azure Container Services. This comprehensive guide covers all aspects of deployment, configuration, and management.
-
-## Architecture
-
-### Technology Stack
+# WebShop - Azure Container Services 
 
 **Backend (.NET 9.0)**
 - ASP.NET Core Web API
@@ -22,7 +14,7 @@ WebShop is a modern e-commerce application built with .NET 9.0 backend, Angular 
 - ngx-translate for internationalization
 - SignalR client for real-time updates
 
-**Database & Caching**
+**Database and caching**
 - Microsoft SQL Server 2022
 - Redis for ses 
 
@@ -40,9 +32,9 @@ WebShop/
 ├── Infrastructure/         # Data access and external services
 ├── client/                 # Angular frontend application
 ├── docker-compose.yml      # Local development orchestration
-├── dockerfile.api         # API container build
-├── dockerfile.angular     # Frontend container build
-└── .dockerignore          # Docker build exclusions
+├── dockerfile.api          # API container build
+├── dockerfile.angular      # Frontend container build
+└── .dockerignore           # Docker build exclusions
 ```
 
 ## Container Configuration
@@ -72,12 +64,6 @@ FROM nginx:alpine AS production
 # Nginx serving...
 ```
 
-**Key Features:**
-- Node.js 20 Alpine build environment
-- Angular production build optimization
-- Nginx Alpine for lightweight serving
-- Port 80 exposure
-
 ### Docker Compose Configuration
 
 **Services:**
@@ -95,13 +81,6 @@ FROM nginx:alpine AS production
 - `redis-data`: Named volume for Redis persistence
 
 ## Azure Container Services Deployment
-
-### Prerequisites
-
-1. **Azure CLI** installed and configured
-2. **Docker** installed locally
-3. **Azure Container Registry (ACR)** created
-4. **Resource Group** for deployment
 
 ### Azure Container Registry Setup
 
@@ -480,31 +459,6 @@ spec:
 - SQL Server: 2-8 CPU cores, 4-32GB RAM
 - Redis: 0.5-1 CPU core, 1-2GB RAM
 
-## Security Considerations
-
-### Network Security
-
-**Azure Network Security Groups:**
-- Restrict inbound traffic to necessary ports
-- Implement private endpoints for database access
-- Use Azure Firewall for outbound filtering
-
-**Container Security:**
-- Use non-root users in containers
-- Implement image scanning with Azure Defender
-- Regular base image updates
-
-### Authentication and Authorization
-
-**Identity Framework Configuration:**
-- JWT token-based authentication
-- Role-based authorization
-- External provider integration (Google, Facebook)
-
-**HTTPS/TLS:**
-- Azure Application Gateway for SSL termination
-- Certificate management with Azure Key Vault
-- Enforce HTTPS redirects
 
 ## CI/CD Pipeline
 
@@ -570,26 +524,6 @@ jobs:
         docker build -f dockerfile.api -t ${{ secrets.ACR_NAME }}.azurecr.io/webshop-api:${{ github.sha }} .
         docker push ${{ secrets.ACR_NAME }}.azurecr.io/webshop-api:${{ github.sha }}
 ```
-
-## Troubleshooting
-
-### Common Issues
-
-**Container Startup Failures:**
-- Check environment variables
-- Verify database connectivity
-- Review container logs: `docker logs <container-name>`
-
-**Database Connection Issues:**
-- Validate connection string format
-- Check firewall rules
-- Verify SQL Server authentication
-
-**Performance Issues:**
-- Monitor resource utilization
-- Check Redis connectivity
-- Review SQL query performance
-
 ### Debug Commands
 
 ```bash
@@ -608,63 +542,3 @@ kubectl logs -f <pod-name>
 # Describe pod for issues
 kubectl describe pod <pod-name>
 ```
-
-## Backup and Disaster Recovery
-
-### Database Backup
-
-**Azure SQL Automated Backups:**
-- Point-in-time restore (35 days)
-- Long-term retention configuration
-- Geo-redundant backup storage
-
-### Container Backup Strategy
-
-**Application State Backup:**
-- Regular database exports
-- Redis data persistence
-- Configuration version control
-
-## Cost Optimization
-
-### Azure Cost Management
-
-**Rightsizing Recommendations:**
-- Monitor actual resource usage
-- Implement auto-shutdown policies
-- Use reserved instances for predictable workloads
-
-**Container Optimization:**
-- Multi-stage builds to reduce image size
-- Shared base images across services
-- Efficient layer caching
-
-## Support and Maintenance
-
-### Monitoring Alerts
-
-**Recommended Alerts:**
-- High CPU/memory utilization
-- Database connection failures
-- Application error rates
-- SSL certificate expiration
-
-### Maintenance Tasks
-
-**Regular Updates:**
-- Base image security patches
-- .NET framework updates
-- Node.js dependency updates
-- Database performance tuning
-
-## Contact and Support
-
-For technical support and questions regarding Azure deployment:
-- Azure Documentation: https://docs.microsoft.com/azure/
-- Container Registry: https://docs.microsoft.com/azure/container-registry/
-- Azure Kubernetes Service: https://docs.microsoft.com/azure/aks/
-- Azure Container Instances: https://docs.microsoft.com/azure/container-instances/
-
----
-
-*This README v3 provides comprehensive guidance for deploying WebShop on Azure Container Services. For local development setup, refer to the existing README files.*
