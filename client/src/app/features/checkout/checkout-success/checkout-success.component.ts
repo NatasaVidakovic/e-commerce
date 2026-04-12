@@ -12,6 +12,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { Currency } from '../../../shared/models/currency';
 import { JsonPipe } from '@angular/common';
+import { AccountService } from '../../../core/services/account.service';
 
 @Component({
   selector: 'app-checkout-success',
@@ -33,6 +34,7 @@ export class CheckoutSuccessComponent implements OnDestroy {
   signalrService = inject(SignalrService);
   private orderService = inject(OrderService);
   private currencyService = inject(CurrencyService);
+  accountService = inject(AccountService);
 
   getOrderCurrency(code: string): Currency {
     return this.currencyService.getCurrencyByCode(code);

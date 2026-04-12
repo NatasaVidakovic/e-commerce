@@ -4,8 +4,12 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AdminService } from '../../../../core/services/admin.service';
 import { ReportingService } from '../../../../core/services/reporting.service';
+import { CurrencyService } from '../../../../core/services/currency.service';
+import { CurrencyPipe } from '../../../../shared/pipes/currency.pipe';
+import { Currency } from '../../../../shared/models/currency';
 import { Order, OrderAuditLog } from '../../../../shared/models/order';
 
 export interface OrderDetailsDialogData {
@@ -22,7 +26,9 @@ export interface OrderDetailsDialogData {
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    MatTabsModule
+    MatTabsModule,
+    MatProgressSpinnerModule,
+    CurrencyPipe
   ],
   templateUrl: './order-details-dialog.component.html',
   styleUrl: './order-details-dialog.component.scss'
@@ -31,13 +37,14 @@ export class OrderDetailsDialogComponent implements OnInit {
   private adminService = inject(AdminService);
   private dialogRef = inject(MatDialogRef<OrderDetailsDialogComponent>);
   private reportingService = inject(ReportingService);
+  private currencyService = inject(CurrencyService);
 
   order?: Order;
   loading = true;
   error?: string;
+  mainTab = 0;
   selectedTab = 0;
 
-  
   constructor(@Inject(MAT_DIALOG_DATA) public data: OrderDetailsDialogData) {}
 
   ngOnInit(): void {
@@ -50,6 +57,42 @@ export class OrderDetailsDialogComponent implements OnInit {
 
   onTabChange(index: number): void {
     this.selectedTab = index;
+  }
+
+  getOrderCurrency(): Currency {
+    return this.currencyService.getCurrencyByCode(this.order?.currency || 'EUR');
+  }
+
+  get itemsSubtotal(): number {
+    if (!this.order?.orderItems) return 0;
+    return this.order.orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  }
+
+  get customerName(): string {
+    if (this.order?.isGuestOrder) {
+      return this.order.guestName || 'N/A';
+    }
+    return this.order?.shippingAddress?.name || 'N/A';
+  }
+
+  get customerEmail(): string {
+    if (this.order?.isGuestOrder && this.order.guestEmail) {
+      return this.order.guestEmail;
+    }
+    return this.order?.buyerEmail || 'N/A';
+  }
+
+  get customerPhone(): string {
+    if (this.order?.isGuestOrder) {
+      return this.order.guestPhone || 'N/A';
+    }
+    return 'N/A';
+  }
+
+  getProductImageUrl(url: string): string {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return url;
   }
 
   private loadOrder(): void {
@@ -100,7 +143,6 @@ export class OrderDetailsDialogComponent implements OnInit {
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   }
 
-  
   getFieldLabel(fieldChanged: string): string {
     if (fieldChanged === 'OrderStatus') return 'Order status';
     if (fieldChanged === 'PaymentStatus') return 'Payment status';

@@ -6,15 +6,14 @@ WORKDIR /app
 COPY client/package*.json ./
 RUN npm ci
 
-# Copy i build Angular
+# Copy and build Angular
 COPY client/ .
-RUN npm run build
+RUN npm run build -- --configuration development
 
 FROM nginx:alpine AS production
-
 
 COPY client/nginx.dev.conf /etc/nginx/nginx.conf
 COPY --from=build /app/dist/client/ /usr/share/nginx/html/
 
-EXPOSE 80
+EXPOSE 443
 CMD ["nginx", "-g", "daemon off;"]

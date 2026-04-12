@@ -1,5 +1,3 @@
-## Run commands
-
 ### stripe setup
 ``` bash
 stripe listen --forward-to https://localhost:5001/api/payments/webhook -e payment_intent.succeeded --api-key sk_test_51SDgJ4IrOvm46oJjvQIgiRuhKY2zSzOIMRThdAZh64c36Sb8n6EAJbwuFgztLWTDphE7fb7qrCBC57sfgI4dRrkv001flQJTRM
@@ -13,7 +11,11 @@ stripe listen --forward-to https://localhost:5001/api/payments/webhook -e paymen
 ```
 mmijob80838@etenx.com
 ```
-
+## Kartica
+``` txt
+5555 5555 5555 4444
+12/25 123
+```
 
 ## Uputstvo za migraciju
 
@@ -37,7 +39,8 @@ dotnet ef migrations list -p Infrastructure -s API --context StoreContext
 2. Pozvati komantu update sa nazivom pretposljednje migracije. Posljedna migracija ide u stanje Pending, brise se izmjena iz baze
 ```bash
 # dotnet ef database update NazivPretposljednjeMigracije -p Infrastructure -s API
-dotnet ef database update 0 -p Infrastructure -s API
+dotnet ef database update 0 -p Infrastructure -s APIAPI
+dotnet ef database update -p Infrastructure -s API
 
 dotnet ef database update 20260110184200_AddIsActiveToDiscount -p Infrastructure -s API
 ```
@@ -90,8 +93,3 @@ docker build -f dockerfile.frontend -t webshopacr.azurecr.io/webshop-frontend:la
 
 ```
 
-## Kartica
-``` txt
-5555 5555 5555 4444
-12/25 123
-```

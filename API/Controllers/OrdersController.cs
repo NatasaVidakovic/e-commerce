@@ -12,13 +12,27 @@ using Microsoft.Extensions.Configuration;
 
 namespace API.Controllers;
 
-[Authorize]
 public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfiguration config, IVoucherService _voucherService, ISiteSettingsService siteSettingsService) : BaseApiController
 {
     [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult<Order>> CreateOrder(CreateOrderDto orderDto)
     {
-        var email = User.GetEmail();
+        var isAuthenticated = User?.Identity?.IsAuthenticated == true;
+        var email = isAuthenticated ? User.GetEmail() : null;
+
+        // Validate guest fields when not authenticated
+        if (!isAuthenticated)
+        {
+            if (string.IsNullOrWhiteSpace(orderDto.GuestName))
+                return BadRequest("Guest name is required");
+            if (string.IsNullOrWhiteSpace(orderDto.GuestEmail))
+                return BadRequest("Guest email is required");
+            if (!IsValidEmail(orderDto.GuestEmail))
+                return BadRequest("Invalid email format");
+            if (string.IsNullOrWhiteSpace(orderDto.GuestPhone))
+                return BadRequest("Guest phone number is required");
+        }
 
         var cart = await cartService.GetCartAsync(orderDto.CartId);
 
@@ -141,7 +155,11 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
             Discount = calculatedDiscount,
             PaymentSummary = orderDto.PaymentSummary,
             PaymentIntentId = cart.PaymentIntentId,
-            BuyerEmail = email,
+            BuyerEmail = isAuthenticated ? email! : orderDto.GuestEmail!,
+            IsGuestOrder = !isAuthenticated,
+            GuestName = !isAuthenticated ? orderDto.GuestName : null,
+            GuestEmail = !isAuthenticated ? orderDto.GuestEmail : null,
+            GuestPhone = !isAuthenticated ? orderDto.GuestPhone : null,
             OrderNumber = orderNumber,
             PaymentType = orderDto.PaymentType,
             PaymentStatus = orderDto.PaymentType == Core.Enums.PaymentType.CashOnDelivery 
@@ -166,6 +184,7 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
     }
 
 
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<OrderDto>>> GetOrdersForUser()
     {
@@ -178,6 +197,7 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
         return Ok(ordersToReturn);
     }
 
+    [Authorize]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<OrderDto>> GetOrderById(int id)
     {
@@ -188,5 +208,18 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
         if (order == null) return NotFound();
 
         return order.ToDto();
+    }
+
+    private static bool IsValidEmail(string email)
+    {
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

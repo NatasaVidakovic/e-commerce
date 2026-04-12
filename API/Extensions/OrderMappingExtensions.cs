@@ -38,6 +38,10 @@ public static class OrderMappingExtensions
             AuditLogs = order.AuditLogs.Select(a => a.ToDto()).ToList(),
             RefundAmount = order.RefundAmount,
             RefundedAt = order.RefundedAt,
+            IsGuestOrder = order.IsGuestOrder,
+            GuestName = order.GuestName,
+            GuestEmail = order.GuestEmail,
+            GuestPhone = order.GuestPhone,
             Total = order.GetTotal()
         };
     }

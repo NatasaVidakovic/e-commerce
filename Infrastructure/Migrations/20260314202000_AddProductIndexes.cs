@@ -1,60 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddFavouriteAndReviewIndexes : Migration
+    public partial class AddProductIndexes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Safely drop indexes that might exist before altering columns
-            migrationBuilder.Sql("IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Products_Brand' AND object_id = OBJECT_ID(N'[Products]')) DROP INDEX [IX_Products_Brand] ON [Products];");
-            migrationBuilder.Sql("IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Products_ProductTypeId_Brand' AND object_id = OBJECT_ID(N'[Products]')) DROP INDEX [IX_Products_ProductTypeId_Brand] ON [Products];");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Brand",
-                table: "Products",
-                type: "nvarchar(450)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Status",
-                table: "Orders",
-                type: "nvarchar(450)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "PaymentIntentId",
-                table: "Orders",
-                type: "nvarchar(450)",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "BuyerEmail",
-                table: "Orders",
-                type: "nvarchar(450)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "BuyerEmail",
-                table: "Favourites",
-                type: "nvarchar(450)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
-
             migrationBuilder.Sql("IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Reviews_ParentCommentId' AND object_id = OBJECT_ID(N'[Reviews]')) CREATE INDEX [IX_Reviews_ParentCommentId] ON [Reviews] ([ParentCommentId]);");
             migrationBuilder.Sql("IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Products_Brand' AND object_id = OBJECT_ID(N'[Products]')) CREATE INDEX [IX_Products_Brand] ON [Products] ([Brand]);");
             migrationBuilder.Sql("IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Products_IsBestReviewed' AND object_id = OBJECT_ID(N'[Products]')) CREATE INDEX [IX_Products_IsBestReviewed] ON [Products] ([IsBestReviewed]);");
@@ -92,47 +47,6 @@ namespace Infrastructure.Migrations
             migrationBuilder.Sql("IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Orders_Status' AND object_id = OBJECT_ID(N'[Orders]')) DROP INDEX [IX_Orders_Status] ON [Orders];");
             migrationBuilder.Sql("IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Favourites_BuyerEmail' AND object_id = OBJECT_ID(N'[Favourites]')) DROP INDEX [IX_Favourites_BuyerEmail] ON [Favourites];");
             migrationBuilder.Sql("IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Favourites_BuyerEmail_ProductId' AND object_id = OBJECT_ID(N'[Favourites]')) DROP INDEX [IX_Favourites_BuyerEmail_ProductId] ON [Favourites];");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Brand",
-                table: "Products",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(450)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Status",
-                table: "Orders",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(450)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "PaymentIntentId",
-                table: "Orders",
-                type: "nvarchar(max)",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(450)",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "BuyerEmail",
-                table: "Orders",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(450)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "BuyerEmail",
-                table: "Favourites",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(450)");
         }
     }
 }

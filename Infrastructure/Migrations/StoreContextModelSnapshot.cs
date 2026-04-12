@@ -257,8 +257,20 @@ namespace Infrastructure.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("GuestEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GuestName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GuestPhone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("InvoiceNumber")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsGuestOrder")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");

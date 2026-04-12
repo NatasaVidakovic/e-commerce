@@ -4,6 +4,14 @@
   <div class="order-info">
     <p><strong>{{ 'ADMIN.ORDER_STATUS.ORDER_NUMBER' | translate }}:</strong> {{ data.order.orderNumber || data.order.id }}</p>
     <p><strong>{{ 'ADMIN.ORDER_STATUS.CUSTOMER' | translate }}:</strong> {{ data.order.buyerEmail }}</p>
+    @if (data.order.isGuestOrder) {
+      <div style="margin-top: 8px; padding: 8px 12px; background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px;">
+        <p style="margin: 0 0 4px; font-weight: 600; color: #92400e;">Guest Order</p>
+        <p style="margin: 0;"><strong>Name:</strong> {{ data.order.guestName }}</p>
+        <p style="margin: 0;"><strong>Email:</strong> {{ data.order.guestEmail }}</p>
+        <p style="margin: 0;"><strong>Phone:</strong> {{ data.order.guestPhone }}</p>
+      </div>
+    }
   </div>
 
   <form [formGroup]="statusForm" class="status-form">

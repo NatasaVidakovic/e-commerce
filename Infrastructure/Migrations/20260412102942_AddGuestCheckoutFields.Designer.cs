@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20260314201503_AddFavouriteAndReviewIndexes")]
-    partial class AddFavouriteAndReviewIndexes
+    [Migration("20260412102942_AddGuestCheckoutFields")]
+    partial class AddGuestCheckoutFields
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -260,8 +260,20 @@ namespace Infrastructure.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("GuestEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GuestName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GuestPhone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("InvoiceNumber")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsGuestOrder")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
