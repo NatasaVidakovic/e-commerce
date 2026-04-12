@@ -43,9 +43,11 @@
         </div>
         
         <div class="flex items-center space-x-4">
+            @if (accountService.currentUser()) {
             <button routerLink="/orders/{{order.id}}" mat-flat-button color="primary">
                 {{ 'CHECKOUT.VIEW_ORDER' | translate }}
             </button>
+            }
             <button routerLink="/shop" mat-stroked-button>
                 {{ 'CHECKOUT.CONTINUE_SHOPPING' | translate }}
             </button>

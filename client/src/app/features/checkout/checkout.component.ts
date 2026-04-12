@@ -50,7 +50,7 @@ import { MatSelectModule } from '@angular/material/select';
 })
 export class CheckoutComponent implements OnInit, OnDestroy {
   private stripeService = inject(StripeService);
-  private accountService = inject(AccountService);
+  accountService = inject(AccountService);
   private snackbar = inject(SnackbarService);
   private router = inject(Router);
   private orderService = inject(OrderService);
@@ -70,9 +70,17 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     postalCode: '',
     country: ''
   };
+  guestForm = {
+    email: '',
+    phone: ''
+  };
   allowedCountries: string[] = [];
-  completionStatus = signal<{ address: boolean, card: boolean, delivery: boolean }>(
-    { address: false, card: false, delivery: false });
+  completionStatus = signal<{ address: boolean, card: boolean, delivery: boolean, guestInfo: boolean }>(
+    { address: false, card: false, delivery: false, guestInfo: false });
+
+  get isGuest(): boolean {
+    return !this.accountService.currentUser();
+  }
   confirmationToken?: ConfirmationToken;
   loading = false;
 
@@ -86,6 +94,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.paymentMethod = 'stripe';
     } else if (this.enabledPaymentMethods === 'cash') {
       this.paymentMethod = 'cash';
+    }
+
+    // Guest users can only use cash on delivery (Stripe requires authentication)
+    if (this.isGuest) {
+      this.paymentMethod = 'cash';
+      this.completionStatus.update(state => {
+        state.card = true;
+        return state;
+      });
     }
 
     const user = this.accountService.currentUser();
@@ -104,6 +121,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
 
     this.validateAddress();
+    this.validateGuestInfo();
   }
 
   validateAddress() {
@@ -118,6 +136,31 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       state.address = isComplete;
       return state;
     });
+  }
+
+  validateGuestInfo() {
+    if (!this.isGuest) {
+      this.completionStatus.update(state => {
+        state.guestInfo = true;
+        return state;
+      });
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isComplete = !!
+      (this.guestForm.email &&
+       emailRegex.test(this.guestForm.email) &&
+       this.guestForm.phone);
+    this.completionStatus.update(state => {
+      state.guestInfo = isComplete;
+      return state;
+    });
+  }
+
+  get isGuestInfoValid(): boolean {
+    if (!this.isGuest) return true;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return !!(this.guestForm.email && emailRegex.test(this.guestForm.email) && this.guestForm.phone);
   }
 
   handlePaymentChange = (event: StripePaymentElementChangeEvent) => {
@@ -148,7 +191,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async onStepChange(event: StepperSelectionEvent) {
     if (event.selectedIndex === 1) {
-      if (this.saveAddress) {
+      if (this.saveAddress && !this.isGuest) {
         const address = this.getAddressFromForm();
         address && firstValueFrom(this.accountService.updateAddress(address));
       }
@@ -168,6 +211,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (this.paymentMethod === 'stripe') {
         await this.getConfirmationToken();
       }
+    }
+    if (this.isGuest && event.selectedIndex === 2) {
+      // For guest, skip Stripe for now (force cash) or validate guest info
+      this.validateGuestInfo();
     }
   }
 
@@ -243,6 +290,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         paymentType: 'Stripe',
         voucherCode: cart.voucher?.code,
         // couponCode: cart.coupon?.promotionCode
+        ...this.getGuestFields()
       };
     } else {
       // Cash on delivery
@@ -260,8 +308,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         paymentType: 'CashOnDelivery',
         voucherCode: cart.voucher?.code,
         // couponCode: cart.coupon?.promotionCode
+        ...this.getGuestFields()
       };
     }
+  }
+
+  private getGuestFields(): Partial<OrderToCreate> {
+    if (!this.isGuest) return {};
+    return {
+      guestName: this.addressForm.name,
+      guestEmail: this.guestForm.email,
+      guestPhone: this.guestForm.phone
+    };
   }
 
   private getAddressFromForm() {

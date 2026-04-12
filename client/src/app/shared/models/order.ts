@@ -28,6 +28,11 @@ export interface Order {
     refundAmount?: number
     refundedAt?: string
     total: number
+    // Guest checkout fields
+    isGuestOrder?: boolean
+    guestName?: string
+    guestEmail?: string
+    guestPhone?: string
   }
   
   export interface ShippingAddress {
@@ -90,6 +95,10 @@ export interface Order {
     specialNotes?: string
     voucherCode?: string
     // couponCode?: string
+    // Guest checkout fields
+    guestName?: string
+    guestEmail?: string
+    guestPhone?: string
   }
 
   export interface UpdateOrderStatusDto {

@@ -25,4 +25,9 @@ public class CreateOrderDto
     public string? SpecialNotes { get; set; }
     public string? VoucherCode { get; set; }
     // public string? CouponCode { get; set; }
+
+    // Guest checkout fields (required when user is not authenticated)
+    public string? GuestName { get; set; }
+    public string? GuestEmail { get; set; }
+    public string? GuestPhone { get; set; }
 }

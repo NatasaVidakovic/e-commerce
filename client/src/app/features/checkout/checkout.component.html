@@ -2,7 +2,16 @@
     <div class="w-full lg:w-3/4">
         <mat-stepper (selectionChange)="onStepChange($event)" [linear]="true"
             #stepper class="border shadow-sm" style="background-color: var(--color-surface); border-color: var(--color-border-primary);">
-            <mat-step [label]="'CHECKOUT.ADDRESS' | translate" [completed]="completionStatus().address">
+            <mat-step [label]="'CHECKOUT.ADDRESS' | translate" [completed]="completionStatus().address && completionStatus().guestInfo">
+                @if (isGuest) {
+                <div class="mb-6 p-4 rounded-lg" style="background-color: var(--color-primary-light); border: 1px solid var(--color-primary);">
+                    <div class="flex items-center gap-2 mb-1">
+                        <mat-icon style="color: var(--color-primary);">info</mat-icon>
+                        <span class="font-semibold" style="color: var(--color-text-primary);">Guest Checkout</span>
+                    </div>
+                    <p class="text-sm" style="color: var(--color-text-secondary);">You do not need an account to place an order. Enter your delivery and contact information below.</p>
+                </div>
+                }
                 <div class="space-y-4">
                     <mat-form-field appearance="fill" class="w-full custom-floating-label">
                         <mat-label>{{ 'FORM.FULL_NAME' | translate }}</mat-label>
@@ -44,19 +53,40 @@
                         </mat-form-field>
                     </div>
                 </div>
+
+                @if (isGuest) {
+                <div class="mt-6 p-4 rounded-lg" style="background-color: var(--color-surface); border: 1px solid var(--color-border-primary);">
+                    <h3 class="text-lg font-semibold mb-4" style="color: var(--color-text-primary);">Contact Information</h3>
+                    <div class="space-y-4">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <mat-label>Email</mat-label>
+                            <input matInput type="email" [(ngModel)]="guestForm.email" (ngModelChange)="validateGuestInfo()" required>
+                            @if (guestForm.email && !isGuestInfoValid) {
+                                <mat-hint style="color: var(--color-error);">Please enter a valid email address</mat-hint>
+                            }
+                        </mat-form-field>
+                        <mat-form-field appearance="fill" class="w-full">
+                            <mat-label>Phone Number</mat-label>
+                            <input matInput type="tel" [(ngModel)]="guestForm.phone" (ngModelChange)="validateGuestInfo()" required>
+                        </mat-form-field>
+                    </div>
+                </div>
+                }
                 
+                @if (!isGuest) {
                 <div class="flex justify-end mt-4">
                     <mat-checkbox [checked]="saveAddress"
                         (change)="onSaveAddressCheckboxChange($event)">
                         {{ 'CHECKOUT.SAVE_AS_DEFAULT_ADDRESS' | translate }}
                     </mat-checkbox>
                 </div>
+                }
                 <div class="flex justify-between mt-6">
                     <button class="z-0" routerLink="/shop"
                         mat-stroked-button>
                         {{ 'BUTTONS.CONTINUE_SHOPPING' | translate }}
                     </button>
-                    <button [disabled]="!completionStatus().address" class="z-0"
+                    <button [disabled]="!completionStatus().address || !completionStatus().guestInfo" class="z-0"
                         matStepperNext mat-flat-button>
                         {{ 'COMMON.NEXT' | translate }}
                     </button>
@@ -87,7 +117,7 @@
                             </div>
                         </label>
                         }
-                        @if (enabledPaymentMethods === 'stripe' || enabledPaymentMethods === 'both') {
+                        @if (!isGuest && (enabledPaymentMethods === 'stripe' || enabledPaymentMethods === 'both')) {
                         <label class="flex items-center gap-3 p-3 rounded cursor-pointer transition-all"
                                [style.background-color]="paymentMethod === 'stripe' ? 'var(--color-primary-light)' : 'transparent'"
                                [style.border]="paymentMethod === 'stripe' ? '2px solid var(--color-primary)' : '2px solid var(--color-border-primary)'">

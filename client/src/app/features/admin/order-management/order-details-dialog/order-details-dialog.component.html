@@ -1,200 +1,407 @@
-<h2 mat-dialog-title>
-  Order #{{ order?.orderNumber || order?.id }}
-</h2>
+<!-- Dialog Title -->
+<div class="dialog-header">
+  <div class="dialog-title-row">
+    <div class="dialog-title-text">
+      <h2>Order Details</h2>
+      <span class="order-number" *ngIf="order">#{{ order.orderNumber || order.id }}</span>
+    </div>
+    <button mat-icon-button (click)="close()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
 
 <mat-dialog-content>
-  <div *ngIf="loading" class="state-row">Loading...</div>
-  <div *ngIf="!loading && error" class="state-row error">{{ error }}</div>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Loading order details...</span>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading && error" class="error-state">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ error }}</span>
+  </div>
 
   <ng-container *ngIf="!loading && order">
-    <!-- Enhanced Header with Customer Info -->
-    <div class="header-row">
-      <div class="header-main">
-        <div class="customer">{{ order.buyerEmail }}</div>
-        <div class="updated">Updated: {{ order.updatedAt | date: 'short' }}</div>
-      </div>
-    </div>
 
-    <!-- Enhanced Status Cards Header -->
-    <div class="status-header">
-      <div class="status-card order-status">
-        <div class="status-icon">
-          <mat-icon>local_shipping</mat-icon>
-        </div>
-        <div class="status-content">
-          <div class="status-title">Order Status</div>
-          <div class="status-value">{{ order.status }}</div>
-        </div>
-      </div>
-      
-      <div class="status-card payment-status">
-        <div class="status-icon">
-          <mat-icon>payments</mat-icon>
-        </div>
-        <div class="status-content">
-          <div class="status-title">Payment Status</div>
-          <div class="status-value">{{ order.paymentStatus }}</div>
-        </div>
-      </div>
-      
-      <div class="status-card delivery-status">
-        <div class="status-icon">
-          <mat-icon>route</mat-icon>
-        </div>
-        <div class="status-content">
-          <div class="status-title">Delivery Status</div>
-          <div class="status-value">{{ order.deliveryStatus }}</div>
-        </div>
-      </div>
-    </div>
+    <!-- ===== Top-level tabs: Order Details | Status History ===== -->
+    <mat-tab-group [(selectedIndex)]="mainTab" class="main-tabs" animationDuration="200ms">
 
-    <!-- Tab Navigation for Status History -->
-    <div class="section-title">Status History</div>
+      <!-- ===== TAB 1: Order Details ===== -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-label-icon">description</mat-icon>
+          Order Details
+        </ng-template>
+        <ng-template matTabContent>
+          <div class="tab-body">
 
-    <div class="tab-container">
-      <mat-tab-group [(selectedIndex)]="selectedTab" (selectedIndexChange)="onTabChange($event)" class="status-tabs">
-        <!-- Order Status Tab -->
-        <mat-tab label="Order Status">
-          <ng-template matTabContent>
-            <div class="tab-content">
-              <div *ngIf="orderStatusLogs.length === 0" class="no-history">
-                <mat-icon class="no-history-icon">history</mat-icon>
-                <span>No order status history available</span>
+            <!-- SECTION 1: Order Summary -->
+            <div class="detail-section">
+              <div class="section-header">
+                <mat-icon class="section-icon summary-icon">receipt_long</mat-icon>
+                <h3>Order Summary</h3>
               </div>
-
-              <div class="history-list" *ngIf="orderStatusLogs.length > 0">
-                <div *ngFor="let log of orderStatusLogs" class="history-item">
-                  <div class="history-time">
-                    <div class="time-badge">
-                      <mat-icon class="time-icon">schedule</mat-icon>
-                      {{ log.timestamp | date: 'MMM dd, yyyy' }}
-                    </div>
-                    <div class="time-detail">{{ log.timestamp | date: 'HH:mm' }}</div>
-                  </div>
-                  
-                  <div class="history-content">
-                    <div class="status-change">
-                      <div class="old-status">
-                        {{ log.oldValue || '—' }}
-                        <mat-icon>arrow_forward</mat-icon>
-                      </div>
-                      <div class="new-status">
-                        {{ log.newValue || '—' }}
-                      </div>
-                    </div>
-                    
-                    <div class="history-details">
-                      <div class="user-info">
-                        <mat-icon class="user-icon">person</mat-icon>
-                        {{ log.userEmail }}
-                      </div>
-                      <div class="comment-info" *ngIf="log.comment">
-                        <mat-icon class="comment-icon">comment</mat-icon>
-                        {{ log.comment }}
-                      </div>
-                    </div>
-                  </div>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="detail-label">Order ID</span>
+                  <span class="detail-value">#{{ order.orderNumber || order.id }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Order Date</span>
+                  <span class="detail-value">{{ order.orderDate | date: 'MMM dd, yyyy, HH:mm' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Order Status</span>
+                  <span class="detail-value">
+                    <span class="status-badge os-badge">{{ order.status }}</span>
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Payment Method</span>
+                  <span class="detail-value">
+                    <span class="status-badge" [ngClass]="{
+                      'badge-stripe': order.paymentType === 'Stripe',
+                      'badge-cod': order.paymentType === 'CashOnDelivery'
+                    }">{{ order.paymentType === 'CashOnDelivery' ? 'Cash on Delivery' : order.paymentType }}</span>
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Payment Status</span>
+                  <span class="detail-value">
+                    <span class="status-badge ps-badge">{{ order.paymentStatus }}</span>
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Delivery Method</span>
+                  <span class="detail-value">{{ order.deliveryMethod || 'N/A' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Delivery Status</span>
+                  <span class="detail-value">
+                    <span class="status-badge ds-badge">{{ order.deliveryStatus }}</span>
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Total Amount</span>
+                  <span class="detail-value total-value">{{ order.total | appCurrency: getOrderCurrency() }}</span>
+                </div>
+                <div class="detail-item" *ngIf="order.specialNotes">
+                  <span class="detail-label">Notes</span>
+                  <span class="detail-value notes-value">{{ order.specialNotes }}</span>
+                </div>
+                <div class="detail-item" *ngIf="order.voucherCode">
+                  <span class="detail-label">Voucher Code</span>
+                  <span class="detail-value">{{ order.voucherCode }}</span>
                 </div>
               </div>
             </div>
-          </ng-template>
-        </mat-tab>
 
-        <!-- Payment Status Tab -->
-        <mat-tab label="Payment Status">
-          <ng-template matTabContent>
-            <div class="tab-content">
-              <div *ngIf="paymentStatusLogs.length === 0" class="no-history">
-                <mat-icon class="no-history-icon">payments</mat-icon>
-                <span>No payment status history available</span>
+            <!-- SECTION 2: Customer Information -->
+            <div class="detail-section">
+              <div class="section-header">
+                <mat-icon class="section-icon customer-icon">person</mat-icon>
+                <h3>Customer Information</h3>
+                <span class="customer-type-badge" [ngClass]="order.isGuestOrder ? 'guest-badge' : 'registered-badge'">
+                  {{ order.isGuestOrder ? 'Guest' : 'Logged-in' }}
+                </span>
               </div>
-
-              <div class="history-list" *ngIf="paymentStatusLogs.length > 0">
-                <div *ngFor="let log of paymentStatusLogs" class="history-item payment-item">
-                  <div class="history-time">
-                    <div class="time-badge payment-time">
-                      <mat-icon class="time-icon">schedule</mat-icon>
-                      {{ log.timestamp | date: 'MMM dd, yyyy' }}
-                    </div>
-                    <div class="time-detail">{{ log.timestamp | date: 'HH:mm' }}</div>
-                  </div>
-                  
-                  <div class="history-content">
-                    <div class="status-change payment-change">
-                      <div class="old-status">
-                        {{ log.oldValue || '—' }}
-                        <mat-icon>arrow_forward</mat-icon>
-                      </div>
-                      <div class="new-status">
-                        {{ log.newValue || '—' }}
-                      </div>
-                    </div>
-                    
-                    <div class="history-details">
-                      <div class="user-info">
-                        <mat-icon class="user-icon">person</mat-icon>
-                        {{ log.userEmail }}
-                      </div>
-                      <div class="comment-info" *ngIf="log.comment">
-                        <mat-icon class="comment-icon">comment</mat-icon>
-                        {{ log.comment }}
-                      </div>
-                    </div>
-                  </div>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <span class="detail-label">Full Name</span>
+                  <span class="detail-value">{{ customerName }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Email</span>
+                  <span class="detail-value">{{ customerEmail }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Phone</span>
+                  <span class="detail-value">{{ customerPhone }}</span>
+                </div>
+                <div class="detail-item" *ngIf="!order.isGuestOrder">
+                  <span class="detail-label">Account Email</span>
+                  <span class="detail-value">{{ order.buyerEmail }}</span>
                 </div>
               </div>
             </div>
-          </ng-template>
-        </mat-tab>
 
-        <!-- Delivery Status Tab -->
-        <mat-tab label="Delivery Status">
-          <ng-template matTabContent>
-            <div class="tab-content">
-              <div *ngIf="deliveryStatusLogs.length === 0" class="no-history">
-                <mat-icon class="no-history-icon">route</mat-icon>
-                <span>No delivery status history available</span>
+            <!-- SECTION 3: Delivery Information -->
+            <div class="detail-section">
+              <div class="section-header">
+                <mat-icon class="section-icon delivery-icon">local_shipping</mat-icon>
+                <h3>Delivery Information</h3>
               </div>
+              <div class="detail-grid" *ngIf="order.shippingAddress">
+                <div class="detail-item">
+                  <span class="detail-label">Name</span>
+                  <span class="detail-value">{{ order.shippingAddress.name || 'N/A' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Address Line 1</span>
+                  <span class="detail-value">{{ order.shippingAddress.line1 || 'N/A' }}</span>
+                </div>
+                <div class="detail-item" *ngIf="order.shippingAddress.line2">
+                  <span class="detail-label">Address Line 2</span>
+                  <span class="detail-value">{{ order.shippingAddress.line2 }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">City</span>
+                  <span class="detail-value">{{ order.shippingAddress.city || 'N/A' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Postal Code</span>
+                  <span class="detail-value">{{ order.shippingAddress.postalCode || 'N/A' }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Country</span>
+                  <span class="detail-value">{{ order.shippingAddress.country || 'N/A' }}</span>
+                </div>
+              </div>
+              <div *ngIf="!order.shippingAddress" class="empty-section">
+                No shipping address available
+              </div>
+            </div>
 
-              <div class="history-list" *ngIf="deliveryStatusLogs.length > 0">
-                <div *ngFor="let log of deliveryStatusLogs" class="history-item delivery-item">
-                  <div class="history-time">
-                    <div class="time-badge delivery-time">
-                      <mat-icon class="time-icon">schedule</mat-icon>
-                      {{ log.timestamp | date: 'MMM dd, yyyy' }}
-                    </div>
-                    <div class="time-detail">{{ log.timestamp | date: 'HH:mm' }}</div>
-                  </div>
-                  
-                  <div class="history-content">
-                    <div class="status-change delivery-change">
-                      <div class="old-status">
-                        {{ log.oldValue || '—' }}
-                        <mat-icon>arrow_forward</mat-icon>
-                      </div>
-                      <div class="new-status">
-                        {{ log.newValue || '—' }}
-                      </div>
-                    </div>
-                    
-                    <div class="history-details">
-                      <div class="user-info">
-                        <mat-icon class="user-icon">person</mat-icon>
-                        {{ log.userEmail }}
-                      </div>
-                      <div class="comment-info" *ngIf="log.comment">
-                        <mat-icon class="comment-icon">comment</mat-icon>
-                        {{ log.comment }}
-                      </div>
-                    </div>
-                  </div>
+            <!-- SECTION 4: Ordered Items -->
+            <div class="detail-section">
+              <div class="section-header">
+                <mat-icon class="section-icon items-icon">shopping_bag</mat-icon>
+                <h3>Ordered Items</h3>
+                <span class="items-count">{{ order.orderItems?.length || 0 }} item(s)</span>
+              </div>
+              <div class="items-table-wrapper" *ngIf="order.orderItems?.length">
+                <table class="items-table">
+                  <thead>
+                    <tr>
+                      <th class="col-product">Product</th>
+                      <th class="col-qty">Qty</th>
+                      <th class="col-price">Unit Price</th>
+                      <th class="col-total">Line Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of order.orderItems">
+                      <td class="col-product">
+                        <div class="product-cell">
+                          <img *ngIf="item.pictureUrl" [src]="getProductImageUrl(item.pictureUrl)"
+                            [alt]="item.productName" class="product-thumb"
+                            onerror="this.style.display='none'">
+                          <div *ngIf="!item.pictureUrl" class="product-thumb-placeholder">
+                            <mat-icon>image</mat-icon>
+                          </div>
+                          <span class="product-name">{{ item.productName }}</span>
+                        </div>
+                      </td>
+                      <td class="col-qty">{{ item.quantity }}</td>
+                      <td class="col-price">{{ item.price | appCurrency: getOrderCurrency() }}</td>
+                      <td class="col-total">{{ (item.price * item.quantity) | appCurrency: getOrderCurrency() }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div *ngIf="!order.orderItems?.length" class="empty-section">
+                No items in this order
+              </div>
+            </div>
+
+            <!-- SECTION 5: Pricing Summary -->
+            <div class="detail-section pricing-section">
+              <div class="section-header">
+                <mat-icon class="section-icon pricing-icon">calculate</mat-icon>
+                <h3>Pricing Summary</h3>
+              </div>
+              <div class="pricing-grid">
+                <div class="pricing-row">
+                  <span class="pricing-label">Subtotal</span>
+                  <span class="pricing-value">{{ order.subtotal | appCurrency: getOrderCurrency() }}</span>
+                </div>
+                <div class="pricing-row" *ngIf="order.discount">
+                  <span class="pricing-label discount-label">Discount</span>
+                  <span class="pricing-value discount-value">-{{ order.discount | appCurrency: getOrderCurrency() }}</span>
+                </div>
+                <div class="pricing-row">
+                  <span class="pricing-label">Shipping</span>
+                  <span class="pricing-value">{{ order.shippingPrice | appCurrency: getOrderCurrency() }}</span>
+                </div>
+                <div class="pricing-row" *ngIf="order.refundAmount">
+                  <span class="pricing-label refund-label">Refund</span>
+                  <span class="pricing-value refund-value">-{{ order.refundAmount | appCurrency: getOrderCurrency() }}</span>
+                </div>
+                <div class="pricing-divider"></div>
+                <div class="pricing-row total-row">
+                  <span class="pricing-label">Total</span>
+                  <span class="pricing-value">{{ order.total | appCurrency: getOrderCurrency() }}</span>
                 </div>
               </div>
             </div>
-          </ng-template>
-        </mat-tab>
-      </mat-tab-group>
-    </div>
+
+          </div>
+        </ng-template>
+      </mat-tab>
+
+      <!-- ===== TAB 2: Status History ===== -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-label-icon">history</mat-icon>
+          Status History
+        </ng-template>
+        <ng-template matTabContent>
+          <div class="tab-body">
+
+            <!-- Status Cards -->
+            <div class="status-cards">
+              <div class="status-card order-status-card">
+                <div class="status-card-icon">
+                  <mat-icon>local_shipping</mat-icon>
+                </div>
+                <div class="status-card-content">
+                  <div class="status-card-title">Order</div>
+                  <div class="status-card-value">{{ order.status }}</div>
+                </div>
+              </div>
+              <div class="status-card payment-status-card">
+                <div class="status-card-icon">
+                  <mat-icon>payments</mat-icon>
+                </div>
+                <div class="status-card-content">
+                  <div class="status-card-title">Payment</div>
+                  <div class="status-card-value">{{ order.paymentStatus }}</div>
+                </div>
+              </div>
+              <div class="status-card delivery-status-card">
+                <div class="status-card-icon">
+                  <mat-icon>route</mat-icon>
+                </div>
+                <div class="status-card-content">
+                  <div class="status-card-title">Delivery</div>
+                  <div class="status-card-value">{{ order.deliveryStatus }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- History Sub-tabs -->
+            <div class="history-tabs-container">
+              <mat-tab-group [(selectedIndex)]="selectedTab" (selectedIndexChange)="onTabChange($event)" class="status-tabs">
+                <mat-tab label="Order Status">
+                  <ng-template matTabContent>
+                    <div class="tab-content">
+                      <div *ngIf="orderStatusLogs.length === 0" class="no-history">
+                        <mat-icon class="no-history-icon">history</mat-icon>
+                        <span>No order status history available</span>
+                      </div>
+                      <div class="history-list" *ngIf="orderStatusLogs.length > 0">
+                        <div *ngFor="let log of orderStatusLogs" class="history-item">
+                          <div class="history-time">
+                            <div class="time-badge">
+                              <mat-icon class="time-icon">schedule</mat-icon>
+                              {{ log.timestamp | date: 'MMM dd, yyyy' }}
+                            </div>
+                            <div class="time-detail">{{ log.timestamp | date: 'HH:mm' }}</div>
+                          </div>
+                          <div class="history-content">
+                            <div class="status-change">
+                              <span class="old-status">{{ log.oldValue || '—' }}</span>
+                              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+                              <span class="new-status">{{ log.newValue || '—' }}</span>
+                            </div>
+                            <div class="history-meta">
+                              <mat-icon class="meta-icon">person</mat-icon>
+                              <span class="user-info">{{ log.userEmail }}</span>
+                            </div>
+                            <div class="history-comment" *ngIf="log.comment">
+                              <mat-icon class="meta-icon">comment</mat-icon>
+                              <span>{{ log.comment }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </mat-tab>
+                <mat-tab label="Payment Status">
+                  <ng-template matTabContent>
+                    <div class="tab-content">
+                      <div *ngIf="paymentStatusLogs.length === 0" class="no-history">
+                        <mat-icon class="no-history-icon">payments</mat-icon>
+                        <span>No payment status history available</span>
+                      </div>
+                      <div class="history-list" *ngIf="paymentStatusLogs.length > 0">
+                        <div *ngFor="let log of paymentStatusLogs" class="history-item payment-item">
+                          <div class="history-time">
+                            <div class="time-badge payment-time">
+                              <mat-icon class="time-icon">schedule</mat-icon>
+                              {{ log.timestamp | date: 'MMM dd, yyyy' }}
+                            </div>
+                            <div class="time-detail">{{ log.timestamp | date: 'HH:mm' }}</div>
+                          </div>
+                          <div class="history-content">
+                            <div class="status-change payment-change">
+                              <span class="old-status">{{ log.oldValue || '—' }}</span>
+                              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+                              <span class="new-status">{{ log.newValue || '—' }}</span>
+                            </div>
+                            <div class="history-meta">
+                              <mat-icon class="meta-icon">person</mat-icon>
+                              <span class="user-info">{{ log.userEmail }}</span>
+                            </div>
+                            <div class="history-comment" *ngIf="log.comment">
+                              <mat-icon class="meta-icon">comment</mat-icon>
+                              <span>{{ log.comment }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </mat-tab>
+                <mat-tab label="Delivery Status">
+                  <ng-template matTabContent>
+                    <div class="tab-content">
+                      <div *ngIf="deliveryStatusLogs.length === 0" class="no-history">
+                        <mat-icon class="no-history-icon">route</mat-icon>
+                        <span>No delivery status history available</span>
+                      </div>
+                      <div class="history-list" *ngIf="deliveryStatusLogs.length > 0">
+                        <div *ngFor="let log of deliveryStatusLogs" class="history-item delivery-item">
+                          <div class="history-time">
+                            <div class="time-badge delivery-time">
+                              <mat-icon class="time-icon">schedule</mat-icon>
+                              {{ log.timestamp | date: 'MMM dd, yyyy' }}
+                            </div>
+                            <div class="time-detail">{{ log.timestamp | date: 'HH:mm' }}</div>
+                          </div>
+                          <div class="history-content">
+                            <div class="status-change delivery-change">
+                              <span class="old-status">{{ log.oldValue || '—' }}</span>
+                              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+                              <span class="new-status">{{ log.newValue || '—' }}</span>
+                            </div>
+                            <div class="history-meta">
+                              <mat-icon class="meta-icon">person</mat-icon>
+                              <span class="user-info">{{ log.userEmail }}</span>
+                            </div>
+                            <div class="history-comment" *ngIf="log.comment">
+                              <mat-icon class="meta-icon">comment</mat-icon>
+                              <span>{{ log.comment }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </mat-tab>
+              </mat-tab-group>
+            </div>
+
+          </div>
+        </ng-template>
+      </mat-tab>
+
+    </mat-tab-group>
+
   </ng-container>
 </mat-dialog-content>
 

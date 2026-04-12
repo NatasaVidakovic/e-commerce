@@ -39,6 +39,12 @@ public class Order : BaseEntity, IDtoConvertible
     public decimal? RefundAmount { get; set; }
     public DateTime? RefundedAt { get; set; }
 
+    // Guest checkout fields
+    public bool IsGuestOrder { get; set; }
+    public string? GuestName { get; set; }
+    public string? GuestEmail { get; set; }
+    public string? GuestPhone { get; set; }
+
     public decimal GetTotal() 
     {
         return Subtotal - Discount + DeliveryMethod.Price;

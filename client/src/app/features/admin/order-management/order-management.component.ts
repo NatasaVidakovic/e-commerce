@@ -163,8 +163,9 @@ export class OrderManagementComponent implements OnInit {
 
   openOrderDetails(order: Order): void {
     this.dialog.open(OrderDetailsDialogComponent, {
-      width: '780px',
+      width: '860px',
       maxWidth: '95vw',
+      maxHeight: '90vh',
       data: { orderId: order.id }
     });
   }
