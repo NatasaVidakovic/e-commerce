@@ -19,7 +19,12 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         
         builder.HasMany(p => p.Discounts)
             .WithMany(d => d.Products)
-            .UsingEntity(j => j.ToTable("ProductDiscounts"));
+            .UsingEntity(j =>
+            {
+                j.ToTable("ProductDiscounts");
+                j.HasIndex("DiscountsId");
+                j.HasIndex("ProductsId");
+            });
 
         // Performance indexes for frequently queried columns
         builder.HasIndex(p => p.ProductTypeId);

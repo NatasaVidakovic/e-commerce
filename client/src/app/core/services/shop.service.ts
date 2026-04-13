@@ -16,8 +16,11 @@ export class ShopService {
   types: string[] = [];
   brands: string[] = [];
 
-  filterProducts(model: BaseDataViewModelRequest) {
-    return this.http.post<BaseDataViewModelResponse<Product>>(this.baseUrl + 'products/filter', model);
+  filterProducts(model: BaseDataViewModelRequest, options?: { discountId?: number; discountedOnly?: boolean }) {
+    let params = new HttpParams();
+    if (options?.discountId) params = params.set('discountId', options.discountId);
+    if (options?.discountedOnly) params = params.set('discountedOnly', 'true');
+    return this.http.post<BaseDataViewModelResponse<Product>>(this.baseUrl + 'products/filter', model, { params });
   }
 
   fetchBrands(): Observable<string[]> {

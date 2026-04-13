@@ -229,14 +229,33 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
     }
 
     [HttpPost("filter")]
-    public async Task<IActionResult> GetFilteredProducts([FromBody] BaseDataViewModel<ProductDto, Product, ProductMapping> model)
+    public async Task<IActionResult> GetFilteredProducts(
+        [FromBody] BaseDataViewModel<ProductDto, Product, ProductMapping> model,
+        [FromQuery] int? discountId = null,
+        [FromQuery] bool discountedOnly = false)
     {
-        model.InitialQuery = unit.Repository<Product>().ListAllQueryiableAsync()
+        var today = DateTime.UtcNow.Date;
+
+        IQueryable<Product> query = unit.Repository<Product>().ListAllQueryiableAsync()
             .Include(p => p.Reviews)
             .Include(x => x.Discounts)
             .Include(p => p.ProductType)
             .Include(p => p.Images);
 
+        if (discountId.HasValue)
+        {
+            query = query.Where(p =>
+                p.Discounts.Any(d => d.Id == discountId.Value && d.IsActive &&
+                    d.DateFrom.Date <= today && today <= d.DateTo.Date));
+        }
+        else if (discountedOnly)
+        {
+            query = query.Where(p =>
+                p.Discounts.Any(d => d.IsActive &&
+                    d.DateFrom.Date <= today && today <= d.DateTo.Date));
+        }
+
+        model.InitialQuery = query;
         model.Mapper = new ProductMapping();
         model.GetResult();
 

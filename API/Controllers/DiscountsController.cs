@@ -138,6 +138,29 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
     }
 
     [Cached(60)]
+    [HttpGet("active-summary")]
+    public async Task<ActionResult<IReadOnlyList<DiscountSummaryDto>>> GetActiveDiscountsSummary()
+    {
+        var discounts = await discountService.GetActiveDiscountsAsync();
+
+        var summaries = discounts.Select(d => new DiscountSummaryDto
+        {
+            Id = d.Id,
+            Name = d.Name,
+            Description = d.Description,
+            Value = d.Value,
+            IsPercentage = d.IsPercentage,
+            IsActive = d.IsActive,
+            DateFrom = d.DateFrom,
+            DateTo = d.DateTo,
+            ProductCount = d.Products?.Count ?? 0,
+            State = d.GetState()
+        }).ToList();
+
+        return Ok(summaries);
+    }
+
+    [Cached(60)]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<DiscountDto>> GetDiscountById(int id)
     {

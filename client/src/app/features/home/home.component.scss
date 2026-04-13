@@ -484,6 +484,66 @@
     height: 0.875rem;
 }
 
+/* Discount section header with shop button */
+.discount-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: $spacing-4;
+
+    .section-title {
+        margin-bottom: 0;
+    }
+
+    @include md {
+        margin-bottom: $spacing-6;
+    }
+}
+
+.shop-discount-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    text-decoration: none;
+
+    svg {
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+    }
+
+    &:hover {
+        background: var(--color-primary-hover, var(--color-primary));
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+        svg {
+            transform: translateX(3px);
+        }
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    @media (max-width: 480px) {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+    }
+}
+
 /* Product carousel section */
 .product-carousel-section {
     margin-top: $spacing-16;

@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, AfterViewInit, OnInit, OnDestroy } from '@angular/core';
 import { Product } from '../../shared/models/product';
-import { Discount } from '../../shared/models/discount';
+import { Discount, DiscountSummary } from '../../shared/models/discount';
 import { ProductItemComponent } from '../shop/product-item/product-item.component';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -16,6 +16,7 @@ import { CurrencyPipe } from '../../shared/pipes/currency.pipe';
 import { computed, inject } from '@angular/core';
 import { SwiperDirective } from '../../shared/directives/swiper.directive';
 import { forkJoin } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { FavouritesService } from '../../core/services/favourites.service';
 import { AccountService } from '../../core/services/account.service';
 
@@ -50,12 +51,12 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   bestReviewedProducts: Product[] = [];
   favouriteProducts: Product[] = [];
   suggestedProducts: Product[] = [];
-  discounts: Discount[] = [];
+  discounts: DiscountSummary[] = [];
   showDiscountNavigation = false;
   userFavorites: number[] = [];
   
   // Interactive discount section
-  selectedDiscount: Discount | null = null;
+  selectedDiscount: DiscountSummary | null = null;
   discountProducts: Product[] = [];
   isLoadingDiscountProducts = false;
   
@@ -106,13 +107,22 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   private loadProductLists(): void {
     forkJoin({
       bestReviewed: this.bestReviewedService.getBestReviewedProducts(),
-      discounts: this.discountService.getDiscounts(),
+      discounts: this.discountService.getActiveDiscountsSummary().pipe(
+        catchError(() => this.discountService.getDiscounts().pipe(
+          map(ds => ds.map(d => ({
+            id: d.id, name: d.name, description: d.description,
+            value: d.value, isPercentage: d.isPercentage, isActive: d.isActive,
+            dateFrom: d.dateFrom, dateTo: d.dateTo,
+            productCount: d.products?.length ?? 0, state: d.state
+          } as DiscountSummary)))
+        ))
+      ),
       suggested: this.suggestedProductsService.getSuggestedProducts(),
       bestSelling: this.bestSellingService.getBestSellingProducts()
     }).subscribe({
       next: ({ bestReviewed, discounts, suggested, bestSelling }) => {
         this.bestReviewedProducts = this.setFavoriteStatus(bestReviewed);
-        this.discounts = discounts.filter(d => d.state === 'Active');
+        this.discounts = (discounts ?? []).filter(d => d.state === 'Active');
         this.suggestedProducts = this.setFavoriteStatus(suggested);
         this.favouriteProducts = this.setFavoriteStatus(bestSelling);
         if (this.discounts.length > 0) {
@@ -201,32 +211,33 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   // Interactive discount methods
-  selectDiscount(discount: Discount): void {
+  selectDiscount(discount: DiscountSummary): void {
     this.selectedDiscount = discount;
-    // Clear products immediately to prevent showing old products
     this.discountProducts = [];
     this.loadDiscountProducts(discount.id);
   }
 
   loadDiscountProducts(discountId: number): void {
     this.isLoadingDiscountProducts = true;
-    this.discountService.getDiscountById(discountId).subscribe(discount => {
-      this.discountProducts = this.setFavoriteStatus(discount.products || []);
-      this.isLoadingDiscountProducts = false;
-    }, error => {
-      console.error('Error loading discount products:', error);
-      this.discountProducts = [];
-      this.isLoadingDiscountProducts = false;
+    this.discountService.getDiscountByIdCached(discountId).subscribe({
+      next: (discount) => {
+        this.discountProducts = this.setFavoriteStatus(discount.products || []);
+        this.isLoadingDiscountProducts = false;
+      },
+      error: () => {
+        this.discountProducts = [];
+        this.isLoadingDiscountProducts = false;
+      }
     });
   }
 
-  viewAllDiscountProducts(): void {
+  shopWithDiscount(): void {
     if (this.selectedDiscount) {
       this.router.navigate(['/shop'], { queryParams: { discountId: this.selectedDiscount.id } });
     }
   }
 
-  trackByDiscountId(_index: number, discount: Discount): number {
+  trackByDiscountId(_index: number, discount: DiscountSummary): number {
     return discount.id;
   }
 

@@ -14,6 +14,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { forkJoin } from 'rxjs';
 import { SnackbarService } from '../../core/services/snackbar.service';
+import { DiscountService } from '../../core/services/discount.service';
 
 export interface ActiveFilterChip {
   keys: string[];
@@ -45,6 +46,7 @@ export class ShopComponent implements OnInit, OnDestroy {
     private shopService: ShopService,
     private favouritesService: FavouritesService,
     private accountService: AccountService,
+    private discountService: DiscountService,
     private route: ActivatedRoute,
     private router: Router,
     private snackbar: SnackbarService
@@ -59,6 +61,11 @@ export class ShopComponent implements OnInit, OnDestroy {
   loading = true;
   brands: string[] = [];
   types: string[] = [];
+
+  discountId: number | null = null;
+  discountedOnly = false;
+  discountName: string | null = null;
+  hasActiveDiscounts = false;
 
   filterDefinitions: DynamicFilterDefinition[] = [];
   sortOptions: DynamicSortOption[] = [
@@ -119,11 +126,18 @@ export class ShopComponent implements OnInit, OnDestroy {
       chips.push({ keys: [def.key], label: `${def.label}: ${displayVal}` });
     }
 
+    if (this.discountId) {
+      chips.push({ keys: ['__discountId'], label: `Popust: ${this.discountName || 'ID ' + this.discountId}` });
+    }
+    if (this.discountedOnly) {
+      chips.push({ keys: ['__discountedOnly'], label: 'Promotivna cijena' });
+    }
+
     return chips;
   }
 
   get hasActiveFilters(): boolean {
-    return this.activeChips.length > 0;
+    return this.activeChips.length > 0 || this.discountId !== null || this.discountedOnly;
   }
 
   private updatePriceBounds(items: Product[]) {
@@ -135,9 +149,6 @@ export class ShopComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log('=== ShopComponent ngOnInit ===');
-    console.log('User logged in:', this.accountService.isLoggedIn());
-    
     // Load last viewed product ID for highlighting
     const lastProductId = sessionStorage.getItem(this.LAST_PRODUCT_KEY);
     if (lastProductId) {
@@ -151,6 +162,16 @@ export class ShopComponent implements OnInit, OnDestroy {
     const params = this.route.snapshot.queryParams;
     this.initialFilterValues = this.urlParamsToFormValues(params);
     this.lastFilters = this.urlParamsToFilters(params);
+
+    if (params['discountId']) {
+      this.discountId = Number(params['discountId']) || null;
+    }
+    if (params['discountedOnly'] === 'true') {
+      this.discountedOnly = true;
+    }
+    if (params['discountName']) {
+      this.discountName = params['discountName'];
+    }
 
     if (params['page']) this.pageNumber = Math.max(1, Number(params['page']) || 1);
     if (params['pageSize']) this.pageSize = Number(params['pageSize']) || 20;
@@ -166,20 +187,19 @@ export class ShopComponent implements OnInit, OnDestroy {
       this.currentFilterValues = { ...this.initialFilterValues };
     }
 
-    console.log('Loading brands and types...');
     forkJoin({
       brands: this.shopService.fetchBrands(),
-      types: this.shopService.fetchTypes()
+      types: this.shopService.fetchTypes(),
+      discounts: this.discountService.getActiveDiscountsSummary()
     }).subscribe({
-      next: ({ brands, types }) => {
-        console.log('Brands and types loaded successfully');
+      next: ({ brands, types, discounts }) => {
         this.brands = brands;
         this.types = types;
+        this.hasActiveDiscounts = discounts?.length > 0;
         this.initializeFilterDefinitions();
         this.loadFavourites();
       },
-      error: (error) => {
-        console.error('Error loading brands and types:', error);
+      error: () => {
         this.initializeFilterDefinitions();
         this.loadFavourites();
       }
@@ -220,8 +240,6 @@ export class ShopComponent implements OnInit, OnDestroy {
   }
 
   loadProducts() {
-    console.log('=== Loading products ===');
-    console.log('Current authentication state:', this.accountService.isLoggedIn());
     this.loading = true;
     this.shopService.filterProducts({
       filters: this.lastFilters,
@@ -231,9 +249,11 @@ export class ShopComponent implements OnInit, OnDestroy {
       accessor: '',
       ascending: this.lastSort.ascending,
       descending: this.lastSort.descending
+    }, {
+      discountId: this.discountId ?? undefined,
+      discountedOnly: this.discountedOnly
     }).subscribe({
       next: (response) => {
-        console.log('Products loaded successfully:', response.data?.length || 0, 'products');
         this.loading = false;
         this.pageNumber = response.currentPage;
         this.pageSize = response.pageSize;
@@ -253,7 +273,6 @@ export class ShopComponent implements OnInit, OnDestroy {
         setTimeout(() => this.restoreScrollPosition(), 100);
       },
       error: (error) => { 
-        console.error('Error loading products:', error);
         this.loading = false; 
         this.snackbar.errorFrom(error, 'Failed to load products'); 
       }
@@ -277,6 +296,13 @@ export class ShopComponent implements OnInit, OnDestroy {
 
   onRawValuesChanged(values: Record<string, any>) {
     this.currentFilterValues = { ...values };
+  }
+
+  toggleDiscountedOnly(): void {
+    this.discountedOnly = !this.discountedOnly;
+    this.pageNumber = 1;
+    this.loadProducts();
+    this.updateUrl();
   }
 
   onDynamicChanged(event: { filters: FilterViewModel[][]; sort: DynamicSortOption }) {
@@ -309,12 +335,32 @@ export class ShopComponent implements OnInit, OnDestroy {
     this.lastFilters = [];
     this.lastSort = this.sortOptions[0];
     this.currentFilterValues = {};
+    this.discountId = null;
+    this.discountedOnly = false;
+    this.discountName = null;
     this.pageNumber = 1;
     this.loadProducts();
     this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
   }
 
   clearChip(chip: ActiveFilterChip) {
+    // Handle special discount chips
+    if (chip.keys.includes('__discountId')) {
+      this.discountId = null;
+      this.discountName = null;
+      this.pageNumber = 1;
+      this.loadProducts();
+      this.updateUrl();
+      return;
+    }
+    if (chip.keys.includes('__discountedOnly')) {
+      this.discountedOnly = false;
+      this.pageNumber = 1;
+      this.loadProducts();
+      this.updateUrl();
+      return;
+    }
+
     if (!this.filterBar) return;
     for (const key of chip.keys) {
       this.filterBar.clearFilter(key, true);
@@ -410,6 +456,10 @@ export class ShopComponent implements OnInit, OnDestroy {
 
     const sortIdx = Number(vals['sort'] ?? 0);
     if (sortIdx !== 0) queryParams['sort'] = sortIdx;
+
+    if (this.discountId) queryParams['discountId'] = this.discountId;
+    if (this.discountedOnly) queryParams['discountedOnly'] = 'true';
+    if (this.discountName) queryParams['discountName'] = this.discountName;
 
     if (this.pageNumber > 1) queryParams['page'] = this.pageNumber;
     if (this.pageSize !== 20) queryParams['pageSize'] = this.pageSize;

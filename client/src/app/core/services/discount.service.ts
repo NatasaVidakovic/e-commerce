@@ -1,17 +1,35 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { Discount } from '../../shared/models/discount';
+import { Discount, DiscountSummary } from '../../shared/models/discount';
 import { Pagination } from '../../shared/models/pagination';
 
 @Injectable({ providedIn: 'root' })
 export class DiscountService {
     private baseUrl = environment.baseUrl + 'discounts';
+    private discountProductsCache = new Map<number, Discount>();
     constructor(private http: HttpClient) { }
 
     getDiscounts(): Observable<Discount[]> {
         return this.http.get<Discount[]>(this.baseUrl);
+    }
+
+    getActiveDiscountsSummary(): Observable<DiscountSummary[]> {
+        return this.http.get<DiscountSummary[]>(`${this.baseUrl}/active-summary`);
+    }
+
+    getDiscountByIdCached(id: number): Observable<Discount> {
+        const cached = this.discountProductsCache.get(id);
+        if (cached) return of(cached);
+        return this.getDiscountById(id).pipe(
+            tap(d => this.discountProductsCache.set(id, d))
+        );
+    }
+
+    clearDiscountCache(): void {
+        this.discountProductsCache.clear();
     }
 
     getDiscountsPaged(
