@@ -11,5 +11,8 @@ public class DiscountConfiguration : IEntityTypeConfiguration<Discount>
         builder.Property(x => x.Value).HasColumnType("decimal(18,2)");
         builder.Property(x => x.Name).IsRequired();
         builder.Property(x => x.Description).IsRequired();
+
+        builder.HasIndex(d => d.IsActive);
+        builder.HasIndex(d => new { d.IsActive, d.DateFrom, d.DateTo });
     }
 }

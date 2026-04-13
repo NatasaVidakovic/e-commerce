@@ -11,8 +11,12 @@ public class CachedAttribute(int timeToLiveSeconds) : Attribute, IAsyncActionFil
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var b = bool.TryParse(Environment.GetEnvironmentVariable("REDIS_CACHING"), out bool cache);
-        if (b && !cache) return;
+        var parsed = bool.TryParse(Environment.GetEnvironmentVariable("REDIS_CACHING"), out bool redisCachingEnabled);
+        if (parsed && !redisCachingEnabled)
+        {
+            await next();
+            return;
+        }
 
         var cacheService = context.HttpContext.RequestServices
             .GetRequiredService<IResponseCacheService>();

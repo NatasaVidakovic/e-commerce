@@ -11,12 +11,22 @@ public class InvalidateCacheAttribute(string pattern) : Attribute, IAsyncActionF
     {
         var resultContext = await next();
 
+        var parsed = bool.TryParse(Environment.GetEnvironmentVariable("REDIS_CACHING"), out bool redisCachingEnabled);
+        if (parsed && !redisCachingEnabled) return;
+
         if (resultContext.Exception == null || resultContext.ExceptionHandled)
         {
-            var cacheService = context.HttpContext.RequestServices
-                .GetRequiredService<IResponseCacheService>();
+            try
+            {
+                var cacheService = context.HttpContext.RequestServices
+                    .GetRequiredService<IResponseCacheService>();
 
-            await cacheService.RemoveCacheByPattern(pattern);
+                await cacheService.RemoveCacheByPattern(pattern);
+            }
+            catch
+            {
+                // Redis unavailable — skip cache invalidation
+            }
         }
     }
 }
