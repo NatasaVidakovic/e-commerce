@@ -143,19 +143,21 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
     {
         var discounts = await discountService.GetActiveDiscountsAsync();
 
-        var summaries = discounts.Select(d => new DiscountSummaryDto
-        {
-            Id = d.Id,
-            Name = d.Name,
-            Description = d.Description,
-            Value = d.Value,
-            IsPercentage = d.IsPercentage,
-            IsActive = d.IsActive,
-            DateFrom = d.DateFrom,
-            DateTo = d.DateTo,
-            ProductCount = d.Products?.Count ?? 0,
-            State = d.GetState()
-        }).ToList();
+        var summaries = discounts
+            .Where(d => d.IsActive && (d.Products?.Count ?? 0) > 0)
+            .Select(d => new DiscountSummaryDto
+            {
+                Id = d.Id,
+                Name = d.Name,
+                Description = d.Description,
+                Value = d.Value,
+                IsPercentage = d.IsPercentage,
+                IsActive = d.IsActive,
+                DateFrom = d.DateFrom,
+                DateTo = d.DateTo,
+                ProductCount = d.Products!.Count,
+                State = d.GetState()
+            }).ToList();
 
         return Ok(summaries);
     }

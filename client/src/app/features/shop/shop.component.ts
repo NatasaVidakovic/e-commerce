@@ -12,7 +12,8 @@ import { DynamicFilterBarComponent } from '../../shared/components/dynamic-filte
 import { DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../shared/models/dynamic-filtering';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { SnackbarService } from '../../core/services/snackbar.service';
 import { DiscountService } from '../../core/services/discount.service';
 
@@ -190,12 +191,14 @@ export class ShopComponent implements OnInit, OnDestroy {
     forkJoin({
       brands: this.shopService.fetchBrands(),
       types: this.shopService.fetchTypes(),
-      discounts: this.discountService.getActiveDiscountsSummary()
+      discounts: this.discountService.getActiveDiscountsSummary().pipe(
+        catchError(() => of([]))
+      )
     }).subscribe({
       next: ({ brands, types, discounts }) => {
         this.brands = brands;
         this.types = types;
-        this.hasActiveDiscounts = discounts?.length > 0;
+        this.hasActiveDiscounts = discounts?.some(d => d.productCount > 0) ?? false;
         this.initializeFilterDefinitions();
         this.loadFavourites();
       },
