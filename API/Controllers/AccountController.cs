@@ -197,6 +197,13 @@ public class AccountController(
     [HttpGet("google-login")]
     public async Task<IActionResult> Login(string returnUrl = null)
     {
+        _logger.LogInformation(
+            "Scheme={Scheme}, Host={Host}, XFP={XFP}, XFHost={XFHost}",
+            Request.Scheme,
+            Request.Host.Value,
+            Request.Headers["X-Forwarded-Proto"].ToString(),
+            Request.Headers["X-Forwarded-Host"].ToString());
+
         var redirectUrl = Url.Action(nameof(LoginResult), new { returnUrl });
 
         var properties = new AuthenticationProperties

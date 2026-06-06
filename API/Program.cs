@@ -19,6 +19,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -264,7 +265,21 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 builder.Services.AddSignalR();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto |
+        ForwardedHeaders.XForwardedHost;
+
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

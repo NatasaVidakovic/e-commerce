@@ -1,0 +1,20 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+
+WORKDIR /src
+
+# Copy project files and restore dependencies
+COPY ["API/API.csproj", "API/"]
+COPY ["Core/Core.csproj", "Core/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+RUN dotnet restore "API/API.csproj"
+
+# Copy remaining source
+COPY . .
+
+WORKDIR /src/API
+
+# Expose port for HTTPS
+EXPOSE 443
+
+# Use dotnet watch for hot reload in development
+ENTRYPOINT ["dotnet", "watch", "run", "--urls", "https://+:443", "--no-launch-browser"]
