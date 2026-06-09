@@ -21,6 +21,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -326,6 +327,18 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 builder.Services.AddSignalR();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto |
+        ForwardedHeaders.XForwardedHost;
+
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+
 var app = builder.Build();
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -372,7 +385,7 @@ app.Use(async (context, next) =>
 
 app.UseDefaultFiles();
 
-// Only serve image files from wwwroot/images — block everything else
+// Only serve image files from wwwroot/images ï¿½ block everything else
 var allowedImageExtensions = new HashSet<string>(["webp", "jpg", "jpeg", "png", "gif", "ico", "svg"], StringComparer.OrdinalIgnoreCase);
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -534,7 +547,7 @@ static async Task ApplyMigrationsWithRetryAsync(StoreContext context, ILogger lo
             if (!pending.Any()) throw;
 
             var conflicting = pending.First();
-            logger.LogWarning("Migration '{Migration}' skipped — object already exists in database.", conflicting);
+            logger.LogWarning("Migration '{Migration}' skipped ï¿½ object already exists in database.", conflicting);
 
             // Get the actual EF Core version from context
             var efVersion = typeof(Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade).Assembly.GetName().Version?.ToString() ?? "9.0.0";

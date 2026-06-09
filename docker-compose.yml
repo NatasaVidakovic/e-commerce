@@ -1,0 +1,116 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: dockerfile.api
+    ports:
+      - "${API_HTTP_PORT}:80"
+    env_file:
+      - .env
+    depends_on:
+      sql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      jsreport:
+        condition: service_started
+    networks:
+      - webshop-network
+    restart: unless-stopped
+
+
+  frontend:
+    build:
+      context: .
+      dockerfile: dockerfile.frontend
+    volumes:
+      - ./client/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api
+    networks:
+      - webshop-network
+    restart: unless-stopped
+
+
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    ports:
+      - "${SQL_PORT}:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+      MSSQL_PID: "Express"
+    volumes:
+      - sql-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - webshop-network
+    restart: unless-stopped
+
+  redis:
+    build:
+      context: .
+      dockerfile: dockerfile.redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    networks:
+      - webshop-network
+    restart: unless-stopped
+
+  jsreport:
+    image: jsreport/jsreport:latest
+    ports:
+      - "${JSREPORT_PORT}:5488"
+    environment:
+      extensions_authentication_enabled: "false"
+      extensions_assets_allowedFiles: "**/*.+(js|css|html|jpg|jpeg|png|svg|ttf)"
+      allowLocalFilesAccess: "true"
+    volumes:
+      - jsreport-data:/jsreport
+    networks:
+      - webshop-network
+    restart: unless-stopped
+
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - api
+    ports:
+      - "${FRONTEND_HTTP_PORT}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - webshop-network
+
+
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - nginx
+    networks:
+      - webshop-network
+
+
+networks:
+  webshop-network:
+    driver: bridge
+
+volumes:
+  sql-data:
+  redis-data:
+  jsreport-data:
