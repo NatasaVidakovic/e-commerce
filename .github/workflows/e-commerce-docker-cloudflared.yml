@@ -1,0 +1,199 @@
+name: Deploy e-commerce with Docker Compose and Cloudflared
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - API/**
+      - Core/**
+      - Infrastructure/**
+      - client/**
+      - dockerfile.api
+      - dockerfile.frontend
+      - dockerfile.redis
+      - dockerfile.jsreport
+      - redis.conf
+      - .github/workflows/e-commerce-docker-cloudflared.yml
+  workflow_dispatch:
+    inputs:
+      services:
+        description: "Compose services to pull and recreate on the self-hosted runner"
+        required: false
+        default: "api frontend redis jsreport nginx cloudflared"
+
+concurrency:
+  group: e-commerce-production-deploy
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  DOCKER_PLATFORMS: ${{ vars.ECOMMERCE_DOCKER_PLATFORMS || 'linux/amd64' }}
+  COMPOSE_FILE: ${{ vars.ECOMMERCE_COMPOSE_FILE || 'docker-compose.production.yml' }}
+  DEPLOY_SERVICES: ${{ github.event.inputs.services || vars.ECOMMERCE_DEPLOY_SERVICES || 'api frontend redis jsreport nginx cloudflared' }}
+
+jobs:
+  validate:
+    name: Validate application
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore .NET packages
+        run: dotnet restore webshop.sln
+
+      - name: Run .NET tests
+        run: dotnet test webshop.sln --configuration Release --no-restore --verbosity minimal
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install frontend packages
+        working-directory: client
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: client
+        run: npm run build
+
+  build:
+    name: Build and push ${{ matrix.service }}
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: api
+            dockerfile: dockerfile.api
+            image: api
+          - service: frontend
+            dockerfile: dockerfile.frontend
+            image: frontend
+          - service: redis
+            dockerfile: dockerfile.redis
+            image: redis
+          - service: jsreport
+            dockerfile: dockerfile.jsreport
+            image: jsreport
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare image tags
+        id: image
+        shell: bash
+        run: |
+          set -euo pipefail
+          repository="${GITHUB_REPOSITORY,,}"
+          image="${REGISTRY}/${repository}/${{ matrix.image }}"
+          echo "name=${image}" >> "${GITHUB_OUTPUT}"
+          echo "sha_tag=${image}:${GITHUB_SHA}" >> "${GITHUB_OUTPUT}"
+          echo "latest_tag=${image}:latest" >> "${GITHUB_OUTPUT}"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          platforms: ${{ env.DOCKER_PLATFORMS }}
+          push: true
+          tags: |
+            ${{ steps.image.outputs.sha_tag }}
+            ${{ steps.image.outputs.latest_tag }}
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+  deploy:
+    name: Deploy on self-hosted runner
+    needs: build
+    runs-on:
+      - self-hosted
+      - linux
+    permissions:
+      contents: read
+      packages: read
+    environment: production
+
+    steps:
+      - name: Validate server deploy path
+        shell: bash
+        env:
+          DEPLOY_PATH: ${{ secrets.ECOMMERCE_DEPLOY_PATH }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${DEPLOY_PATH}" ]; then
+            echo "::error::Missing ECOMMERCE_DEPLOY_PATH secret."
+            exit 1
+          fi
+
+          if [ ! -d "${DEPLOY_PATH}" ]; then
+            echo "::error::Deploy path '${DEPLOY_PATH}' does not exist on the self-hosted runner."
+            exit 1
+          fi
+
+          if [ ! -f "${DEPLOY_PATH}/${COMPOSE_FILE}" ]; then
+            echo "::error::Compose file '${DEPLOY_PATH}/${COMPOSE_FILE}' was not found."
+            exit 1
+          fi
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull and recreate services
+        shell: bash
+        env:
+          DEPLOY_PATH: ${{ secrets.ECOMMERCE_DEPLOY_PATH }}
+        run: |
+          set -euo pipefail
+
+          repository="${GITHUB_REPOSITORY,,}"
+          export WEB_SHOP_API_IMAGE="${REGISTRY}/${repository}/api:${GITHUB_SHA}"
+          export WEB_SHOP_FRONTEND_IMAGE="${REGISTRY}/${repository}/frontend:${GITHUB_SHA}"
+          export WEB_SHOP_REDIS_IMAGE="${REGISTRY}/${repository}/redis:${GITHUB_SHA}"
+          export WEB_SHOP_JSREPORT_IMAGE="${REGISTRY}/${repository}/jsreport:${GITHUB_SHA}"
+
+          cd "${DEPLOY_PATH}"
+
+          docker compose -f "${COMPOSE_FILE}" config --quiet
+          docker compose -f "${COMPOSE_FILE}" pull ${DEPLOY_SERVICES}
+          docker compose -f "${COMPOSE_FILE}" up -d --remove-orphans ${DEPLOY_SERVICES}
+          docker compose -f "${COMPOSE_FILE}" ps
+
+      - name: Prune old Docker images
+        run: docker image prune -f
