@@ -6,5 +6,8 @@
     }
     @if (control.hasError('email')) {
         <mat-error>{{ 'VALIDATION.EMAIL_INVALID' | translate }}</mat-error>
-      }
+    }
+    @if (control.hasError('minlength')) {
+        <mat-error>{{ 'FORM.MIN_LENGTH' | translate: { min: control.getError('minlength')?.requiredLength } }}</mat-error>
+    }
 </mat-form-field>

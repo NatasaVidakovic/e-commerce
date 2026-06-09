@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvider, IDiscountService discountService, IProductService productService) : BaseApiController
+public class DiscountsController(IServiceProvider serviceProvider, IDiscountService discountService, IProductService productService) : BaseApiController
 {
     [Cached(60)]
     [HttpGet]
@@ -228,6 +228,8 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         {
             var mapper = serviceProvider.GetService<DiscountMapping>();
             var productMapper = serviceProvider.GetService<ProductMapping>();
+            if (productMapper == null)
+                return StatusCode(500, new { success = false, message = "Product mapper is not configured" });
             var entity = mapper?.ToEntity(discount) ?? null;
             if (entity == null || mapper == null)
                 return BadRequest(new { message = "Invalid discount data" });
@@ -259,7 +261,7 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         {
             return BadRequest(new { message = ex.Message });
         }
-        catch (Exception ex)
+        catch
         {
             return StatusCode(500, new { success = false, message = "An error occurred while creating the discount" });
         }
@@ -280,6 +282,8 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         {
             var mapper = serviceProvider.GetService<DiscountMapping>();
             var productMapper = serviceProvider.GetService<ProductMapping>();
+            if (productMapper == null)
+                return StatusCode(500, new { success = false, message = "Product mapper is not configured" });
 
             var entity = mapper?.ToEntity(discount) ?? null;
             if (entity == null || mapper == null)
@@ -313,15 +317,15 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
 
             return Ok(dto);
         }
-        catch (KeyNotFoundException ex)
+        catch (KeyNotFoundException)
         {
             return NotFound(new { message = "Discount not found" });
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
             return BadRequest(new { message = "Invalid operation" });
         }
-        catch (Exception ex)
+        catch
         {
             return StatusCode(500, new { success = false, message = "An error occurred while updating the discount" });
         }
@@ -345,7 +349,7 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         {
             return BadRequest(new { message = ex.Message });
         }
-        catch (Exception ex)
+        catch
         {
             return StatusCode(500, new { success = false, message = "An error occurred while deleting the discount" });
         }
@@ -369,7 +373,7 @@ public class DiscountsController(IUnitOfWork unit, IServiceProvider serviceProvi
         {
             return BadRequest(new { message = ex.Message });
         }
-        catch (Exception ex)
+        catch
         {
             return StatusCode(500, new { success = false, message = "An error occurred while disabling the discount" });
         }

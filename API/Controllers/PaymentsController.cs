@@ -14,16 +14,44 @@ namespace API.Controllers;
 
 public class PaymentsController(IPaymentService paymentService,
     IUnitOfWork unit,
+    ICartService cartService,
     IHubContext<NotificationHub> hubContext,
     ILogger<PaymentsController> logger,
     IConfiguration config) : BaseApiController
 {
     private readonly string _whSecret = config["StripeSettings:WhSecret"]!;
 
+    [HttpGet("config")]
+    public ActionResult GetPaymentConfig()
+    {
+        var publishableKey = config["StripeSettings:PublishableKey"];
+
+        if (string.IsNullOrWhiteSpace(publishableKey))
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, "Stripe publishable key is not configured");
+
+        return Ok(new { stripePublishableKey = publishableKey });
+    }
+
     [Authorize]
     [HttpPost("{cartId}")]
     public async Task<ActionResult> CreateOrUpdatePaymentIntent(string cartId)
     {
+        var existingCart = await cartService.GetCartAsync(cartId);
+        if (existingCart == null) return BadRequest("Problem with your cart on the API");
+
+        var email = User.GetEmail();
+        if (!string.IsNullOrWhiteSpace(existingCart.OwnerEmail) &&
+            !string.Equals(existingCart.OwnerEmail, email, StringComparison.OrdinalIgnoreCase))
+        {
+            return Forbid();
+        }
+
+        if (string.IsNullOrWhiteSpace(existingCart.OwnerEmail))
+        {
+            existingCart.OwnerEmail = email;
+            await cartService.SetCartAsync(existingCart);
+        }
+
         var cart = await paymentService.CreateOrUpdatePaymentIntent(cartId);
 
         if (cart == null) return BadRequest("Problem with your cart on the API");
@@ -127,7 +155,7 @@ public class PaymentsController(IPaymentService paymentService,
             return;
         }
 
-        logger.LogInformation("Stripe auto-update order #{OrderId}: PaymentStatus {Old} → {New}",
+        logger.LogInformation("Stripe auto-update order #{OrderId}: PaymentStatus {Old} -> {New}",
             order.Id, order.PaymentStatus, paymentStatus);
 
         order.PaymentStatus = paymentStatus;

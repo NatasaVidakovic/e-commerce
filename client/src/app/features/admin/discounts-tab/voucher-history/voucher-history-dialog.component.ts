@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { VoucherService } from '../../../../core/services/voucher.service';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 export interface VoucherStatusChange {
   id: number;
@@ -24,7 +25,8 @@ export interface VoucherStatusChange {
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    MatTableModule
+    MatTableModule,
+    TranslatePipe
   ],
   templateUrl: './voucher-history-dialog.component.html',
   styleUrls: ['./voucher-history-dialog.component.scss']
@@ -49,8 +51,8 @@ export class VoucherHistoryDialogComponent {
         this.loading = false;
       },
       error: (err: any) => {
-        console.error('Failed to load voucher history', err);
-        this.snackbar.errorFrom(err, 'Failed to load voucher history');
+        console.error('VOUCHER.HISTORY_LOAD_FAILED', err);
+        this.snackbar.errorFrom(err, 'VOUCHER.HISTORY_LOAD_FAILED');
         this.loading = false;
       }
     });

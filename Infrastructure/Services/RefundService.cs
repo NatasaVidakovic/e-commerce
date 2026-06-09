@@ -60,8 +60,52 @@ public class RefundService : IRefundService
         if (existingRefund != null)
             throw new Exception("A refund request already exists for this order");
 
-        if (dto.Amount > order.GetTotal())
-            throw new Exception("Refund amount cannot exceed order total");
+        if (dto.Amount <= 0)
+            throw new Exception("Refund amount must be greater than zero");
+
+        var orderItemsByProductId = order.OrderItems
+            .GroupBy(i => i.ItemOrdered.ProductId)
+            .ToDictionary(g => g.Key, g => new
+            {
+                ProductId = g.Key,
+                ProductName = g.First().ItemOrdered.ProductName,
+                Price = g.First().Price,
+                OrderedQuantity = g.Sum(i => i.Quantity)
+            });
+
+        var validatedItems = new List<RefundItem>();
+        var maxRefundAmount = order.GetTotal();
+
+        if (dto.IsPartialRefund)
+        {
+            if (dto.Items.Count == 0)
+                throw new Exception("At least one item is required for a partial refund");
+
+            foreach (var item in dto.Items)
+            {
+                if (item.Quantity <= 0)
+                    throw new Exception("Refund item quantity must be greater than zero");
+
+                if (!orderItemsByProductId.TryGetValue(item.ProductId, out var orderItem))
+                    throw new Exception("Refund item does not belong to this order");
+
+                if (item.Quantity > orderItem.OrderedQuantity)
+                    throw new Exception("Refund item quantity exceeds ordered quantity");
+
+                validatedItems.Add(new RefundItem
+                {
+                    ProductId = orderItem.ProductId,
+                    ProductName = orderItem.ProductName,
+                    Price = orderItem.Price,
+                    Quantity = item.Quantity
+                });
+            }
+
+            maxRefundAmount = validatedItems.Sum(i => i.Price * i.Quantity);
+        }
+
+        if (dto.Amount > maxRefundAmount)
+            throw new Exception("Refund amount cannot exceed refundable order items");
 
         var refund = new Refund
         {
@@ -74,20 +118,7 @@ public class RefundService : IRefundService
             Status = RefundStatus.Requested
         };
 
-        // Add refund items for partial refund
-        if (dto.IsPartialRefund && dto.Items.Count > 0)
-        {
-            foreach (var item in dto.Items)
-            {
-                refund.Items.Add(new RefundItem
-                {
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    Price = item.Price,
-                    Quantity = item.Quantity
-                });
-            }
-        }
+        refund.Items.AddRange(validatedItems);
 
         _context.Refunds.Add(refund);
         await _context.SaveChangesAsync();
@@ -140,10 +171,10 @@ public class RefundService : IRefundService
         // Set all three statuses as required
         refund.Order.Status = OrderStatus.Returned;
         refund.Order.DeliveryStatus = DeliveryStatus.ReturnedToSender;
-        
+
         // For Stripe refunds, payment status will be set after successful refund
         // For COD refunds, payment status will be set after confirmation
-        
+
         // Log all status changes
         await _orderService.LogOrderChangeAsync(refund.Order, "OrderStatus", oldOrderStatus, refund.Order.Status.ToString(), adminEmail, "Refund approved - order returned");
         await _orderService.LogOrderChangeAsync(refund.Order, "DeliveryStatus", oldDeliveryStatus, refund.Order.DeliveryStatus.ToString(), adminEmail, "Refund approved - item returned to sender");
@@ -161,13 +192,13 @@ public class RefundService : IRefundService
                 {
                     refund.Status = RefundStatus.Completed;
                     refund.CompletedAt = DateTime.UtcNow;
-                    
+
                     // Update payment status and log the change
                     var oldPaymentStatusForStripe = refund.Order.PaymentStatus.ToString();
                     refund.Order.PaymentStatus = refund.IsPartialRefund ? PaymentStatus.PartiallyRefunded : PaymentStatus.Refunded;
                     refund.Order.RefundAmount = refund.Amount;
                     refund.Order.RefundedAt = DateTime.UtcNow;
-                    
+
                     await _orderService.LogOrderChangeAsync(refund.Order, "PaymentStatus", oldPaymentStatusForStripe, refund.Order.PaymentStatus.ToString(), adminEmail, "Stripe refund completed");
 
                     _logger.LogInformation("Stripe refund completed for order {OrderId}", refund.OrderId);

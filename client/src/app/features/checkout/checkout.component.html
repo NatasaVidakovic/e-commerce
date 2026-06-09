@@ -7,9 +7,9 @@
                 <div class="mb-6 p-4 rounded-lg" style="background-color: var(--color-primary-light); border: 1px solid var(--color-primary);">
                     <div class="flex items-center gap-2 mb-1">
                         <mat-icon style="color: var(--color-primary);">info</mat-icon>
-                        <span class="font-semibold" style="color: var(--color-text-primary);">Guest Checkout</span>
+                        <span class="font-semibold" style="color: var(--color-text-primary);">{{ 'CHECKOUT.GUEST_CHECKOUT' | translate }}</span>
                     </div>
-                    <p class="text-sm" style="color: var(--color-text-secondary);">You do not need an account to place an order. Enter your delivery and contact information below.</p>
+                    <p class="text-sm" style="color: var(--color-text-secondary);">{{ 'CHECKOUT.GUEST_CHECKOUT_DESC' | translate }}</p>
                 </div>
                 }
                 <div class="space-y-4">
@@ -56,17 +56,17 @@
 
                 @if (isGuest) {
                 <div class="mt-6 p-4 rounded-lg" style="background-color: var(--color-surface); border: 1px solid var(--color-border-primary);">
-                    <h3 class="text-lg font-semibold mb-4" style="color: var(--color-text-primary);">Contact Information</h3>
+                    <h3 class="text-lg font-semibold mb-4" style="color: var(--color-text-primary);">{{ 'CHECKOUT.CONTACT_INFORMATION' | translate }}</h3>
                     <div class="space-y-4">
                         <mat-form-field appearance="fill" class="w-full">
-                            <mat-label>Email</mat-label>
+                            <mat-label>{{ 'FORM.EMAIL' | translate }}</mat-label>
                             <input matInput type="email" [(ngModel)]="guestForm.email" (ngModelChange)="validateGuestInfo()" required>
                             @if (guestForm.email && !isGuestInfoValid) {
-                                <mat-hint style="color: var(--color-error);">Please enter a valid email address</mat-hint>
+                                <mat-hint style="color: var(--color-error);">{{ 'FORM.ERRORS.INVALID_EMAIL' | translate }}</mat-hint>
                             }
                         </mat-form-field>
                         <mat-form-field appearance="fill" class="w-full">
-                            <mat-label>Phone Number</mat-label>
+                            <mat-label>{{ 'FORM.PHONE' | translate }}</mat-label>
                             <input matInput type="tel" [(ngModel)]="guestForm.phone" (ngModelChange)="validateGuestInfo()" required>
                         </mat-form-field>
                     </div>

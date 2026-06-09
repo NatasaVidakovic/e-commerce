@@ -1,5 +1,5 @@
-@import '../../../../styles/breakpoints';
-@import '../../../../styles/spacing';
+@use '../../../../styles/breakpoints' as *;
+@use '../../../../styles/spacing' as *;
 
 .mat-form-field-infix {
     padding: 6px 0 !important;
@@ -30,24 +30,24 @@
     -webkit-overflow-scrolling: touch !important;
     width: 100vw !important;
     max-width: 100vw !important;
-    
+
     // Force horizontal scrolling
     position: relative;
-    
+
     // Custom scrollbar for mobile
     &::-webkit-scrollbar {
       height: 6px !important;
     }
-    
+
     &::-webkit-scrollbar-track {
       background: #f1f1f1 !important;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: #888 !important;
       border-radius: 3px !important;
     }
-    
+
     &::-webkit-scrollbar-thumb:hover {
       background: #555 !important;
     }

@@ -42,7 +42,7 @@
 
     <!-- Active filter chips -->
     <div class="active-filters-bar" *ngIf="activeChips.length > 0">
-      <span class="active-filters-label">Active filters:</span>
+      <span class="active-filters-label">{{ 'FILTER.ACTIVE_FILTERS' | translate }}:</span>
       <div class="active-filter-chips">
         <button class="filter-chip" *ngFor="let chip of activeChips" (click)="clearChip(chip)" type="button">
           <span class="chip-label">{{ chip.label }}</span>
@@ -51,7 +51,7 @@
       </div>
       <button class="clear-all-btn" (click)="onClearAllFilters()" type="button">
         <mat-icon>filter_alt_off</mat-icon>
-        Clear All
+        {{ 'FILTER.CLEAR_ALL' | translate }}
       </button>
     </div>
 
@@ -69,7 +69,7 @@
         <button mat-icon-button (click)="onExportClick(selectedFormat)" [matTooltip]="'ADMIN.DOWNLOAD' | translate" [disabled]="pdfGenerating && selectedFormat === 'pdf'">
           <mat-icon>download</mat-icon>
         </button>
-        <button mat-icon-button (click)="printReport()" matTooltip="Print report">
+        <button mat-icon-button (click)="printReport()" [matTooltip]="'REPORTS.PRINT_REPORT' | translate">
           <mat-icon>print</mat-icon>
         </button>
       </div>

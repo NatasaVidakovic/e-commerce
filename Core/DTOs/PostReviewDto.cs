@@ -5,7 +5,7 @@ namespace Core.DTOs;
 
 public class PostReviewDto
 {
-
+    [StringLength(1000, ErrorMessage = "Review description cannot exceed 1000 characters")]
     public string Description { get; set; } = string.Empty;
     public int? ParentCommentId { get; set; }
 

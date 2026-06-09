@@ -11,6 +11,7 @@ import { CurrencyService } from '../../../../core/services/currency.service';
 import { CurrencyPipe } from '../../../../shared/pipes/currency.pipe';
 import { Currency } from '../../../../shared/models/currency';
 import { Order, OrderAuditLog } from '../../../../shared/models/order';
+import { TranslatePipe } from '@ngx-translate/core';
 
 export interface OrderDetailsDialogData {
   orderId: number;
@@ -28,7 +29,8 @@ export interface OrderDetailsDialogData {
     MatIconModule,
     MatTabsModule,
     MatProgressSpinnerModule,
-    CurrencyPipe
+    CurrencyPipe,
+    TranslatePipe
   ],
   templateUrl: './order-details-dialog.component.html',
   styleUrl: './order-details-dialog.component.scss'

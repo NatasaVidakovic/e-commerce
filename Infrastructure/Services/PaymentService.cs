@@ -114,6 +114,8 @@ public class PaymentService : IPaymentService
         var voucherService = new VoucherService(unit);
 
         var voucherEntity = await voucherService.ValidateVoucher(voucher.Code);
+        if (voucherEntity == null)
+            throw new Exception("Voucher is no longer valid");
 
         if (voucherEntity.AmountOff.HasValue)
         {

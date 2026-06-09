@@ -81,12 +81,12 @@ export class OrderEmailDialogComponent {
       this.adminService.sendOrderEmail(this.data.order.id, emailDto).subscribe({
         next: () => {
           this.sending = false;
-          this.snackbar.success('Email sent successfully');
+          this.snackbar.success('ADMIN.EMAIL_SENT_SUCCESS');
           this.dialogRef.close({ success: true });
         },
         error: (err) => {
           this.sending = false;
-          this.snackbar.error(err.error?.message || err.error || 'Failed to send email');
+          this.snackbar.error(err.error?.message || err.error || 'ADMIN.EMAIL_SEND_FAILED');
         }
       });
     }

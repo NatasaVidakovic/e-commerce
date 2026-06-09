@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { ErrorHandler } from '../utils/error-handler.util';
+import { TranslateService } from '@ngx-translate/core';
 
 export type SnackbarOptions = {
   duration?: number;
@@ -13,12 +14,18 @@ export type SnackbarOptions = {
 })
 export class SnackbarService {
   snackbar = inject(MatSnackBar);
+  private translate = inject(TranslateService);
 
   private open(message: string, options?: SnackbarOptions) {
-    this.snackbar.open(message, options?.action ?? 'Close', {
+    this.snackbar.open(this.translateMessage(message), this.translateMessage(options?.action ?? 'COMMON.CLOSE'), {
       duration: options?.duration ?? 5000,
       panelClass: options?.panelClass
     });
+  }
+
+  private translateMessage(message: string): string {
+    const translated = this.translate.instant(message);
+    return translated !== message ? translated : message;
   }
 
   show(message: string, options?: SnackbarOptions) {
@@ -42,7 +49,8 @@ export class SnackbarService {
 
   extractMessage(error: any, fallbackMessage: string = 'An error occurred', transform?: (message: string) => string): string {
     const extracted = ErrorHandler.extractErrorMessage(error, fallbackMessage);
-    return transform ? transform(extracted) : extracted;
+    const finalMessage = transform ? transform(extracted) : extracted;
+    return this.translateMessage(finalMessage);
   }
 
   success(message: string, options?: SnackbarOptions) {

@@ -3,8 +3,8 @@
 // ==========================================
 // Reusable utility classes for common patterns
 
-@import 'breakpoints';
-@import 'spacing';
+@use 'breakpoints' as *;
+@use 'spacing' as *;
 
 // Container utilities
 .container {

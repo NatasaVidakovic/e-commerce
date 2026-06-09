@@ -11,7 +11,7 @@ public static class MappingExtensions
             .Where(t => t.IsClass && !t.IsAbstract  && IsSubclassOfRawGeneric(t,typeof(BaseMapping<,>)))
             .ToList();
 
-       
+
         foreach (var mappingType in mappingTypes)
         {
             services.TryAddScoped(mappingType);  // Registruj konkretnu klasu
@@ -21,7 +21,7 @@ public static class MappingExtensions
     }
 
 
-    public static bool IsSubclassOfRawGeneric(Type toCheck, Type generic)
+    public static bool IsSubclassOfRawGeneric(Type? toCheck, Type generic)
     {
         while (toCheck != null && toCheck != typeof(object))
         {

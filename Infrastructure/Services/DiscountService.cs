@@ -9,7 +9,7 @@ public class DiscountService(IUnitOfWork unit, IDiscountRepository repository) :
     private readonly IUnitOfWork _unit = unit;
     private readonly IDiscountRepository discountRepo = repository;
 
-    public async Task<Discount> GetDiscountByIdAsync(int id)
+    public async Task<Discount?> GetDiscountByIdAsync(int id)
     {
         var discount = await discountRepo.GetByIdAsync(id);
         if (discount != null)
@@ -19,7 +19,7 @@ public class DiscountService(IUnitOfWork unit, IDiscountRepository repository) :
         return discount;
     }
 
-    public async Task<Discount> GetDiscountByNameAsync(string name)
+    public async Task<Discount?> GetDiscountByNameAsync(string name)
     {
         var discount = await discountRepo.GetDiscountByNameAsync(name);
         if (discount != null && discount.Id > 0)

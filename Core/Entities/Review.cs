@@ -12,8 +12,8 @@ public class Review : BaseEntity
     public int? ParentCommentId { get; set; }
 
     public byte? Rating { get; set; }
-    public Product Product { get; set; }
-    public AppUser AppUser { get; set; }
+    public Product Product { get; set; } = null!;
+    public AppUser AppUser { get; set; } = null!;
 
 }
 

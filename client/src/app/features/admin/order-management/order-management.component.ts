@@ -317,7 +317,7 @@ export class OrderManagementComponent implements OnInit {
     // Check if order is refunded
     if (this.isOrderRefunded(order)) {
       select.value = order.status; // revert
-      this.snackbar.error('Cannot change status of refunded order', { action: '✗', duration: 3000 });
+      this.snackbar.error('ADMIN.ORDER_MANAGEMENT.CANNOT_CHANGE_REFUNDED', { action: '✗', duration: 3000 });
       return;
     }
 
@@ -344,7 +344,7 @@ export class OrderManagementComponent implements OnInit {
       },
       error: (err) => {
         select.value = oldStatus; // revert
-        this.snackbar.error(err?.error || 'Failed to update status', { action: '✗', duration: 3000 });
+        this.snackbar.error(err?.error || 'ADMIN.ORDER_MANAGEMENT.STATUS_UPDATE_FAILED', { action: '✗', duration: 3000 });
         this.updatingOrder[order.id] = false;
       }
     });
@@ -358,7 +358,7 @@ export class OrderManagementComponent implements OnInit {
     // Check if order is refunded
     if (this.isOrderRefunded(order)) {
       select.value = order.paymentStatus; // revert
-      this.snackbar.error('Cannot change status of refunded order', { action: '✗', duration: 3000 });
+      this.snackbar.error('ADMIN.ORDER_MANAGEMENT.CANNOT_CHANGE_REFUNDED', { action: '✗', duration: 3000 });
       return;
     }
 
@@ -381,7 +381,7 @@ export class OrderManagementComponent implements OnInit {
       },
       error: (err) => {
         select.value = oldStatus; // revert
-        this.snackbar.error(err?.error || 'Failed to update payment status', { action: '✗', duration: 3000 });
+        this.snackbar.error(err?.error || 'ADMIN.ORDER_MANAGEMENT.PAYMENT_STATUS_UPDATE_FAILED', { action: '✗', duration: 3000 });
         this.updatingOrder[order.id] = false;
       }
     });
@@ -395,7 +395,7 @@ export class OrderManagementComponent implements OnInit {
     // Check if order is refunded
     if (this.isOrderRefunded(order)) {
       select.value = order.deliveryStatus; // revert
-      this.snackbar.error('Cannot change status of refunded order', { action: '✗', duration: 3000 });
+      this.snackbar.error('ADMIN.ORDER_MANAGEMENT.CANNOT_CHANGE_REFUNDED', { action: '✗', duration: 3000 });
       return;
     }
 
@@ -418,7 +418,7 @@ export class OrderManagementComponent implements OnInit {
       },
       error: (err) => {
         select.value = oldStatus;
-        this.snackbar.error(err?.error || 'Failed to update delivery status', { action: '✗', duration: 3000 });
+        this.snackbar.error(err?.error || 'ADMIN.ORDER_MANAGEMENT.DELIVERY_STATUS_UPDATE_FAILED', { action: '✗', duration: 3000 });
         this.updatingOrder[order.id] = false;
       }
     });
@@ -427,7 +427,7 @@ export class OrderManagementComponent implements OnInit {
   quickRefund(order: Order): void {
     // Only open dialog if refund request exists
     if (!this.hasRefundRequest(order.id)) {
-      this.snackbar.error('No refund request submitted for this order', { action: '✗', duration: 3000 });
+      this.snackbar.error('TOOLTIPS.NO_REFUND_REQUEST', { action: '✗', duration: 3000 });
       return;
     }
 

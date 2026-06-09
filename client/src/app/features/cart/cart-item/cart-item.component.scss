@@ -1,5 +1,5 @@
-@import '../../../../styles/breakpoints';
-@import '../../../../styles/spacing';
+@use '../../../../styles/breakpoints' as *;
+@use '../../../../styles/spacing' as *;
 
 // ════════════════════════════════════════════════════════
 //  MOBILE  (<768px) — compact list row

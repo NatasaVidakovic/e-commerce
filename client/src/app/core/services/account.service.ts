@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { User, Address } from '../../shared/models/user';
 import { map, tap } from 'rxjs';
 import { SignalrService } from './signalr.service';
@@ -22,10 +22,8 @@ export class AccountService {
 
   isLoggedIn = computed(() => this.currentUser() !== null); 
   
-  login(values: any) {
-    let params = new HttpParams();
-    params = params.append('useCookies', true);
-    return this.http.post<User>(this.baseUrl + 'login', values, { params }).pipe(
+  login(values: { email: string; password: string }) {
+    return this.http.post<User>(this.baseUrl + 'account/login-with-feedback', values).pipe(
       tap(user => {
         if (user) this.signalrService.createHubConnection()
       })

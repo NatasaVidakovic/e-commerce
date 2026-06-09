@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, of, tap } from 'rxjs';
+import { catchError, of, tap } from 'rxjs';
 import { CartService } from './cart.service';
 import { AccountService } from './account.service';
 import { SignalrService } from './signalr.service';
@@ -14,6 +14,7 @@ export class InitService {
 
   init() {
     return this.accountService.getUserInfo().pipe(
+      catchError(() => of(null)),
       tap(user => {
         if (user && user.email) {
           this.signalrService.createHubConnection();
@@ -22,7 +23,9 @@ export class InitService {
       tap(() => {
         const cartId = this.cartService.getCartIdForUser();
         if (cartId) {
-          this.cartService.getCart(cartId).subscribe();
+          this.cartService.getCart(cartId).pipe(
+            catchError(() => of(null))
+          ).subscribe();
         }
       })
     );

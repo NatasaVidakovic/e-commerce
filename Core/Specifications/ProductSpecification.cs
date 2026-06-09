@@ -33,7 +33,7 @@ public class ProductSpecification : BaseSpecification<Product>
     // Constructor for getting single product with discounts
     public ProductSpecification(int id) : base(x => x.Id == id)
     {
-        AddInclude(x => x.Discounts);
+        AddInclude(x => x.Discounts!);
         AddInclude(x => x.ProductType);
     }
 }

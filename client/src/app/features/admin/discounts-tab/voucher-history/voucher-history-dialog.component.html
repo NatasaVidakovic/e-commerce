@@ -1,48 +1,48 @@
 <h2 mat-dialog-title class="flex items-center gap-2">
   <mat-icon>history</mat-icon>
-  Voucher Status History - {{ data.voucherCode }}
+  {{ 'VOUCHER.STATUS_HISTORY_TITLE' | translate: { code: data.voucherCode } }}
 </h2>
 
 <mat-dialog-content class="min-w-[500px]">
   <div *ngIf="loading" class="text-center py-8">
-    <p>Loading history...</p>
+    <p>{{ 'VOUCHER.LOADING_HISTORY' | translate }}</p>
   </div>
 
   <div *ngIf="!loading && history.length === 0" class="text-center py-8" style="color: var(--color-text-secondary);">
-    No status changes recorded for this voucher.
+    {{ 'VOUCHER.NO_STATUS_CHANGES' | translate }}
   </div>
 
   <div *ngIf="!loading && history.length > 0" class="overflow-auto">
     <table mat-table [dataSource]="history" class="w-full">
       <ng-container matColumnDef="changedAt">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">Date & Time</th>
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'VOUCHER.DATE_TIME' | translate }}</th>
         <td mat-cell *matCellDef="let item" class="px-4 py-2">
           {{ item.changedAt | date:'short' }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">Status</th>
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.STATUS' | translate }}</th>
         <td mat-cell *matCellDef="let item" class="px-4 py-2">
           <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold"
                 [class.bg-green-100]="item.isActive" 
                 [class.text-green-800]="item.isActive"
                 [class.bg-red-100]="!item.isActive" 
                 [class.text-red-800]="!item.isActive">
-            {{ item.isActive ? 'Active' : 'Inactive' }}
+            {{ item.isActive ? ('VOUCHER.ACTIVE' | translate) : ('VOUCHER.INACTIVE' | translate) }}
           </span>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="changedBy">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">Changed By</th>
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'VOUCHER.CHANGED_BY' | translate }}</th>
         <td mat-cell *matCellDef="let item" class="px-4 py-2">
-          {{ item.changedBy || 'System' }}
+          {{ item.changedBy || ('COMMON.SYSTEM' | translate) }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="reason">
-        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">Reason</th>
+        <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'VOUCHER.REASON' | translate }}</th>
         <td mat-cell *matCellDef="let item" class="px-4 py-2">
           {{ item.reason || '-' }}
         </td>
@@ -55,5 +55,5 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button mat-dialog-close>{{ 'COMMON.CLOSE' | translate }}</button>
 </mat-dialog-actions>

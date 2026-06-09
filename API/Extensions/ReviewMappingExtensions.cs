@@ -8,9 +8,6 @@ public static class ReviewMappingExtensions
 {
     public static ReviewDto ToDto(this Review review)
     {
-        if (review == null) return null;
-
-        
         return new ReviewDto
         {
             Id = review.Id,
@@ -35,7 +32,7 @@ public static class ReviewMappingExtensions
             Rating = reviewDto.Rating,
             Description = reviewDto.Description,
             ParentCommentId = reviewDto.ParentCommentId
-            
+
         };
     }
 

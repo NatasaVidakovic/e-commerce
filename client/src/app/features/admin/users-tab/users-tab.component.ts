@@ -10,6 +10,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import { PaginationComponent, PaginationEvent } from '../../../shared/components/pagination/pagination.component';
 import { DynamicFilterBarComponent } from '../../../shared/components/dynamic-filter-bar/dynamic-filter-bar.component';
 import { DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../../shared/models/dynamic-filtering';
+import { TranslatePipe } from '@ngx-translate/core';
 
 export interface UserInfo {
   id: string;
@@ -39,7 +40,8 @@ export interface UserInfo {
     MatTooltipModule,
     MatProgressSpinnerModule,
     PaginationComponent,
-    DynamicFilterBarComponent
+    DynamicFilterBarComponent,
+    TranslatePipe
   ],
   templateUrl: './users-tab.component.html',
   styleUrl: './users-tab.component.scss'
@@ -59,7 +61,7 @@ export class UsersTabComponent implements OnInit {
   filterDefinitions: DynamicFilterDefinition[] = [
     {
       key: 'search',
-      label: 'Search by email, name or phone',
+      label: 'ADMIN.USERS.SEARCH_PLACEHOLDER',
       controlType: 'text',
       propertyName: 'Email',
       operationType: 'Contains',
@@ -67,31 +69,31 @@ export class UsersTabComponent implements OnInit {
     },
     {
       key: 'role',
-      label: 'Role',
+      label: 'ADMIN.USERS.ROLE',
       controlType: 'select',
       propertyName: 'Role',
       operationType: 'Equal',
       dataType: 'String',
       options: ['Admin', 'Customer'],
       multiple: false,
-      allLabel: 'All Roles'
+      allLabel: 'ADMIN.USERS.ALL_ROLES'
     },
     {
       key: 'emailConfirmed',
-      label: 'Email Status',
+      label: 'ADMIN.USERS.EMAIL_STATUS',
       controlType: 'select',
       propertyName: 'EmailConfirmed',
       operationType: 'Equal',
       dataType: 'String',
       options: ['Verified', 'Unverified'],
       multiple: false,
-      allLabel: 'All'
+      allLabel: 'COMMON.ALL'
     }
   ];
 
   sortOptions: DynamicSortOption[] = [
-    { label: 'Email (A-Z)', column: 'Email', ascending: true, descending: false },
-    { label: 'Email (Z-A)', column: 'Email', ascending: false, descending: true }
+    { label: 'ADMIN.USERS.SORT_EMAIL_ASC', column: 'Email', ascending: true, descending: false },
+    { label: 'ADMIN.USERS.SORT_EMAIL_DESC', column: 'Email', ascending: false, descending: true }
   ];
 
   pageIndex = 0;

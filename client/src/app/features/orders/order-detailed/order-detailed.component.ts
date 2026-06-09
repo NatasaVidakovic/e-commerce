@@ -89,7 +89,7 @@ export class OrderDetailedComponent implements OnInit, OnDestroy {
       const updated = this.signalrService.orderStatusUpdated();
       if (updated && this.order && updated.id === this.order.id) {
         this.order = updated;
-        this.snackbar.success('Order status updated');
+        this.snackbar.success('ADMIN.ORDER_STATUS.UPDATED_MESSAGE');
       }
     });
   }
@@ -195,7 +195,7 @@ export class OrderDetailedComponent implements OnInit, OnDestroy {
     const isPartial = this.refundType === 'partial';
 
     if (isPartial && !this.hasSelectedItems) {
-      this.snackbar.error('Please select at least one product to return');
+      this.snackbar.error('REFUND.SELECT_PRODUCT_REQUIRED');
       return;
     }
 
@@ -221,11 +221,11 @@ export class OrderDetailedComponent implements OnInit, OnDestroy {
         this.refundLoading = false;
         this.refund = r;
         this.showRefundForm = false;
-        this.snackbar.success('Refund request submitted');
+        this.snackbar.success('REFUND.REQUEST_SUBMITTED');
       },
       error: (err) => {
         this.refundLoading = false;
-        this.snackbar.error(err.error || 'Failed to submit refund request');
+        this.snackbar.error(err.error || 'REFUND.REQUEST_FAILED');
       }
     });
   }

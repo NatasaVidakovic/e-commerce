@@ -1,5 +1,7 @@
 ﻿
 
+#nullable disable
+
 using Core.Enums;
 
 namespace API.RequestHelpers

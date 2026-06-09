@@ -10,7 +10,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 import { forkJoin } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 
@@ -23,7 +23,6 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
         MatButtonModule,
         MatIconModule,
         CommonModule,
-        DecimalPipe,
         PaginationComponent,
         CurrencyPipe
     ],
@@ -96,7 +95,7 @@ export class BestSellingProductsComponent implements OnInit, OnDestroy {
                 this.loadProducts();
             }
         });
-        
+
         // Add window resize listener
         window.addEventListener('resize', this.onWindowResize.bind(this));
     }

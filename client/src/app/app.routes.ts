@@ -45,10 +45,6 @@ export const routes: Routes = [
         canActivate: [notAdminGuard]
     },
     {
-        path: 'test-error',
-        loadComponent: () => import('./features/test-error/test-error.component').then(m => m.TestErrorComponent)
-    },
-    {
         path: 'server-error',
         loadComponent: () => import('./shared/components/server-error/server-error.component').then(m => m.ServerErrorComponent)
     },

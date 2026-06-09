@@ -41,7 +41,8 @@ public class AccountController(
 
         if (logins.Any(l => l.LoginProvider == "Google") && !hasPassword)
         {
-            return BadRequest(new { code = "GoogleAccount", message = "This account uses Google login. Please use Google to sign in." });
+            _logger.LogInformation("Password reset requested for external-login-only user {UserId}", user.Id);
+            return Ok(new { message = "If that email is registered, a reset link has been sent." });
         }
 
         var token = await signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
@@ -52,6 +53,7 @@ public class AccountController(
         return Ok(new { message = "If that email is registered, a reset link has been sent." });
     }
 
+    [EnableRateLimiting("auth")]
     [HttpPost("reset-password")]
     public async Task<ActionResult> ResetPassword(ResetPasswordDto dto)
     {
@@ -80,22 +82,22 @@ public class AccountController(
         var user = await signInManager.UserManager.FindByEmailAsync(dto.Email);
 
         if (user == null)
-            return Unauthorized(new { code = "UserNotFound", message = "The email you entered is not registered." });
+            return Unauthorized(new { code = "InvalidLogin", message = "Invalid email or password." });
 
         // Check if Google-only account
         var logins = await signInManager.UserManager.GetLoginsAsync(user);
         var hasPassword = await signInManager.UserManager.HasPasswordAsync(user);
 
         if (logins.Any(l => l.LoginProvider == "Google") && !hasPassword)
-            return Unauthorized(new { code = "GoogleAccount", message = "This account uses Google login. Please use Google to sign in." });
+            return Unauthorized(new { code = "InvalidLogin", message = "Invalid email or password." });
 
         var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, lockoutOnFailure: true);
 
         if (result.IsLockedOut)
-            return Unauthorized(new { code = "LockedOut", message = "Account is locked due to too many failed attempts. Try again later." });
+            return Unauthorized(new { code = "InvalidLogin", message = "Invalid email or password." });
 
         if (!result.Succeeded)
-            return Unauthorized(new { code = "WrongPassword", message = "Incorrect password for this account." });
+            return Unauthorized(new { code = "InvalidLogin", message = "Invalid email or password." });
 
         await signInManager.SignInAsync(user, isPersistent: true);
 
@@ -134,6 +136,7 @@ public class AccountController(
     public async Task<ActionResult> Logout()
     {
         await signInManager.SignOutAsync();
+        Response.Headers["Clear-Site-Data"] = "\"cache\", \"cookies\", \"storage\"";
         return NoContent();
     }
 
@@ -142,6 +145,7 @@ public class AccountController(
     public async Task<ActionResult> LogoutGet()
     {
         await signInManager.SignOutAsync();
+        Response.Headers["Clear-Site-Data"] = "\"cache\", \"cookies\", \"storage\"";
         return NoContent();
     }
 
@@ -170,7 +174,7 @@ public class AccountController(
             IsAuthenticated = User.Identity?.IsAuthenticated ?? false
         });
     }
-    
+
     [Authorize]
     [HttpPost("address")]
     public async Task<ActionResult<Address>> CreateOrUpdateAddress(AddressDto addressDto)
@@ -195,9 +199,9 @@ public class AccountController(
 
 
     [HttpGet("google-login")]
-    public async Task<IActionResult> Login(string returnUrl = null)
+    public async Task<IActionResult> Login(string? returnUrl = null)
     {
-        var redirectUrl = Url.Action(nameof(LoginResult), new { returnUrl });
+        var redirectUrl = Url.Action(nameof(LoginResult), new { returnUrl = NormalizeFrontendReturnUrl(returnUrl) });
 
         var properties = new AuthenticationProperties
         {
@@ -214,9 +218,9 @@ public class AccountController(
     }
 
     [HttpGet("google-complete")]
-    public async Task<IActionResult> LoginResult(string returnUrl = null)
+    public async Task<IActionResult> LoginResult(string? returnUrl = null)
     {
-        var returnUrlValue = returnUrl ?? "/";
+        var returnUrlValue = NormalizeFrontendReturnUrl(returnUrl);
         var baseUrl = appSettings.Value.FrontendUrl;
 
         _logger.LogInformation("=== Google OAuth Callback ===");
@@ -224,24 +228,24 @@ public class AccountController(
         _logger.LogInformation($"Final ReturnUrl: {returnUrlValue}");
         _logger.LogInformation($"BaseUrl: {baseUrl}");
         _logger.LogInformation($"Will redirect to: {baseUrl}{returnUrlValue}");
-        
+
         var info = await signInManager.GetExternalLoginInfoAsync();
-        if (info == null) 
+        if (info == null)
         {
             _logger.LogError("Error: External login info is null");
             return BadRequest("Error loading external login information");
         }
-        
+
         var email = info.Principal.FindFirstValue(ClaimTypes.Email);
         _logger.LogInformation($"External login info received for provider: {info.LoginProvider}, email: {email}");
 
         var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-        
+
         if (result.Succeeded)
         {
             _logger.LogInformation("User successfully signed in with existing account");
             var user = await signInManager.UserManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-            
+
             if (user != null)
             {
                 await signInManager.SignInAsync(user, isPersistent: false);
@@ -270,7 +274,7 @@ public class AccountController(
         };
 
         var createResult = await signInManager.UserManager.CreateAsync(newUser);
-        if (!createResult.Succeeded) 
+        if (!createResult.Succeeded)
         {
             _logger.LogError($"Failed to create user: {string.Join(", ", createResult.Errors.Select(e => e.Description))}");
             return BadRequest("Problem creating user account");
@@ -279,7 +283,7 @@ public class AccountController(
         await signInManager.UserManager.AddToRoleAsync(newUser, "Customer");
 
         var loginResult = await signInManager.UserManager.AddLoginAsync(newUser, info);
-        if (!loginResult.Succeeded) 
+        if (!loginResult.Succeeded)
         {
             _logger.LogError($"Failed to add external login: {string.Join(", ", loginResult.Errors.Select(e => e.Description))}");
             return BadRequest("Problem adding external login");
@@ -289,5 +293,17 @@ public class AccountController(
         _logger.LogInformation("New user successfully created and signed in");
 
         return Redirect($"{baseUrl}{returnUrlValue}");
+    }
+
+    private static string NormalizeFrontendReturnUrl(string? returnUrl)
+    {
+        if (string.IsNullOrWhiteSpace(returnUrl)) return "/";
+
+        if (!Uri.TryCreate(returnUrl, UriKind.Relative, out _)) return "/";
+        if (!returnUrl.StartsWith('/')) return "/";
+        if (returnUrl.StartsWith("//")) return "/";
+        if (returnUrl.Contains('\\')) return "/";
+
+        return returnUrl;
     }
 }

@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { AdminService } from '../../../../core/services/admin.service';
 import { ShopService } from '../../../../core/services/shop.service';
@@ -42,7 +43,8 @@ export interface KpiCard {
     MatTooltipModule,
     MatProgressSpinnerModule,
     BaseChartDirective,
-    DynamicFilterBarComponent
+    DynamicFilterBarComponent,
+    TranslatePipe
   ],
   templateUrl: './analytics-tab.component.html',
   styleUrl: './analytics-tab.component.scss'

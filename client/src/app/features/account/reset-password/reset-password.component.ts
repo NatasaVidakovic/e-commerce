@@ -7,7 +7,7 @@ import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AccountService } from '../../../core/services/account.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { AccountService } from '../../../core/services/account.service';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatCard, MatFormField, MatInput,
-    MatButton, MatLabel, MatIcon, RouterLink
+    MatButton, MatLabel, MatIcon, RouterLink, TranslatePipe
   ],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss'
@@ -27,7 +27,7 @@ export class ResetPasswordComponent implements OnInit {
   private translate = inject(TranslateService);
 
   form = this.fb.group({
-    newPassword: ['', [Validators.required, Validators.minLength(6)]],
+    newPassword: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', [Validators.required]]
   });
 

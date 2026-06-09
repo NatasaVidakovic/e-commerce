@@ -240,7 +240,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           } else if (result.error) {
             throw new Error(result.error.message);
           } else {
-            throw new Error('Something went wrong');
+            throw new Error('ERROR_MESSAGES.GENERIC');
           }
         }
       } else {
@@ -258,7 +258,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
     } catch (error: any) {
-      this.snackbar.error(error.message || 'Something went wrong');
+      this.snackbar.error(error.message || 'ERROR_MESSAGES.GENERIC');
       stepper.previous();
     } finally {
       this.loading = false;

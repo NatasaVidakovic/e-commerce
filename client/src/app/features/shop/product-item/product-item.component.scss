@@ -1,4 +1,4 @@
-@import '../../../../styles/spacing';
+@use '../../../../styles/spacing' as *;
 
 :host {
   display: block;
@@ -45,7 +45,7 @@
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 100%);
     animation: highlightPulse 2s ease-in-out;
     position: relative;
-    
+
     &::before {
       content: 'Recently Viewed';
       position: absolute;
@@ -279,7 +279,7 @@
   gap: $spacing-2;
   margin-top: $spacing-2;
   flex-wrap: wrap;
-  
+
   // Grid mode: add more space above rating
   .product-card:not(.list-mode) & {
     margin-top: $spacing-3;
@@ -457,7 +457,7 @@
     color: var(--color-text-secondary);
     text-decoration: line-through;
     opacity: 0.8;
-    
+
     .product-card:not(.list-mode) & {
       flex-shrink: 0;
     }
@@ -468,7 +468,7 @@
     font-weight: 600;
     color: var(--color-error);
     letter-spacing: 0.01em;
-    
+
     .product-card:not(.list-mode) & {
       flex-shrink: 0;
     }
@@ -606,7 +606,7 @@
 // Favorite button
 .text-favorite {
   color: var(--color-error) !important;
-  
+
   mat-icon {
     animation: heartbeat 0.3s ease-in-out;
   }
@@ -628,20 +628,20 @@
   font-weight: 400 !important;
   background-color: var(--color-primary) !important;
   color: white !important;
-  
+
   mat-icon {
     transition: transform 0.2s ease;
   }
-  
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
-    
+
     mat-icon {
       transform: scale(1.1);
     }
   }
-  
+
   &:active {
     transform: translateY(0);
   }
@@ -652,11 +652,11 @@
   .relative img {
     transition: transform 0.3s ease;
   }
-  
+
   &:hover .relative img {
     transform: scale(1.05);
   }
-  
+
   &.list-mode:hover .relative img {
     transform: scale(1.03);
   }

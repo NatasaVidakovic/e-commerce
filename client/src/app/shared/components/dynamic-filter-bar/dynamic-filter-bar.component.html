@@ -20,7 +20,7 @@
         <input
           type="text"
           [formControlName]="searchDefinition.key"
-          [placeholder]="searchDefinition.label"
+          [placeholder]="searchDefinition.label | translate"
           class="search-input" />
       </div>
 
@@ -34,13 +34,13 @@
           [class.active]="advancedFiltersOpen"
           (click)="toggleAdvancedFilters()">
           <mat-icon>tune</mat-icon>
-          <span>Advanced Filters</span>
+          <span>{{ 'FILTER.ADVANCED_FILTERS' | translate }}</span>
           <span *ngIf="activeFilterCount > 0" class="adv-filter-badge">{{ activeFilterCount }}</span>
         </button>
 
         <!-- Sort By -->
         <div *ngIf="sortOptions.length > 0" class="filter-sort-group">
-          <span class="sort-label">Sort By:</span>
+          <span class="sort-label">{{ 'FILTER.SORT_BY' | translate }}:</span>
           <div class="sort-select-wrapper">
             <select
               class="sort-select"
@@ -49,7 +49,7 @@
                 *ngFor="let o of sortOptions; index as i"
                 [value]="i"
                 [selected]="selectedSortIndex === i">
-                {{ o.label }}
+                {{ o.label | translate }}
               </option>
             </select>
             <mat-icon class="sort-arrow-icon">expand_more</mat-icon>
@@ -89,10 +89,10 @@
 
             <!-- Single Select -->
             <div *ngIf="d.controlType === 'select' && !d.multiple" class="filter-dropdown-group">
-              <label class="filter-col-label">{{ d.label | uppercase }}</label>
+              <label class="filter-col-label">{{ (d.label | translate) | uppercase }}</label>
               <div class="select-wrapper">
                 <select [formControlName]="d.key" class="filter-native-select">
-                  <option value="">{{ d.allLabel || 'All' }}</option>
+                  <option value="">{{ d.allLabel ? (d.allLabel | translate) : ('COMMON.ALL' | translate) }}</option>
                   <option *ngFor="let o of (d.options || [])" [value]="o">{{ o }}</option>
                 </select>
                 <mat-icon class="select-arrow-icon">expand_more</mat-icon>
@@ -101,9 +101,9 @@
 
             <!-- Multiple Select -->
             <div *ngIf="d.controlType === 'select' && d.multiple" class="filter-dropdown-group">
-              <label class="filter-col-label">{{ d.label | uppercase }}</label>
+              <label class="filter-col-label">{{ (d.label | translate) | uppercase }}</label>
               <mat-form-field appearance="outline" class="filter-mat-field">
-                <mat-select [formControlName]="d.key" multiple [placeholder]="d.allLabel || 'All'">
+                <mat-select [formControlName]="d.key" multiple [placeholder]="d.allLabel ? (d.allLabel | translate) : ('COMMON.ALL' | translate)">
                   <mat-option *ngFor="let o of (d.options || [])" [value]="o">{{ o }}</mat-option>
                 </mat-select>
               </mat-form-field>
@@ -111,31 +111,31 @@
 
             <!-- Price Range (minPrice + maxPrice combined) -->
             <div *ngIf="d.key === 'minPrice' && hasPriceRange()" class="filter-dropdown-group filter-price-range">
-              <label class="filter-col-label">PRICE RANGE</label>
+              <label class="filter-col-label">{{ 'FILTER.PRICE_RANGE' | translate }}</label>
               <div class="price-inputs-row">
-                <input type="number" formControlName="minPrice" class="filter-number-input" placeholder="Min" />
+                <input type="number" formControlName="minPrice" class="filter-number-input" [placeholder]="'FILTER.MIN' | translate" />
                 <span class="price-sep">–</span>
-                <input type="number" formControlName="maxPrice" class="filter-number-input" placeholder="Max" />
+                <input type="number" formControlName="maxPrice" class="filter-number-input" [placeholder]="'FILTER.MAX' | translate" />
               </div>
             </div>
 
             <!-- Standalone Number (not part of price range) -->
             <div *ngIf="d.controlType === 'number' && !(d.key === 'minPrice' && hasPriceRange())" class="filter-dropdown-group">
-              <label class="filter-col-label">{{ d.label | uppercase }}</label>
-              <input type="number" [formControlName]="d.key" class="filter-number-input" [placeholder]="d.label" />
+              <label class="filter-col-label">{{ (d.label | translate) | uppercase }}</label>
+              <input type="number" [formControlName]="d.key" class="filter-number-input" [placeholder]="d.label | translate" />
             </div>
 
             <!-- Standalone Text (non-search) -->
             <div *ngIf="d.controlType === 'text'" class="filter-dropdown-group">
-              <label class="filter-col-label">{{ d.label | uppercase }}</label>
+              <label class="filter-col-label">{{ (d.label | translate) | uppercase }}</label>
               <div class="select-wrapper">
-                <input type="text" [formControlName]="d.key" class="filter-text-input" [placeholder]="d.label" />
+                <input type="text" [formControlName]="d.key" class="filter-text-input" [placeholder]="d.label | translate" />
               </div>
             </div>
 
             <!-- Date -->
             <div *ngIf="d.controlType === 'date'" class="filter-dropdown-group">
-              <label class="filter-col-label">{{ d.label | uppercase }}</label>
+              <label class="filter-col-label">{{ (d.label | translate) | uppercase }}</label>
               <mat-form-field appearance="outline" class="filter-mat-field">
                 <input matInput [matDatepicker]="deskDatePicker" [formControlName]="d.key">
                 <mat-datepicker-toggle matSuffix [for]="deskDatePicker"></mat-datepicker-toggle>
@@ -145,31 +145,31 @@
 
             <!-- Date Range -->
             <div *ngIf="d.controlType === 'dateRange'" class="filter-dropdown-group filter-dropdown-wide">
-              <label class="filter-col-label">{{ d.label | uppercase }}</label>
+              <label class="filter-col-label">{{ (d.label | translate) | uppercase }}</label>
               <div class="date-range-inline">
                 <mat-form-field appearance="outline" class="date-range-field" [class.date-field-error]="isDateRangeInvalid(d.key)">
-                  <mat-label>From</mat-label>
+                  <mat-label>{{ 'FILTER.FROM' | translate }}</mat-label>
                   <input matInput [matDatepicker]="advStartPicker"
                     [formControlName]="d.key + 'Start'"
                     [max]="getMaxStartDate(d.key)"
-                    placeholder="Start">
+                    [placeholder]="'FILTER.START' | translate">
                   <mat-datepicker-toggle matSuffix [for]="advStartPicker"></mat-datepicker-toggle>
                   <mat-datepicker #advStartPicker></mat-datepicker>
                 </mat-form-field>
                 <span class="date-range-sep">–</span>
                 <mat-form-field appearance="outline" class="date-range-field" [class.date-field-error]="isDateRangeInvalid(d.key)">
-                  <mat-label>To</mat-label>
+                  <mat-label>{{ 'FILTER.TO' | translate }}</mat-label>
                   <input matInput [matDatepicker]="advEndPicker"
                     [formControlName]="d.key + 'End'"
                     [min]="getMinEndDate(d.key)"
-                    placeholder="End">
+                    [placeholder]="'FILTER.END' | translate">
                   <mat-datepicker-toggle matSuffix [for]="advEndPicker"></mat-datepicker-toggle>
                   <mat-datepicker #advEndPicker></mat-datepicker>
                 </mat-form-field>
               </div>
               <div *ngIf="isDateRangeInvalid(d.key)" class="date-range-error">
                 <mat-icon>error_outline</mat-icon>
-                <span>"To" date must be after "From" date</span>
+                <span>{{ 'FILTER.DATE_RANGE_INVALID' | translate }}</span>
               </div>
             </div>
 
@@ -180,7 +180,7 @@
       <!-- Actions Row -->
       <div class="filter-actions">
         <button type="button" class="filter-clear-btn" (click)="onReset()">
-          Clear Filters
+          {{ 'FILTER.CLEAR_FILTERS' | translate }}
         </button>
         <button
           mat-flat-button
@@ -188,9 +188,9 @@
           type="button"
           class="filter-apply-btn"
           [disabled]="hasAnyInvalidDateRange()"
-          [matTooltip]="hasAnyInvalidDateRange() ? 'End date must be after start date' : ''"
+          [matTooltip]="hasAnyInvalidDateRange() ? ('FILTER.DATE_RANGE_INVALID' | translate) : ''"
           (click)="applyFilters()">
-          Apply Filters
+          {{ 'FILTER.APPLY_FILTERS' | translate }}
         </button>
       </div>
 
@@ -202,7 +202,7 @@
   
   <div class="mobile-drawer" [class.open]="mobileDrawerOpen">
     <div class="mobile-drawer-header">
-      <h2>Filters</h2>
+      <h2>{{ 'FILTER.FILTERS' | translate }}</h2>
       <button class="close-btn" (click)="closeMobileDrawer()">
         <mat-icon>close</mat-icon>
       </button>
@@ -212,7 +212,7 @@
       <!-- Search field -->
       <div *ngIf="searchDefinition && form.contains(searchDefinition.key)" class="mb-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>{{ searchDefinition.label }}</mat-label>
+          <mat-label>{{ searchDefinition.label | translate }}</mat-label>
           <input matInput type="text" [formControlName]="searchDefinition.key" />
           <mat-icon matSuffix style="color: var(--color-text-disabled);">search</mat-icon>
         </mat-form-field>
@@ -221,10 +221,10 @@
       <!-- Sort dropdown -->
       <div *ngIf="sortOptions.length > 0" class="mb-4">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Sort By</mat-label>
+          <mat-label>{{ 'FILTER.SORT_BY' | translate }}</mat-label>
           <mat-select formControlName="sort" panelClass="modern-select-panel">
             <mat-option *ngFor="let o of sortOptions; index as i" [value]="i">
-              {{ o.label }}
+              {{ o.label | translate }}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -238,7 +238,7 @@
               <button type="button" class="filter-section-toggle w-full flex items-center justify-between p-3 transition-colors"
                 (click)="toggleFilterSection(d.key)">
                 <div class="flex items-center gap-2">
-                  <span class="text-sm font-medium">{{ d.label }}</span>
+                  <span class="text-sm font-medium">{{ d.label | translate }}</span>
                   <span *ngIf="hasValue(d.key)"
                     class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
                     ✓
@@ -287,7 +287,7 @@
                   *ngIf="d.controlType === 'date'"
                   appearance="outline"
                   class="w-full">
-                  <mat-label>{{ d.label }}</mat-label>
+                  <mat-label>{{ d.label | translate }}</mat-label>
                   <input matInput [matDatepicker]="mobileDatePicker" [formControlName]="d.key">
                   <mat-datepicker-toggle matSuffix [for]="mobileDatePicker"></mat-datepicker-toggle>
                   <mat-datepicker #mobileDatePicker></mat-datepicker>
@@ -298,29 +298,29 @@
                   <div class="date-range-inline">
                     <mat-form-field appearance="outline" class="date-range-field"
                       [class.date-field-error]="isDateRangeInvalid(d.key)">
-                      <mat-label>From</mat-label>
+                      <mat-label>{{ 'FILTER.FROM' | translate }}</mat-label>
                       <input matInput [matDatepicker]="mobileStartDatePicker"
                         [formControlName]="d.key + 'Start'"
                         [max]="getMaxStartDate(d.key)"
-                        placeholder="Start">
+                        [placeholder]="'FILTER.START' | translate">
                       <mat-datepicker-toggle matSuffix [for]="mobileStartDatePicker"></mat-datepicker-toggle>
                       <mat-datepicker #mobileStartDatePicker></mat-datepicker>
                     </mat-form-field>
                     <span class="date-range-sep">–</span>
                     <mat-form-field appearance="outline" class="date-range-field"
                       [class.date-field-error]="isDateRangeInvalid(d.key)">
-                      <mat-label>To</mat-label>
+                      <mat-label>{{ 'FILTER.TO' | translate }}</mat-label>
                       <input matInput [matDatepicker]="mobileEndDatePicker"
                         [formControlName]="d.key + 'End'"
                         [min]="getMinEndDate(d.key)"
-                        placeholder="End">
+                        [placeholder]="'FILTER.END' | translate">
                       <mat-datepicker-toggle matSuffix [for]="mobileEndDatePicker"></mat-datepicker-toggle>
                       <mat-datepicker #mobileEndDatePicker></mat-datepicker>
                     </mat-form-field>
                   </div>
                   <div *ngIf="isDateRangeInvalid(d.key)" class="date-range-error">
                     <mat-icon>error_outline</mat-icon>
-                    <span>"To" date must be after "From" date</span>
+                    <span>{{ 'FILTER.DATE_RANGE_INVALID' | translate }}</span>
                   </div>
                 </div>
 
@@ -328,7 +328,7 @@
                   class="w-full mt-2 flex items-center justify-center gap-1 px-3 py-1.5 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
                   (click)="d.controlType === 'dateRange' ? clearDateRange(d.key) : clearFilter(d.key)">
                   <mat-icon class="text-sm">close</mat-icon>
-                  <span>{{ 'FILTER.CLEAR' | translate }} {{ d.label }}</span>
+                  <span>{{ 'FILTER.CLEAR' | translate }} {{ d.label | translate }}</span>
                 </button>
               </div>
             </div>
@@ -376,7 +376,7 @@
                   class="w-full mt-2 flex items-center justify-center gap-1 px-3 py-1.5 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
                   (click)="clearPriceRange()">
                   <mat-icon class="text-sm">close</mat-icon>
-                  <span>Clear {{ 'FILTER.PRICE_RANGE' | translate }}</span>
+                  <span>{{ 'FILTER.CLEAR' | translate }} {{ 'FILTER.PRICE_RANGE' | translate }}</span>
                 </button>
               </div>
             </div>
@@ -387,13 +387,13 @@
     
     <div class="mobile-drawer-footer">
       <button mat-stroked-button type="button" class="flex-1" (click)="onReset()">
-        Clear All
+        {{ 'FILTER.CLEAR_ALL' | translate }}
       </button>
       <button mat-flat-button color="primary" type="button" class="flex-1"
         [disabled]="hasAnyInvalidDateRange()"
-        [matTooltip]="hasAnyInvalidDateRange() ? 'End date must be after start date' : ''"
+        [matTooltip]="hasAnyInvalidDateRange() ? ('FILTER.DATE_RANGE_INVALID' | translate) : ''"
         (click)="applyMobileFilters()">
-        Apply Filters
+        {{ 'FILTER.APPLY_FILTERS' | translate }}
       </button>
     </div>
   </div>

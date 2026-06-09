@@ -194,6 +194,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsActive", "DateFrom", "DateTo");
+
                     b.ToTable("Discounts");
                 });
 
@@ -894,6 +898,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("DiscountsId", "ProductsId");
 
+                    b.HasIndex("DiscountsId");
+
                     b.HasIndex("ProductsId");
 
                     b.ToTable("ProductDiscounts", (string)null);
@@ -1170,7 +1176,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("ShippingAddress")
                         .IsRequired();
 
-                    b.Navigation("Tracking");
+                    b.Navigation("Tracking")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Core.Entities.OrderAggregate.OrderAuditLog", b =>

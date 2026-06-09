@@ -93,12 +93,12 @@ export class OrderRefundDialogComponent implements OnInit {
     }).subscribe({
       next: (result) => {
         this.processing = false;
-        this.snackbar.success('Refund approved');
+        this.snackbar.success('ADMIN.REFUND_DIALOG.APPROVED_MESSAGE');
         this.dialogRef.close({ success: true, refund: result });
       },
       error: (err) => {
         this.processing = false;
-        this.snackbar.error(err.error || 'Failed to approve refund');
+        this.snackbar.error(err.error || 'ADMIN.REFUND_DIALOG.APPROVE_FAILED');
       }
     });
   }
@@ -106,7 +106,7 @@ export class OrderRefundDialogComponent implements OnInit {
   onReject(): void {
     if (!this.existingRefund) return;
     if (!this.rejectionReason?.trim()) {
-      this.snackbar.error('Rejection reason is required');
+      this.snackbar.error('ADMIN.REFUND_DIALOG.REJECTION_REASON_REQUIRED');
       return;
     }
     this.processing = true;
@@ -117,12 +117,12 @@ export class OrderRefundDialogComponent implements OnInit {
     }).subscribe({
       next: (result) => {
         this.processing = false;
-        this.snackbar.success('Refund rejected');
+        this.snackbar.success('ADMIN.REFUND_DIALOG.REJECTED_MESSAGE');
         this.dialogRef.close({ success: true, refund: result });
       },
       error: (err) => {
         this.processing = false;
-        this.snackbar.error(err.error || 'Failed to reject refund');
+        this.snackbar.error(err.error || 'ADMIN.REFUND_DIALOG.REJECT_FAILED');
       }
     });
   }
@@ -135,12 +135,12 @@ export class OrderRefundDialogComponent implements OnInit {
     }).subscribe({
       next: (result) => {
         this.processing = false;
-        this.snackbar.success('COD refund marked as completed');
+        this.snackbar.success('ADMIN.REFUND_DIALOG.COD_COMPLETED');
         this.dialogRef.close({ success: true, refund: result });
       },
       error: (err) => {
         this.processing = false;
-        this.snackbar.error(err.error || 'Failed to confirm refund');
+        this.snackbar.error(err.error || 'ADMIN.REFUND_DIALOG.CONFIRM_FAILED');
       }
     });
   }

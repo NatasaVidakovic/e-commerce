@@ -32,7 +32,7 @@ public class FavouriteService(IFavouriteRepository favouriteRepository, IProduct
         await _favouriteRepository.SaveChangesAsync();
     }
 
-    public async Task<Favourite> GetFavouriteAsync(string buyerEmail, int productId)
+    public async Task<Favourite?> GetFavouriteAsync(string buyerEmail, int productId)
     {
         return await _favouriteRepository.GetFavouriteAsync(buyerEmail, productId);
     }

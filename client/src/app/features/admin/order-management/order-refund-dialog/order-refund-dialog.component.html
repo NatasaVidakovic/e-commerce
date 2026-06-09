@@ -7,7 +7,7 @@
   <!-- Loading state -->
   <div *ngIf="loading" class="loading-state">
     <mat-icon class="spin">hourglass_empty</mat-icon>
-    <p>Loading...</p>
+    <p>{{ 'COMMON.LOADING' | translate }}</p>
   </div>
 
   <!-- No refund request exists -->
@@ -34,7 +34,7 @@
         </div>
       </div>
       <div class="refund-type-container">
-        <div class="refund-type-label">Refund Type</div>
+        <div class="refund-type-label">{{ 'ADMIN.REFUND_DIALOG.REFUND_TYPE' | translate }}</div>
         <div class="refund-type-badge" [ngClass]="existingRefund.isPartialRefund ? 'badge-partial' : 'badge-full'">
           <mat-icon class="refund-icon">
             {{ existingRefund.isPartialRefund ? 'remove_circle' : 'all_inclusive' }}
@@ -134,7 +134,7 @@
       <mat-icon>close</mat-icon> {{ 'ADMIN.REFUND_DIALOG.REJECT' | translate }}
     </button>
     <button mat-flat-button color="primary" (click)="onApprove()" [disabled]="processing">
-      <mat-icon>check</mat-icon> OK
+      <mat-icon>check</mat-icon> {{ 'COMMON.OK' | translate }}
     </button>
   </ng-container>
 

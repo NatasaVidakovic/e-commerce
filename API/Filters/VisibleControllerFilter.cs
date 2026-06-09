@@ -19,6 +19,7 @@ public class VisibleControllerFilter : IDocumentFilter
         var pathsToRemove = swaggerDoc.Paths
             .Where(pathItem => !context.ApiDescriptions
                 .Any(apiDesc => apiDesc.ActionDescriptor.RouteValues["controller"] == allowedController &&
+                                !string.IsNullOrEmpty(apiDesc.RelativePath) &&
                                 pathItem.Key.Contains(apiDesc.RelativePath)))
             .Select(pathItem => pathItem.Key)
             .ToList();

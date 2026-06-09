@@ -1,5 +1,5 @@
-@import '../../../../styles/breakpoints';
-@import '../../../../styles/spacing';
+@use '../../../../styles/breakpoints' as *;
+@use '../../../../styles/spacing' as *;
 
 .admin-dashboard {
   .table-container {
@@ -90,11 +90,11 @@
 
   mat-form-field {
     width: 100%;
-    
+
     ::ng-deep .mat-mdc-form-field-infix {
       min-height: 40px;
     }
-    
+
     ::ng-deep .mat-mdc-text-field-wrapper {
       padding-bottom: 0;
     }

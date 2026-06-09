@@ -70,7 +70,7 @@ export class LoginComponent {
         this.router.navigateByUrl(this.returnUrl);
       },
       error: (err: any) => {
-        this.errorMessage = err.error?.message || 'Login failed. Please try again.';
+        this.errorMessage = err.error?.message || 'ERRORS.LOGIN_FAILED';
       }
     });
   }

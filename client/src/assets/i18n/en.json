@@ -103,7 +103,20 @@
     "CLEAR_ALL": "Clear All",
     "CLEAR": "Clear",
     "ENTER_VALUE": "Enter value",
-    "PRICE_RANGE": "Price Range"
+    "PRICE_RANGE": "Price Range",
+    "ADVANCED_FILTERS": "Advanced Filters",
+    "MIN": "Min",
+    "MAX": "Max",
+    "FROM": "From",
+    "TO": "To",
+    "START": "Start",
+    "END": "End",
+    "DATE_RANGE_INVALID": "End date must be after start date",
+    "CLEAR_FILTERS": "Clear Filters",
+    "APPLY_FILTERS": "Apply Filters",
+    "ACTIVE_FILTERS": "Active filters",
+    "MIN_PRICE": "Min Price",
+    "MAX_PRICE": "Max Price"
   },
   "PAYMENT": {
     "UNKNOWN_METHOD": "Unknown payment method"
@@ -170,7 +183,20 @@
     "REFRESH": "Refresh",
     "YES": "Yes",
     "NO": "No",
-    "CANNOT_UNDO": "This action cannot be undone"
+    "CANNOT_UNDO": "This action cannot be undone",
+    "ALL": "All",
+    "CONFIRM": "Confirm",
+    "NAME": "Name",
+    "RETRY": "Retry",
+    "SAVING": "Saving...",
+    "ON": "On",
+    "OFF": "Off",
+    "OK": "OK",
+    "UPLOADING": "Uploading...",
+    "SYSTEM": "System",
+    "NOT_AVAILABLE": "N/A",
+    "NEWEST_FIRST": "Newest First",
+    "OLDEST_FIRST": "Oldest First"
   },
   "FORM": {
     "FIRST_NAME": "First name",
@@ -210,7 +236,7 @@
       "REQUIRED": "{{field}} is required",
       "INVALID_EMAIL": "Please enter a valid email address",
       "PASSWORD_MISMATCH": "Passwords do not match",
-      "PASSWORD_TOO_SHORT": "Password must be at least 6 characters long",
+      "PASSWORD_TOO_SHORT": "Password must be at least 8 characters long",
       "VALIDATION_ERRORS": "Please fix the following errors"
     },
     "SEARCH_PRODUCTS": "Search products...",
@@ -245,7 +271,7 @@
       "PasswordRequiresNonAlphanumeric": "Password must have at least one special character (e.g. !@#$%).",
       "PasswordRequiresDigit": "Password must have at least one digit ('0'-'9').",
       "PasswordRequiresLower": "Password must have at least one lowercase letter ('a'-'z').",
-      "PasswordTooShort": "Password must be at least 6 characters long.",
+      "PasswordTooShort": "Password must be at least 8 characters long.",
       "PasswordRequiresUniqueChars": "Password must use more unique characters.",
       "InvalidToken": "This reset link is invalid or has expired. Please request a new one.",
       "InvalidResetRequest": "Invalid password reset request."
@@ -296,7 +322,10 @@
     "NO_PRODUCTS_MESSAGE": "No products found. Try adjusting your filters.",
     "TOGGLE_FILTERS": "Toggle filters",
     "SHOW_FILTERS": "Show Filters",
-    "HIDE_FILTERS": "Hide Filters"
+    "HIDE_FILTERS": "Hide Filters",
+    "NO_PRODUCTS_FOUND": "No products found",
+    "NO_PRODUCTS_CURRENT_FILTERS": "No products match your current filters.",
+    "TRY_ADJUST_FILTERS": "Try adjusting or removing some filters."
   },
   "CHECKOUT": {
     "ADDRESS": "Address",
@@ -327,7 +356,7 @@
       "LOGIN": {
         "TITLE": "Login",
         "SUBMIT_BUTTON": "Sign in",
-        "FORGOT_PASSWORD":  "Forgot password?",
+        "FORGOT_PASSWORD": "Forgot password?",
         "NO_ACCOUNT": "Don't have an account?",
         "REGISTER_LINK": "Sign up"
       },
@@ -368,7 +397,10 @@
     "CITY": "City",
     "STATE": "State",
     "POSTAL_CODE": "Postal Code",
-    "COUNTRY": "Country"
+    "COUNTRY": "Country",
+    "GUEST_CHECKOUT": "Guest Checkout",
+    "GUEST_CHECKOUT_DESC": "You do not need an account to place an order. Enter your delivery and contact information below.",
+    "CONTACT_INFORMATION": "Contact Information"
   },
   "MESSAGES": {
     "WELCOME": "Welcome back, {{name}}!",
@@ -483,7 +515,13 @@
     "ADD_URL": "Add URL",
     "UPLOAD": "Upload",
     "MAIN": "Main",
-    "DOWNLOAD_SHEET": "Product Sheet"
+    "DOWNLOAD_SHEET": "Product Sheet",
+    "SELECT_IMAGES_HELP": "Select images to upload. The first image will be the main image. Images are uploaded after product creation.",
+    "UPLOAD_IMAGES_HELP": "Upload images for this product. Click the star to set the main image.",
+    "SET_AS_MAIN_IMAGE": "Set as main image",
+    "SELECTED_COUNT": "{{count}} selected",
+    "LOADING_PRODUCTS": "Loading products...",
+    "PRODUCTS_WILL_BE_ADDED": "{{count}} product(s) will be added"
   },
   "CART": {
     "TOTAL": "Total",
@@ -622,7 +660,11 @@
     "DESCRIBE_REASON": "Describe why you would like a refund...",
     "SUBMITTING": "Submitting...",
     "PROCESSED": "Processed",
-    "COMPLETED": "Completed"
+    "COMPLETED": "Completed",
+    "REFUND": "Refund",
+    "SELECT_PRODUCT_REQUIRED": "Please select at least one product to return",
+    "REQUEST_SUBMITTED": "Refund request submitted",
+    "REQUEST_FAILED": "Failed to submit refund request"
   },
   "SORTING": {
     "PRICE_LOW_HIGH": "Price: Low to High",
@@ -636,8 +678,19 @@
   },
   "ADMIN": {
     "DASHBOARD": "Dashboard",
-    "USERS": "Users",
-    "REFRESH":"Refresh",
+    "USERS": {
+      "TITLE": "Users",
+      "ROLES": "Roles",
+      "VERIFIED": "Verified",
+      "NO_USERS_FOUND": "No users found",
+      "SEARCH_PLACEHOLDER": "Search by email, name or phone",
+      "ROLE": "Role",
+      "ALL_ROLES": "All Roles",
+      "EMAIL_STATUS": "Email Status",
+      "SORT_EMAIL_ASC": "Email (A-Z)",
+      "SORT_EMAIL_DESC": "Email (Z-A)"
+    },
+    "REFRESH": "Refresh",
     "NO_USERS_FOUND": "No users found",
     "USER_COL_EMAIL": "Email",
     "USER_COL_NAME": "Name",
@@ -787,7 +840,29 @@
     "DISCOUNTS": "Discounts",
     "VOUCHERS": "Vouchers",
     "THEME_SETTINGS": "Theme Settings",
-    "SHOP_LOCATION": "Shop Location",
+    "SHOP_LOCATION": {
+      "TITLE": "Shop Location",
+      "USE_CURRENT_LOCATION": "Use Current Location",
+      "SAVE_LOCATION": "Save Location",
+      "LATITUDE": "Latitude",
+      "LONGITUDE": "Longitude",
+      "LATITUDE_PLACEHOLDER": "e.g., 44.7722",
+      "LONGITUDE_PLACEHOLDER": "e.g., 17.1910",
+      "MIN_LATITUDE": "Min -90",
+      "MAX_LATITUDE": "Max 90",
+      "MIN_LONGITUDE": "Min -180",
+      "MAX_LONGITUDE": "Max 180",
+      "ADDRESS_OPTIONAL": "Address (optional)",
+      "ADDRESS_PLACEHOLDER": "e.g., Banja Luka, Bosnia and Herzegovina",
+      "MAX_500": "Max 500 characters",
+      "UPDATE_SUCCESS": "Shop location updated successfully!",
+      "GEOLOCATION_UNSUPPORTED": "Geolocation is not supported by this browser",
+      "GETTING_LOCATION": "Getting your current location...",
+      "LOCATION_RETRIEVED": "Current location retrieved!",
+      "GET_LOCATION_FAILED": "Failed to get current location",
+      "LOCATION_ACCESS_DENIED": "Location access denied. Please enable location services.",
+      "LOCATION_UNAVAILABLE": "Location unavailable. Please try again."
+    },
     "SITE_SETTINGS": "Site Settings",
     "ORDERS": "Orders",
     "CATALOG": "Catalog",
@@ -816,7 +891,9 @@
       "SEND_EMAIL_NOTIFICATION": "Send email notification to customer",
       "ORDER_STATUS_HINT": "New → Confirmed → Preparing → Shipped → Delivered",
       "PAYMENT_STATUS_HINT": "Pending → Authorized → Paid",
-      "DELIVERY_STATUS_HINT": "Pending → In Transit → Delivered"
+      "DELIVERY_STATUS_HINT": "Pending → In Transit → Delivered",
+      "UPDATED_MESSAGE": "Order status updated",
+      "UPDATE_FAILED": "Failed to update order status"
     },
     "EMAIL": {
       "TITLE": "Send Email to Customer",
@@ -870,7 +947,15 @@
       "APPROVE": "Approve",
       "CONFIRM_CASH_RETURNED": "Confirm Cash Returned",
       "PROCESS_REFUND": "Process Refund",
-      "NO_REFUND_REQUEST": "No refund request has been submitted for this order."
+      "NO_REFUND_REQUEST": "No refund request has been submitted for this order.",
+      "REFUND_TYPE": "Refund Type",
+      "APPROVED_MESSAGE": "Refund approved",
+      "APPROVE_FAILED": "Failed to approve refund",
+      "REJECTION_REASON_REQUIRED": "Rejection reason is required",
+      "REJECTED_MESSAGE": "Refund rejected",
+      "REJECT_FAILED": "Failed to reject refund",
+      "COD_COMPLETED": "COD refund marked as completed",
+      "CONFIRM_FAILED": "Failed to confirm refund"
     },
     "SITE_SETTINGS_COMPANY_INFO": "Company Information",
     "SITE_SETTINGS_COMPANY_NAME": "Company Name",
@@ -1067,7 +1152,7 @@
       "DELETE_USER": "Obriši korisnika",
       "SETTINGS": "Podešavanja",
       "DASHBOARD": "Kontrolna tabla",
-      "SALES_REPORTS": "Izveštaji o prodaji",
+      "SALES_REPORTS": "Izvještajii o prodaji",
       "INVENTORY_MANAGEMENT": "Upravljanje zalihama",
       "USER_ROLES": "Uloge korisnika",
       "SYSTEM_LOGS": "Sistemski zapisi",
@@ -1095,7 +1180,74 @@
       "TERMS": "Uslovi korišćenja",
       "PRIVACY": "Politika privatnosti",
       "CONTACT_US": "Kontaktirajte nas"
-    }
+    },
+    "ORDER_DETAILS": {
+      "TITLE": "Order Details",
+      "LOADING": "Loading order details...",
+      "ORDER_ID": "Order ID",
+      "ORDER_DATE": "Order Date",
+      "ORDER_STATUS": "Order Status",
+      "TOTAL_AMOUNT": "Total Amount",
+      "CUSTOMER_INFORMATION": "Customer Information",
+      "GUEST": "Guest",
+      "GUEST_ORDER": "Guest Order",
+      "LOGGED_IN": "Logged-in",
+      "ACCOUNT_EMAIL": "Account Email",
+      "DELIVERY_INFORMATION": "Delivery Information",
+      "NO_SHIPPING_ADDRESS": "No shipping address available",
+      "ORDERED_ITEMS": "Ordered Items",
+      "ITEMS_COUNT": "item(s)",
+      "UNIT_PRICE": "Unit Price",
+      "LINE_TOTAL": "Line Total",
+      "NO_ITEMS": "No items in this order",
+      "PRICING_SUMMARY": "Pricing Summary",
+      "STATUS_HISTORY": "Status History",
+      "NO_ORDER_STATUS_HISTORY": "No order status history available",
+      "NO_PAYMENT_STATUS_HISTORY": "No payment status history available",
+      "NO_DELIVERY_STATUS_HISTORY": "No delivery status history available"
+    },
+    "ORDER_MANAGEMENT": {
+      "REFRESH_ORDERS": "Refresh Orders",
+      "EMAIL_NOTIFICATIONS_TOOLTIP": "Enable/disable automatic email notifications to customers when order status changes",
+      "AUTOMATIC_EMAIL": "Automatic Email",
+      "CANNOT_CHANGE_REFUNDED": "Cannot change status of refunded order",
+      "STATUS_UPDATE_FAILED": "Failed to update status",
+      "PAYMENT_STATUS_UPDATE_FAILED": "Failed to update payment status",
+      "DELIVERY_STATUS_UPDATE_FAILED": "Failed to update delivery status"
+    },
+    "SITE_SETTINGS_SAMPLE_PRICE": "Sample Price",
+    "SITE_SETTINGS_DISCOUNT_VALUE": "Discount Value",
+    "SITE_SETTINGS_PAYMENT_METHODS": "Payment Methods",
+    "SITE_SETTINGS_PAYMENT_METHODS_HINT": "Choose which payment methods customers can use at checkout.",
+    "SITE_SETTINGS_PAYMENT_BOTH": "Both",
+    "SITE_SETTINGS_PAYMENT_BOTH_DESC": "Customers can pay with Stripe (card) or Cash on Delivery",
+    "SITE_SETTINGS_PAYMENT_STRIPE_ONLY": "Stripe Only",
+    "SITE_SETTINGS_PAYMENT_STRIPE_ONLY_DESC": "Customers can only pay online with credit/debit card via Stripe",
+    "SITE_SETTINGS_PAYMENT_CASH_ONLY": "Cash on Delivery Only",
+    "SITE_SETTINGS_PAYMENT_CASH_ONLY_DESC": "Customers pay in cash when the order is delivered",
+    "SITE_SETTINGS_SAVE_PAYMENT": "Save Payment Settings",
+    "SITE_SETTINGS_COMPANY_INFO_SAVED": "Company info saved",
+    "SITE_SETTINGS_LOGO_SAVED": "Logo saved",
+    "SITE_SETTINGS_SOCIAL_LINKS_SAVED": "Social media links saved",
+    "SITE_SETTINGS_GALLERY_UPLOAD_SUCCESS": "Successfully uploaded {{count}} gallery image(s)",
+    "SITE_SETTINGS_GALLERY_UPLOAD_FAILED": "Failed to upload gallery images",
+    "SITE_SETTINGS_GALLERY_UPDATED": "Gallery updated",
+    "DELIVERY_METHODS_LOAD_FAILED": "Failed to load delivery methods",
+    "DELIVERY_TITLE_DESCRIPTION_REQUIRED": "Title and description are required",
+    "DELIVERY_METHOD_ADDED": "Delivery method added",
+    "DELIVERY_METHOD_ADD_FAILED": "Failed to add delivery method",
+    "DELIVERY_METHOD_DELETED": "Delivery method deleted",
+    "DELIVERY_METHOD_DELETE_FAILED": "Failed to delete delivery method",
+    "COUNTRY_NAME_REQUIRED": "Country name is required",
+    "COUNTRY_ALREADY_EXISTS": "Country already exists",
+    "ALLOWED_COUNTRIES_SAVED": "Allowed countries saved",
+    "PAYMENT_METHODS_SAVED": "Payment methods saved",
+    "CURRENCY_SETTINGS_SAVED": "Currency settings saved",
+    "INVALID_IMAGE_FILE": "Please select a valid image file",
+    "IMAGE_SIZE_TOO_LARGE": "Image size must be less than 5MB",
+    "IMAGE_READ_FAILED": "Failed to read image file",
+    "EMAIL_SENT_SUCCESS": "Email sent successfully",
+    "EMAIL_SEND_FAILED": "Failed to send email"
   },
   "ABOUT": {
     "DEFAULT_TITLE": "About Us",
@@ -1266,11 +1418,34 @@
     "DEACTIVATE": "Deactivate",
     "NO_VOUCHERS": "No vouchers created yet.",
     "CODE_PLACEHOLDER": "e.g. SUMMER2026",
-    "DESCRIPTION_PLACEHOLDER": "Description"
+    "DESCRIPTION_PLACEHOLDER": "Description",
+    "STATUS_HISTORY_TITLE": "Voucher Status History - {{code}}",
+    "LOADING_HISTORY": "Loading history...",
+    "NO_STATUS_CHANGES": "No status changes recorded for this voucher.",
+    "DATE_TIME": "Date & Time",
+    "CHANGED_BY": "Changed By",
+    "REASON": "Reason",
+    "SEARCH_PLACEHOLDER": "Search by code or description",
+    "TYPE": "Voucher Type",
+    "VIEW_STATUS_HISTORY": "View Status History",
+    "SORT_CODE_ASC": "Code (A-Z)",
+    "SORT_CODE_DESC": "Code (Z-A)",
+    "LOAD_FAILED": "Failed to load vouchers",
+    "CODE_REQUIRED": "Voucher code is required",
+    "SINGLE_DISCOUNT_TYPE_REQUIRED": "Voucher can have either amount off OR percent off, not both",
+    "AMOUNT_OFF_NEGATIVE": "Amount off cannot be negative",
+    "PERCENT_OFF_RANGE": "Percent off must be between 0 and 100",
+    "CREATED": "Voucher created",
+    "CREATE_FAILED": "Failed to create voucher",
+    "ACTIVATED": "Voucher activated",
+    "ACTIVATE_FAILED": "Failed to activate voucher",
+    "DEACTIVATED": "Voucher deactivated",
+    "DEACTIVATE_FAILED": "Failed to deactivate voucher",
+    "HISTORY_LOAD_FAILED": "Failed to load voucher history"
   },
   "ARIA_LABELS": {
     "GRID_VIEW": "Grid View",
-    "LIST_VIEW": "List View", 
+    "LIST_VIEW": "List View",
     "BACK_TO_SHOP": "Back to shop",
     "PREVIOUS_IMAGE": "Previous image",
     "NEXT_IMAGE": "Next image",
@@ -1288,6 +1463,78 @@
     "ERROR_ADDING_REVIEW": "Error adding review",
     "MUST_BE_LOGGED_IN_FOR_REVIEW": "You must be logged in to leave a review",
     "LOCATION_REQUEST_TIMED_OUT": "Location request timed out. Please try again.",
-    "ERROR_UPDATING_SHOP_LOCATION": "Error updating shop location"
+    "ERROR_UPDATING_SHOP_LOCATION": "Error updating shop location",
+    "NETWORK_ERROR": "Network error. Please check your connection.",
+    "PLEASE_LOGIN": "Please log in to continue",
+    "NO_PERMISSION": "You do not have permission to perform this action",
+    "RESOURCE_NOT_FOUND": "Resource not found",
+    "SERVER_TRY_LATER": "Server error. Please try again later",
+    "UNEXPECTED": "An unexpected error occurred",
+    "GENERIC": "An error occurred",
+    "FAILED_LOAD_SHOP_LOCATION": "Failed to load shop location",
+    "FAILED_LOAD_PRODUCT": "Failed to load product",
+    "FAILED_LOAD_PRODUCTS": "Failed to load products",
+    "FAILED_ADD_FAVORITES": "Failed to add to favorites",
+    "FAILED_REMOVE_FAVORITES": "Failed to remove from favorites"
+  },
+  "ACCOUNT": {
+    "FORGOT_PASSWORD": {
+      "CHECK_EMAIL_TITLE": "Check Your Email",
+      "CHECK_SPAM": "If you don't see the email, check your spam folder.",
+      "BACK_TO_LOGIN": "Back to Login",
+      "TITLE": "Forgot Password?",
+      "DESCRIPTION": "Enter the email address associated with your account and we'll send you a link to reset your password.",
+      "EMAIL_PLACEHOLDER": "Enter your email",
+      "SEND_RESET_LINK": "Send Reset Link",
+      "SENDING": "Sending...",
+      "ERROR_GENERIC": "Something went wrong. Please try again."
+    },
+    "RESET_PASSWORD": {
+      "INVALID_LINK_TITLE": "Invalid Reset Link",
+      "INVALID_LINK_MESSAGE": "This password reset link is invalid or incomplete. Please request a new one.",
+      "REQUEST_NEW_LINK": "Request New Link",
+      "SUCCESS_TITLE": "Password Reset Successfully",
+      "SUCCESS_MESSAGE": "Your password has been changed. You can now log in with your new password.",
+      "GO_TO_LOGIN": "Go to Login",
+      "TITLE": "Set New Password",
+      "DESCRIPTION": "Enter your new password below.",
+      "NEW_PASSWORD": "New Password",
+      "NEW_PASSWORD_PLACEHOLDER": "At least 8 characters",
+      "RESET_PASSWORD": "Reset Password",
+      "RESETTING": "Resetting..."
+    },
+    "LOGIN": {
+      "TOGGLE_PASSWORD_VISIBILITY": "Toggle password visibility"
+    }
+  },
+  "ANALYTICS": {
+    "TABS": {
+      "REVENUE": "Revenue",
+      "ORDERS": "Orders",
+      "PRODUCTS": "Products",
+      "CUSTOMERS": "Customers"
+    },
+    "LOADING": "Loading analytics data...",
+    "CHARTS": {
+      "REVENUE_BY_MONTH": "Revenue by Month",
+      "REVENUE_BY_PAYMENT_METHOD": "Revenue by Payment Method",
+      "MONTHLY_ORDER_VOLUME": "Monthly Order Volume",
+      "ORDERS_BY_STATUS": "Orders by Status",
+      "TOP_PRODUCTS_BY_STOCK": "Top 10 Products by Stock Level",
+      "PRODUCTS_BY_TYPE": "Products by Type",
+      "TOP_CUSTOMERS_BY_ORDERS": "Top 10 Customers by Orders",
+      "CUSTOMERS_BY_STATUS": "Customers by Status"
+    },
+    "NO_SELECTION_TITLE": "Select a category to view analytics",
+    "NO_SELECTION_MESSAGE": "Choose from Revenue, Orders, Products, or Customers above"
+  },
+  "REPORTS": {
+    "LOADING_REPORT_DATA": "Loading report data...",
+    "NO_DATA_AVAILABLE": "No data available",
+    "NO_DATA_MESSAGE": "Try adjusting your filters or check back later.",
+    "SUMMARY": "Summary",
+    "METRIC": "Metric",
+    "VALUE": "Value",
+    "PRINT_REPORT": "Print report"
   }
 }

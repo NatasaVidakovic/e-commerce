@@ -5,6 +5,7 @@
 
 # dotenv files
 .env
+.codex-run/
 
 # Local development secrets — never commit these
 API/appsettings.Development.json

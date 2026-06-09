@@ -36,7 +36,7 @@ export class ShopLocationService {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set('Failed to load shop location');
+        this.error.set('ERROR_MESSAGES.FAILED_LOAD_SHOP_LOCATION');
         this.loading.set(false);
         console.error('Error loading shop location:', err);
       }

@@ -1,4 +1,4 @@
-﻿using Core.DTOs;
+using Core.DTOs;
 using Core.Entities;
 using API.Extensions;
 
@@ -8,8 +8,8 @@ public class ProductMapping : BaseMapping<ProductDto, Product>
 {
     public override ProductDto ToDto(Product product)
     {
-        var pictureUrl = !string.IsNullOrEmpty(product.PictureUrl) 
-            ? RewriteLocalImageUrl(product.PictureUrl) 
+        var pictureUrl = !string.IsNullOrEmpty(product.PictureUrl)
+            ? RewriteLocalImageUrl(product.PictureUrl)
             : RewriteLocalImageUrl(product.Images?.OrderBy(i => i.DisplayOrder).FirstOrDefault()?.Url ?? "");
 
         var dto = new ProductDto
@@ -22,8 +22,8 @@ public class ProductMapping : BaseMapping<ProductDto, Product>
             Brand = product.Brand,
             QuantityInStock = product.QuantityInStock,
             Id = product.Id,
-            Rating = product.Reviews != null && product.Reviews.Any() 
-                ? (float)Math.Round(product.Reviews.Average(r => (double)r.Rating), 2) 
+            Rating = product.Reviews != null && product.Reviews.Any()
+                ? (float)Math.Round(product.Reviews.Average(r => (double)(r.Rating ?? 0)), 2)
                 : 0,
             ReviewsCount = product.Reviews?.Count ?? 0
         };

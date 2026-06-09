@@ -6,6 +6,7 @@ import { RouterOutlet } from '@angular/router';
 import { AccountService } from './core/services/account.service';
 import { SignalrService } from './core/services/signalr.service';
 import { Router } from '@angular/router';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +28,9 @@ export class AppComponent {
     }
 
     ngOnInit() {
-        this.accountService.getAuthState().subscribe(state => {
+        this.accountService.getAuthState().pipe(
+            catchError(() => of({ isAuthenticated: false }))
+        ).subscribe(state => {
             if (state.isAuthenticated) {
                 this.accountService.getUserInfo().subscribe({
                     next: () => {

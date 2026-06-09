@@ -7,7 +7,7 @@
       <button mat-raised-button (click)="loadOrders()" [disabled]="loading"
         class="bg-blue-600 text-white hover:bg-blue-700">
         <mat-icon class="mr-2">refresh</mat-icon>
-        Refresh Orders
+        {{ 'ADMIN.ORDER_MANAGEMENT.REFRESH_ORDERS' | translate }}
       </button>
       @if (selectedOrder) {
         <button mat-raised-button (click)="downloadInvoice(selectedOrder)"
@@ -22,7 +22,7 @@
         </button>
       }
       <div class="header-email-toggle"
-        matTooltip="Enable/disable automatic email notifications to customers when order status changes"
+        [matTooltip]="'ADMIN.ORDER_MANAGEMENT.EMAIL_NOTIFICATIONS_TOOLTIP' | translate"
         matTooltipPosition="below">
         <mat-icon class="header-toggle-icon" [class.icon-enabled]="sendEmailNotifications"
           [class.icon-disabled]="!sendEmailNotifications">
@@ -30,7 +30,7 @@
         </mat-icon>
         <span class="header-toggle-label" [class.text-enabled]="sendEmailNotifications"
           [class.text-disabled]="!sendEmailNotifications">
-          Automatic Email {{ sendEmailNotifications ? 'On' : 'Off' }}
+          {{ 'ADMIN.ORDER_MANAGEMENT.AUTOMATIC_EMAIL' | translate }} {{ sendEmailNotifications ? ('COMMON.ON' | translate) : ('COMMON.OFF' | translate) }}
         </span>
         <mat-slide-toggle [(ngModel)]="sendEmailNotifications" (change)="onEmailNotificationToggle()"
           class="header-toggle">
@@ -64,7 +64,7 @@
             <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.COLUMNS.CUSTOMER' | translate }}</th>
             <td mat-cell *matCellDef="let order" class="truncate max-w-[180px]" [matTooltip]="order.isGuestOrder ? 'Guest: ' + (order.guestName || '') + ' | ' + order.buyerEmail + ' | ' + (order.guestPhone || '') : order.buyerEmail">
               @if (order.isGuestOrder) {
-                <span class="badge compact-badge" style="background-color: #f59e0b; color: white; font-size: 10px; padding: 1px 6px; margin-right: 4px;">Guest</span>
+                <span class="badge compact-badge" style="background-color: #f59e0b; color: white; font-size: 10px; padding: 1px 6px; margin-right: 4px;">{{ 'ADMIN.ORDER_DETAILS.GUEST' | translate }}</span>
               }
               {{order.buyerEmail}}
             </td>
@@ -143,14 +143,14 @@
                 </button>
                 <button mat-icon-button [disabled]="updatingOrder[order.id] || !hasRefundRequest(order.id)"
                   (click)="quickRefund(order)"
-                  [matTooltip]="hasRefundRequest(order.id) ? getRefundStatusTooltip(getRefundStatus(order.id)) : 'No refund requested'"
+                  [matTooltip]="hasRefundRequest(order.id) ? getRefundStatusTooltip(getRefundStatus(order.id)) : ('TOOLTIPS.NO_REFUND_REQUEST' | translate)"
                   matTooltipDisabled="false">
                   <mat-icon
                     [class]="hasRefundRequest(order.id) ? getRefundStatusColor(getRefundStatus(order.id)) : 'text-gray-400'"
                     [style]="hasRefundRequest(order.id) ? 'font-size: 22px !important;' : 'font-size: 20px;'">undo</mat-icon>
                 </button>
                 <button mat-icon-button (click)="openOrderDetails(order)" (dblclick)="$event.stopPropagation()"
-                  matTooltip="View Details">
+                  matTooltip="{{ 'TOOLTIPS.VIEW_DETAILS' | translate }}">
                   <mat-icon class="text-blue-600" style="font-size: 20px;">visibility</mat-icon>
                 </button>
               </div>
@@ -177,7 +177,7 @@
               <a routerLink="/orders/{{order.id}}" class="order-id-link">#{{order.id}}</a>
               <div class="order-customer">
                 @if (order.isGuestOrder) {
-                  <span style="background-color: #f59e0b; color: white; font-size: 10px; padding: 1px 6px; border-radius: 4px; margin-right: 4px;">Guest</span>
+                  <span style="background-color: #f59e0b; color: white; font-size: 10px; padding: 1px 6px; border-radius: 4px; margin-right: 4px;">{{ 'ADMIN.ORDER_DETAILS.GUEST' | translate }}</span>
                 }
                 {{ order.buyerEmail }}
               </div>
@@ -203,7 +203,7 @@
             
             <div class="order-statuses">
               <div class="status-group">
-                <label class="status-label">Payment:</label>
+                <label class="status-label">{{ 'CHECKOUT.PAYMENT' | translate }}:</label>
                 <select class="inline-status-select compact-select mobile-select"
                   [ngClass]="'ps-' + order.paymentStatus.toLowerCase()" [ngModel]="order.paymentStatus"
                   [disabled]="updatingOrder[order.id] || isOrderRefunded(order)"
@@ -214,7 +214,7 @@
               </div>
               
               <div class="status-group">
-                <label class="status-label">Order:</label>
+                <label class="status-label">{{ 'ORDERS.ORDER' | translate }}:</label>
                 <select class="inline-status-select compact-select mobile-select" [ngClass]="'os-' + order.status.toLowerCase()"
                   [ngModel]="order.status" [disabled]="updatingOrder[order.id] || isOrderRefunded(order)"
                   [matTooltip]="isOrderRefunded(order) ? getRefundStatusMessage(order) : ''"
@@ -224,7 +224,7 @@
               </div>
               
               <div class="status-group">
-                <label class="status-label">Delivery:</label>
+                <label class="status-label">{{ 'CHECKOUT.SHIPPING' | translate }}:</label>
                 <select class="inline-status-select compact-select mobile-select"
                   [ngClass]="'ds-' + order.deliveryStatus.toLowerCase()" [ngModel]="order.deliveryStatus"
                   [disabled]="updatingOrder[order.id] || isOrderRefunded(order)"
@@ -242,14 +242,14 @@
               </button>
               <button mat-icon-button [disabled]="updatingOrder[order.id] || !hasRefundRequest(order.id)"
                 (click)="quickRefund(order)"
-                [matTooltip]="hasRefundRequest(order.id) ? getRefundStatusTooltip(getRefundStatus(order.id)) : 'No refund requested'"
+                [matTooltip]="hasRefundRequest(order.id) ? getRefundStatusTooltip(getRefundStatus(order.id)) : ('TOOLTIPS.NO_REFUND_REQUEST' | translate)"
                 matTooltipDisabled="false">
                 <mat-icon
                   [class]="hasRefundRequest(order.id) ? getRefundStatusColor(getRefundStatus(order.id)) : 'text-gray-400'"
                   [style]="hasRefundRequest(order.id) ? 'font-size: 22px !important;' : 'font-size: 20px;'">undo</mat-icon>
               </button>
               <button mat-icon-button (click)="openOrderDetails(order)" (dblclick)="$event.stopPropagation()"
-                matTooltip="View Details">
+                matTooltip="{{ 'TOOLTIPS.VIEW_DETAILS' | translate }}">
                 <mat-icon class="text-blue-600" style="font-size: 20px;">visibility</mat-icon>
               </button>
             </div>
