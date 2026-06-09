@@ -75,11 +75,11 @@
       <!-- Product Images -->
       <div class="mt-6">
         <h3 class="text-lg font-semibold mb-3">{{ 'PRODUCT.IMAGES' | translate }}</h3>
-        <p class="text-sm mb-3" style="color: var(--color-text-secondary);">Upload images for this product. Click the star to set the main image.</p>
+        <p class="text-sm mb-3" style="color: var(--color-text-secondary);">{{ 'PRODUCT.UPLOAD_IMAGES_HELP' | translate }}</p>
         <div class="flex gap-2 mb-3">
           <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="uploadingImage" class="image-button">
             <mat-icon class="button-icon">upload_file</mat-icon>
-            <span class="button-text">{{ uploadingImage ? 'Uploading...' : ('PRODUCT.UPLOAD' | translate) }}</span>
+            <span class="button-text">{{ uploadingImage ? ('COMMON.UPLOADING' | translate) : ('PRODUCT.UPLOAD' | translate) }}</span>
           </button>
           <input #fileInput type="file" accept="image/*" multiple hidden (change)="onFilesSelected($event)" />
         </div>
@@ -88,13 +88,13 @@
                class="flex items-center gap-2 sm:gap-3 p-2 rounded-lg border"
                [style.border-color]="img.isPrimary ? 'var(--color-primary, #3b82f6)' : 'var(--color-border-primary, #e0e0e0)'"
                [style.border-width]="img.isPrimary ? '2px' : '1px'">
-            <img [src]="img.url" class="w-14 h-14 object-cover rounded" alt="Product image" />
+            <img [src]="img.url" class="w-14 h-14 object-cover rounded" [alt]="'COMMON.PRODUCT_IMAGE' | translate" />
             <div class="flex-1 min-w-0">
               <span *ngIf="img.isPrimary" class="text-xs font-semibold px-2 py-0.5 rounded" style="background-color: var(--color-primary, #3b82f6); color: white;">{{ 'PRODUCT.MAIN' | translate }}</span>
               <p class="text-sm truncate mt-1" style="color: var(--color-text-secondary);">{{ img.altText || ('Image ' + (i + 1)) }}</p>
             </div>
             <button mat-icon-button type="button" (click)="setPrimary(i)" [disabled]="img.isPrimary"
-                    [style.color]="img.isPrimary ? 'var(--color-primary)' : 'inherit'" title="Set as main image">
+                    [style.color]="img.isPrimary ? 'var(--color-primary)' : 'inherit'" [attr.title]="'PRODUCT.SET_AS_MAIN_IMAGE' | translate">
               <mat-icon>{{ img.isPrimary ? 'star' : 'star_border' }}</mat-icon>
             </button>
             <button mat-icon-button type="button" (click)="moveImage(i, -1)" [disabled]="i === 0">

@@ -75,11 +75,11 @@
         <h5 class="preview-title">{{ 'ADMIN.SITE_SETTINGS_CURRENCY_PREVIEW' | translate }}</h5>
         <div class="preview-examples">
           <div class="preview-item">
-            <span class="preview-label">Sample Price:</span>
+            <span class="preview-label">{{ 'ADMIN.SITE_SETTINGS_SAMPLE_PRICE' | translate }}:</span>
             <span class="preview-value">{{ 1234.56 | appCurrency }}</span>
           </div>
           <div class="preview-item">
-            <span class="preview-label">Discount Value:</span>
+            <span class="preview-label">{{ 'ADMIN.SITE_SETTINGS_DISCOUNT_VALUE' | translate }}:</span>
             <span class="preview-value">{{ 100 | appCurrency }}</span>
           </div>
         </div>
@@ -166,7 +166,7 @@
         <span class="field-hint">{{ 'ADMIN.SITE_SETTINGS_WELCOME_IMAGE_HINT' | translate }}</span>
         <span *ngIf="showWelcomeImage && !welcomeImageUrl" class="validation-error">
           <mat-icon>error</mat-icon>
-          Image is required when "Show welcome image" is enabled
+          {{ 'ERROR_MESSAGES.PLEASE_UPLOAD_IMAGE' | translate }}
         </span>
 
         <div *ngIf="welcomeImageUrl" class="image-preview">
@@ -333,17 +333,17 @@
     </mat-card-content>
   </mat-card>
 
-  <!-- Payment Methods -->
+  <!-- {{ 'ADMIN.SITE_SETTINGS_PAYMENT_METHODS' | translate }} -->
   <mat-card class="settings-card">
     <mat-card-header>
       <mat-card-title class="card-title">
         <mat-icon class="title-icon">payment</mat-icon>
-        Payment Methods
+        {{ 'ADMIN.SITE_SETTINGS_PAYMENT_METHODS' | translate }}
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <p class="field-hint" style="margin-bottom: 16px;">
-        Choose which payment methods customers can use at checkout.
+        {{ 'ADMIN.SITE_SETTINGS_PAYMENT_METHODS_HINT' | translate }}
       </p>
 
       <div class="payment-options">
@@ -352,8 +352,8 @@
           <input type="radio" name="paymentMethods" value="both" [(ngModel)]="paymentMethods">
           <mat-icon class="payment-option-icon">account_balance_wallet</mat-icon>
           <div class="payment-option-text">
-            <span class="payment-option-title">Both</span>
-            <span class="payment-option-desc">Customers can pay with Stripe (card) or Cash on Delivery</span>
+            <span class="payment-option-title">{{ 'ADMIN.SITE_SETTINGS_PAYMENT_BOTH' | translate }}</span>
+            <span class="payment-option-desc">{{ 'ADMIN.SITE_SETTINGS_PAYMENT_BOTH_DESC' | translate }}</span>
           </div>
         </label>
 
@@ -362,8 +362,8 @@
           <input type="radio" name="paymentMethods" value="stripe" [(ngModel)]="paymentMethods">
           <mat-icon class="payment-option-icon">credit_card</mat-icon>
           <div class="payment-option-text">
-            <span class="payment-option-title">Stripe Only</span>
-            <span class="payment-option-desc">Customers can only pay online with credit/debit card via Stripe</span>
+            <span class="payment-option-title">{{ 'ADMIN.SITE_SETTINGS_PAYMENT_STRIPE_ONLY' | translate }}</span>
+            <span class="payment-option-desc">{{ 'ADMIN.SITE_SETTINGS_PAYMENT_STRIPE_ONLY_DESC' | translate }}</span>
           </div>
         </label>
 
@@ -372,15 +372,15 @@
           <input type="radio" name="paymentMethods" value="cash" [(ngModel)]="paymentMethods">
           <mat-icon class="payment-option-icon">local_atm</mat-icon>
           <div class="payment-option-text">
-            <span class="payment-option-title">Cash on Delivery Only</span>
-            <span class="payment-option-desc">Customers pay in cash when the order is delivered</span>
+            <span class="payment-option-title">{{ 'ADMIN.SITE_SETTINGS_PAYMENT_CASH_ONLY' | translate }}</span>
+            <span class="payment-option-desc">{{ 'ADMIN.SITE_SETTINGS_PAYMENT_CASH_ONLY_DESC' | translate }}</span>
           </div>
         </label>
       </div>
 
       <button mat-flat-button color="primary" (click)="savePaymentMethods()" class="save-btn">
         <mat-icon>save</mat-icon>
-        Save Payment Settings
+        {{ 'ADMIN.SITE_SETTINGS_SAVE_PAYMENT' | translate }}
       </button>
     </mat-card-content>
   </mat-card>

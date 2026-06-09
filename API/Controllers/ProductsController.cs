@@ -8,14 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using API.Mappings;
 using API.Extensions;
 
 namespace API.Controllers;
 
-public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManager, IReviewService reviewService, IProductService productService, IImageStorageService imageStorageService, ILogger<ProductsController> logger) : BaseApiController
+public class ProductsController(IUnitOfWork unit, IReviewService reviewService, IProductService productService, IImageStorageService imageStorageService, ILogger<ProductsController> logger) : BaseApiController
 {
     [Cached(1)]
     [HttpGet]
@@ -44,7 +43,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
         {
             var bestSellingProducts = await productService.GetBestSellingProductsListAsync();
             var productIds = bestSellingProducts.Select(p => p.Id).ToList();
-            
+
             model.InitialQuery = unit.Repository<Product>()
                 .ListAllQueryiableAsync()
                 .Include(p => p.Reviews)
@@ -101,7 +100,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
             .Include(p => p.Images)
             .Include(p => p.Discounts)
             .FirstOrDefaultAsync(p => p.Id == id);
-            
+
         if (productEntity == null) return NotFound();
 
         var reviews = await reviewService.GetReviewsForProductId(id);
@@ -111,6 +110,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
     }
 
     [InvalidateCache("api/products|")]
+    [Authorize(Roles = "Admin")]
     [HttpPost("{productId}/discounts")]
     public async Task<ActionResult<ProductDetailsDto>> ApplyDiscount(int productId, [FromBody] int discountId)
     {
@@ -119,6 +119,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
     }
 
      [InvalidateCache("api/products|")]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{productId}/discounts")]
     public async Task<ActionResult<ProductDetailsDto>> DeleteDiscount(int productId, [FromBody] int discountId)
     {
@@ -150,7 +151,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
             // Reload the product with the ProductType navigation property
             var createdProduct = await unit.Repository<Product>()
                 .GetByIdAsync(product.Id);
-            
+
             return CreatedAtAction("GetProduct", new { id = product.Id }, createdProduct);
         }
 
@@ -235,6 +236,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
         [FromQuery] bool discountedOnly = false)
     {
         var today = DateTime.UtcNow.Date;
+        var tomorrow = today.AddDays(1);
 
         IQueryable<Product> query = unit.Repository<Product>().ListAllQueryiableAsync()
             .Include(p => p.Reviews)
@@ -244,15 +246,25 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
 
         if (discountId.HasValue)
         {
-            query = query.Where(p =>
-                p.Discounts.Any(d => d.Id == discountId.Value && d.IsActive &&
-                    d.DateFrom.Date <= today && today <= d.DateTo.Date));
+            var discountedProductIds = await unit.Repository<Discount>()
+                .ListAllQueryiableAsync()
+                .Where(d => d.Id == discountId.Value && d.IsActive && d.DateFrom < tomorrow && d.DateTo >= today)
+                .SelectMany(d => d.Products.Select(p => p.Id))
+                .Distinct()
+                .ToListAsync();
+
+            query = query.Where(p => discountedProductIds.Contains(p.Id));
         }
         else if (discountedOnly)
         {
-            query = query.Where(p =>
-                p.Discounts.Any(d => d.IsActive &&
-                    d.DateFrom.Date <= today && today <= d.DateTo.Date));
+            var discountedProductIds = await unit.Repository<Discount>()
+                .ListAllQueryiableAsync()
+                .Where(d => d.IsActive && d.DateFrom < tomorrow && d.DateTo >= today)
+                .SelectMany(d => d.Products.Select(p => p.Id))
+                .Distinct()
+                .ToListAsync();
+
+            query = query.Where(p => discountedProductIds.Contains(p.Id));
         }
 
         model.InitialQuery = query;
@@ -293,7 +305,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
         try
         {
             var bestReviewed = await productService.GetProductsByRatingAsync();
-            var productsWithRating = bestReviewed.Select(p => new 
+            var productsWithRating = bestReviewed.Select(p => new
             {
                 Product = p.Item1,
                 Rating = p.Item2,
@@ -301,13 +313,13 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
             }).ToList();
 
             var productIds = productsWithRating.Select(p => p.Product.Id).ToList();
-            
+
             var isRatingSort = model.Column == "Rating";
             if (isRatingSort)
             {
                 model.Column = "Id";
             }
-            
+
             model.InitialQuery = unit.Repository<Product>()
                 .ListAllQueryiableAsync()
                 .Include(p => p.Reviews)
@@ -320,7 +332,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
             model.GetResult();
 
             var ratingDict = productsWithRating.ToDictionary(p => p.Product.Id, p => new { p.Rating, p.TotalRatings });
-            
+
             var dataWithRating = model.Data.Select(p => new ProductRatingDto
             {
                 Product = p,
@@ -330,11 +342,11 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
 
             if (isRatingSort)
             {
-                dataWithRating = model.Descending 
+                dataWithRating = model.Descending
                     ? dataWithRating.OrderByDescending(x => x.Rating).ToList()
                     : dataWithRating.OrderBy(x => x.Rating).ToList();
             }
-            
+
             var result = new
             {
                 model.CurrentPage,
@@ -372,7 +384,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
         {
             var suggestedProducts = await productService.GetSuggestedProductsListAsync();
             var productIds = suggestedProducts.Select(p => p.Id).ToList();
-            
+
             model.InitialQuery = unit.Repository<Product>()
                 .ListAllQueryiableAsync()
                 .Include(p => p.Reviews)
@@ -726,6 +738,7 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
 
     [HttpPost("{productId}/reviews")]
     [InvalidateCache("api/products|")]
+    [Authorize]
     public async Task<ActionResult> PostReviewForProductId(int productId, PostReviewDto reviewDto)
     {
 
@@ -749,16 +762,26 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
 
     [HttpDelete("{productId}/reviews/{reviewId}")]
     [InvalidateCache("api/products|")]
+    [Authorize]
     public async Task<ActionResult> DeleteReviewForProductId(int productId, int reviewId)
     {
+        var review = await unit.Repository<Review>().GetByIdAsync(reviewId);
+        if (review == null || review.ProductId != productId) return NotFound();
+        if (!CanManageReview(review)) return Forbid();
+
         await reviewService.DeleteReviewForProductId(productId, reviewId);
         return Ok();
     }
 
     [HttpPut("{productId}/reviews/{reviewId}")]
     [InvalidateCache("api/products|")]
+    [Authorize]
     public async Task<ActionResult> UpdateReviewForProductId(int productId, int reviewId, ReviewDto reviewDto)
     {
+        var review = await unit.Repository<Review>().GetByIdAsync(reviewId);
+        if (review == null || review.ProductId != productId) return NotFound();
+        if (!CanManageReview(review)) return Forbid();
+
         var reviewEntity = reviewDto.ToEntity();
         await reviewService.UpdateReviewForProductId(productId, reviewId, reviewEntity);
         return Ok();
@@ -769,6 +792,14 @@ public class ProductsController(IUnitOfWork unit, UserManager<AppUser> userManag
     private bool ProductExists(int id)
     {
         return unit.Repository<Product>().Exists(id);
+    }
+
+    private bool CanManageReview(Review review)
+    {
+        if (User.IsInRole("Admin")) return true;
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return !string.IsNullOrWhiteSpace(userId) &&
+               string.Equals(review.AppUserId, userId, StringComparison.Ordinal);
     }
     #endregion
 }

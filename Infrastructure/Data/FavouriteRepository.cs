@@ -32,7 +32,7 @@ public class FavouriteRepository(StoreContext context) : IFavouriteRepository
        return await context.SaveChangesAsync() > 0;
    }
 
-   public async Task<Favourite> GetFavouriteAsync(string buyerEmail, int productId)
+   public async Task<Favourite?> GetFavouriteAsync(string buyerEmail, int productId)
 {
     return await context.Favourites.FirstOrDefaultAsync(f => f.BuyerEmail == buyerEmail && f.ProductId == productId);
 }

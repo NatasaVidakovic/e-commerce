@@ -40,8 +40,12 @@ public class SeedDataService : ISeedDataService
                 Email = "buyer@test.com"
             };
 
-            var defaultPassword = Environment.GetEnvironmentVariable("ADMIN_USER_PASSWORD") ?? "Pa$$w0rd";
-            var testUserPassword = Environment.GetEnvironmentVariable("TEST_USER_PASSWORD") ?? "Pa$$w0rd";
+            var defaultPassword = Environment.GetEnvironmentVariable("ADMIN_USER_PASSWORD");
+            if (string.IsNullOrWhiteSpace(defaultPassword))
+            {
+                throw new InvalidOperationException("ADMIN_USER_PASSWORD must be set before seeding the default admin user.");
+            }
+
             await userManager.CreateAsync(user, defaultPassword);
 
         if (!await roleManager.RoleExistsAsync("Admin"))
@@ -50,7 +54,7 @@ public class SeedDataService : ISeedDataService
                     }
 
             await userManager.AddToRoleAsync(user, "Admin");
-            
+
             await userManager.CreateAsync(buyer, defaultPassword);
         }
 

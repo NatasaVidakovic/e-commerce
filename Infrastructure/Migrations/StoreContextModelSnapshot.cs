@@ -1176,7 +1176,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("ShippingAddress")
                         .IsRequired();
 
-                    b.Navigation("Tracking");
+                    b.Navigation("Tracking")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Core.Entities.OrderAggregate.OrderAuditLog", b =>

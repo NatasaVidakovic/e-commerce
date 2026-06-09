@@ -1,5 +1,5 @@
-@import '../../../styles/breakpoints';
-@import '../../../styles/spacing';
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/spacing' as *;
 
 .cart-section {
   width: 100%;
@@ -12,7 +12,7 @@
   flex-direction: column;
   gap: $spacing-6;
   width: 100%;
-  
+
   @include lg {
     flex-direction: row;
     align-items: flex-start;
@@ -25,11 +25,11 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  
+
   @include md {
     gap: $spacing-3;
   }
-  
+
   @include lg {
     flex: 3;
     gap: $spacing-4;
@@ -60,7 +60,7 @@
   width: 100%;
   position: sticky;
   top: 5rem;
-  
+
   @include lg {
     flex: 1;
     max-width: 24rem;

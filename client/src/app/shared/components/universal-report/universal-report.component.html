@@ -10,7 +10,7 @@
   <!-- Loading State -->
   <div class="loading-state" *ngIf="loading">
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-    <p>Loading report data...</p>
+    <p>{{ 'REPORTS.LOADING_REPORT_DATA' | translate }}</p>
   </div>
 
   <!-- Report Content -->
@@ -39,20 +39,20 @@
     <!-- Empty State -->
     <div class="empty-state" *ngIf="data.length === 0">
       <mat-icon>inbox</mat-icon>
-      <h3>No data available</h3>
-      <p>Try adjusting your filters or check back later.</p>
+      <h3>{{ 'REPORTS.NO_DATA_AVAILABLE' | translate }}</h3>
+      <p>{{ 'REPORTS.NO_DATA_MESSAGE' | translate }}</p>
     </div>
   </div>
 
   <!-- Summary Section -->
   <div class="summary-section" *ngIf="summaryMetrics.length > 0">
-    <h3>Summary</h3>
+    <h3>{{ 'REPORTS.SUMMARY' | translate }}</h3>
     <div class="summary-table-container">
       <table class="summary-table">
         <thead>
           <tr>
-            <th>Metric</th>
-            <th>Value</th>
+            <th>{{ 'REPORTS.METRIC' | translate }}</th>
+            <th>{{ 'REPORTS.VALUE' | translate }}</th>
           </tr>
         </thead>
         <tbody>

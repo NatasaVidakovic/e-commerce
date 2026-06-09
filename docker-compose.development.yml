@@ -6,13 +6,12 @@ services:
     ports:
       - "5001:443"
     environment:
-      - "ConnectionStrings__DefaultConnection=Server=sql;Database=WebShop;User Id=sa;Password=Password@1;TrustServerCertificate=true;MultipleActiveResultSets=true"
-      - "ConnectionStrings__Redis=redis:6379,password=devredis123"
+      - "ConnectionStrings__DefaultConnection=Server=sql;Database=WebShop;User Id=sa;Password=${WEB_SHOP_DB_PASSWORD};TrustServerCertificate=true;MultipleActiveResultSets=true"
+      - "ConnectionStrings__Redis=redis:6379,password=${WEB_SHOP_REDIS_PASSWORD}"
       - "ASPNETCORE_ENVIRONMENT=Development"
       - "ASPNETCORE_URLS=https://+:443"
       - "ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pem"
       - "ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/https/localhost-key.pem"
-      - "DEFAULT_USER_PASSWORD=Pa$$w0rd"
       - "JsReport__Url=http://jsreport:5488"
       - "Cors__AllowedOrigins__0=https://localhost:4200"
       - "Cors__AllowedOrigins__1=https://localhost"
@@ -46,7 +45,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "Password@1"
+      MSSQL_SA_PASSWORD: "${WEB_SHOP_DB_PASSWORD}"
       MSSQL_PID: "Express"
     platform: linux/amd64
     ports:
@@ -54,7 +53,7 @@ services:
     volumes:
       - sql-data:/var/opt/mssql
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Password@1 -Q 'SELECT 1' || exit 0"]
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -Q 'SELECT 1' || exit 0"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -78,9 +77,9 @@ services:
     ports:
       - "5488:5488"
     environment:
-      - "extensions_authentication_enabled=false"
+      - "extensions_authentication_enabled=true"
       - "extensions_assets_allowedFiles=**/*.+(js|css|html|jpg|jpeg|png|svg|ttf)"
-      - "allowLocalFilesAccess=true"
+      - "allowLocalFilesAccess=false"
     volumes:
       - jsreport-data:/jsreport
     networks:

@@ -1,14 +1,14 @@
-@import '../../../styles/breakpoints';
-@import '../../../styles/spacing';
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/spacing' as *;
 
 .admin-container {
   padding: $spacing-3;
   overflow-x: hidden; // Prevent horizontal scroll on container
-  
+
   @include sm {
     padding: $spacing-4;
   }
-  
+
   @include md {
     padding: $spacing-6;
   }
@@ -27,37 +27,37 @@
       display: flex !important;
       flex-wrap: nowrap !important;
       position: relative;
-      
+
       // Enhanced mobile touch scrolling
       touch-action: pan-x pan-y pinch-zoom !important;
       -webkit-overflow-scrolling: touch !important;
       scroll-behavior: smooth;
-      
+
       // Force disable Material's touch handling on mobile
       pointer-events: auto !important;
-      
+
       // Custom scrollbar for webkit browsers
       &::-webkit-scrollbar {
         height: 8px !important;
         width: 8px !important;
         display: block !important;
       }
-      
+
       &::-webkit-scrollbar-track {
         background: var(--color-bg-primary);
         display: block !important;
       }
-      
+
       &::-webkit-scrollbar-thumb {
         background: var(--color-border-primary);
         border-radius: 4px;
         display: block !important;
-        
+
         &:hover {
           background: var(--color-text-secondary);
         }
       }
-      
+
       // Force scrolling on all small screens
       @media (max-width: 1023px) {
         overflow-x: auto !important;
@@ -65,7 +65,7 @@
         touch-action: pan-x pan-y pinch-zoom !important;
         -webkit-overflow-scrolling: touch !important;
       }
-      
+
       // Specific mobile fixes - more aggressive
       @media (max-width: 767px) {
         overflow-x: scroll !important;
@@ -73,7 +73,7 @@
         touch-action: pan-x pan-y pinch-zoom !important;
         scroll-behavior: smooth;
         pointer-events: auto !important;
-        
+
         // Force visible scrollbar on mobile
         &::-webkit-scrollbar {
           display: block !important;
@@ -81,12 +81,12 @@
           width: 8px !important;
         }
       }
-      
+
       @include md {
         overflow-x: visible;
       }
     }
-    
+
     .mat-mdc-tab-label {
       min-width: auto;
       max-width: none !important;
@@ -99,70 +99,70 @@
       white-space: nowrap;
       flex-shrink: 0 !important;
       flex-grow: 0 !important;
-      
+
       @include sm {
         padding: $spacing-1 $spacing-3;
         font-size: 0.8125rem;
       }
-      
+
       @include md {
         padding: $spacing-2 $spacing-3;
         font-size: 0.875rem;
       }
-      
+
       &:hover {
         background-color: transparent;
         color: var(--color-primary) !important;
       }
-      
+
       &.mdc-tab--active {
         color: var(--color-primary) !important;
         font-weight: 600;
       }
     }
-    
+
     .mat-mdc-tab-label-content {
       color: inherit !important;
     }
-    
+
     .mdc-tab-indicator__content--underline {
       border-color: var(--color-primary) !important;
       border-width: 3px !important;
     }
-    
+
     .mat-mdc-tab-body-wrapper {
       background-color: var(--color-bg-primary);
     }
-    
+
     // Fix tab arrows visibility in dark theme - seamless without borders
     .mat-mdc-tab-header-pagination {
       background-color: var(--color-bg-primary) !important;
       border: none !important;
       box-shadow: none !important;
-      
+
       .mat-mdc-tab-header-pagination-chevron {
         border-color: var(--color-text-primary) !important;
       }
-      
+
       &.mat-mdc-tab-header-pagination-disabled {
         .mat-mdc-tab-header-pagination-chevron {
           border-color: var(--color-text-disabled) !important;
         }
       }
     }
-    
+
     // Ensure tab group uses full width, reduce height
     .mat-mdc-tab-header {
       width: 100% !important;
       --mdc-secondary-navigation-tab-container-height: 40px;
       overflow: hidden !important;
       position: relative;
-      
+
       // Disable Material's swipe gestures on mobile
       .mat-mdc-tab-header-pagination {
         display: none !important;
       }
-      
+
       // Mobile specific fixes
       @media (max-width: 767px) {
         touch-action: pan-x pan-y pinch-zoom !important;
@@ -170,16 +170,16 @@
         pointer-events: auto !important;
       }
     }
-    
+
     .mat-mdc-tab-label-container {
       width: 100% !important;
       overflow-x: auto !important;
       overflow-y: hidden !important;
       position: relative;
-      
+
       // Disable Material's touch handling
       pointer-events: auto !important;
-      
+
       // Mobile specific fixes
       @media (max-width: 767px) {
         overflow-x: scroll !important;
@@ -190,47 +190,47 @@
       }
     }
   }
-  
+
   // Table container — allow horizontal scroll on small screens
   .mat-elevation-z8 {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   // Table responsive
   table.mat-mdc-table {
     width: 100%;
-    
+
     // Mobile: Compact table with smaller columns
     @media (max-width: 767px) {
       font-size: 0.75rem;
-      
+
       th.mat-mdc-header-cell {
         padding: $spacing-1 $spacing-2;
         font-size: 0.7rem;
       }
-      
+
       td.mat-mdc-cell {
         padding: $spacing-1 $spacing-2;
         font-size: 0.75rem;
         word-break: break-word;
       }
-      
+
       // Hide less important columns on mobile
       .mat-column-id {
         display: none;
       }
-      
+
       .mat-column-orderDate {
         display: none;
       }
-      
+
       // Make action buttons smaller
       .mat-mdc-icon-button {
         min-width: 2rem;
         min-height: 2rem;
         padding: 0;
-        
+
         mat-icon {
           font-size: 1rem;
           width: 1rem;
@@ -238,33 +238,33 @@
         }
       }
     }
-    
+
     // Desktop: Normal table
     @include md {
       display: table;
-      
+
       th.mat-mdc-header-cell {
         font-size: 0.875rem;
         padding: $spacing-3;
       }
-      
+
       td.mat-mdc-cell {
         font-size: 0.875rem;
         padding: $spacing-3;
       }
     }
   }
-  
+
   // mat-mdc-paginator is replaced by custom app-pagination; keep visible
   .mat-mdc-paginator {
     display: block;
   }
-  
+
   // Form field responsive
   .mat-mdc-form-field {
     width: 100%;
     max-width: 100%;
-    
+
     @include sm {
       width: auto;
       max-width: 300px;
@@ -276,15 +276,15 @@
 .flex.justify-between {
   flex-direction: column;
   gap: $spacing-3;
-  
+
   @include sm {
     flex-direction: row;
     align-items: center;
   }
-  
+
   h2 {
     font-size: 1.25rem;
-    
+
     @include md {
       font-size: 1.5rem;
     }
@@ -295,7 +295,7 @@
 .mat-mdc-icon-button {
   min-width: 2.75rem;
   min-height: 2.75rem;
-  
+
   mat-icon {
     font-size: 1.25rem;
     width: 1.25rem;

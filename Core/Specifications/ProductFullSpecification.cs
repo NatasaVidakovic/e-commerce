@@ -9,6 +9,6 @@ public class ProductFullSpecification : BaseSpecification<Product>
         AddInclude(x => x.ProductType);
         AddInclude(x => x.Images);
         AddInclude(x => x.Reviews);
-        AddInclude(x => x.Discounts);
+        AddInclude(x => x.Discounts!);
     }
 }

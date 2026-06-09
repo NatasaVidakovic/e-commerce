@@ -132,12 +132,6 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     this.shopService.getProduct(id).subscribe({
       next: product => {
         this.product = product;
-        console.log('Product loaded:', product);
-        console.log('Has discount?', product.hasActiveDiscount);
-        console.log('Original price:', product.originalPrice);
-        console.log('Current price:', product.price);
-        console.log('Rating:', product.rating);
-        console.log('Reviews:', product.reviews);
         this.updateQuantityInBasket();
         this.loadSuggestedProducts(product);
         // Only check favorite status for logged-in non-admin users
@@ -145,7 +139,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
           this.checkFavoriteStatus(id);
         }
       },
-      error: error => { console.error('Failed to load product:', error); this.snackbar.errorFrom(error, 'Failed to load product'); }
+      error: error => { console.error('Failed to load product:', error); this.snackbar.errorFrom(error, 'ERROR_MESSAGES.FAILED_LOAD_PRODUCT'); }
     });
   }
 
@@ -238,20 +232,20 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       this.favouritesService.addToFavourites(productId).subscribe({
         next: () => {
           this.isFavourite = true;
-          this.snackbar.success('Product added to favorites');
+          this.snackbar.success('MESSAGES.ITEM_ADDED_FAVOURITES');
         },
         error: (error) => {
-          this.snackbar.errorFrom(error, 'Failed to add to favorites');
+          this.snackbar.errorFrom(error, 'ERROR_MESSAGES.FAILED_ADD_FAVORITES');
         }
       });
     } else {
       this.favouritesService.removeFromFavourites(productId).subscribe({
         next: () => {
           this.isFavourite = false;
-          this.snackbar.success('Product removed from favorites');
+          this.snackbar.success('MESSAGES.ITEM_REMOVED_FAVOURITES');
         },
         error: (error) => {
-          this.snackbar.errorFrom(error, 'Failed to remove from favorites');
+          this.snackbar.errorFrom(error, 'ERROR_MESSAGES.FAILED_REMOVE_FAVORITES');
         }
       });
     }

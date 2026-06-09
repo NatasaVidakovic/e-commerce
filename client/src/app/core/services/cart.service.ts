@@ -103,7 +103,7 @@ export class CartService {
   async addItemToCart(item: CartItem | Product, quantity = 1) {
     try {
       let cart = this.cart();
-      
+
       // If no cart exists, create a new one
       if (!cart) {
         cart = this.createCart();
@@ -116,11 +116,11 @@ export class CartService {
 
       // Add or update the item in the cart
       cart.items = this.addOrUpdateItem(cart.items, item, quantity);
-      
+
       // Save the cart
       const updatedCart = await firstValueFrom(this.setCart(cart));
       this.cart.set(updatedCart);
-      
+
       return true;
     } catch (error) {
       console.error('Error adding item to cart:', error);
@@ -184,29 +184,11 @@ export class CartService {
 
   private createCart() {
     const cart = new Cart();
-    const user = this.accountService.currentUser();
-    if (user?.email) {
-      cart.id = 'cart_' + this.hashEmail(user.email);
-    }
     localStorage.setItem('cart_id', cart.id);
     return cart;
   }
 
   getCartIdForUser(): string {
-    const user = this.accountService.currentUser();
-    if (user?.email) {
-      return 'cart_' + this.hashEmail(user.email);
-    }
     return localStorage.getItem('cart_id') || '';
-  }
-
-  private hashEmail(email: string): string {
-    let hash = 0;
-    for (let i = 0; i < email.length; i++) {
-      const char = email.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash |= 0;
-    }
-    return Math.abs(hash).toString(36);
   }
 }

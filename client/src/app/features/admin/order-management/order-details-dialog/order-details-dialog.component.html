@@ -2,7 +2,7 @@
 <div class="dialog-header">
   <div class="dialog-title-row">
     <div class="dialog-title-text">
-      <h2>Order Details</h2>
+      <h2>{{ 'ADMIN.ORDER_DETAILS.TITLE' | translate }}</h2>
       <span class="order-number" *ngIf="order">#{{ order.orderNumber || order.id }}</span>
     </div>
     <button mat-icon-button (click)="close()" class="close-btn">
@@ -15,7 +15,7 @@
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-state">
     <mat-spinner diameter="40"></mat-spinner>
-    <span>Loading order details...</span>
+    <span>{{ 'ADMIN.ORDER_DETAILS.LOADING' | translate }}</span>
   </div>
 
   <!-- Error State -->
@@ -33,7 +33,7 @@
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-label-icon">description</mat-icon>
-          Order Details
+          {{ 'ADMIN.ORDER_DETAILS.TITLE' | translate }}
         </ng-template>
         <ng-template matTabContent>
           <div class="tab-body">
@@ -42,58 +42,58 @@
             <div class="detail-section">
               <div class="section-header">
                 <mat-icon class="section-icon summary-icon">receipt_long</mat-icon>
-                <h3>Order Summary</h3>
+                <h3>{{ 'ORDERS.SUMMARY' | translate }}</h3>
               </div>
               <div class="detail-grid">
                 <div class="detail-item">
-                  <span class="detail-label">Order ID</span>
+                  <span class="detail-label">{{ 'ADMIN.ORDER_DETAILS.ORDER_ID' | translate }}</span>
                   <span class="detail-value">#{{ order.orderNumber || order.id }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Order Date</span>
+                  <span class="detail-label">{{ 'ADMIN.ORDER_DETAILS.ORDER_DATE' | translate }}</span>
                   <span class="detail-value">{{ order.orderDate | date: 'MMM dd, yyyy, HH:mm' }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Order Status</span>
+                  <span class="detail-label">{{ 'ADMIN.ORDER_DETAILS.ORDER_STATUS' | translate }}</span>
                   <span class="detail-value">
                     <span class="status-badge os-badge">{{ order.status }}</span>
                   </span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Payment Method</span>
+                  <span class="detail-label">{{ 'CHECKOUT.PAYMENT_METHOD' | translate }}</span>
                   <span class="detail-value">
                     <span class="status-badge" [ngClass]="{
                       'badge-stripe': order.paymentType === 'Stripe',
                       'badge-cod': order.paymentType === 'CashOnDelivery'
-                    }">{{ order.paymentType === 'CashOnDelivery' ? 'Cash on Delivery' : order.paymentType }}</span>
+                    }">{{ order.paymentType === 'CashOnDelivery' ? ('CHECKOUT.CASH_ON_DELIVERY' | translate) : order.paymentType }}</span>
                   </span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Payment Status</span>
+                  <span class="detail-label">{{ 'ORDER_DETAILS.PAYMENT_STATUS' | translate }}</span>
                   <span class="detail-value">
                     <span class="status-badge ps-badge">{{ order.paymentStatus }}</span>
                   </span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Delivery Method</span>
+                  <span class="detail-label">{{ 'ORDER_DETAILS.DELIVERY_METHOD' | translate }}</span>
                   <span class="detail-value">{{ order.deliveryMethod || 'N/A' }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Delivery Status</span>
+                  <span class="detail-label">{{ 'ORDER_DETAILS.DELIVERY_STATUS' | translate }}</span>
                   <span class="detail-value">
                     <span class="status-badge ds-badge">{{ order.deliveryStatus }}</span>
                   </span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Total Amount</span>
+                  <span class="detail-label">{{ 'ADMIN.ORDER_DETAILS.TOTAL_AMOUNT' | translate }}</span>
                   <span class="detail-value total-value">{{ order.total | appCurrency: getOrderCurrency() }}</span>
                 </div>
                 <div class="detail-item" *ngIf="order.specialNotes">
-                  <span class="detail-label">Notes</span>
+                  <span class="detail-label">{{ 'ORDER_DETAILS.SPECIAL_NOTES' | translate }}</span>
                   <span class="detail-value notes-value">{{ order.specialNotes }}</span>
                 </div>
                 <div class="detail-item" *ngIf="order.voucherCode">
-                  <span class="detail-label">Voucher Code</span>
+                  <span class="detail-label">{{ 'VOUCHER.CODE' | translate }}</span>
                   <span class="detail-value">{{ order.voucherCode }}</span>
                 </div>
               </div>
@@ -103,26 +103,26 @@
             <div class="detail-section">
               <div class="section-header">
                 <mat-icon class="section-icon customer-icon">person</mat-icon>
-                <h3>Customer Information</h3>
+                <h3>{{ 'ADMIN.ORDER_DETAILS.CUSTOMER_INFORMATION' | translate }}</h3>
                 <span class="customer-type-badge" [ngClass]="order.isGuestOrder ? 'guest-badge' : 'registered-badge'">
-                  {{ order.isGuestOrder ? 'Guest' : 'Logged-in' }}
+                  {{ order.isGuestOrder ? ('ADMIN.ORDER_DETAILS.GUEST' | translate) : ('ADMIN.ORDER_DETAILS.LOGGED_IN' | translate) }}
                 </span>
               </div>
               <div class="detail-grid">
                 <div class="detail-item">
-                  <span class="detail-label">Full Name</span>
+                  <span class="detail-label">{{ 'FORM.FULL_NAME' | translate }}</span>
                   <span class="detail-value">{{ customerName }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Email</span>
+                  <span class="detail-label">{{ 'FORM.EMAIL' | translate }}</span>
                   <span class="detail-value">{{ customerEmail }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Phone</span>
+                  <span class="detail-label">{{ 'FORM.PHONE' | translate }}</span>
                   <span class="detail-value">{{ customerPhone }}</span>
                 </div>
                 <div class="detail-item" *ngIf="!order.isGuestOrder">
-                  <span class="detail-label">Account Email</span>
+                  <span class="detail-label">{{ 'ADMIN.ORDER_DETAILS.ACCOUNT_EMAIL' | translate }}</span>
                   <span class="detail-value">{{ order.buyerEmail }}</span>
                 </div>
               </div>
@@ -132,36 +132,36 @@
             <div class="detail-section">
               <div class="section-header">
                 <mat-icon class="section-icon delivery-icon">local_shipping</mat-icon>
-                <h3>Delivery Information</h3>
+                <h3>{{ 'ADMIN.ORDER_DETAILS.DELIVERY_INFORMATION' | translate }}</h3>
               </div>
               <div class="detail-grid" *ngIf="order.shippingAddress">
                 <div class="detail-item">
-                  <span class="detail-label">Name</span>
+                  <span class="detail-label">{{ 'COMMON.NAME' | translate }}</span>
                   <span class="detail-value">{{ order.shippingAddress.name || 'N/A' }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Address Line 1</span>
+                  <span class="detail-label">{{ 'FORM.ADDRESS_LINE1' | translate }}</span>
                   <span class="detail-value">{{ order.shippingAddress.line1 || 'N/A' }}</span>
                 </div>
                 <div class="detail-item" *ngIf="order.shippingAddress.line2">
-                  <span class="detail-label">Address Line 2</span>
+                  <span class="detail-label">{{ 'FORM.ADDRESS_LINE2' | translate }}</span>
                   <span class="detail-value">{{ order.shippingAddress.line2 }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">City</span>
+                  <span class="detail-label">{{ 'FORM.CITY' | translate }}</span>
                   <span class="detail-value">{{ order.shippingAddress.city || 'N/A' }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Postal Code</span>
+                  <span class="detail-label">{{ 'FORM.POSTAL_CODE' | translate }}</span>
                   <span class="detail-value">{{ order.shippingAddress.postalCode || 'N/A' }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Country</span>
+                  <span class="detail-label">{{ 'FORM.COUNTRY' | translate }}</span>
                   <span class="detail-value">{{ order.shippingAddress.country || 'N/A' }}</span>
                 </div>
               </div>
               <div *ngIf="!order.shippingAddress" class="empty-section">
-                No shipping address available
+                {{ 'ADMIN.ORDER_DETAILS.NO_SHIPPING_ADDRESS' | translate }}
               </div>
             </div>
 
@@ -169,17 +169,17 @@
             <div class="detail-section">
               <div class="section-header">
                 <mat-icon class="section-icon items-icon">shopping_bag</mat-icon>
-                <h3>Ordered Items</h3>
-                <span class="items-count">{{ order.orderItems?.length || 0 }} item(s)</span>
+                <h3>{{ 'ADMIN.ORDER_DETAILS.ORDERED_ITEMS' | translate }}</h3>
+                <span class="items-count">{{ order.orderItems.length || 0 }} {{ 'ADMIN.ORDER_DETAILS.ITEMS_COUNT' | translate }}</span>
               </div>
-              <div class="items-table-wrapper" *ngIf="order.orderItems?.length">
+              <div class="items-table-wrapper" *ngIf="order.orderItems.length">
                 <table class="items-table">
                   <thead>
                     <tr>
-                      <th class="col-product">Product</th>
-                      <th class="col-qty">Qty</th>
-                      <th class="col-price">Unit Price</th>
-                      <th class="col-total">Line Total</th>
+                      <th class="col-product">{{ 'CART.PRODUCT' | translate }}</th>
+                      <th class="col-qty">{{ 'COMMON.QUANTITY' | translate }}</th>
+                      <th class="col-price">{{ 'ADMIN.ORDER_DETAILS.UNIT_PRICE' | translate }}</th>
+                      <th class="col-total">{{ 'ADMIN.ORDER_DETAILS.LINE_TOTAL' | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -202,8 +202,8 @@
                   </tbody>
                 </table>
               </div>
-              <div *ngIf="!order.orderItems?.length" class="empty-section">
-                No items in this order
+              <div *ngIf="!order.orderItems.length" class="empty-section">
+                {{ 'ADMIN.ORDER_DETAILS.NO_ITEMS' | translate }}
               </div>
             </div>
 
@@ -211,28 +211,28 @@
             <div class="detail-section pricing-section">
               <div class="section-header">
                 <mat-icon class="section-icon pricing-icon">calculate</mat-icon>
-                <h3>Pricing Summary</h3>
+                <h3>{{ 'ADMIN.ORDER_DETAILS.PRICING_SUMMARY' | translate }}</h3>
               </div>
               <div class="pricing-grid">
                 <div class="pricing-row">
-                  <span class="pricing-label">Subtotal</span>
+                  <span class="pricing-label">{{ 'CART.SUBTOTAL' | translate }}</span>
                   <span class="pricing-value">{{ order.subtotal | appCurrency: getOrderCurrency() }}</span>
                 </div>
                 <div class="pricing-row" *ngIf="order.discount">
-                  <span class="pricing-label discount-label">Discount</span>
+                  <span class="pricing-label discount-label">{{ 'CART.DISCOUNT' | translate }}</span>
                   <span class="pricing-value discount-value">-{{ order.discount | appCurrency: getOrderCurrency() }}</span>
                 </div>
                 <div class="pricing-row">
-                  <span class="pricing-label">Shipping</span>
+                  <span class="pricing-label">{{ 'CART.SHIPPING' | translate }}</span>
                   <span class="pricing-value">{{ order.shippingPrice | appCurrency: getOrderCurrency() }}</span>
                 </div>
                 <div class="pricing-row" *ngIf="order.refundAmount">
-                  <span class="pricing-label refund-label">Refund</span>
+                  <span class="pricing-label refund-label">{{ 'REFUND.REFUND' | translate }}</span>
                   <span class="pricing-value refund-value">-{{ order.refundAmount | appCurrency: getOrderCurrency() }}</span>
                 </div>
                 <div class="pricing-divider"></div>
                 <div class="pricing-row total-row">
-                  <span class="pricing-label">Total</span>
+                  <span class="pricing-label">{{ 'CART.TOTAL' | translate }}</span>
                   <span class="pricing-value">{{ order.total | appCurrency: getOrderCurrency() }}</span>
                 </div>
               </div>
@@ -246,7 +246,7 @@
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-label-icon">history</mat-icon>
-          Status History
+          {{ 'ADMIN.ORDER_DETAILS.STATUS_HISTORY' | translate }}
         </ng-template>
         <ng-template matTabContent>
           <div class="tab-body">
@@ -258,7 +258,7 @@
                   <mat-icon>local_shipping</mat-icon>
                 </div>
                 <div class="status-card-content">
-                  <div class="status-card-title">Order</div>
+                  <div class="status-card-title">{{ 'ORDERS.ORDER' | translate }}</div>
                   <div class="status-card-value">{{ order.status }}</div>
                 </div>
               </div>
@@ -267,7 +267,7 @@
                   <mat-icon>payments</mat-icon>
                 </div>
                 <div class="status-card-content">
-                  <div class="status-card-title">Payment</div>
+                  <div class="status-card-title">{{ 'CHECKOUT.PAYMENT' | translate }}</div>
                   <div class="status-card-value">{{ order.paymentStatus }}</div>
                 </div>
               </div>
@@ -276,7 +276,7 @@
                   <mat-icon>route</mat-icon>
                 </div>
                 <div class="status-card-content">
-                  <div class="status-card-title">Delivery</div>
+                  <div class="status-card-title">{{ 'CHECKOUT.SHIPPING' | translate }}</div>
                   <div class="status-card-value">{{ order.deliveryStatus }}</div>
                 </div>
               </div>
@@ -285,12 +285,12 @@
             <!-- History Sub-tabs -->
             <div class="history-tabs-container">
               <mat-tab-group [(selectedIndex)]="selectedTab" (selectedIndexChange)="onTabChange($event)" class="status-tabs">
-                <mat-tab label="Order Status">
+                <mat-tab [label]="'ADMIN.ORDER_DETAILS.ORDER_STATUS' | translate">
                   <ng-template matTabContent>
                     <div class="tab-content">
                       <div *ngIf="orderStatusLogs.length === 0" class="no-history">
                         <mat-icon class="no-history-icon">history</mat-icon>
-                        <span>No order status history available</span>
+                        <span>{{ 'ADMIN.ORDER_DETAILS.NO_ORDER_STATUS_HISTORY' | translate }}</span>
                       </div>
                       <div class="history-list" *ngIf="orderStatusLogs.length > 0">
                         <div *ngFor="let log of orderStatusLogs" class="history-item">
@@ -321,12 +321,12 @@
                     </div>
                   </ng-template>
                 </mat-tab>
-                <mat-tab label="Payment Status">
+                <mat-tab [label]="'ORDER_DETAILS.PAYMENT_STATUS' | translate">
                   <ng-template matTabContent>
                     <div class="tab-content">
                       <div *ngIf="paymentStatusLogs.length === 0" class="no-history">
                         <mat-icon class="no-history-icon">payments</mat-icon>
-                        <span>No payment status history available</span>
+                        <span>{{ 'ADMIN.ORDER_DETAILS.NO_PAYMENT_STATUS_HISTORY' | translate }}</span>
                       </div>
                       <div class="history-list" *ngIf="paymentStatusLogs.length > 0">
                         <div *ngFor="let log of paymentStatusLogs" class="history-item payment-item">
@@ -357,12 +357,12 @@
                     </div>
                   </ng-template>
                 </mat-tab>
-                <mat-tab label="Delivery Status">
+                <mat-tab [label]="'ORDER_DETAILS.DELIVERY_STATUS' | translate">
                   <ng-template matTabContent>
                     <div class="tab-content">
                       <div *ngIf="deliveryStatusLogs.length === 0" class="no-history">
                         <mat-icon class="no-history-icon">route</mat-icon>
-                        <span>No delivery status history available</span>
+                        <span>{{ 'ADMIN.ORDER_DETAILS.NO_DELIVERY_STATUS_HISTORY' | translate }}</span>
                       </div>
                       <div class="history-list" *ngIf="deliveryStatusLogs.length > 0">
                         <div *ngFor="let log of deliveryStatusLogs" class="history-item delivery-item">
@@ -406,5 +406,5 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="close()">Close</button>
+  <button mat-button (click)="close()">{{ 'COMMON.CLOSE' | translate }}</button>
 </mat-dialog-actions>

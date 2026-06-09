@@ -1,4 +1,4 @@
-@import '../../../../styles/spacing';
+@use '../../../../styles/spacing' as *;
 
 :host {
   display: block;

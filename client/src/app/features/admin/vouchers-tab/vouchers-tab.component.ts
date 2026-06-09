@@ -57,7 +57,7 @@ export class VouchersTabComponent implements OnInit {
   filterDefinitions: DynamicFilterDefinition[] = [
     {
       key: 'search',
-      label: 'Search by code or description',
+      label: 'VOUCHER.SEARCH_PLACEHOLDER',
       controlType: 'text',
       propertyName: 'Code',
       operationType: 'Contains',
@@ -65,33 +65,33 @@ export class VouchersTabComponent implements OnInit {
     },
     {
       key: 'status',
-      label: 'Status',
+      label: 'COMMON.STATUS',
       controlType: 'select',
       propertyName: 'Status',
       operationType: 'Equal',
       dataType: 'String',
       options: ['Active', 'Inactive'],
       multiple: false,
-      allLabel: 'All'
+      allLabel: 'COMMON.ALL'
     },
     {
       key: 'type',
-      label: 'Voucher Type',
+      label: 'VOUCHER.TYPE',
       controlType: 'select',
       propertyName: 'Type',
       operationType: 'Equal',
       dataType: 'String',
       options: ['Percentage Off', 'Amount Off'],
       multiple: false,
-      allLabel: 'All Types'
+      allLabel: 'COMMON.ALL_TYPES'
     },
   ];
 
   sortOptions: DynamicSortOption[] = [
-    { label: 'Newest First', column: 'CreatedAt', ascending: false, descending: true },
-    { label: 'Oldest First', column: 'CreatedAt', ascending: true, descending: false },
-    { label: 'Code (A-Z)', column: 'Code', ascending: true, descending: false },
-    { label: 'Code (Z-A)', column: 'Code', ascending: false, descending: true }
+    { label: 'COMMON.NEWEST_FIRST', column: 'CreatedAt', ascending: false, descending: true },
+    { label: 'COMMON.OLDEST_FIRST', column: 'CreatedAt', ascending: true, descending: false },
+    { label: 'VOUCHER.SORT_CODE_ASC', column: 'Code', ascending: true, descending: false },
+    { label: 'VOUCHER.SORT_CODE_DESC', column: 'Code', ascending: false, descending: true }
   ];
 
   ngOnInit(): void {
@@ -112,7 +112,7 @@ export class VouchersTabComponent implements OnInit {
         this.vouchers = result.data;
         this.voucherTotalCount = result.count;
       },
-      error: () => this.snackbar.error('Failed to load vouchers')
+      error: () => this.snackbar.error('VOUCHER.LOAD_FAILED')
     });
   }
 
@@ -163,29 +163,29 @@ export class VouchersTabComponent implements OnInit {
 
   addVoucher(): void {
     if (!this.newVoucher.code?.trim()) {
-      this.snackbar.error('Voucher code is required');
+      this.snackbar.error('VOUCHER.CODE_REQUIRED');
       return;
     }
     if (this.newVoucher.amountOff && this.newVoucher.percentOff) {
-      this.snackbar.error('Voucher can have either amount off OR percent off, not both');
+      this.snackbar.error('VOUCHER.SINGLE_DISCOUNT_TYPE_REQUIRED');
       return;
     }
     if (this.newVoucher.amountOff && this.newVoucher.amountOff < 0) {
-      this.snackbar.error('Amount off cannot be negative');
+      this.snackbar.error('VOUCHER.AMOUNT_OFF_NEGATIVE');
       return;
     }
     if (this.newVoucher.percentOff && (this.newVoucher.percentOff < 0 || this.newVoucher.percentOff > 100)) {
-      this.snackbar.error('Percent off must be between 0 and 100');
+      this.snackbar.error('VOUCHER.PERCENT_OFF_RANGE');
       return;
     }
     this.voucherService.createVoucher(this.newVoucher).subscribe({
       next: () => {
-        this.snackbar.success('Voucher created');
+        this.snackbar.success('VOUCHER.CREATED');
         this.newVoucher = { code: '', description: '', amountOff: undefined, percentOff: undefined };
         this.showAddForm = false;
         this.loadVouchers();
       },
-      error: err => this.snackbar.errorFrom(err, 'Failed to create voucher')
+      error: err => this.snackbar.errorFrom(err, 'VOUCHER.CREATE_FAILED')
     });
   }
 
@@ -203,15 +203,15 @@ export class VouchersTabComponent implements OnInit {
 
   activateVoucher(v: Voucher): void {
     this.voucherService.activateVoucher(v.id).subscribe({
-      next: () => { this.snackbar.success('Voucher activated'); this.loadVouchers(); },
-      error: err => this.snackbar.errorFrom(err, 'Failed to activate voucher')
+      next: () => { this.snackbar.success('VOUCHER.ACTIVATED'); this.loadVouchers(); },
+      error: err => this.snackbar.errorFrom(err, 'VOUCHER.ACTIVATE_FAILED')
     });
   }
 
   deactivateVoucher(v: Voucher): void {
     this.voucherService.deactivateVoucher(v.id).subscribe({
-      next: () => { this.snackbar.success('Voucher deactivated'); this.loadVouchers(); },
-      error: err => this.snackbar.errorFrom(err, 'Failed to deactivate voucher')
+      next: () => { this.snackbar.success('VOUCHER.DEACTIVATED'); this.loadVouchers(); },
+      error: err => this.snackbar.errorFrom(err, 'VOUCHER.DEACTIVATE_FAILED')
     });
   }
 

@@ -1,9 +1,11 @@
-﻿using System;
+using System;
+
+#nullable disable
 
 namespace API.RequestHelpers;
 
 /// <summary>
-/// Advanced filtering class. 
+/// Advanced filtering class.
 /// Contains logic for generating one-to-many filter expression.
 /// </summary>
 public class OneToManyContains : IAdvancedFilter

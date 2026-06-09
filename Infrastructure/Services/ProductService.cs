@@ -18,7 +18,7 @@ public class ProductService(IUnitOfWork unit, IReviewService commentRatingServic
         var active = await discountService.GetActiveDiscountsAsync();
 
         var dtos = products
-            .SelectMany(p => p.Product.Discounts
+            .SelectMany(p => (p.Product.Discounts ?? [])
                 .Where(d => active.Any(ad => ad.Id == d.Id))
                 .Select(d => new DiscountProductListItemDto
                 {

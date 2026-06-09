@@ -12,7 +12,7 @@ import { AccountService } from './account.service';
 })
 export class StripeService {
   baseUrl = environment.baseUrl;
-  private stripePromise: Promise<Stripe | null>;
+  private stripePromise?: Promise<Stripe | null>;
   private cartService = inject(CartService);
   private accountService = inject(AccountService);
   private http = inject(HttpClient);
@@ -21,12 +21,22 @@ export class StripeService {
   private addressElement?: StripeAddressElement;
   private paymentElement?: StripePaymentElement;
 
-  constructor() {
-    this.stripePromise = loadStripe(environment.stripePublicKey);
+  getStripeInstance(): Promise<Stripe | null> {
+    this.stripePromise ??= this.getStripePublishableKey()
+      .then(key => loadStripe(key));
+
+    return this.stripePromise;
   }
 
-  getStripeInstance(): Promise<Stripe | null> {
-    return this.stripePromise;
+  private async getStripePublishableKey(): Promise<string> {
+    if (environment.stripePublicKey) return environment.stripePublicKey;
+
+    const config = await firstValueFrom(
+      this.http.get<{ stripePublishableKey: string }>(this.baseUrl + 'payments/config')
+    );
+
+    if (!config.stripePublishableKey) throw new Error('Stripe publishable key is not configured');
+    return config.stripePublishableKey;
   }
 
   async initializeElements() {

@@ -1,5 +1,5 @@
-@import '../../../styles/breakpoints';
-@import '../../../styles/spacing';
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/spacing' as *;
 
 /* ── Page wrapper ── */
 .home-page {
@@ -157,7 +157,7 @@
 .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
-    
+
     &::-webkit-scrollbar {
         display: none;
     }
@@ -173,7 +173,7 @@
     font-weight: 700;
     color: var(--color-text-primary);
     margin-bottom: $spacing-4;
-    
+
     @include md {
         margin-bottom: $spacing-6;
     }
@@ -197,18 +197,18 @@
     justify-content: center;
     min-width: 2.5rem;
     min-height: 2.5rem;
-    
+
     @include md {
         min-width: 3rem;
         min-height: 3rem;
     }
-    
+
     &:hover {
         background-color: var(--color-surface-hover);
         box-shadow: var(--shadow-lg);
         transform: translateY(-50%) scale(1.05);
     }
-    
+
     mat-icon {
         font-size: 1.5rem;
         width: 1.5rem;
@@ -220,12 +220,12 @@
 [data-theme="dark"] .carousel-nav-btn {
     background-color: var(--color-bg-primary);
     border: 1px solid var(--color-border-primary);
-    
+
     &:hover {
         background-color: var(--color-bg-primary-hover);
         border-color: var(--color-border-primary-hover);
     }
-    
+
     mat-icon {
         color: var(--color-text-inverse);
     }
@@ -233,7 +233,7 @@
 
 .carousel-nav-left {
     left: 0.5rem;
-    
+
     @include md {
         left: 1rem;
     }
@@ -241,7 +241,7 @@
 
 .carousel-nav-right {
     right: 0.5rem;
-    
+
     @include md {
         right: 1rem;
     }
@@ -549,7 +549,7 @@
     margin-top: $spacing-16;
     margin-bottom: $spacing-8;
     position: relative;
-    
+
     @include md {
         margin-bottom: $spacing-12;
     }
@@ -567,11 +567,11 @@
     gap: $spacing-4;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    
+
     &::-webkit-scrollbar {
         display: none;
     }
-    
+
     @include md {
         gap: $spacing-5;
         padding-left: $spacing-6;
@@ -584,22 +584,22 @@
     flex-shrink: 0;
     width: 16rem;
     max-width: 16rem;
-    
+
     @include sm {
         width: 18rem;
         max-width: 18rem;
     }
-    
+
     @include md {
         width: calc((100% - 3rem) / 3);
         max-width: 20rem;
     }
-    
+
     @include lg {
         width: calc((100% - 4.5rem) / 4);
         max-width: 18rem;
     }
-    
+
     @include xl {
         width: calc((100% - 6rem) / 5);
         max-width: 16rem;
@@ -642,7 +642,7 @@
         z-index: 10;
         pointer-events: auto;
         cursor: pointer;
-        
+
         &::after {
             font-size: 18px;
             font-weight: bold;
@@ -672,7 +672,7 @@
 
 .discount-swiper {
     position: relative;
-    
+
     .swiper-button-next,
     .swiper-button-prev {
         width: 44px;
@@ -686,7 +686,7 @@
         z-index: 10;
         pointer-events: auto;
         cursor: pointer;
-        
+
         &::after {
             font-size: 18px;
             font-weight: bold;

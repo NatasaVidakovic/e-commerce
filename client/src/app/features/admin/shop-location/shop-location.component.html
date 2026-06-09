@@ -2,18 +2,18 @@
 
   <!-- Toolbar -->
   <div class="flex justify-between items-center mb-6 mt-6 w-full max-w-full">
-    <h2 class="text-2xl font-semibold">Shop Location</h2>
+    <h2 class="text-2xl font-semibold">{{ 'ADMIN.SHOP_LOCATION.TITLE' | translate }}</h2>
     <div class="flex items-center gap-2">
       <button mat-stroked-button color="primary" class="flex items-center gap-2"
               (click)="onGetCurrentLocation()">
         <mat-icon>my_location</mat-icon>
-        Use Current Location
+        {{ 'ADMIN.SHOP_LOCATION.USE_CURRENT_LOCATION' | translate }}
       </button>
       <button mat-flat-button color="primary" class="flex items-center gap-2"
               (click)="onSaveLocation()"
               [disabled]="locationForm.invalid || saving()">
         <mat-icon>{{ saving() ? 'hourglass_empty' : 'save' }}</mat-icon>
-        {{ saving() ? 'Saving...' : 'Save Location' }}
+        {{ saving() ? ('COMMON.SAVING' | translate) : ('ADMIN.SHOP_LOCATION.SAVE_LOCATION' | translate) }}
       </button>
     </div>
   </div>
@@ -21,15 +21,15 @@
   <!-- Loading -->
   <div *ngIf="loading()" class="loading-state">
     <mat-icon class="spin-icon">hourglass_empty</mat-icon>
-    <span>Loading...</span>
+    <span>{{ 'COMMON.LOADING' | translate }}</span>
   </div>
 
   <!-- Error -->
   <div *ngIf="error()" class="error-state">
     <mat-icon>error_outline</mat-icon>
-    <span>{{ error() }}</span>
+    <span>{{ error() | translate }}</span>
     <button mat-stroked-button (click)="loadShopLocation()">
-      <mat-icon>refresh</mat-icon> Retry
+      <mat-icon>refresh</mat-icon> {{ 'COMMON.RETRY' | translate }}
     </button>
   </div>
 
@@ -37,32 +37,32 @@
   <form *ngIf="!loading() && !error()" [formGroup]="locationForm" class="location-form">
     <div class="form-row">
       <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Latitude</mat-label>
+        <mat-label>{{ 'ADMIN.SHOP_LOCATION.LATITUDE' | translate }}</mat-label>
         <input matInput type="number" step="any" formControlName="latitude"
-               placeholder="e.g., 44.7722">
+               [placeholder]="'ADMIN.SHOP_LOCATION.LATITUDE_PLACEHOLDER' | translate">
         <mat-error *ngIf="latitude?.invalid && latitude?.touched">
-          <span *ngIf="latitude?.errors?.['required']">Required</span>
-          <span *ngIf="latitude?.errors?.['min']">Min -90</span>
-          <span *ngIf="latitude?.errors?.['max']">Max 90</span>
+          <span *ngIf="latitude?.errors?.['required']">{{ 'VALIDATION.REQUIRED' | translate }}</span>
+          <span *ngIf="latitude?.errors?.['min']">{{ 'ADMIN.SHOP_LOCATION.MIN_LATITUDE' | translate }}</span>
+          <span *ngIf="latitude?.errors?.['max']">{{ 'ADMIN.SHOP_LOCATION.MAX_LATITUDE' | translate }}</span>
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Longitude</mat-label>
+        <mat-label>{{ 'ADMIN.SHOP_LOCATION.LONGITUDE' | translate }}</mat-label>
         <input matInput type="number" step="any" formControlName="longitude"
-               placeholder="e.g., 17.1910">
+               [placeholder]="'ADMIN.SHOP_LOCATION.LONGITUDE_PLACEHOLDER' | translate">
         <mat-error *ngIf="longitude?.invalid && longitude?.touched">
-          <span *ngIf="longitude?.errors?.['required']">Required</span>
-          <span *ngIf="longitude?.errors?.['min']">Min -180</span>
-          <span *ngIf="longitude?.errors?.['max']">Max 180</span>
+          <span *ngIf="longitude?.errors?.['required']">{{ 'VALIDATION.REQUIRED' | translate }}</span>
+          <span *ngIf="longitude?.errors?.['min']">{{ 'ADMIN.SHOP_LOCATION.MIN_LONGITUDE' | translate }}</span>
+          <span *ngIf="longitude?.errors?.['max']">{{ 'ADMIN.SHOP_LOCATION.MAX_LONGITUDE' | translate }}</span>
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="form-field address-field">
-        <mat-label>Address (optional)</mat-label>
+        <mat-label>{{ 'ADMIN.SHOP_LOCATION.ADDRESS_OPTIONAL' | translate }}</mat-label>
         <input matInput formControlName="address"
-               placeholder="e.g., Banja Luka, Bosnia and Herzegovina">
-        <mat-error *ngIf="address?.invalid && address?.touched">Max 500 characters</mat-error>
+               [placeholder]="'ADMIN.SHOP_LOCATION.ADDRESS_PLACEHOLDER' | translate">
+        <mat-error *ngIf="address?.invalid && address?.touched">{{ 'ADMIN.SHOP_LOCATION.MAX_500' | translate }}</mat-error>
       </mat-form-field>
     </div>
   </form>

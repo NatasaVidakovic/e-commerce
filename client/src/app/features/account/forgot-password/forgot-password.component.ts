@@ -47,7 +47,7 @@ export class ForgotPasswordComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.message || err.error?.message || 'Something went wrong. Please try again.';
+        this.errorMessage = err.message || err.error?.message || 'ACCOUNT.FORGOT_PASSWORD.ERROR_GENERIC';
       }
     });
   }

@@ -38,7 +38,7 @@
     <!-- Active filter chips -->
     @if (activeChips.length > 0) {
       <div class="active-filters-bar">
-        <span class="active-filters-label">Active filters:</span>
+        <span class="active-filters-label">{{ 'FILTER.ACTIVE_FILTERS' | translate }}:</span>
         <div class="active-filter-chips">
           @for (chip of activeChips; track chip.keys[0]) {
             <button class="filter-chip" (click)="clearChip(chip)" type="button">
@@ -65,13 +65,13 @@
     @else if (!products || products.count === 0) {
       <div class="shop-empty-state">
         <mat-icon class="empty-icon">search_off</mat-icon>
-        <h3 class="empty-title">No products found</h3>
-        <p class="empty-message">No products match your current filters.</p>
-        <p class="empty-hint">Try adjusting or removing some filters.</p>
+        <h3 class="empty-title">{{ 'SHOP.NO_PRODUCTS_FOUND' | translate }}</h3>
+        <p class="empty-message">{{ 'SHOP.NO_PRODUCTS_CURRENT_FILTERS' | translate }}</p>
+        <p class="empty-hint">{{ 'SHOP.TRY_ADJUST_FILTERS' | translate }}</p>
         @if (hasActiveFilters) {
           <button class="reset-filters-btn" (click)="onDynamicReset()" type="button">
             <mat-icon>filter_alt_off</mat-icon>
-            Reset Filters
+            {{ 'SHOP.RESET_FILTERS' | translate }}
           </button>
         }
       </div>

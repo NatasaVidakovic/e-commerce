@@ -213,28 +213,46 @@ export class AboutComponent implements OnInit, AfterViewInit {
   }
 
   private showMapPlaceholder(mapElement: HTMLElement, location: any): void {
-    mapElement.innerHTML = `
-      <div style="
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        height: 400px; 
-        background: #f5f5f5; 
-        border: 2px dashed #ddd;
-        color: #666;
-        text-align: center;
-        padding: 20px;
-      ">
-        <div>
-          <mat-icon style="font-size: 48px; margin-bottom: 10px;">location_on</mat-icon>
-          <h3>Shop Location</h3>
-          <p><strong>${location.address || 'Address not available'}</strong></p>
-          <p>Latitude: ${location.latitude}</p>
-          <p>Longitude: ${location.longitude}</p>
-          <small>Google Maps integration requires API key setup</small>
-        </div>
-      </div>
-    `;
+    const wrapper = document.createElement('div');
+    wrapper.style.display = 'flex';
+    wrapper.style.alignItems = 'center';
+    wrapper.style.justifyContent = 'center';
+    wrapper.style.height = '400px';
+    wrapper.style.background = '#f5f5f5';
+    wrapper.style.border = '2px dashed #ddd';
+    wrapper.style.color = '#666';
+    wrapper.style.textAlign = 'center';
+    wrapper.style.padding = '20px';
+
+    const content = document.createElement('div');
+
+    const icon = document.createElement('span');
+    icon.className = 'material-icons';
+    icon.textContent = 'location_on';
+    icon.style.fontSize = '48px';
+    icon.style.marginBottom = '10px';
+    icon.style.display = 'inline-block';
+
+    const title = document.createElement('h3');
+    title.textContent = 'Shop Location';
+
+    const address = document.createElement('p');
+    const strongAddress = document.createElement('strong');
+    strongAddress.textContent = location.address || 'Address not available';
+    address.appendChild(strongAddress);
+
+    const latitude = document.createElement('p');
+    latitude.textContent = `Latitude: ${location.latitude}`;
+
+    const longitude = document.createElement('p');
+    longitude.textContent = `Longitude: ${location.longitude}`;
+
+    const hint = document.createElement('small');
+    hint.textContent = 'Google Maps integration requires API key setup';
+
+    content.append(icon, title, address, latitude, longitude, hint);
+    wrapper.appendChild(content);
+    mapElement.replaceChildren(wrapper);
   }
 
   submitContactForm(): void {

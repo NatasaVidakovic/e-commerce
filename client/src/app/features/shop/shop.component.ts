@@ -70,9 +70,9 @@ export class ShopComponent implements OnInit, OnDestroy {
 
   filterDefinitions: DynamicFilterDefinition[] = [];
   sortOptions: DynamicSortOption[] = [
-    { label: 'Alphabetical', column: 'Name', ascending: true, descending: false },
-    { label: 'Price: Low to High', column: 'Price', ascending: true, descending: false },
-    { label: 'Price: High to Low', column: 'Price', ascending: false, descending: true }
+    { label: 'SHOP.SORT_OPTIONS.name', column: 'Name', ascending: true, descending: false },
+    { label: 'SHOP.SORT_OPTIONS.priceAsc', column: 'Price', ascending: true, descending: false },
+    { label: 'SHOP.SORT_OPTIONS.priceDesc', column: 'Price', ascending: false, descending: true }
   ];
   lastFilters: FilterViewModel[][] = [];
   lastSort: DynamicSortOption = this.sortOptions[0];
@@ -211,11 +211,11 @@ export class ShopComponent implements OnInit, OnDestroy {
 
   initializeFilterDefinitions() {
     this.filterDefinitions = [
-      { key: 'search', label: 'Search Products', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
-      { key: 'brand', label: 'Brand', controlType: 'select', multiple: true, options: this.brands, propertyName: 'Brand', operationType: 'Equal', dataType: 'String' },
-      { key: 'type', label: 'Type', controlType: 'select', multiple: true, options: this.types, propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String' },
-      { key: 'minPrice', label: 'Min Price', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
-      { key: 'maxPrice', label: 'Max Price', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
+      { key: 'search', label: 'BUTTONS.SEARCH_PRODUCTS', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
+      { key: 'brand', label: 'COMMON.BRAND', controlType: 'select', multiple: true, options: this.brands, propertyName: 'Brand', operationType: 'Equal', dataType: 'String' },
+      { key: 'type', label: 'COMMON.TYPE', controlType: 'select', multiple: true, options: this.types, propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String' },
+      { key: 'minPrice', label: 'FILTER.MIN_PRICE', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
+      { key: 'maxPrice', label: 'FILTER.MAX_PRICE', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
     ];
   }
 
@@ -275,9 +275,9 @@ export class ShopComponent implements OnInit, OnDestroy {
         // Restore scroll after products are rendered in DOM
         setTimeout(() => this.restoreScrollPosition(), 100);
       },
-      error: (error) => { 
-        this.loading = false; 
-        this.snackbar.errorFrom(error, 'Failed to load products'); 
+      error: (error) => {
+        this.loading = false;
+        this.snackbar.errorFrom(error, 'ERROR_MESSAGES.FAILED_LOAD_PRODUCTS');
       }
     });
   }

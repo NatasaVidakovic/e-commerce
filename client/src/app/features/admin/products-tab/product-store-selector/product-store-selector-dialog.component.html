@@ -3,7 +3,7 @@
   <div class="title-row">
     <h2 class="dialog-title">{{ data.title }}</h2>
     <span *ngIf="selection.selected.length > 0" class="selection-badge">
-      {{ selection.selected.length }} selected
+      {{ 'PRODUCT.SELECTED_COUNT' | translate: { count: selection.selected.length } }}
     </span>
   </div>
   <div class="search-bar">
@@ -45,7 +45,7 @@
 
     <div *ngIf="!loading && dataSource.filteredData.length === 0" class="empty-state">
       <mat-icon>search_off</mat-icon>
-      <span>No products found</span>
+      <span>{{ 'SHOP.NO_PRODUCTS_FOUND' | translate }}</span>
     </div>
 
     <div
@@ -77,7 +77,7 @@
 
 <div mat-dialog-actions align="end" class="dialog-actions">
   <span *ngIf="selection.selected.length > 0" class="actions-hint">
-    {{ selection.selected.length }} product(s) will be added
+    {{ 'PRODUCT.PRODUCTS_WILL_BE_ADDED' | translate: { count: selection.selected.length } }}
   </span>
   <button mat-stroked-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
   <button mat-flat-button color="primary" (click)="save()" [disabled]="selection.selected.length === 0">

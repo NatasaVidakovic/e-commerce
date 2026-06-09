@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { ShopLocationService, UpdateShopLocation, ShopLocation } from '../../../core/services/shop-location.service';
 
@@ -19,7 +19,8 @@ import { ShopLocationService, UpdateShopLocation, ShopLocation } from '../../../
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    TranslatePipe
   ],
   templateUrl: './shop-location.component.html',
   styleUrl: './shop-location.component.scss'
@@ -67,7 +68,7 @@ export class ShopLocationComponent implements OnInit {
   onSaveLocation(): void {
     if (this.locationForm.invalid) {
       this.markFormGroupTouched(this.locationForm);
-      this.snackbar.error('Please fix the validation errors');
+      this.snackbar.error('FORM.ERRORS.VALIDATION_ERRORS');
       return;
     }
 
@@ -82,7 +83,7 @@ export class ShopLocationComponent implements OnInit {
     this.shopLocationService.updateShopLocation(updateData).subscribe({
       next: (updatedLocation: ShopLocation) => {
         this.saving.set(false);
-        this.snackbar.success('Shop location updated successfully!');
+        this.snackbar.success('ADMIN.SHOP_LOCATION.UPDATE_SUCCESS');
       },
       error: (err: any) => {
         this.saving.set(false);
@@ -94,11 +95,11 @@ export class ShopLocationComponent implements OnInit {
 
   onGetCurrentLocation(): void {
     if (!navigator.geolocation) {
-      this.snackbar.error('Geolocation is not supported by this browser');
+      this.snackbar.error('ADMIN.SHOP_LOCATION.GEOLOCATION_UNSUPPORTED');
       return;
     }
 
-    this.snackbar.show('Getting your current location...', { duration: 2000 });
+    this.snackbar.show('ADMIN.SHOP_LOCATION.GETTING_LOCATION', { duration: 2000 });
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -107,14 +108,14 @@ export class ShopLocationComponent implements OnInit {
           latitude: latitude.toFixed(6),
           longitude: longitude.toFixed(6)
         });
-        this.snackbar.success('Current location retrieved!');
+        this.snackbar.success('ADMIN.SHOP_LOCATION.LOCATION_RETRIEVED');
       },
       (error) => {
-        let errorMessage = 'Failed to get current location';
+        let errorMessage = 'ADMIN.SHOP_LOCATION.GET_LOCATION_FAILED';
         if (error.code === 1) {
-          errorMessage = 'Location access denied. Please enable location services.';
+          errorMessage = 'ADMIN.SHOP_LOCATION.LOCATION_ACCESS_DENIED';
         } else if (error.code === 2) {
-          errorMessage = 'Location unavailable. Please try again.';
+          errorMessage = 'ADMIN.SHOP_LOCATION.LOCATION_UNAVAILABLE';
         } else if (error.code === 3) {
           errorMessage = this.translate.instant('ERROR_MESSAGES.LOCATION_REQUEST_TIMED_OUT');
         }

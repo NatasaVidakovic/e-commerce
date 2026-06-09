@@ -1,4 +1,4 @@
 // Theme System - Central import file for all theme-related styles
 
-@import 'theme-variables';
-@import 'theme-mixins';
+@use 'theme-variables' as *;
+@use 'theme-mixins' as *;

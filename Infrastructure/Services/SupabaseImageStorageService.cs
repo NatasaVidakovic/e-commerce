@@ -16,6 +16,7 @@ public class SupabaseImageStorageService : IImageStorageService
     private static readonly string[] AllowedMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".gif"];
     private const long MaxFileSizeBytes = 5 * 1024 * 1024; // 5 MB
+    private const long MaxImagePixels = 20_000_000;
 
     private static readonly (string Suffix, int Width)[] Sizes =
     [
@@ -50,6 +51,7 @@ public class SupabaseImageStorageService : IImageStorageService
 
         request.FileStream.Position = 0;
         using var image = await Image.LoadAsync(request.FileStream);
+        ValidateDecodedImage(image);
 
         var slug    = Guid.NewGuid().ToString("N")[..12];
         var folder  = $"products/{productId}";
@@ -138,6 +140,7 @@ public class SupabaseImageStorageService : IImageStorageService
 
         request.FileStream.Position = 0;
         using var image = await Image.LoadAsync(request.FileStream);
+        ValidateDecodedImage(image);
 
         var slug = Guid.NewGuid().ToString("N")[..12];
         var folder = "gallery";
@@ -243,6 +246,15 @@ public class SupabaseImageStorageService : IImageStorageService
         return url[(idx + marker.Length)..];
     }
 
+    private static void ValidateDecodedImage(Image image)
+    {
+        if (image.Width <= 0 || image.Height <= 0)
+            throw new InvalidOperationException("Image dimensions are invalid.");
+
+        if ((long)image.Width * image.Height > MaxImagePixels)
+            throw new InvalidOperationException("Image dimensions exceed the allowed pixel limit.");
+    }
+
     private static void ValidateFile(ImageUploadRequest req)
     {
         var ext = Path.GetExtension(req.FileName).ToLowerInvariant();
@@ -255,6 +267,62 @@ public class SupabaseImageStorageService : IImageStorageService
 
         if (req.FileStream.Length > MaxFileSizeBytes)
             throw new InvalidOperationException("File size exceeds the 5 MB limit.");
+
+        if (!HasAllowedImageSignature(req.FileStream))
+            throw new InvalidOperationException("File content does not match an allowed image format.");
+    }
+
+    private static bool HasAllowedImageSignature(Stream stream)
+    {
+        if (!stream.CanSeek) return false;
+
+        var originalPosition = stream.Position;
+        var buffer = new byte[12];
+
+        try
+        {
+            stream.Position = 0;
+            var bytesRead = stream.Read(buffer, 0, buffer.Length);
+
+            var isJpeg = bytesRead >= 3 &&
+                         buffer[0] == 0xFF &&
+                         buffer[1] == 0xD8 &&
+                         buffer[2] == 0xFF;
+
+            var isPng = bytesRead >= 8 &&
+                        buffer[0] == 0x89 &&
+                        buffer[1] == 0x50 &&
+                        buffer[2] == 0x4E &&
+                        buffer[3] == 0x47 &&
+                        buffer[4] == 0x0D &&
+                        buffer[5] == 0x0A &&
+                        buffer[6] == 0x1A &&
+                        buffer[7] == 0x0A;
+
+            var isGif = bytesRead >= 6 &&
+                        buffer[0] == 0x47 &&
+                        buffer[1] == 0x49 &&
+                        buffer[2] == 0x46 &&
+                        buffer[3] == 0x38 &&
+                        (buffer[4] == 0x37 || buffer[4] == 0x39) &&
+                        buffer[5] == 0x61;
+
+            var isWebp = bytesRead >= 12 &&
+                         buffer[0] == 0x52 &&
+                         buffer[1] == 0x49 &&
+                         buffer[2] == 0x46 &&
+                         buffer[3] == 0x46 &&
+                         buffer[8] == 0x57 &&
+                         buffer[9] == 0x45 &&
+                         buffer[10] == 0x42 &&
+                         buffer[11] == 0x50;
+
+            return isJpeg || isPng || isGif || isWebp;
+        }
+        finally
+        {
+            stream.Position = originalPosition;
+        }
     }
 
     private record SupabaseListItem(string Name, string Id);

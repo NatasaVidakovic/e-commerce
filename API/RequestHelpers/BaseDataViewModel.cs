@@ -1,3 +1,5 @@
+#nullable disable
+
 using API.Mappings;
 using Core.DTOs;
 using Core.Entities;
@@ -20,10 +22,13 @@ namespace API.RequestHelpers
         where D : IDtoConvertible
         where M : BaseMapping<T,D>
     {
+        private const int DefaultPageSize = 20;
+        private const int MaxPageSize = 100;
+
         #region PROPERTIES
 
 #pragma warning disable 1591
-       public M? Mapper { get; set; }
+       public M Mapper { get; set; }
 
         public int CurrentPage { get; set; }
 
@@ -64,7 +69,7 @@ namespace API.RequestHelpers
         public List<T> AllData { get; set; } = [];
 
         [JsonIgnore]
-        public IQueryable<D>? InitialQuery { get; set; } = null;
+        public IQueryable<D> InitialQuery { get; set; } = null;
 
         //[JsonIgnore]
         //public Expression<Func<D, T>> SelectExpression { get; set; }
@@ -259,7 +264,8 @@ namespace API.RequestHelpers
         /// <param name="defaultFiltering"> Bool field represening is default filter active. </param>
         public void GetResult(bool defaultFiltering = true)
         {
-             if (defaultFiltering) DefaultApplyFilters();
+            NormalizePaging();
+            if (defaultFiltering) DefaultApplyFilters();
             CalculatePaging();
 
             var isDiscardEditedItem = DiscardEditedItemId != null && DiscardEditedItemId > 0;
@@ -299,6 +305,7 @@ namespace API.RequestHelpers
         /// <param name="defaultFiltering"> Bool field represening is default filter active. </param>
         public void GetAllData(bool defaultFiltering = true)
         {
+            NormalizePaging();
             if (defaultFiltering) DefaultApplyFilters();
             AllData = PerformOrder().Select(b => Mapper.ToDto(b)).ToList();
         }
@@ -308,6 +315,7 @@ namespace API.RequestHelpers
         /// </summary>
         public void CalculatePaging()
         {
+            NormalizePaging();
             DataCount = InitialQuery.Count();
 
             if (DataCount == 0)
@@ -315,7 +323,18 @@ namespace API.RequestHelpers
                 PageCount = 1;
                 CurrentPage = 1;
             }
-            else PageCount = (int)Math.Ceiling((decimal)DataCount / PageSize);
+            else
+            {
+                PageCount = (int)Math.Ceiling((decimal)DataCount / PageSize);
+                if (CurrentPage > PageCount) CurrentPage = PageCount;
+            }
+        }
+
+        private void NormalizePaging()
+        {
+            if (PageSize <= 0) PageSize = DefaultPageSize;
+            if (PageSize > MaxPageSize) PageSize = MaxPageSize;
+            if (CurrentPage <= 0) CurrentPage = 1;
         }
 
         /// <summary>

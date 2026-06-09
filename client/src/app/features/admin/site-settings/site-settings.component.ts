@@ -130,13 +130,13 @@ export class SiteSettingsComponent implements OnInit {
       heroTitle: this.heroTitle,
       heroSubtitle: this.heroSubtitle
     });
-    this.snackbar.success('Company info saved');
+    this.snackbar.success('ADMIN.SITE_SETTINGS_COMPANY_INFO_SAVED');
   }
 
   // --- Logo ---
   saveLogo(): void {
     this.themeService.setCustomColors({ logoUrl: this.logoUrl });
-    this.snackbar.success('Logo saved');
+    this.snackbar.success('ADMIN.SITE_SETTINGS_LOGO_SAVED');
   }
 
   onLogoFileSelected(event: Event): void {
@@ -207,7 +207,7 @@ export class SiteSettingsComponent implements OnInit {
     this.siteConfigService.updateConfig({
       socialMediaLinks: validLinks
     });
-    this.snackbar.success('Social media links saved');
+    this.snackbar.success('ADMIN.SITE_SETTINGS_SOCIAL_LINKS_SAVED');
   }
 
   // --- Gallery ---
@@ -223,10 +223,10 @@ export class SiteSettingsComponent implements OnInit {
             this.galleryImages.push(image.url);
           });
           this.saveGallery();
-          this.snackbar.success(`Successfully uploaded ${uploadedImages.length} gallery image(s)`);
+          this.snackbar.success(this.translate.instant('ADMIN.SITE_SETTINGS_GALLERY_UPLOAD_SUCCESS', { count: uploadedImages.length }));
         },
         error: (err) => {
-          this.snackbar.errorFrom(err, 'Failed to upload gallery images');
+          this.snackbar.errorFrom(err, 'ADMIN.SITE_SETTINGS_GALLERY_UPLOAD_FAILED');
         }
       });
     }
@@ -261,36 +261,36 @@ export class SiteSettingsComponent implements OnInit {
     this.siteConfigService.updateConfig({
       galleryImages: [...this.galleryImages]
     });
-    this.snackbar.success('Gallery updated');
+    this.snackbar.success('ADMIN.SITE_SETTINGS_GALLERY_UPDATED');
   }
 
   // --- Delivery Methods ---
   loadDeliveryMethods(): void {
     this.adminService.getDeliveryMethods().subscribe({
       next: methods => this.deliveryMethods = methods,
-      error: () => this.snackbar.error('Failed to load delivery methods')
+      error: () => this.snackbar.error('ADMIN.DELIVERY_METHODS_LOAD_FAILED')
     });
   }
 
   addDeliveryMethod(): void {
     if (!this.newDelivery.shortName.trim() || !this.newDelivery.description.trim()) {
-      this.snackbar.error('Title and description are required');
+      this.snackbar.error('ADMIN.DELIVERY_TITLE_DESCRIPTION_REQUIRED');
       return;
     }
     this.adminService.createDeliveryMethod(this.newDelivery).subscribe({
       next: () => {
-        this.snackbar.success('Delivery method added');
+        this.snackbar.success('ADMIN.DELIVERY_METHOD_ADDED');
         this.newDelivery = { shortName: '', description: '', deliveryTime: '', price: 0 };
         this.loadDeliveryMethods();
       },
-      error: (err: any) => this.snackbar.errorFrom(err, 'Failed to add delivery method')
+      error: (err: any) => this.snackbar.errorFrom(err, 'ADMIN.DELIVERY_METHOD_ADD_FAILED')
     });
   }
 
   deleteDeliveryMethod(id: number): void {
     this.adminService.deleteDeliveryMethod(id).subscribe({
-      next: () => { this.snackbar.success('Delivery method deleted'); this.loadDeliveryMethods(); },
-      error: (err: any) => this.snackbar.errorFrom(err, 'Failed to delete delivery method')
+      next: () => { this.snackbar.success('ADMIN.DELIVERY_METHOD_DELETED'); this.loadDeliveryMethods(); },
+      error: (err: any) => this.snackbar.errorFrom(err, 'ADMIN.DELIVERY_METHOD_DELETE_FAILED')
     });
   }
 
@@ -298,11 +298,11 @@ export class SiteSettingsComponent implements OnInit {
   addCountry(): void {
     const name = this.newCountry.trim();
     if (!name) {
-      this.snackbar.error('Country name is required');
+      this.snackbar.error('ADMIN.COUNTRY_NAME_REQUIRED');
       return;
     }
     if (this.allowedCountries.some(c => c.toLowerCase() === name.toLowerCase())) {
-      this.snackbar.error('Country already exists');
+      this.snackbar.error('ADMIN.COUNTRY_ALREADY_EXISTS');
       return;
     }
     this.allowedCountries.push(name);
@@ -317,19 +317,19 @@ export class SiteSettingsComponent implements OnInit {
 
   saveCountries(): void {
     this.siteConfigService.updateConfig({ allowedCountries: [...this.allowedCountries] });
-    this.snackbar.success('Allowed countries saved');
+    this.snackbar.success('ADMIN.ALLOWED_COUNTRIES_SAVED');
   }
 
   // --- Payment Methods ---
   savePaymentMethods(): void {
     this.siteConfigService.updateConfig({ paymentMethods: this.paymentMethods });
-    this.snackbar.success('Payment methods saved');
+    this.snackbar.success('ADMIN.PAYMENT_METHODS_SAVED');
   }
 
   // --- Currency Settings ---
   saveCurrencySettings(): void {
     this.currencyService.setCurrency(this.currentCurrency);
-    this.snackbar.success('Currency settings saved');
+    this.snackbar.success('ADMIN.CURRENCY_SETTINGS_SAVED');
   }
 
   onCurrencyChange(): void {
@@ -340,11 +340,11 @@ export class SiteSettingsComponent implements OnInit {
   // --- Helpers ---
   private handleImageUpload(file: File, callback: (base64: string) => void): void {
     if (!file.type.startsWith('image/')) {
-      this.snackbar.error('Please select a valid image file');
+      this.snackbar.error('ADMIN.INVALID_IMAGE_FILE');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      this.snackbar.error('Image size must be less than 5MB');
+      this.snackbar.error('ADMIN.IMAGE_SIZE_TOO_LARGE');
       return;
     }
     const reader = new FileReader();
@@ -352,7 +352,7 @@ export class SiteSettingsComponent implements OnInit {
       const result = e.target?.result as string;
       if (result) callback(result);
     };
-    reader.onerror = () => this.snackbar.error('Failed to read image file');
+    reader.onerror = () => this.snackbar.error('ADMIN.IMAGE_READ_FAILED');
     reader.readAsDataURL(file);
   }
 

@@ -18,24 +18,24 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   private handleServerError(error: HttpErrorResponse): void {
     const errorResponse = error.error as { message?: string } | null;
-    const message = errorResponse?.message || 'An error occurred';
+    const message = errorResponse?.message || 'ERROR_MESSAGES.GENERIC';
     
     switch (error.status) {
       case 0:
-        this.snackbar.error('Network error. Please check your connection.');
+        this.snackbar.error('ERROR_MESSAGES.NETWORK_ERROR');
         break;
       case 401:
-        this.snackbar.error('Please log in to continue');
+        this.snackbar.error('ERROR_MESSAGES.PLEASE_LOGIN');
         this.router.navigate(['/account/login']);
         break;
       case 403:
-        this.snackbar.error('You do not have permission to perform this action');
+        this.snackbar.error('ERROR_MESSAGES.NO_PERMISSION');
         break;
       case 404:
-        this.snackbar.error('Resource not found');
+        this.snackbar.error('ERROR_MESSAGES.RESOURCE_NOT_FOUND');
         break;
       case 500:
-        this.snackbar.error('Server error. Please try again later');
+        this.snackbar.error('ERROR_MESSAGES.SERVER_TRY_LATER');
         break;
       default:
         this.snackbar.error(message);
@@ -48,7 +48,7 @@ export class GlobalErrorHandler implements ErrorHandler {
   }
 
   private handleClientError(error: Error): void {
-    this.snackbar.error('An unexpected error occurred');
+    this.snackbar.error('ERROR_MESSAGES.UNEXPECTED');
     
     // Log to console in development
     if (!this.isProduction()) {

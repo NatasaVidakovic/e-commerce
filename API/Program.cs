@@ -1,4 +1,4 @@
-﻿using System.Threading.RateLimiting;
+using System.Threading.RateLimiting;
 using API.Filters;
 using API.Mappings;
 using API.Middleware;
@@ -14,6 +14,8 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +29,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Register AppSettings configuration
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+var productionCookieSameSite = GetProductionCookieSameSite(builder.Configuration);
 
 // Register FluentValidation validators
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
@@ -40,6 +43,19 @@ builder.Services.AddControllers(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-XSRF-TOKEN";
+    options.Cookie.Name = "WebShop.Antiforgery";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.None
+        : CookieSecurePolicy.Always;
+    options.Cookie.SameSite = builder.Environment.IsDevelopment()
+        ? SameSiteMode.Lax
+        : productionCookieSameSite;
+});
 
 // Add Swagger services
 builder.Services.AddEndpointsApiExplorer();
@@ -84,7 +100,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddDbContext<StoreContext>(opt =>
 {
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), 
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("Infrastructure"));
 });
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
@@ -166,6 +182,18 @@ builder.Services.AddRateLimiter(rlo =>
                 QueueLimit           = 0
             }));
 
+    // Order creation: guest checkout is public, so cap repeated attempts per IP
+    rlo.AddPolicy("order-create", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "anon",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit          = 10,
+                Window               = TimeSpan.FromMinutes(15),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit           = 0
+            }));
+
     rlo.RejectionStatusCode = 429;
 });
 
@@ -174,7 +202,12 @@ builder.Services.AddMappings(typeof(DiscountMapping).Assembly);
 
 var origins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
-    .Get<string[]>();
+    .Get<string[]>() ?? [];
+
+if (!builder.Environment.IsDevelopment() && origins.Length == 0)
+{
+    throw new InvalidOperationException("Cors:AllowedOrigins must contain at least one trusted frontend origin in production.");
+}
 
 builder.Services.AddCors(options =>
 {
@@ -214,7 +247,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(config =>
         // Log Redis connection status
         return connection;
     }
-    catch (RedisConnectionException ex)
+    catch (RedisConnectionException)
     {
         // Log Redis connection failure
         throw;
@@ -229,39 +262,68 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(config =>
 
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICartService, CartService>(); 
+builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IResponseCacheService, ResponseCacheService>();
 builder.Services.AddScoped<IJsReportService, JsReportService>();
 builder.Services.AddHttpClient("JsReport");
 
 builder.Services.AddAuthentication()
-    .AddCookie("Cookies")  
     .AddGoogle("Google", options =>
     {
-        options.ClientId = builder.Configuration["Google:ClientId"];
-        options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+        options.ClientId = builder.Configuration["Google:ClientId"] ?? string.Empty;
+        options.ClientSecret = builder.Configuration["Google:ClientSecret"] ?? string.Empty;
         options.SignInScheme = IdentityConstants.ExternalScheme;
 
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<AppUser>()
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+
+        options.Password.RequiredLength = 8;
+        options.Password.RequiredUniqueChars = 1;
+        options.Password.RequireDigit = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+
+        options.Lockout.AllowedForNewUsers = true;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    })
     .AddRoles<IdentityRole>()
     .AddSignInManager()
-    .AddEntityFrameworkStores<StoreContext>();
+    .AddEntityFrameworkStores<StoreContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromHours(1);
+});
 
 // Secure cookie configuration
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
-        ? CookieSecurePolicy.None 
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.None
         : CookieSecurePolicy.Always;
-    options.Cookie.SameSite = builder.Environment.IsDevelopment() 
-        ? SameSiteMode.Lax 
-        : SameSiteMode.Strict;
+    options.Cookie.SameSite = builder.Environment.IsDevelopment()
+        ? SameSiteMode.Lax
+        : productionCookieSameSite;
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
     options.SlidingExpiration = true;
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.CompletedTask;
+    };
 });
 builder.Services.AddSignalR();
 
@@ -279,13 +341,26 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 
-app.UseForwardedHeaders();
-
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebShop API V1");
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebShop API V1");
+    });
+}
 
 app.UseMiddleware<ExceptionMiddleware>();
 
@@ -294,15 +369,23 @@ app.Use(async (context, next) =>
 {
     context.Response.Headers["X-Content-Type-Options"] = "nosniff";
     context.Response.Headers["X-Frame-Options"] = "DENY";
-    context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
     context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
     context.Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+    context.Response.Headers["Content-Security-Policy"] =
+        "default-src 'self'; " +
+        "script-src 'self' 'unsafe-inline' https://js.stripe.com https://maps.googleapis.com; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+        "font-src 'self' https://fonts.gstatic.com; " +
+        "img-src 'self' data: blob: https:; " +
+        "connect-src 'self' https: wss:; " +
+        "frame-src 'self' https://js.stripe.com https://hooks.stripe.com; " +
+        "object-src 'none'; base-uri 'self'; frame-ancestors 'none'";
     await next();
 });
 
 app.UseDefaultFiles();
 
-// Only serve image files from wwwroot/images — block everything else
+// Only serve image files from wwwroot/images � block everything else
 var allowedImageExtensions = new HashSet<string>(["webp", "jpg", "jpeg", "png", "gif", "ico", "svg"], StringComparer.OrdinalIgnoreCase);
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -330,6 +413,57 @@ app.UseCors("FrontendPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.Use(async (context, next) =>
+{
+    var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
+    var method = context.Request.Method;
+    var isSafeMethod = HttpMethods.IsGet(method) ||
+                       HttpMethods.IsHead(method) ||
+                       HttpMethods.IsOptions(method) ||
+                       HttpMethods.IsTrace(method);
+
+    if (isSafeMethod)
+    {
+        var tokens = antiforgery.GetAndStoreTokens(context);
+        if (!string.IsNullOrEmpty(tokens.RequestToken))
+        {
+            context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = !app.Environment.IsDevelopment(),
+                SameSite = app.Environment.IsDevelopment() ? SameSiteMode.Lax : productionCookieSameSite
+            });
+        }
+    }
+    else if (context.User.Identity?.IsAuthenticated == true)
+    {
+        await antiforgery.ValidateRequestAsync(context);
+    }
+
+    await next();
+});
+
+app.Use(async (context, next) =>
+{
+    await next();
+
+    if (context.Response.StatusCode is StatusCodes.Status401Unauthorized
+        or StatusCodes.Status403Forbidden
+        or StatusCodes.Status429TooManyRequests)
+    {
+        var auditLogger = context.RequestServices.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("SecurityAudit");
+
+        auditLogger.LogWarning(
+            "Security event {StatusCode} {Method} {Path} user={User} ip={RemoteIp}",
+            context.Response.StatusCode,
+            context.Request.Method,
+            context.Request.Path,
+            context.User.Identity?.Name ?? "anonymous",
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+    }
+});
+
 app.UseRateLimiter();
 
 if (!app.Environment.IsDevelopment())
@@ -338,7 +472,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-app.MapGroup("api").MapIdentityApi<AppUser>();
 app.MapHub<NotificationHub>("/hub/notifications");
 
 if (!app.Environment.IsDevelopment())
@@ -361,7 +494,7 @@ try
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<StoreContext>();
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
-    
+
     // Only apply migrations in development environment
     if (app.Environment.IsDevelopment())
     {
@@ -385,7 +518,7 @@ try
         logger.LogInformation("Production environment detected. Skipping automatic migrations.");
     }
 }
-catch (Exception e)
+catch
 {
     // Log application startup error
     throw;
@@ -402,7 +535,7 @@ static async Task ApplyMigrationsWithRetryAsync(StoreContext context, ILogger lo
         {
             // Test database connection first
             await context.Database.CanConnectAsync();
-            
+
             // Apply migrations
             await context.Database.MigrateAsync();
             logger.LogInformation("Migrations applied successfully.");
@@ -414,11 +547,11 @@ static async Task ApplyMigrationsWithRetryAsync(StoreContext context, ILogger lo
             if (!pending.Any()) throw;
 
             var conflicting = pending.First();
-            logger.LogWarning("Migration '{Migration}' skipped — object already exists in database.", conflicting);
-            
+            logger.LogWarning("Migration '{Migration}' skipped � object already exists in database.", conflicting);
+
             // Get the actual EF Core version from context
             var efVersion = typeof(Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade).Assembly.GetName().Version?.ToString() ?? "9.0.0";
-            
+
             await context.Database.ExecuteSqlRawAsync(
                 "IF NOT EXISTS (SELECT 1 FROM [__EFMigrationsHistory] WHERE [MigrationId] = {0}) " +
                 "INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES ({0}, {1})",
@@ -431,4 +564,20 @@ static async Task ApplyMigrationsWithRetryAsync(StoreContext context, ILogger lo
         }
     }
     throw new InvalidOperationException("Could not apply migrations after maximum retry attempts.");
+}
+
+static SameSiteMode GetProductionCookieSameSite(IConfiguration configuration)
+{
+    var frontendUrl = configuration["AppSettings:FrontendUrl"];
+    var apiUrl = configuration["AppSettings:ApiUrl"];
+
+    if (!Uri.TryCreate(frontendUrl, UriKind.Absolute, out var frontendUri) ||
+        !Uri.TryCreate(apiUrl, UriKind.Absolute, out var apiUri))
+    {
+        return SameSiteMode.Strict;
+    }
+
+    return string.Equals(frontendUri.Host, apiUri.Host, StringComparison.OrdinalIgnoreCase)
+        ? SameSiteMode.Strict
+        : SameSiteMode.None;
 }

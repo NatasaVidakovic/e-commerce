@@ -4,7 +4,7 @@ using Core.Entities;
 
 namespace API.Extensions;
 
-public static class ProductMappingExtensions 
+public static class ProductMappingExtensions
 {
     public static ProductDto ToDto(this Product product)
     {
@@ -26,8 +26,8 @@ public static class ProductMappingExtensions
             Brand = product.Brand,
             QuantityInStock = product.QuantityInStock,
             Id = product.Id,
-            Rating = product.Reviews != null && product.Reviews.Any() 
-                ? (float)Math.Round(product.Reviews.Average(r => (double)r.Rating), 2) 
+            Rating = product.Reviews != null && product.Reviews.Any()
+                ? (float)Math.Round(product.Reviews.Average(r => (double)(r.Rating ?? 0)), 2)
                 : 0,
             ReviewsCount = product.Reviews?.Count ?? 0
         };
@@ -89,7 +89,7 @@ public static class ProductMappingExtensions
         product.ProductTypeId = productDto.ProductType?.Id ?? product.ProductTypeId;
         product.Brand = productDto.Brand;
         product.QuantityInStock = productDto.QuantityInStock;
-       
+
     }
 
 

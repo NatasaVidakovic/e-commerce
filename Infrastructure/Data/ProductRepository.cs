@@ -93,7 +93,7 @@ public class ProductRepository(StoreContext context) : IProductRepository
     {
         var anonList = await context.Products
             .Include(p => p.Discounts)
-            .SelectMany(p => p.Discounts, (p, d) => new { Product = p, Discount = d })
+            .SelectMany(p => p.Discounts ?? Enumerable.Empty<Discount>(), (p, d) => new { Product = p, Discount = d })
             .ToListAsync();
 
         IList<(Product Product, Discount Discount)> tuples = anonList

@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Text.Json;
 using Core.DTOs;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.Extensions.Logging;
 
 namespace API.Middleware;
@@ -33,6 +34,7 @@ public class ExceptionMiddleware(IHostEnvironment env, RequestDelegate next, ILo
         var (statusCode, message) = e switch
         {
             UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "Unauthorized access"),
+            AntiforgeryValidationException => (StatusCodes.Status400BadRequest, "Invalid request verification token"),
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Resource not found"),
             InvalidOperationException => (StatusCodes.Status400BadRequest, "Invalid operation"),
             ArgumentException => (StatusCodes.Status400BadRequest, "Invalid argument"),

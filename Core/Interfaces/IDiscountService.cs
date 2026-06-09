@@ -4,8 +4,8 @@ namespace Core.Interfaces;
 
 public interface IDiscountService
 {
-    Task<Discount> GetDiscountByIdAsync(int id);
-    Task<Discount> GetDiscountByNameAsync(string name);
+    Task<Discount?> GetDiscountByIdAsync(int id);
+    Task<Discount?> GetDiscountByNameAsync(string name);
     Task<IReadOnlyList<Discount>> GetAllDiscountsAsync();
     Task<IReadOnlyList<Discount>> GetActiveDiscountsAsync();
     Task<Discount> CreateDiscountAsync(Discount discount);

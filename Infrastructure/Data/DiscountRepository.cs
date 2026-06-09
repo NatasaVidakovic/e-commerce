@@ -4,8 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data;
 
-public class DiscountRepository(StoreContext _context) : GenericRepository<Discount>(_context), IDiscountRepository
+public class DiscountRepository : GenericRepository<Discount>, IDiscountRepository
 {
+    private readonly StoreContext _context;
+
+    public DiscountRepository(StoreContext context) : base(context)
+    {
+        _context = context;
+    }
 
     public new async Task<Discount?> GetByIdAsync(int id)
     {
@@ -23,9 +29,10 @@ public class DiscountRepository(StoreContext _context) : GenericRepository<Disco
     public async Task<IReadOnlyList<Discount>> GetActiveDiscountsAsync()
     {
         var today = DateTime.UtcNow.Date;
+        var tomorrow = today.AddDays(1);
         return await _context.Discounts
             .Include (d => d.Products)
-            .Where(d => d.DateFrom.Date <= today && today <= d.DateTo.Date)
+            .Where(d => d.DateFrom < tomorrow && d.DateTo >= today)
             .ToListAsync();
     }
 
@@ -79,7 +86,7 @@ public class DiscountRepository(StoreContext _context) : GenericRepository<Disco
             .Include(d => d.Products)
             .Where(d => d.Products.Any(p => productIds.Contains(p.Id)))
             .Where(d => d.IsActive || d.DateFrom > DateTime.UtcNow)
-            .Where(d => !(d.DateTo.Date < dateFrom.Date || d.DateFrom.Date > dateTo.Date));
+            .Where(d => d.DateTo >= dateFrom.Date && d.DateFrom < dateTo.Date.AddDays(1));
 
         if (excludeDiscountId.HasValue)
         {

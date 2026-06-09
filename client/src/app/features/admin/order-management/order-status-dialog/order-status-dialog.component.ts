@@ -72,12 +72,12 @@ export class OrderStatusDialogComponent {
       this.adminService.updateOrderStatus(this.data.order.id, updateDto).subscribe({
         next: (updatedOrder) => {
           this.saving = false;
-          this.snackbar.success('Order status updated');
+          this.snackbar.success('ADMIN.ORDER_STATUS.UPDATED_MESSAGE');
           this.dialogRef.close(updatedOrder);
         },
         error: (err) => {
           this.saving = false;
-          this.snackbar.error(err.error?.message || err.error || 'Failed to update order status');
+          this.snackbar.error(err.error?.message || err.error || 'ADMIN.ORDER_STATUS.UPDATE_FAILED');
         }
       });
     }

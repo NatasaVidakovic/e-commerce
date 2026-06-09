@@ -5,21 +5,25 @@ using Core.Entities;
 using Core.Entities.OrderAggregate;
 using Core.Interfaces;
 using Core.Specifications;
+using Infrastructure.Data;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace API.Controllers;
 
-public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfiguration config, IVoucherService _voucherService, ISiteSettingsService siteSettingsService) : BaseApiController
+public class OrdersController(ICartService cartService, IUnitOfWork unit, StoreContext context, IVoucherService _voucherService, ISiteSettingsService siteSettingsService) : BaseApiController
 {
     [HttpPost]
     [AllowAnonymous]
+    [EnableRateLimiting("order-create")]
     public async Task<ActionResult<Order>> CreateOrder(CreateOrderDto orderDto)
     {
         var isAuthenticated = User?.Identity?.IsAuthenticated == true;
-        var email = isAuthenticated ? User.GetEmail() : null;
+        var email = isAuthenticated ? User!.GetEmail() : null;
 
         // Validate guest fields when not authenticated
         if (!isAuthenticated)
@@ -37,6 +41,7 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
         var cart = await cartService.GetCartAsync(orderDto.CartId);
 
         if (cart == null) return BadRequest("Cart not found");
+        if (!CanUseCart(cart, email)) return Forbid();
 
         if (orderDto.PaymentType == Core.Enums.PaymentType.Stripe && cart.PaymentIntentId == null)
             return BadRequest("No payment intent for this order");
@@ -84,14 +89,21 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
         //     }
         // }
 
+        await using var transaction = await context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+
         var items = new List<OrderItem>();
 
         foreach (var item in cart.Items)
         {
-            var spec = new ProductSpecification(item.ProductId);
-            var productItem = await unit.Repository<Product>().GetEntityWithSpec(spec);
+            if (item.Quantity <= 0) return BadRequest("Invalid item quantity");
+
+            var productItem = await context.Products
+                .Include(p => p.Discounts)
+                .FirstOrDefaultAsync(p => p.Id == item.ProductId);
 
             if (productItem == null) return BadRequest("Problem with the order");
+            if (productItem.QuantityInStock < item.Quantity)
+                return BadRequest($"Insufficient stock for {productItem.Name}");
 
             var currentPrice = productItem.Price;
             var activeDiscount = productItem.Discounts?
@@ -125,9 +137,11 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
                 Quantity = item.Quantity
             };
             items.Add(orderItem);
+
+            productItem.QuantityInStock -= item.Quantity;
         }
 
-        var deliveryMethod = await unit.Repository<DeliveryMethod>().GetByIdAsync(orderDto.DeliveryMethodId);
+        var deliveryMethod = await context.DeliveryMethods.FindAsync(orderDto.DeliveryMethodId);
 
         if (deliveryMethod == null) return BadRequest("No delivery method selected");
 
@@ -162,8 +176,8 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
             GuestPhone = !isAuthenticated ? orderDto.GuestPhone : null,
             OrderNumber = orderNumber,
             PaymentType = orderDto.PaymentType,
-            PaymentStatus = orderDto.PaymentType == Core.Enums.PaymentType.CashOnDelivery 
-                ? Core.Enums.PaymentStatus.Pending 
+            PaymentStatus = orderDto.PaymentType == Core.Enums.PaymentType.CashOnDelivery
+                ? Core.Enums.PaymentStatus.Pending
                 : Core.Enums.PaymentStatus.Pending,
             Status = OrderStatus.New,
             SpecialNotes = orderDto.SpecialNotes,
@@ -173,10 +187,11 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
             Currency = currencyCode
         };
 
-        unit.Repository<Order>().Add(order);
+        context.Orders.Add(order);
 
-        if (await unit.Complete())
+        if (await context.SaveChangesAsync() > 0)
         {
+            await transaction.CommitAsync();
             return order;
         }
 
@@ -221,5 +236,12 @@ public class OrdersController(ICartService cartService, IUnitOfWork unit, IConfi
         {
             return false;
         }
+    }
+
+    private static bool CanUseCart(ShoppingCart cart, string? email)
+    {
+        if (string.IsNullOrWhiteSpace(cart.OwnerEmail)) return true;
+        return !string.IsNullOrWhiteSpace(email) &&
+               string.Equals(cart.OwnerEmail, email, StringComparison.OrdinalIgnoreCase);
     }
 }

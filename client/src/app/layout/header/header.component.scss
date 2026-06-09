@@ -1,5 +1,5 @@
-@import '../../../styles/breakpoints';
-@import '../../../styles/spacing';
+@use '../../../styles/breakpoints' as *;
+@use '../../../styles/spacing' as *;
 
 // Header theming
 .header-themed {
@@ -7,7 +7,7 @@
   border-bottom: 1px solid var(--color-border-primary);
   transition: background-color 0.3s ease, border-color 0.3s ease;
   padding: $spacing-3 $spacing-4;
-  
+
   @include md {
     padding: $spacing-3 $spacing-6;
   }
@@ -28,7 +28,7 @@
   height: 3rem;
   max-height: 3rem;
   width: auto;
-  
+
   @include md {
     height: 4rem;
     max-height: 4rem;
@@ -38,13 +38,13 @@
 // Desktop Navigation
 .desktop-nav {
   display: none;
-  
+
   @include md {
     display: flex;
     gap: $spacing-6;
     align-items: center;
   }
-  
+
   a {
     color: var(--color-text-primary);
     text-decoration: none;
@@ -53,11 +53,11 @@
     text-transform: uppercase;
     transition: color 0.2s ease;
     white-space: nowrap;
-    
+
     &:hover {
       color: var(--color-primary);
     }
-    
+
     &.active {
       color: var(--color-primary);
       font-weight: 600;
@@ -68,7 +68,7 @@
 // Desktop Actions
 .desktop-actions {
   display: none;
-  
+
   @include md {
     display: flex;
     gap: $spacing-3;
@@ -94,7 +94,7 @@
   justify-content: center;
   min-height: 2.75rem;
   min-width: 2.75rem;
-  
+
   .mat-badge-content {
     min-width: 1.25rem;
     height: 1.25rem;
@@ -103,14 +103,14 @@
     line-height: 1.25rem;
     background-color: var(--color-primary);
   }
-  
+
   mat-icon {
     font-size: 1.75rem;
     width: 1.75rem;
     height: 1.75rem;
     color: var(--color-text-primary);
     transition: color 0.2s ease;
-    
+
     &:hover {
       color: var(--color-primary);
     }
@@ -122,7 +122,7 @@
   display: flex;
   align-items: center;
   gap: $spacing-2;
-  
+
   @include md {
     display: none;
   }
@@ -140,18 +140,18 @@
   border-radius: 0.5rem;
   transition: background-color 0.2s ease;
   position: relative;
-  
+
   &:hover {
     background-color: var(--color-bg-hover);
     color: var(--color-text-primary);
   }
-  
+
   mat-icon {
     font-size: 1.5rem;
     width: 1.5rem;
     height: 1.5rem;
   }
-  
+
   // Badge styling for mobile
   .mat-badge-content {
     min-width: 1.25rem;
@@ -180,15 +180,15 @@
   padding: $spacing-2;
   border-radius: 0.5rem;
   transition: background-color 0.2s ease;
-  
+
   @include md {
     display: none;
   }
-  
+
   &:hover {
     background-color: var(--color-bg-hover);
   }
-  
+
   mat-icon {
     font-size: 1.75rem;
     width: 1.75rem;
@@ -208,12 +208,12 @@
   z-index: 40;
   opacity: 0;
   transition: opacity 0.3s ease;
-  
+
   &.open {
     display: block;
     opacity: 1;
   }
-  
+
   @include md {
     display: none !important;
   }
@@ -232,11 +232,11 @@
   overflow-y: auto;
   transition: right 0.3s ease;
   box-shadow: var(--shadow-xl);
-  
+
   @include md {
     display: none;
   }
-  
+
   &.open {
     right: 0;
   }
@@ -253,7 +253,7 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-2;
-  
+
   a {
     display: flex;
     align-items: center;
@@ -266,28 +266,28 @@
     border-radius: 0.5rem;
     transition: all 0.2s ease;
     min-height: 2.75rem;
-    
+
     mat-icon {
       font-size: 1.5rem;
       width: 1.5rem;
       height: 1.5rem;
       color: var(--color-text-secondary);
     }
-    
+
     &:hover {
       background-color: var(--color-bg-hover);
       color: var(--color-primary);
-      
+
       mat-icon {
         color: var(--color-primary);
       }
     }
-    
+
     &.active {
       background-color: var(--color-primary-lighter);
       color: var(--color-primary);
       font-weight: 600;
-      
+
       mat-icon {
         color: var(--color-primary);
       }
@@ -299,7 +299,7 @@
   padding: $spacing-4;
   background-color: var(--color-bg-secondary);
   border-radius: 0.5rem;
-  
+
   .language-label {
     font-size: 0.75rem;
     color: var(--color-text-tertiary);
@@ -307,11 +307,11 @@
     text-transform: uppercase;
     font-weight: 600;
   }
-  
+
   .language-buttons {
     display: flex;
     gap: $spacing-2;
-    
+
     button {
       flex: 1;
       padding: $spacing-2 $spacing-3;
@@ -323,12 +323,12 @@
       cursor: pointer;
       transition: all 0.2s ease;
       min-height: 2.5rem;
-      
+
       &:hover {
         background-color: var(--color-bg-hover);
         border-color: var(--color-primary);
       }
-      
+
       &.active {
         background-color: var(--color-primary-light);
         color: var(--color-primary);
@@ -347,14 +347,14 @@
   background-color: var(--color-bg-secondary);
   border-radius: 0.5rem;
   color: var(--color-text-primary);
-  
+
   mat-icon {
     font-size: 2rem;
     width: 2rem;
     height: 2rem;
     color: var(--color-primary);
   }
-  
+
   span {
     font-size: 0.875rem;
     font-weight: 500;
@@ -375,7 +375,7 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
-  
+
   button {
     width: 100%;
     min-height: 2.75rem;
@@ -385,7 +385,7 @@
 // User menu button
 ::ng-deep .mat-mdc-button {
   color: var(--color-text-primary) !important;
-  
+
   mat-icon {
     color: var(--color-text-primary) !important;
   }
@@ -394,36 +394,36 @@
 // Menu items
 ::ng-deep .mat-mdc-menu-panel {
   background-color: var(--color-surface) !important;
-  
+
   .mat-mdc-menu-item {
     color: var(--color-text-primary) !important;
     min-height: 2.75rem !important;
-    
+
     mat-icon {
       color: var(--color-text-secondary) !important;
     }
-    
+
     &:hover {
       background-color: var(--color-bg-hover) !important;
-      
+
       mat-icon {
         color: var(--color-primary) !important;
       }
     }
   }
-  
+
   // Language selector buttons in menu
   .lang-btn {
     background-color: var(--color-surface) !important;
     color: var(--color-text-primary) !important;
     border: 1px solid var(--color-border-primary) !important;
     transition: all 0.2s ease;
-    
+
     &:hover {
       background-color: var(--color-bg-hover) !important;
       border-color: var(--color-primary) !important;
     }
-    
+
     &.active {
       background-color: var(--color-primary-light) !important;
       color: var(--color-primary) !important;
@@ -437,7 +437,7 @@
 ::ng-deep .mat-mdc-progress-bar {
   &.fixed {
     top: 3.5rem;
-    
+
     @include md {
       top: 4.5rem;
     }

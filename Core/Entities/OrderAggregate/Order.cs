@@ -32,7 +32,7 @@ public class Order : BaseEntity, IDtoConvertible
     // public string? CouponCode { get; set; }
     public string? AppliedDiscountType { get; set; } // "Voucher" or "Coupon"
     
-    public OrderTracking? Tracking { get; set; }
+    public OrderTracking Tracking { get; set; } = new();
     public List<OrderComment> Comments { get; set; } = [];
     public List<OrderAuditLog> AuditLogs { get; set; } = [];
     

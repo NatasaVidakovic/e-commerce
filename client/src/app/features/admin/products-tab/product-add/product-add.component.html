@@ -75,7 +75,7 @@
       <!-- Product Images -->
       <div class="mt-6">
         <h3 class="text-lg font-semibold mb-3">{{ 'PRODUCT.IMAGES' | translate }}</h3>
-        <p class="text-sm mb-3" style="color: var(--color-text-secondary);">Select images to upload. The first image will be the main image. Images are uploaded after product creation.</p>
+        <p class="text-sm mb-3" style="color: var(--color-text-secondary);">{{ 'PRODUCT.SELECT_IMAGES_HELP' | translate }}</p>
         <div class="flex gap-2 mb-3">
           <button mat-stroked-button type="button" (click)="fileInput.click()" class="image-button">
             <mat-icon class="button-icon">upload_file</mat-icon>
@@ -88,13 +88,13 @@
                class="flex items-center gap-2 sm:gap-3 p-2 rounded-lg border"
                [style.border-color]="i === 0 ? 'var(--color-primary, #3b82f6)' : 'var(--color-border-primary, #e0e0e0)'"
                [style.border-width]="i === 0 ? '2px' : '1px'">
-            <img [src]="img.previewUrl" class="w-14 h-14 object-cover rounded" alt="Product image" />
+            <img [src]="img.previewUrl" class="w-14 h-14 object-cover rounded" [alt]="'COMMON.PRODUCT_IMAGE' | translate" />
             <div class="flex-1 min-w-0">
               <span *ngIf="i === 0" class="text-xs font-semibold px-2 py-0.5 rounded" style="background-color: var(--color-primary, #3b82f6); color: white;">{{ 'PRODUCT.MAIN' | translate }}</span>
               <p class="text-sm truncate mt-1" style="color: var(--color-text-secondary);">{{ img.file.name }}</p>
             </div>
             <button mat-icon-button type="button" (click)="setPrimaryPending(i)" [disabled]="i === 0"
-                    [style.color]="i === 0 ? 'var(--color-primary)' : 'inherit'" title="Set as main image">
+                    [style.color]="i === 0 ? 'var(--color-primary)' : 'inherit'" [attr.title]="'PRODUCT.SET_AS_MAIN_IMAGE' | translate">
               <mat-icon>{{ i === 0 ? 'star' : 'star_border' }}</mat-icon>
             </button>
             <button mat-icon-button type="button" (click)="moveImage(i, -1)" [disabled]="i === 0">

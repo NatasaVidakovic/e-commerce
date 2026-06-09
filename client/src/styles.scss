@@ -1,21 +1,21 @@
 @use '@angular/material' as mat;
 
 // Import centralized theme variables
-@import 'styles/themes/theme-variables';
+@use 'styles/themes/theme-variables' as *;
 
 // Import responsive system
-@import 'styles/breakpoints';
-@import 'styles/spacing';
-@import 'styles/typography';
-@import 'styles/utilities';
-@import 'styles/progressive-enhancement';
-@import 'styles/badges';
-@import 'styles/product-cards';
+@use 'styles/breakpoints' as *;
+@use 'styles/spacing' as *;
+@use 'styles/typography' as *;
+@use 'styles/utilities' as *;
+@use 'styles/progressive-enhancement' as *;
+@use 'styles/badges' as *;
+@use 'styles/product-cards' as *;
 
 // Import Swiper styles globally
-@import 'swiper/css';
-@import 'swiper/css/navigation';
-@import 'swiper/css/pagination';
+@use 'swiper/css' as *;
+@use 'swiper/css/navigation' as *;
+@use 'swiper/css/pagination' as *;
 
 // ============================================
 // GLOBAL RESPONSIVE FOUNDATION
@@ -45,7 +45,7 @@ html {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  
+
   table {
     min-width: 600px;
   }
@@ -115,12 +115,12 @@ a {
   text-decoration: none;
   transition: color 0.2s ease;
   font-weight: 500;
-  
+
   &:hover {
     color: var(--color-primary-hover);
     text-decoration: underline;
   }
-  
+
   &:focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
@@ -183,7 +183,7 @@ table.mat-mdc-table,
 table.mat-table {
   background-color: var(--color-table-row-bg) !important;
   color: var(--color-text-primary) !important;
-  
+
   .mat-mdc-header-cell,
   .mat-header-cell {
     background-color: var(--color-table-header-bg) !important;
@@ -191,43 +191,43 @@ table.mat-table {
     font-weight: 600 !important;
     border-bottom: 1px solid var(--color-table-border) !important;
   }
-  
+
   .mdc-data-table__header-row,
   .mat-mdc-header-row {
     background-color: var(--color-table-header-bg) !important;
   }
-  
+
   .mdc-data-table__header-cell {
     background-color: var(--color-table-header-bg) !important;
     color: var(--color-text-secondary) !important;
     border-bottom-color: var(--color-table-border) !important;
   }
-  
+
   .mat-mdc-cell,
   .mat-cell {
     color: var(--color-text-primary) !important;
     border-bottom: 1px solid var(--color-border-primary) !important;
   }
-  
+
   .mdc-data-table__cell {
     color: var(--color-text-primary) !important;
     border-bottom-color: var(--color-border-primary) !important;
   }
-  
+
   .mat-mdc-row,
   .mat-row {
     background-color: var(--color-table-row-bg) !important;
     transition: background-color 0.2s ease;
-    
+
     &:hover {
       background-color: var(--color-table-row-hover) !important;
     }
-    
+
     &.selected {
       background-color: var(--color-table-row-selected) !important;
     }
   }
-  
+
   .mdc-data-table__row {
     background-color: var(--color-table-row-bg) !important;
     transition: background-color 0.2s ease;
@@ -273,22 +273,22 @@ table.mat-table {
   .mat-mdc-input-element::placeholder {
     color: var(--color-input-placeholder) !important;
   }
-  
+
   .mdc-text-field--filled {
     background-color: var(--color-input-bg) !important;
   }
-  
+
   .mdc-text-field--outlined {
     background-color: var(--color-input-bg) !important;
   }
-  
+
   .mdc-text-field--outlined {
     .mdc-notched-outline__leading,
     .mdc-notched-outline__notch,
     .mdc-notched-outline__trailing {
       border-color: var(--color-input-border) !important;
     }
-    
+
     &:hover:not(.mdc-text-field--focused) .mdc-notched-outline {
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
@@ -296,7 +296,7 @@ table.mat-table {
         border-color: var(--color-input-border-hover) !important;
       }
     }
-    
+
     &.mdc-text-field--focused {
       .mdc-notched-outline {
         .mdc-notched-outline__leading,
@@ -306,11 +306,11 @@ table.mat-table {
           border-width: 2px !important;
         }
       }
-      
+
       box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.30) !important;
     }
   }
-  
+
   &.mat-focused .mdc-text-field--outlined {
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.30) !important;
   }
@@ -321,7 +321,7 @@ table.mat-table {
     .mdc-text-field--outlined.mdc-text-field--focused {
       box-shadow: 0 0 0 2px rgba(144, 202, 249, 0.30) !important;
     }
-    
+
     &.mat-focused .mdc-text-field--outlined {
       box-shadow: 0 0 0 2px rgba(144, 202, 249, 0.30) !important;
     }
@@ -331,7 +331,7 @@ table.mat-table {
 // Select dropdowns - Proper dark styling
 .mat-mdc-select {
   color: var(--color-text-primary) !important;
-  
+
   .mat-mdc-select-value {
     color: var(--color-text-primary) !important;
   }
@@ -340,11 +340,11 @@ table.mat-table {
   .mat-mdc-select-trigger {
     color: var(--color-text-primary) !important;
   }
-  
+
   .mat-mdc-select-arrow {
     color: var(--color-text-secondary) !important;
   }
-  
+
   .mdc-select__selected-text {
     color: var(--color-text-primary) !important;
   }
@@ -359,22 +359,22 @@ table.mat-table {
   background-color: var(--color-surface-raised) !important;
   border: 1px solid var(--color-border-secondary) !important;
   box-shadow: var(--shadow-lg) !important;
-  
+
   .mat-mdc-option {
     color: var(--color-text-primary) !important;
 
     .mdc-list-item__primary-text {
       color: var(--color-text-primary) !important;
     }
-    
+
     &:hover {
       background-color: var(--color-surface-hover) !important;
     }
-    
+
     &.mat-mdc-option-active {
       background-color: var(--color-surface-hover) !important;
     }
-    
+
     &.mdc-list-item--selected {
       background-color: var(--color-primary-light) !important;
       color: var(--color-primary) !important;
@@ -387,14 +387,14 @@ table.mat-table {
   background-color: var(--color-surface-raised) !important;
   border: 1px solid var(--color-border-secondary) !important;
   box-shadow: var(--shadow-lg) !important;
-  
+
   .mat-mdc-menu-item {
     color: var(--color-text-primary) !important;
-    
+
     &:hover {
       background-color: var(--color-surface-hover) !important;
     }
-    
+
     .mat-icon {
       color: var(--color-text-secondary) !important;
     }
@@ -406,7 +406,7 @@ table.mat-table {
 .mat-mdc-unelevated-button.mat-primary {
   background-color: var(--color-btn-primary-bg) !important;
   color: var(--color-btn-primary-text) !important;
-  
+
   &:hover {
     background-color: var(--color-btn-primary-hover) !important;
   }
@@ -417,7 +417,7 @@ table.mat-table {
   background-color: var(--color-btn-secondary-bg) !important;
   border-color: var(--color-border-secondary) !important;
   color: var(--color-btn-secondary-text) !important;
-  
+
   &:hover {
     background-color: var(--color-btn-secondary-hover) !important;
   }
@@ -425,7 +425,7 @@ table.mat-table {
 
 .mat-mdc-button {
   color: var(--color-text-secondary) !important;
-  
+
   &:hover {
     background-color: var(--color-bg-hover) !important;
   }
@@ -433,7 +433,7 @@ table.mat-table {
 
 .mat-mdc-icon-button {
   color: var(--color-text-primary) !important;
-  
+
   &:hover {
     background-color: var(--color-bg-hover) !important;
   }
@@ -444,12 +444,12 @@ table.mat-table {
   background-color: var(--color-table-row-bg) !important;
   color: var(--color-text-primary) !important;
   border-top: 1px solid var(--color-border-primary) !important;
-  
+
   .mat-mdc-paginator-page-size-label,
   .mat-paginator-page-size-label {
     color: var(--color-text-primary) !important;
   }
-  
+
   .mat-mdc-select-value {
     color: var(--color-text-primary) !important;
   }
@@ -465,22 +465,22 @@ table.mat-table {
 table.mat-mdc-table,
 table.mat-table {
   background: transparent !important;
-  
+
   .mat-mdc-row,
   .mat-row,
   .mdc-data-table__row {
     background: transparent !important;
-    
+
     &:hover {
       background-color: var(--color-table-row-hover) !important;
     }
-    
+
     &.selected {
       background-color: var(--color-table-row-selected) !important;
       border-left: 3px solid var(--color-primary);
     }
   }
-  
+
   .mat-mdc-cell,
   .mat-cell,
   .mdc-data-table__cell {
@@ -488,7 +488,7 @@ table.mat-table {
     color: var(--color-text-primary) !important;
     border-color: transparent !important;
   }
-  
+
   .mat-mdc-header-cell,
   .mat-header-cell,
   .mdc-data-table__header-cell {
@@ -517,10 +517,10 @@ table.mat-table {
   .mdc-tab__text-label {
     color: var(--color-text-primary) !important;
   }
-  
+
   &:hover {
     background-color: transparent !important;
-    
+
     .mdc-tab__text-label {
       color: var(--color-primary) !important;
     }
@@ -544,7 +544,7 @@ table.mat-table {
 .mat-mdc-chip {
   background-color: var(--color-filter-inactive-chip) !important;
   color: var(--color-text-secondary) !important;
-  
+
   &.mat-mdc-chip-selected {
     background-color: var(--color-filter-active-bg) !important;
     color: var(--color-filter-active-text) !important;
@@ -601,22 +601,22 @@ table.mat-table {
   table.mat-mdc-table,
   table.mat-table {
     background: transparent !important;
-    
+
     .mat-mdc-row,
     .mat-row,
     .mdc-data-table__row {
       background: transparent !important;
-      
+
       &:hover {
         background-color: var(--color-bg-active) !important;
       }
-      
+
       &.selected {
         background-color: var(--color-table-row-selected) !important;
         border-left: 3px solid var(--color-primary);
       }
     }
-    
+
     .mat-mdc-cell,
     .mat-cell,
     .mdc-data-table__cell {
@@ -624,7 +624,7 @@ table.mat-table {
       color: var(--color-text-primary) !important;
       border-color: transparent !important;
     }
-    
+
     .mat-mdc-header-cell,
     .mat-header-cell,
     .mdc-data-table__header-cell {
@@ -768,7 +768,7 @@ table.mat-table {
   .mat-mdc-form-field {
     .mat-mdc-text-field-wrapper {
       background-color: var(--color-input-bg) !important;
-      
+
       .mdc-notched-outline {
         .mdc-notched-outline__leading,
         .mdc-notched-outline__notch,
@@ -776,7 +776,7 @@ table.mat-table {
           border-color: var(--color-input-border) !important;
         }
       }
-      
+
       &.mdc-text-field--focused .mdc-notched-outline {
         .mdc-notched-outline__leading,
         .mdc-notched-outline__notch,
@@ -785,28 +785,28 @@ table.mat-table {
           border-width: 2px !important;
         }
       }
-      
+
       .mdc-text-field__input {
         color: var(--color-input-text) !important;
       }
     }
-    
+
     .mat-mdc-form-field-label {
       color: var(--color-text-secondary) !important;
-      
+
       &.mat-mdc-form-field-empty {
         color: var(--color-input-placeholder) !important;
       }
     }
-    
+
     .mat-mdc-select-value {
       color: var(--color-input-text) !important;
     }
-    
+
     .mat-mdc-select-arrow {
       color: var(--color-text-secondary) !important;
     }
-    
+
     .mat-mdc-select-placeholder {
       color: var(--color-input-placeholder) !important;
     }
@@ -817,11 +817,11 @@ table.mat-table {
     background-color: var(--color-input-bg) !important;
     color: var(--color-input-text) !important;
     border-color: var(--color-input-border) !important;
-    
+
     &::placeholder {
       color: var(--color-input-placeholder) !important;
     }
-    
+
     &:focus {
       border-color: var(--color-input-border-focus) !important;
     }
@@ -850,17 +850,17 @@ table.mat-table {
       background-color: var(--color-snackbar-error-bg) !important;
       color: var(--color-snackbar-error-text) !important;
     }
-    
+
     &.mat-snack-bar-success {
       background-color: var(--color-snackbar-success-bg) !important;
       color: var(--color-snackbar-success-text) !important;
     }
-    
+
     &.mat-snack-bar-warning {
       background-color: var(--color-snackbar-warning-bg) !important;
       color: var(--color-snackbar-warning-text) !important;
     }
-    
+
     &.mat-snack-bar-info {
       background-color: var(--color-snackbar-info-bg) !important;
       color: var(--color-snackbar-info-text) !important;
@@ -879,16 +879,16 @@ table.mat-table {
       background-color: var(--color-bg-active) !important;
       color: var(--color-text-primary) !important;
     }
-    
+
     &.mat-mdc-option-active {
       background-color: var(--color-bg-active) !important;
       color: var(--color-text-primary) !important;
     }
-    
+
     &.mdc-list-item--selected {
       background-color: var(--color-bg-active) !important;
       color: var(--color-text-primary) !important;
-      
+
       .mdc-list-item__primary-text {
         color: var(--color-text-primary) !important;
       }
@@ -899,24 +899,24 @@ table.mat-table {
   .mat-mdc-select-panel {
     background-color: var(--color-surface-raised) !important;
     border: 1px solid var(--color-border-secondary) !important;
-    
+
     .mat-mdc-option {
       color: var(--color-text-primary) !important;
-      
+
       &:hover {
         background-color: var(--color-bg-active) !important;
         color: var(--color-text-primary) !important;
       }
-      
+
       &.mat-mdc-option-active {
         background-color: var(--color-bg-active) !important;
         color: var(--color-text-primary) !important;
       }
-      
+
       &.mdc-list-item--selected {
         background-color: var(--color-bg-active) !important;
         color: var(--color-text-primary) !important;
-        
+
         .mdc-list-item__primary-text {
           color: var(--color-text-primary) !important;
         }
@@ -928,15 +928,15 @@ table.mat-table {
   .mat-mdc-menu-panel {
     background-color: var(--color-surface-raised) !important;
     border: 1px solid var(--color-border-secondary) !important;
-    
+
     .mat-mdc-menu-item {
       color: var(--color-text-primary) !important;
-      
+
       &:hover {
         background-color: var(--color-bg-active) !important;
         color: var(--color-text-primary) !important;
       }
-      
+
       .mat-icon {
         color: var(--color-text-secondary) !important;
       }
@@ -973,7 +973,7 @@ table.mat-table {
     .mdc-tab__text-label {
       color: var(--color-text-primary) !important;
     }
-    
+
     &:hover {
       background-color: var(--color-bg-hover) !important;
     }
@@ -981,7 +981,7 @@ table.mat-table {
 
   .mat-mdc-tab.mdc-tab--active {
     background-color: var(--color-filter-active-bg) !important;
-    
+
     .mdc-tab__text-label {
       color: var(--color-filter-active-text) !important;
     }
@@ -991,7 +991,7 @@ table.mat-table {
   .mat-mdc-chip {
     background-color: var(--color-filter-inactive-chip) !important;
     color: var(--color-text-secondary) !important;
-    
+
     &.mat-mdc-chip-selected {
       background-color: var(--color-filter-active-bg) !important;
       color: var(--color-filter-active-text) !important;
@@ -1033,21 +1033,21 @@ table.mat-table {
   input[type="number"] {
     scrollbar-width: thin;
     scrollbar-color: var(--color-border-primary) var(--color-input-bg);
-    
+
     &::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
-    
+
     &::-webkit-scrollbar-track {
       background: var(--color-input-bg);
       border-radius: 3px;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: var(--color-border-primary);
       border-radius: 3px;
-      
+
       &:hover {
         background: var(--color-border-secondary);
       }
@@ -1137,21 +1137,21 @@ table.mat-table {
   input[type="number"] {
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 #ffffff;
-    
+
     &::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
-    
+
     &::-webkit-scrollbar-track {
       background: #ffffff;
       border-radius: 3px;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 3px;
-      
+
       &:hover {
         background: #94a3b8;
       }
@@ -1165,30 +1165,30 @@ app-admin-dashboard {
     .flex.gap-6 {
       flex-direction: column !important;
       gap: 1rem !important;
-      
+
       @media (min-width: 1024px) {
         flex-direction: row !important;
         gap: 1.5rem !important;
       }
     }
-    
+
     .filter-sidebar {
       width: 100% !important;
       flex-shrink: 1 !important;
       max-width: none !important;
-      
+
       @media (min-width: 1024px) {
         width: 16rem !important;
         max-width: 18rem !important;
         flex-shrink: 0 !important;
       }
-      
+
       @media (min-width: 1280px) {
         width: 18rem !important;
         max-width: 20rem !important;
       }
     }
-    
+
     .products-main {
       width: 100% !important;
       min-width: 0 !important;
@@ -1204,13 +1204,13 @@ app-admin-dashboard {
     display: flex !important;
     flex-direction: column !important;
   }
-  
+
   app-admin-dashboard .admin-dashboard .filter-sidebar {
     width: 100% !important;
     max-width: 100% !important;
     flex-shrink: 1 !important;
   }
-  
+
   app-admin-dashboard .admin-dashboard .products-main {
     width: 100% !important;
     max-width: 100% !important;

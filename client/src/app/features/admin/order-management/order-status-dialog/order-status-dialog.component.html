@@ -6,10 +6,10 @@
     <p><strong>{{ 'ADMIN.ORDER_STATUS.CUSTOMER' | translate }}:</strong> {{ data.order.buyerEmail }}</p>
     @if (data.order.isGuestOrder) {
       <div style="margin-top: 8px; padding: 8px 12px; background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px;">
-        <p style="margin: 0 0 4px; font-weight: 600; color: #92400e;">Guest Order</p>
-        <p style="margin: 0;"><strong>Name:</strong> {{ data.order.guestName }}</p>
-        <p style="margin: 0;"><strong>Email:</strong> {{ data.order.guestEmail }}</p>
-        <p style="margin: 0;"><strong>Phone:</strong> {{ data.order.guestPhone }}</p>
+        <p style="margin: 0 0 4px; font-weight: 600; color: #92400e;">{{ 'ADMIN.ORDER_DETAILS.GUEST_ORDER' | translate }}</p>
+        <p style="margin: 0;"><strong>{{ 'COMMON.NAME' | translate }}:</strong> {{ data.order.guestName }}</p>
+        <p style="margin: 0;"><strong>{{ 'FORM.EMAIL' | translate }}:</strong> {{ data.order.guestEmail }}</p>
+        <p style="margin: 0;"><strong>{{ 'FORM.PHONE' | translate }}:</strong> {{ data.order.guestPhone }}</p>
       </div>
     }
   </div>
@@ -61,6 +61,6 @@
   <button mat-button (click)="onCancel()" [disabled]="saving">{{ 'COMMON.CANCEL' | translate }}</button>
   <button mat-flat-button color="primary" (click)="onSave()" 
           [disabled]="!statusForm.valid || saving">
-    {{ saving ? 'Saving...' : ('COMMON.SAVE' | translate) }}
+    {{ saving ? ('COMMON.SAVING' | translate) : ('COMMON.SAVE' | translate) }}
   </button>
 </mat-dialog-actions>

@@ -3,6 +3,7 @@ import { DatePipe, CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 export interface ReportColumn {
   key: string;
@@ -28,7 +29,8 @@ export interface SummaryMetric {
   imports: [
     CommonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslatePipe
   ],
   providers: [DatePipe],
   templateUrl: './universal-report.component.html',

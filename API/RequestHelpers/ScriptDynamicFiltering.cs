@@ -1,10 +1,13 @@
-﻿
+
+#nullable disable
+
 using Core.DTOs;
 using Core.Entities;
 using Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
@@ -17,6 +20,17 @@ namespace API.RequestHelpers;
 /// </summary>
 public static class ScriptDynamicFiltering
 {
+    private sealed class FilterBuildContext
+    {
+        public List<object> Values { get; } = [];
+
+        public string Add(object value)
+        {
+            Values.Add(value);
+            return "@" + (Values.Count - 1).ToString(CultureInfo.InvariantCulture);
+        }
+    }
+
     /// <summary>
     /// Parses a date string into a DateTime. Used by dynamic LINQ expressions.
     /// </summary>
@@ -35,6 +49,11 @@ public static class ScriptDynamicFiltering
     /// <returns>Expression in string format</returns>
     public static string GetContainsExpression(ScriptFilterModel model)
     {
+        return GetContainsExpression(model, new FilterBuildContext());
+    }
+
+    private static string GetContainsExpression(ScriptFilterModel model, FilterBuildContext context)
+    {
         if (model.Value == null)
         {
             var ex = new ArgumentNullException(null, "Value is null");
@@ -46,49 +65,27 @@ public static class ScriptDynamicFiltering
             var ex = new ArgumentException("DataType is not string");
             throw ex;
         }
-        
+
 
         var propertySelector = GetPropertySelector(model);
         var propertyNullEvaluation = GetPropertyNullEvaluation(model, true);
 
         return
-            "(x." + propertyNullEvaluation + " && x." + propertySelector + ".ToLower().Contains(\"" + model.Value.ToString().ToLower() + "\"))";
+            "(x." + propertyNullEvaluation + " && x." + propertySelector + ".ToLower().Contains(" + context.Add(model.Value.ToString()?.ToLowerInvariant()) + "))";
     }
 
     /// <summary>
-    /// Generates expression with <c>string.StartsWith.</c> 
+    /// Generates expression with <c>string.StartsWith.</c>
     /// Applicable to strings only.
     /// </summary>
     /// <param name="model">Model containing the information to generate filter expression</param>
     /// <returns>Expression in string format</returns>
     public static string GetStartsWithExpression(ScriptFilterModel model)
     {
-        if (model.Value == null)
-        {
-            var ex = new ArgumentNullException(null, "Value is null");
-            throw ex;
-        }
-
-        if (model.DataType != typeof(string))
-        {
-            var ex = new ArgumentException("DataType is not string");
-            throw ex;
-        }
-
-        var propertySelector = GetPropertySelector(model);
-        var propertyNullEvaluation = GetPropertyNullEvaluation(model, true);
-
-        return
-            "(x." + propertyNullEvaluation + " && x." + propertySelector + ".ToLower().StartsWith(\"" + model.Value.ToString().ToLower() + "\"))";
+        return GetStartsWithExpression(model, new FilterBuildContext());
     }
 
-    /// <summary>
-    /// Generates expression with <c>string.EndsWith.</c> 
-    /// Applicable to strings only.
-    /// </summary>
-    /// <param name="model">Model containing the information to generate filter expression</param>
-    /// <returns>Expression in string format</returns>
-    public static string GetEndsWithExpression(ScriptFilterModel model)
+    private static string GetStartsWithExpression(ScriptFilterModel model, FilterBuildContext context)
     {
         if (model.Value == null)
         {
@@ -106,16 +103,53 @@ public static class ScriptDynamicFiltering
         var propertyNullEvaluation = GetPropertyNullEvaluation(model, true);
 
         return
-            "(x." + propertyNullEvaluation + " && x." + propertySelector + ".ToLower().EndsWith(\"" + model.Value.ToString().ToLower() + "\"))";
+            "(x." + propertyNullEvaluation + " && x." + propertySelector + ".ToLower().StartsWith(" + context.Add(model.Value.ToString()?.ToLowerInvariant()) + "))";
     }
 
     /// <summary>
-    /// Generates expression with <c>string.Length.</c> 
+    /// Generates expression with <c>string.EndsWith.</c>
+    /// Applicable to strings only.
+    /// </summary>
+    /// <param name="model">Model containing the information to generate filter expression</param>
+    /// <returns>Expression in string format</returns>
+    public static string GetEndsWithExpression(ScriptFilterModel model)
+    {
+        return GetEndsWithExpression(model, new FilterBuildContext());
+    }
+
+    private static string GetEndsWithExpression(ScriptFilterModel model, FilterBuildContext context)
+    {
+        if (model.Value == null)
+        {
+            var ex = new ArgumentNullException(null, "Value is null");
+            throw ex;
+        }
+
+        if (model.DataType != typeof(string))
+        {
+            var ex = new ArgumentException("DataType is not string");
+            throw ex;
+        }
+
+        var propertySelector = GetPropertySelector(model);
+        var propertyNullEvaluation = GetPropertyNullEvaluation(model, true);
+
+        return
+            "(x." + propertyNullEvaluation + " && x." + propertySelector + ".ToLower().EndsWith(" + context.Add(model.Value.ToString()?.ToLowerInvariant()) + "))";
+    }
+
+    /// <summary>
+    /// Generates expression with <c>string.Length.</c>
     /// Applicable to strings only.
     /// </summary>
     /// <param name="model">Model containing the information to generate filter expression</param>
     /// <returns>Expression in string format</returns>
     public static string GetLengthExpression(ScriptFilterModel model)
+    {
+        return GetLengthExpression(model, new FilterBuildContext());
+    }
+
+    private static string GetLengthExpression(ScriptFilterModel model, FilterBuildContext context)
     {
         if (model.Value == null)
         {
@@ -133,7 +167,7 @@ public static class ScriptDynamicFiltering
         var propertyNullEvaluation = GetPropertyNullEvaluation(model, true);
 
         return
-            "(x." + propertyNullEvaluation + " && x." + propertySelector + ".Length == " + model.Value.ToString() + ")";
+            "(x." + propertyNullEvaluation + " && x." + propertySelector + ".Length == " + context.Add(ParseFilterValue(model)) + ")";
     }
 
     /// <summary>
@@ -143,6 +177,11 @@ public static class ScriptDynamicFiltering
     /// <returns>Expression in string format</returns>
     public static string GetEqualExpression(ScriptFilterModel model)
     {
+        return GetEqualExpression(model, new FilterBuildContext());
+    }
+
+    private static string GetEqualExpression(ScriptFilterModel model, FilterBuildContext context)
+    {
         if (model.Value == null)
         {
             var ex = new ArgumentNullException(null, "Value is null");
@@ -153,44 +192,44 @@ public static class ScriptDynamicFiltering
         var propertySelector = GetPropertySelector(model);
 
         if (model.DataType == typeof(string))
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + ".ToLower().Equals(\"" + model.Value.ToString().ToLower() + "\"))";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + ".ToLower().Equals(" + context.Add(model.Value.ToString()?.ToLowerInvariant()) + "))";
 
         //-------------------------------------------------------------------------------------------------------
 
         if (model.StringDataType == "Nullable<Boolean>")
             return isJustZeroLevel
-                ? "(x." + propertySelector + " != null && x." + propertySelector + " == " + model.Value.ToString().ToLower() + ")"
-                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + model.Value.ToString().ToLower() + ")";
+                ? "(x." + propertySelector + " != null && x." + propertySelector + " == " + context.Add(ParseFilterValue(model)) + ")"
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.DataType == typeof(bool))
             return isJustZeroLevel
-                ? "x." + propertySelector + " == " + model.Value.ToString().ToLower()
-                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + model.Value.ToString().ToLower() + ")";
+                ? "x." + propertySelector + " == " + context.Add(ParseFilterValue(model))
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.StringDataType == "Nullable<Int32>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + model.Value.ToString() + ")";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.StringDataType == "Nullable<Decimal>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + model.Value.ToString().Replace(",", ".") + "m" + ")";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.DataType == typeof(decimal))
             return isJustZeroLevel
-                ? "x." + propertySelector + " == " + model.Value.ToString().Replace(",", ".") + "m"
-                : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + model.Value.ToString().Replace(",", ".") + "m" + ")";
+                ? "x." + propertySelector + " == " + context.Add(ParseFilterValue(model))
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.StringDataType == "Nullable<DateTime>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.DataType == typeof(DateTime))
             return isJustZeroLevel
-                ? "x." + propertySelector + " == ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\")"
-                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == ScriptDynamicFiltering.ParseDate(\"" + model.Value.ToString() + "\"))";
+                ? "x." + propertySelector + " == " + context.Add(ParseFilterValue(model))
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + context.Add(ParseFilterValue(model)) + ")";
 
         //-------------------------------------------------------------------------------------------------------
 
         return isJustZeroLevel
-            ? "x." + propertySelector + " == " + model.Value.ToString()
-            : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + model.Value.ToString() + ")";
+            ? "x." + propertySelector + " == " + context.Add(ParseFilterValue(model))
+            : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " == " + context.Add(ParseFilterValue(model)) + ")";
     }
 
     /// <summary>
@@ -200,6 +239,11 @@ public static class ScriptDynamicFiltering
     /// <returns>Expression in string format</returns>
     public static string GetNotEqualExpression(ScriptFilterModel model)
     {
+        return GetNotEqualExpression(model, new FilterBuildContext());
+    }
+
+    private static string GetNotEqualExpression(ScriptFilterModel model, FilterBuildContext context)
+    {
         if (model.Value == null)
         {
             var ex = new ArgumentNullException(null, "Value is null");
@@ -210,44 +254,44 @@ public static class ScriptDynamicFiltering
         var propertySelector = GetPropertySelector(model);
 
         if (model.DataType == typeof(string))
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && !x." + propertySelector + ".ToLower().Equals(\"" + model.Value.ToString().ToLower() + "\"))";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && !x." + propertySelector + ".ToLower().Equals(" + context.Add(model.Value.ToString()?.ToLowerInvariant()) + "))";
 
         //-------------------------------------------------------------------------------------------------------
 
         if (model.StringDataType == "Nullable<Boolean>")
             return isJustZeroLevel
-                ? "(x." + propertySelector + " != null && x." + propertySelector + " != " + model.Value.ToString().ToLower() + ")"
-                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + model.Value.ToString().ToLower() + ")";
+                ? "(x." + propertySelector + " != null && x." + propertySelector + " != " + context.Add(ParseFilterValue(model)) + ")"
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.DataType == typeof(bool))
             return isJustZeroLevel
-                ? "x." + propertySelector + " != " + model.Value.ToString().ToLower()
-                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + model.Value.ToString().ToLower() + ")";
+                ? "x." + propertySelector + " != " + context.Add(ParseFilterValue(model))
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.StringDataType == "Nullable<Int32>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + model.Value.ToString() + ")";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.StringDataType == "Nullable<Decimal>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + model.Value.ToString().Replace(",", ".") + "m" + ")";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.DataType == typeof(decimal))
             return isJustZeroLevel
-                ? "x." + propertySelector + " != " + model.Value.ToString().Replace(",", ".") + "m"
-                : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + model.Value.ToString().Replace(",", ".") + "m" + ")";
+                ? "x." + propertySelector + " != " + context.Add(ParseFilterValue(model))
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.StringDataType == "Nullable<DateTime>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != DateTime(\"" + model.Value.ToString() + "\"))";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.DataType == typeof(DateTime))
             return isJustZeroLevel
-                ? "x." + propertySelector + " != DateTime(\"" + model.Value.ToString() + "\")"
-                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != DateTime(\"" + model.Value.ToString() + "\"))";
+                ? "x." + propertySelector + " != " + context.Add(ParseFilterValue(model))
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + context.Add(ParseFilterValue(model)) + ")";
 
         //-------------------------------------------------------------------------------------------------------
 
         return isJustZeroLevel
-            ? "x." + propertySelector + " != " + model.Value.ToString()
-            : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + model.Value.ToString() + ")";
+            ? "x." + propertySelector + " != " + context.Add(ParseFilterValue(model))
+            : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " != " + context.Add(ParseFilterValue(model)) + ")";
     }
 
     /// <summary>
@@ -257,7 +301,7 @@ public static class ScriptDynamicFiltering
     /// <returns>Expression in string format</returns>
     public static string GetGreaterThanExpression(ScriptFilterModel model)
     {
-        return GetGreatherThanLessThanExpression(model, ">");
+        return GetGreatherThanLessThanExpression(model, ">", new FilterBuildContext());
     }
 
     /// <summary>
@@ -267,7 +311,7 @@ public static class ScriptDynamicFiltering
     /// <returns>Expression in string format</returns>
     public static string GetGreaterThanOrEqualExpression(ScriptFilterModel model)
     {
-        return GetGreatherThanLessThanExpression(model, ">=");
+        return GetGreatherThanLessThanExpression(model, ">=", new FilterBuildContext());
     }
 
     /// <summary>
@@ -277,7 +321,7 @@ public static class ScriptDynamicFiltering
     /// <returns>Expression in string format</returns>
     public static string GetLessThanExpression(ScriptFilterModel model)
     {
-        return GetGreatherThanLessThanExpression(model, "<");
+        return GetGreatherThanLessThanExpression(model, "<", new FilterBuildContext());
     }
 
     /// <summary>
@@ -287,7 +331,7 @@ public static class ScriptDynamicFiltering
     /// <returns>Expression in string format</returns>
     public static string GetLessThanOrEqualExpression(ScriptFilterModel model)
     {
-        return GetGreatherThanLessThanExpression(model, "<=");
+        return GetGreatherThanLessThanExpression(model, "<=", new FilterBuildContext());
     }
 
     /// <summary>
@@ -297,6 +341,11 @@ public static class ScriptDynamicFiltering
     /// <param name="theOperator">One of these oprrators in string format: <, >, >=, <= </param>
     /// <returns></returns>
     public static string GetGreatherThanLessThanExpression(ScriptFilterModel model, string theOperator)
+    {
+        return GetGreatherThanLessThanExpression(model, theOperator, new FilterBuildContext());
+    }
+
+    private static string GetGreatherThanLessThanExpression(ScriptFilterModel model, string theOperator, FilterBuildContext context)
     {
         if (model.Value == null)
         {
@@ -316,29 +365,29 @@ public static class ScriptDynamicFiltering
         var propertySelector = GetPropertySelector(model);
 
         if (model.StringDataType == "Nullable<Int32>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + model.Value.ToString() + ")";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.StringDataType == "Nullable<Decimal>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + model.Value.ToString().Replace(",", ".") + "m)";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.DataType == typeof(decimal))
             return isJustZeroLevel
-            ? "x." + propertySelector + " " + theOperator + " " + model.Value.ToString().Replace(",", ".") + "m"
-            : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + model.Value.ToString().Replace(",", ".") + "m)";
+            ? "x." + propertySelector + " " + theOperator + " " + context.Add(ParseFilterValue(model))
+            : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.StringDataType == "Nullable<DateTime>")
-            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " DateTime(\"" + model.Value.ToString() + "\"))";
+            return "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + context.Add(ParseFilterValue(model)) + ")";
 
         if (model.DataType == typeof(DateTime))
             return isJustZeroLevel
-                ? "x." + propertySelector + " " + theOperator + " DateTime(\"" + model.Value.ToString() + "\")"
-                : "(x." + GetPropertyNullEvaluation(model, true) + "&& x." + propertySelector + " " + theOperator + " DateTime(\"" + model.Value.ToString() + "\"))";
+                ? "x." + propertySelector + " " + theOperator + " " + context.Add(ParseFilterValue(model))
+                : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + context.Add(ParseFilterValue(model)) + ")";
 
         //-------------------------------------------------------------------------------------------------------
 
         return isJustZeroLevel
-            ? "x." + propertySelector + " " + theOperator + " " + model.Value.ToString()
-            : "(x. " + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + model.Value.ToString() + ")";
+            ? "x." + propertySelector + " " + theOperator + " " + context.Add(ParseFilterValue(model))
+            : "(x." + GetPropertyNullEvaluation(model, true) + " && x." + propertySelector + " " + theOperator + " " + context.Add(ParseFilterValue(model)) + ")";
     }
 
     #endregion
@@ -513,10 +562,11 @@ public static class ScriptDynamicFiltering
             return initialQuery;
 
         var finalExpression = "x => ";
+        var context = new FilterBuildContext();
 
         foreach (var f in validFilters)
         {
-            string temp = GetConnectedOrExpressions(f);
+            string temp = GetConnectedOrExpressions(f, context);
 
             if (!string.IsNullOrEmpty(temp))
                 finalExpression += temp + " && ";
@@ -526,11 +576,11 @@ public static class ScriptDynamicFiltering
             return initialQuery;
 
         finalExpression = finalExpression[0..^3];
-        
+
         var config = ParsingConfig.Default;
         config.ResolveTypesBySimpleName = true;
-        
-        return initialQuery.Where(config, finalExpression);
+
+        return initialQuery.Where(config, finalExpression, context.Values.ToArray());
     }
 
     /// <summary>
@@ -540,6 +590,11 @@ public static class ScriptDynamicFiltering
     /// <returns>Multiple expressions connected by OR operator, in string format</returns>
     public static string GetConnectedOrExpressions(List<ScriptFilterModel> model)
     {
+        return GetConnectedOrExpressions(model, new FilterBuildContext());
+    }
+
+    private static string GetConnectedOrExpressions(List<ScriptFilterModel> model, FilterBuildContext context)
+    {
         if (!model.Any()) throw new ArgumentNullException(null, "model is empty or null");
         var finalExpression = "(";
 
@@ -547,7 +602,7 @@ public static class ScriptDynamicFiltering
         {
             if (!f.MultipleValues)
             {
-                string temp = GetSingleExpression(f);
+                string temp = GetSingleExpression(f, context);
 
                 if (!string.IsNullOrEmpty(temp))
                     finalExpression += temp + " && ";
@@ -562,7 +617,7 @@ public static class ScriptDynamicFiltering
                     if (!string.IsNullOrEmpty(val))
                     {
                         f.Value = val;
-                        string temp = GetSingleExpression(f);
+                        string temp = GetSingleExpression(f, context);
 
                         if (!string.IsNullOrEmpty(temp))
                             finalExpression += temp + " || ";
@@ -616,40 +671,66 @@ public static class ScriptDynamicFiltering
     [ExcludeFromCodeCoverage]
     private static string GetSingleExpression(ScriptFilterModel model)
     {
+        return GetSingleExpression(model, new FilterBuildContext());
+    }
+
+    private static string GetSingleExpression(ScriptFilterModel model, FilterBuildContext context)
+    {
         if (model.OperationType.Code == FilterOperationTypeEnum.AdvancedFilter.Code)
             return model.AdvancedFilter.GetFilter();
 
         if (model.OperationType.Code == FilterOperationTypeEnum.Contains.Code)
-            return GetContainsExpression(model);
+            return GetContainsExpression(model, context);
 
         if (model.OperationType.Code == FilterOperationTypeEnum.StartsWith.Code)
-            return GetStartsWithExpression(model);
+            return GetStartsWithExpression(model, context);
 
         if (model.OperationType.Code == FilterOperationTypeEnum.EndsWith.Code)
-            return GetEndsWithExpression(model);
+            return GetEndsWithExpression(model, context);
 
         if (model.OperationType.Code == FilterOperationTypeEnum.Length.Code)
-            return GetLengthExpression(model);
+            return GetLengthExpression(model, context);
 
         if (model.OperationType.Code == FilterOperationTypeEnum.Equal.Code)
-            return GetEqualExpression(model);
+            return GetEqualExpression(model, context);
 
         if (model.OperationType.Code == FilterOperationTypeEnum.NotEqual.Code)
-            return GetNotEqualExpression(model);
+            return GetNotEqualExpression(model, context);
 
         if (model.OperationType.Code == FilterOperationTypeEnum.GreaterThan.Code)
-            return GetGreaterThanExpression(model);
+            return GetGreatherThanLessThanExpression(model, ">", context);
 
         if (model.OperationType.Code == FilterOperationTypeEnum.LessThan.Code)
-            return GetLessThanExpression(model);
+            return GetGreatherThanLessThanExpression(model, "<", context);
 
         if (model.OperationType.Code == FilterOperationTypeEnum.GreaterThanOrEqual.Code)
-            return GetGreaterThanOrEqualExpression(model);
+            return GetGreatherThanLessThanExpression(model, ">=", context);
 
         if (model.OperationType.Code == FilterOperationTypeEnum.LessThanOrEqual.Code)
-            return GetLessThanOrEqualExpression(model);
+            return GetGreatherThanLessThanExpression(model, "<=", context);
 
         return null;
+    }
+
+    private static object ParseFilterValue(ScriptFilterModel model)
+    {
+        if (model.Value == null) return null;
+
+        var value = model.Value.ToString() ?? string.Empty;
+        var dataType = model.DataType;
+        var stringDataType = model.StringDataType;
+
+        if (dataType == typeof(string)) return value;
+        if (dataType == typeof(bool) || stringDataType == "Nullable<Boolean>")
+            return bool.Parse(value);
+        if (dataType == typeof(int) || stringDataType == "Nullable<Int32>")
+            return int.Parse(value, CultureInfo.InvariantCulture);
+        if (dataType == typeof(decimal) || stringDataType == "Nullable<Decimal>")
+            return decimal.Parse(value.Replace(",", "."), CultureInfo.InvariantCulture);
+        if (dataType == typeof(DateTime) || stringDataType == "Nullable<DateTime>")
+            return DateTime.Parse(value, CultureInfo.InvariantCulture);
+
+        return model.Value;
     }
 
     public static FilterOperationTypeEnum GetOperationTypeByString(string operationTypeString)

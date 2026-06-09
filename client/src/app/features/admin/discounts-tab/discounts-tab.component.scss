@@ -1,5 +1,5 @@
-@import '../../../../styles/breakpoints';
-@import '../../../../styles/spacing';
+@use '../../../../styles/breakpoints' as *;
+@use '../../../../styles/spacing' as *;
 
 /* Page header row: title left, actions right */
 .page-header-row {
