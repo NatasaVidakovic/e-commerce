@@ -43,7 +43,7 @@ export class HeaderComponent implements OnInit {
 
   logoSrc = computed(() => {
     const config = this.themeService.themeConfig();
-    return config.logoUrl || (this.branding.isNoli() ? '/brand/noli-mascot.png' : '/images/logo.png');
+    return config.logoUrl || (this.branding.isLumen() ? '/brand/lumen/favicon.svg' : this.branding.isNoli() ? '/brand/noli-mascot.png' : '/images/logo.png');
   });
 
   private router = inject(Router);
@@ -52,13 +52,13 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     const savedLanguage = localStorage.getItem('userLanguage');
     this.currentLang = savedLanguage === 'en' ? 'en' : 'sr';
-    this.translate.use(this.currentLang).subscribe(() => { if (this.branding.isNoli()) document.title = this.translate.instant('NOLI.PAGE_TITLE'); });
+    this.translate.use(this.currentLang).subscribe(() => this.updatePageTitle());
     document.documentElement.lang = this.currentLang;
   }
 
   switchLanguage(lang: string) {
     this.currentLang = lang;
-    this.translate.use(lang).subscribe(() => { if (this.branding.isNoli()) document.title = this.translate.instant('NOLI.PAGE_TITLE'); });
+    this.translate.use(lang).subscribe(() => this.updatePageTitle());
     document.documentElement.lang = lang;
     // Save language preference to localStorage
     localStorage.setItem('userLanguage', lang);
@@ -71,6 +71,11 @@ export class HeaderComponent implements OnInit {
         this.router.navigateByUrl('/');
       }
     });
+  }
+
+  private updatePageTitle(): void {
+    if (this.branding.isNoli()) document.title = this.translate.instant('NOLI.PAGE_TITLE');
+    if (this.branding.isLumen()) document.title = this.translate.instant('LUMEN.PAGE_TITLE');
   }
 
   toggleMobileMenu() {

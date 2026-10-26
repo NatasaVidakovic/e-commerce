@@ -34,11 +34,12 @@ describe('Noli cash checkout', () => {
   }
 });
 
-describe('Base checkout configuration', () => {
+describe('Base and Lumen checkout configuration', () => {
+  for (const brand of ['default', 'lumen']) {
   for (const paymentMethods of ['stripe', 'cash', 'both'] as const) {
-    it(`honours the administrator's ${paymentMethods} setting without Noli`, async () => {
+    it(`honours the administrator's ${paymentMethods} setting in ${brand}`, async () => {
       TestBed.configureTestingModule({providers: [
-        {provide: BrandingService, useValue: {isNoli: () => false}},
+        {provide: BrandingService, useValue: {isNoli: () => false, isLumen: () => brand === 'lumen'}},
         {provide: AccountService, useValue: {currentUser: () => ({email: 'buyer@test.com'})}},
         {provide: SiteConfigService, useValue: {siteConfig: () => ({paymentMethods, allowedCountries: []})}},
         {provide: CartService, useValue: {}}, {provide: OrderService, useValue: {}},
@@ -53,5 +54,6 @@ describe('Base checkout configuration', () => {
       component.onPaymentMethodChange('stripe');
       expect(initialize).toHaveBeenCalledTimes(paymentMethods === 'cash' ? 0 : 1);
     });
+  }
   }
 });

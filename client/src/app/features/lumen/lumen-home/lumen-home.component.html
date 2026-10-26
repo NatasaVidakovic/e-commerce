@@ -1,0 +1,220 @@
+<ng-template #forestAtmosphere>
+  <div class="home-atmosphere" aria-hidden="true">
+    <i class="sunbeam"></i><i class="sunbeam"></i><i class="sunbeam"></i>
+    <span class="light-mote"></span><span class="light-mote"></span>
+    <span class="light-mote"></span><span class="light-mote"></span>
+    <span class="light-mote"></span><span class="light-mote"></span>
+  </div>
+</ng-template>
+<section class="lumen-hero" [class.text-only]="!showHeroImage()">
+  @if (showHeroImage()) {
+    <img
+      class="hero-photo"
+      [src]="heroImage()"
+      [alt]="'LUMEN.SUNLIGHT_ALT' | translate"
+      fetchpriority="high"
+    />
+  }
+  <div class="hero-shade"></div>
+  <ng-container *ngTemplateOutlet="forestAtmosphere" />
+  <div class="hero-content">
+    <p class="lumen-eyebrow">
+      {{ "LUMEN.STUDIO_COLLECTION" | translate }} {{ collectionYear }}
+    </p>
+    <h1 [class.custom-title]="!!heroTitle()">{{ heroTitle() || "LUMEN" }}</h1>
+    <p class="hero-description">
+      {{ heroSubtitle() || ("LUMEN.HERO_TEXT" | translate) }}
+    </p>
+    <a routerLink="/" fragment="candles" class="lumen-text-link"
+      >{{ "LUMEN.EXPLORE" | translate }} <span aria-hidden="true">⟶</span></a
+    >
+  </div>
+  <span class="hero-caption">{{ "LUMEN.SIGNATURE" | translate }}</span>
+</section>
+@for (group of groups; track group.kind) {
+  <section
+    class="lumen-collection"
+    [class.forest-collection]="group.kind === 'jewellery'"
+    [id]="group.kind"
+  >
+    <ng-container *ngTemplateOutlet="forestAtmosphere" />
+    <div class="collection-heading">
+      <span class="gold-rule" aria-hidden="true"></span>
+      <div>
+        <h2>
+          {{ group.title | translate }}<em>{{ group.subtitle | translate }}</em>
+        </h2>
+        <a
+          class="lumen-text-link"
+          routerLink="/shop"
+          [queryParams]="{ type: group.type }"
+          >{{ "LUMEN.VIEW_COLLECTION" | translate }}
+          <span aria-hidden="true">↗</span></a
+        >
+      </div>
+    </div>
+    <div
+      #collectionRail
+      class="collection-rail"
+      tabindex="0"
+      role="region"
+      [attr.aria-label]="group.title | translate"
+      (scroll)="onCollectionScroll($event, group.kind)"
+    >
+      @for (photo of group.photos; track photo.image; let i = $index) {
+        <a
+          class="editorial-card"
+          routerLink="/shop"
+          [attr.aria-label]="
+            (photo.title | translate) +
+            '. ' +
+            ('LUMEN.VIEW_COLLECTION' | translate)
+          "
+          [queryParams]="{ type: group.type }"
+          [style.--tile-width]="tileWidths[i] + 'px'"
+          [style.--tile-offset]="tileOffsets[i] + 'px'"
+        >
+          <div class="editorial-image">
+            <img
+              [src]="photo.image"
+              [alt]="photo.alt | translate"
+              loading="lazy"
+              width="800"
+              height="1000"
+              draggable="false"
+            />
+            <span class="discover-label"
+              >{{ "LUMEN.DISCOVER" | translate }}
+              <span aria-hidden="true">⟶</span></span
+            >
+          </div>
+          <div class="editorial-caption">
+            <span>{{ group.detail | translate }}</span>
+            <h3>
+              {{ photo.title | translate }}<span aria-hidden="true">↗</span>
+            </h3>
+          </div>
+        </a>
+      }
+    </div>
+    <div class="rail-controls">
+      <div class="rail-progress" aria-hidden="true">
+        <span
+          [style.transform]="
+            'scaleX(' + (0.15 + (railProgress()[group.kind] || 0) * 0.85) + ')'
+          "
+        ></span>
+      </div>
+      <button
+        type="button"
+        [attr.aria-label]="'LUMEN.PREVIOUS_PHOTOS' | translate"
+        [disabled]="(railProgress()[group.kind] || 0) === 0"
+        (click)="scrollCollection(collectionRail, -1)"
+      >
+        ←
+      </button>
+      <button
+        type="button"
+        [attr.aria-label]="'LUMEN.NEXT_PHOTOS' | translate"
+        [disabled]="railProgress()[group.kind] >= 0.999"
+        (click)="scrollCollection(collectionRail, 1)"
+      >
+        →
+      </button>
+    </div>
+    <p class="collection-footnote">{{ group.note | translate }}</p>
+  </section>
+}
+<section class="archive-section">
+  <div>
+    <span class="lumen-eyebrow">{{ "LUMEN.ONE_STUDIO" | translate }}</span>
+    <h2>
+      {{ "LUMEN.ARCHIVE_TITLE" | translate
+      }}<em>{{ "LUMEN.ARCHIVE_SUBTITLE" | translate }}</em>
+    </h2>
+  </div>
+  <a routerLink="/shop" class="lumen-text-link"
+    >{{ "LUMEN.ENTER_ARCHIVE" | translate }}
+    <span aria-hidden="true">⟶</span></a
+  >
+</section>
+<section class="studio-story">
+  <ng-container *ngTemplateOutlet="forestAtmosphere" />
+  <span class="lumen-eyebrow">{{ "LUMEN.STORY" | translate }}</span>
+  <h2>
+    {{ "LUMEN.STORY_TITLE" | translate
+    }}<em>{{ "LUMEN.STORY_SUBTITLE" | translate }}</em>
+  </h2>
+  <p>{{ "LUMEN.STORY_TEXT" | translate }}</p>
+  <a class="lumen-pill" routerLink="/about"
+    >{{ "LUMEN.PROCESS" | translate }} <span aria-hidden="true">⟶</span></a
+  >
+</section>
+@if (collectionError) {
+  <div class="collection-status" role="alert">
+    <p>{{ "LUMEN.LOAD_ERROR" | translate }}</p>
+    <button class="lumen-pill" (click)="loadCollection()">
+      {{ "NOLI.RETRY" | translate }}
+    </button>
+  </div>
+}
+@if (discounts.length) {
+  <section class="lumen-recommendations">
+    <div class="recommendations-heading">
+      <span class="lumen-eyebrow">LUMEN STUDIO</span>
+      <h2>{{ "HOME.ACTIVE_DISCOUNTS" | translate }}</h2>
+    </div>
+    <div class="discount-selection">
+      @for (discount of discounts; track discount.id) {
+        <button
+          class="lumen-pill"
+          [class.selected]="selectedDiscount?.id === discount.id"
+          (click)="selectDiscount(discount)"
+        >
+          {{ discount.name }} ·
+          {{
+            discount.isPercentage
+              ? discount.value + "%"
+              : (discount.value | appCurrency)
+          }}
+        </button>
+      }
+    </div>
+    @if (selectedDiscount) {
+      <a
+        class="lumen-text-link"
+        routerLink="/shop"
+        [queryParams]="{ discountId: selectedDiscount.id }"
+        >{{ "NOLI.PROMO_PRICE" | translate }} ⟶</a
+      >
+      <div class="recommendation-grid">
+        @for (product of discountProducts; track product.id) {
+          <app-product-item
+            [product]="product"
+            [isFavourite]="product.isFavourite"
+            (favoriteToggled)="onFavoriteToggled($event)"
+          />
+        }
+      </div>
+    }
+  </section>
+}
+@for (section of recommendations; track section.title) {
+  <section class="lumen-recommendations">
+    <div class="recommendations-heading">
+      <span class="lumen-eyebrow">{{
+        "LUMEN.STUDIO_SELECTION" | translate
+      }}</span>
+      <h2>{{ section.title | translate }}</h2>
+    </div>
+    <div class="recommendation-grid">
+      @for (product of section.products; track product.id) {
+        <app-product-item
+          [product]="product"
+          [isFavourite]="product.isFavourite"
+          (favoriteToggled)="onFavoriteToggled($event)"
+        />
+      }
+    </div>
+  </section>
+}

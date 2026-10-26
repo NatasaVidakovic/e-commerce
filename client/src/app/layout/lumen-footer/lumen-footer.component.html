@@ -1,0 +1,46 @@
+<footer class="lumen-footer">
+  <div class="footer-top">
+    <a routerLink="/" [attr.aria-label]="'LUMEN.HOME' | translate"
+      ><app-lumen-logo
+    /></a>
+    <p>{{ "LUMEN.FOOTER_NOTE" | translate }}</p>
+    <a class="lumen-text-link" routerLink="/shop"
+      >{{ "LUMEN.EXPLORE" | translate }} <span aria-hidden="true">↗</span></a
+    >
+  </div>
+  <div class="footer-links">
+    <div>
+      <span class="footer-caption">{{ "LUMEN.COLLECTIONS" | translate }}</span
+      ><a routerLink="/shop" [queryParams]="{ type: 'Mirisne svijeće' }">{{
+        "LUMEN.CANDLES" | translate
+      }}</a
+      ><a routerLink="/shop" [queryParams]="{ type: 'Nakit' }">{{
+        "LUMEN.JEWELLERY" | translate
+      }}</a
+      ><a routerLink="/shop">{{ "LUMEN.ARCHIVE" | translate }}</a>
+    </div>
+    <div>
+      <span class="footer-caption">LUMEN STUDIO</span
+      ><a routerLink="/about">{{ "LUMEN.STORY" | translate }}</a
+      ><a routerLink="/about" fragment="kontakt">{{
+        "FOOTER.CONTACT_US" | translate
+      }}</a>
+      @for (link of config().socialMediaLinks; track link.platform) {
+        <a [href]="link.url" target="_blank" rel="noopener noreferrer">{{
+          link.platform
+        }}</a>
+      }
+    </div>
+    <div>
+      <span class="footer-caption">{{ "LUMEN.ACCOUNT" | translate }}</span
+      ><a routerLink="/account/login">{{ "NAVIGATION.LOG_IN" | translate }}</a
+      ><a routerLink="/orders">{{ "NAVIGATION.ORDERS" | translate }}</a
+      ><a routerLink="/favourites">{{ "NAVIGATION.FAVOURITES" | translate }}</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span
+      >© {{ currentYear }} Lumen. {{ "FOOTER.ALL_RIGHTS" | translate }}</span
+    ><span>{{ "LUMEN.SIGNATURE" | translate }}</span>
+  </div>
+</footer>

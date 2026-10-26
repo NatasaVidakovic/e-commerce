@@ -1055,7 +1055,7 @@ input[type="range"].range-slider {
   }
 }
 
-:host-context([data-brand='noli']) {
+:host-context([data-studio]) {
   @media (min-width: 768px) and (max-width: 1100px) {
     .filter-main-row { flex-wrap: wrap; }
     .filter-search-field { flex-basis: 100%; }

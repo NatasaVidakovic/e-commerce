@@ -249,7 +249,7 @@ $sidebar-collapsed-width: 60px;
 }
 }
 
-:host-context([data-brand="noli"]) {
+:host-context([data-studio]) {
 $sidebar-width: 220px;
 $sidebar-collapsed-width: 60px;
 
@@ -494,7 +494,7 @@ $sidebar-collapsed-width: 60px;
 }
 }
 
-:host-context([data-brand='noli']) {
+:host-context([data-studio]) {
   .admin-content > router-outlet + * { display: block; width: 100%; min-width: 0; }
   @media (max-width: 767px) {
     .sidebar { flex-shrink: 0; }

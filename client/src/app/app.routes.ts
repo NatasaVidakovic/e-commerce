@@ -8,13 +8,17 @@ import { notAdminGuard } from './core/guards/not-admin.guard';
 export const routes: Routes = [
     {
         path: '',
-        loadComponent: () => inject(BrandingService).isNoli()
+        loadComponent: () => inject(BrandingService).isLumen()
+          ? import('./features/lumen/lumen-home/lumen-home.component').then(m => m.LumenHomeComponent)
+          : inject(BrandingService).isNoli()
           ? import('./features/home/home.component').then(m => m.HomeComponent)
           : import('./features/home/base-home.component').then(m => m.BaseHomeComponent)
     },
     {
         path: 'about',
-        loadComponent: () => inject(BrandingService).isNoli()
+        loadComponent: () => inject(BrandingService).isLumen()
+          ? import('./features/lumen/lumen-about/lumen-about.component').then(m => m.LumenAboutComponent)
+          : inject(BrandingService).isNoli()
           ? import('./features/about/about.component').then(m => m.AboutComponent)
           : import('./features/about/base-about.component').then(m => m.BaseAboutComponent)
     },

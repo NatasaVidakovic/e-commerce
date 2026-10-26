@@ -11,6 +11,65 @@
   <meta property="og:description" content="Shop products, manage your cart, checkout securely, and track orders online.">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    /* Available before Angular and the theme stylesheets load. */
+    #initial-splash {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      overflow: hidden;
+      background: #fafafa;
+    }
+    #initial-splash * { box-sizing: border-box; }
+    #initial-splash .startup-header {
+      height: 80px;
+      padding: 0 max(24px, calc((100vw - 1120px) / 2));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      background: #fff;
+    }
+    #initial-splash .startup-body {
+      width: min(1120px, calc(100% - 48px));
+      margin: 56px auto;
+    }
+    #initial-splash .skeleton-block {
+      background: #e9e9e9;
+      border-radius: 8px;
+      animation: startup-pulse 1.8s ease-in-out infinite alternate;
+    }
+    #initial-splash .startup-nav { width: 112px; height: 16px; }
+    #initial-splash .startup-brand { width: 120px; height: 28px; }
+    #initial-splash .startup-actions { width: 72px; height: 24px; }
+    #initial-splash .startup-title { width: min(360px, 75%); height: 36px; }
+    #initial-splash .startup-caption { width: min(480px, 90%); height: 14px; margin-top: 20px; }
+    #initial-splash .startup-toolbar { height: 48px; margin: 36px 0 28px; }
+    #initial-splash .startup-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+    #initial-splash .startup-image { aspect-ratio: 1 / 1.1; }
+    #initial-splash .startup-line { width: 72%; height: 16px; margin-top: 20px; }
+    #initial-splash .startup-price { width: 40%; height: 12px; margin-top: 14px; }
+    #initial-splash .startup-status {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    @keyframes startup-pulse { to { opacity: 0.5; } }
+    @media (max-width: 767px) {
+      #initial-splash .startup-header { height: 72px; padding-inline: 20px; gap: 16px; }
+      #initial-splash .startup-nav { width: 28px; height: 24px; }
+      #initial-splash .startup-actions { width: 48px; }
+      #initial-splash .startup-body { width: calc(100% - 40px); margin-top: 36px; }
+      #initial-splash .startup-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #initial-splash .skeleton-block { animation: none; }
+    }
+  </style>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script>
@@ -20,10 +79,24 @@
   </script>
 </head>
 <body>
-  <div id="initial-splash">
-    <div class="flex items-center justify-center h-screen">
-      <div class="flex-col items-center align-middle">
-        <img src="../images/logo.png" alt="logo">
+  <div id="initial-splash" role="status" aria-busy="true">
+    <span class="startup-status">Učitavanje… / Loading…</span>
+    <div aria-hidden="true">
+      <div class="startup-header">
+        <div class="skeleton-block startup-nav"></div>
+        <div class="skeleton-block startup-brand"></div>
+        <div class="skeleton-block startup-actions"></div>
+      </div>
+      <div class="startup-body">
+        <div class="skeleton-block startup-title"></div>
+        <div class="skeleton-block startup-caption"></div>
+        <div class="skeleton-block startup-toolbar"></div>
+        <div class="startup-grid">
+          <div><div class="skeleton-block startup-image"></div><div class="skeleton-block startup-line"></div><div class="skeleton-block startup-price"></div></div>
+          <div><div class="skeleton-block startup-image"></div><div class="skeleton-block startup-line"></div><div class="skeleton-block startup-price"></div></div>
+          <div><div class="skeleton-block startup-image"></div><div class="skeleton-block startup-line"></div><div class="skeleton-block startup-price"></div></div>
+          <div><div class="skeleton-block startup-image"></div><div class="skeleton-block startup-line"></div><div class="skeleton-block startup-price"></div></div>
+        </div>
       </div>
     </div>
   </div>

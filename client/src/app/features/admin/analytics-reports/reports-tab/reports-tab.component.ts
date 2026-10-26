@@ -832,6 +832,18 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
   /* ── Currency formatting ── */
   .currency { font-weight: 600; color: #1e293b; }
+${this.branding.isLumen() ? `
+  body { color: #173c29; background: #faf9f4; }
+  .doc-header { border-color: #1f4a34; }
+  .brand-icon, th { background: #1f4a34; color: #f8f5eb; }
+  .brand-name { color: #1f4a34; font-family: Georgia, serif; }
+  .brand-sub, .summary-title, .table-title, .metric-label { color: #687d61; }
+  .metric-value, .report-info h2 { color: #173c29; }
+  .metric-card, tr.alt td { background: #f4f0e7; }
+  .metric-card, .print-footer, tbody tr:last-child td { border-color: #d9cdbc; }
+  .metric-change.pos { background: #e5ecdd; color: #304c27; }
+  .metric-change.neg { background: #f2e5da; color: #713c2c; }
+` : ''}
 </style>
 </head>
 <body>
@@ -840,7 +852,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
     <div class="brand">
       <div class="brand-icon">♡</div>
       <div>
-        <div class="brand-name">${this.branding.isNoli() ? 'noli' : 'Web Shop'}</div>
+        <div class="brand-name">${this.branding.isLumen() ? 'LUMEN' : this.branding.isNoli() ? 'noli' : 'Web Shop'}</div>
         <div class="brand-sub">${esc(this.translate.instant('NAVIGATION.REPORTS'))} (${currentCurrency.code})</div>
       </div>
     </div>

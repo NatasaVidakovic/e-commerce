@@ -36,16 +36,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withPreloading(PreloadAllModules), withViewTransitions(), withRouterConfig({ onSameUrlNavigation: 'reload' }), withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' })),
     provideHttpClient(withInterceptors([errorInterceptor, loadingInterceptor, authInterceptor])),
     provideAppInitializer(async () => {
-      inject(ViewportScroller).setOffset(() => [0, (document.querySelector('app-header header, app-base-header header')?.getBoundingClientRect().height || 72) + 16]);
+      inject(ViewportScroller).setOffset(() => [0, (document.querySelector('app-header header, app-base-header header, app-lumen-header header')?.getBoundingClientRect().height || 72) + 16]);
       const initService = inject(InitService);
       const appearance = inject(StorefrontAppearanceService);
       await appearance.load();
-      return lastValueFrom(initService.init()).finally(() => {
-        const splash = document.getElementById('initial-splash');
-        if (splash) {
-          splash.remove();
-        }
-      })
+      return lastValueFrom(initService.init());
     }),
 
     {

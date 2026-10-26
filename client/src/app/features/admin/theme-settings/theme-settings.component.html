@@ -26,6 +26,10 @@
             <input type="radio" name="storefrontBrand" value="noli" [ngModel]="selectedBrand()" (ngModelChange)="selectedBrand.set($event)">
             <span><strong>{{ 'THEME_SETTINGS.NOLI_BRAND' | translate }}</strong><small>{{ 'THEME_SETTINGS.NOLI_BRAND_DESC' | translate }}</small></span>
           </label>
+          <label class="brand-option" [class.selected]="selectedBrand() === 'lumen'">
+            <input type="radio" name="storefrontBrand" value="lumen" [ngModel]="selectedBrand()" (ngModelChange)="selectedBrand.set($event)">
+            <span><strong>Lumen</strong><small>{{ 'LUMEN.THEME_DESCRIPTION' | translate }}</small></span>
+          </label>
         </fieldset>
         <p class="section-description brand-hint">{{ 'THEME_SETTINGS.BRAND_RELOAD_HINT' | translate }}</p>
         @if (brandError()) {

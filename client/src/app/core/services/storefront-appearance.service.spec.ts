@@ -35,6 +35,13 @@ describe('Server-controlled storefront appearance', () => {
     await loaded;
     expect(branding.initialize).toHaveBeenCalledOnceWith('default');
   });
+  it('loads the Lumen selection from the server before rendering', async () => {
+    const loaded = service.load();
+    http.expectOne('/api/appearance').flush({brand: 'lumen'});
+    await loaded;
+    expect(branding.initialize).toHaveBeenCalledOnceWith('lumen');
+    expect(interceptedMethods).toEqual([]);
+  });
   it('saves through the protected endpoint and surfaces a forbidden response', () => {
     const error = jasmine.createSpy('error');
     service.save('noli').subscribe({error});

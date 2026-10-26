@@ -57,4 +57,20 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('[data-testid="app-shell"]')).toBeTruthy();
   });
+
+  it('keeps the startup skeleton until the application has rendered', async () => {
+    const skeleton = document.createElement('div');
+    skeleton.id = 'initial-splash';
+    document.body.appendChild(skeleton);
+    try {
+      const fixture = TestBed.createComponent(AppComponent);
+      expect(document.getElementById('initial-splash')).toBe(skeleton);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.querySelector('[data-testid="app-shell"]')).toBeTruthy();
+      expect(document.getElementById('initial-splash')).toBeNull();
+    } finally {
+      skeleton.remove();
+    }
+  });
 });

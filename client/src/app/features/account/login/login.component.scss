@@ -180,7 +180,7 @@
 }
 }
 
-:host-context([data-brand="noli"]) {
+:host-context([data-studio]) {
 .login-container {
   display: flex;
   justify-content: center;
@@ -380,10 +380,11 @@
 }
 
 // Responsive Noli layout. The base shop keeps its original styling.
-:host-context([data-brand='noli']) {
+:host-context([data-studio]) {
 
   .login-card, .login-form { min-width: 0; }
   @media (max-width: 767px) {
+    .login-art { display: none; }
     .login-container { padding: 12px 0 32px; }
     .login-card { width: 100%; max-width: 440px; flex: 0 1 440px; }
     .submit-btn, .google-btn { min-height: 48px; white-space: normal; }

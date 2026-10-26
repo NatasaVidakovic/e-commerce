@@ -1,0 +1,210 @@
+<div class="lumen-about">
+  <header class="about-intro">
+    <div class="lumen-daylight" aria-hidden="true"></div>
+    <span class="lumen-eyebrow">LUMEN STUDIO</span>
+    <h1>
+      {{ "LUMEN.STORY_TITLE" | translate
+      }}<em>{{ "LUMEN.STORY_SUBTITLE" | translate }}</em>
+    </h1>
+    <p>{{ customCompanyDescription() || ("LUMEN.ABOUT_TEXT" | translate) }}</p>
+  </header>
+  <section class="process-section">
+    <img
+      src="/brand/lumen/linen.jpg"
+      [alt]="'LUMEN.MATERIAL_ALT' | translate"
+    />
+    <div>
+      <span class="lumen-eyebrow">{{
+        "LUMEN.CONSIDERED_DETAILS" | translate
+      }}</span>
+      <h2>{{ "LUMEN.PROCESS_TITLE" | translate }}</h2>
+      <p>{{ "LUMEN.STORY_TEXT" | translate }}</p>
+      <a routerLink="/shop" class="lumen-text-link"
+        >{{ "LUMEN.EXPLORE" | translate }} ⟶</a
+      >
+    </div>
+  </section>
+  <!-- Gallery Section -->
+  <div *ngIf="hasGallery()" class="about-content gallery-content">
+    <section class="content-section gallery-section">
+      <div class="section-header">
+        <span class="section-header__icon"
+          ><mat-icon>photo_library</mat-icon></span
+        >
+        <h2 class="section-header__title">{{ "ABOUT.GALLERY" | translate }}</h2>
+      </div>
+      <div
+        class="swiper about-gallery-swiper"
+        swiper
+        [navigation]="true"
+        [pagination]="false"
+        [spaceBetween]="16"
+        [slidesPerView]="'auto'"
+        [centeredSlides]="false"
+        [loop]="true"
+        [config]="swiperConfig"
+      >
+        <div class="swiper-wrapper gallery-track">
+          <div
+            *ngFor="let img of galleryImages(); let i = index"
+            class="swiper-slide gallery-slide"
+            (click)="openLightbox(i)"
+          >
+            <img
+              [src]="img"
+              [alt]="'ABOUT.GALLERY_IMAGE' | translate"
+              loading="lazy"
+            />
+            <div class="gallery-slide__overlay">
+              <mat-icon>zoom_in</mat-icon>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Contact + Social (bottom) -->
+  <div class="about-content" id="kontakt">
+    <!-- Fallback removed - show empty when no content is configured -->
+
+    <div class="cards-grid">
+      <!-- Contact Form Card -->
+      <section *ngIf="!isAdmin()" class="info-card">
+        <div class="info-card__header">
+          <span class="info-card__icon"><mat-icon>mail_outline</mat-icon></span>
+          <h2>{{ "FOOTER.CONTACT_US" | translate }}</h2>
+        </div>
+        <div class="info-card__body">
+          <div *ngIf="!submitted" class="contact-form">
+            <div class="form-row">
+              <div class="form-field" [class.has-error]="errors.name">
+                <label>{{ "FOOTER.FULL_NAME" | translate }} *</label>
+                <input
+                  type="text"
+                  [(ngModel)]="contactName"
+                  [placeholder]="'FOOTER.FULL_NAME_PLACEHOLDER' | translate"
+                />
+                <span *ngIf="errors.name" class="error-msg">{{
+                  "ERRORS.REQUIRED_FIELD" | translate
+                }}</span>
+              </div>
+              <div class="form-field" [class.has-error]="errors.email">
+                <label>{{ "FOOTER.EMAIL" | translate }} *</label>
+                <input
+                  type="email"
+                  [(ngModel)]="contactEmail"
+                  [placeholder]="'FOOTER.EMAIL_PLACEHOLDER' | translate"
+                  [readonly]="!!accountService.currentUser()?.email"
+                />
+                <span *ngIf="errors.email" class="error-msg">{{
+                  "ERRORS.INVALID_EMAIL" | translate
+                }}</span>
+              </div>
+            </div>
+            <div class="form-field" [class.has-error]="errors.message">
+              <label>{{ "FOOTER.MESSAGE" | translate }} *</label>
+              <textarea
+                [(ngModel)]="contactMessage"
+                [placeholder]="'FOOTER.MESSAGE_PLACEHOLDER' | translate"
+                rows="5"
+              ></textarea>
+              <span *ngIf="errors.message" class="error-msg">{{
+                "ERRORS.REQUIRED_FIELD" | translate
+              }}</span>
+            </div>
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="submitContactForm()"
+              [disabled]="sending"
+              class="submit-btn"
+            >
+              <mat-icon>send</mat-icon>
+              {{
+                sending
+                  ? ("FOOTER.SENDING" | translate)
+                  : ("FOOTER.SEND" | translate)
+              }}
+            </button>
+          </div>
+          <div *ngIf="submitted" class="success-message">
+            <mat-icon>check_circle</mat-icon>
+            <p>{{ "FOOTER.SUCCESS_MESSAGE" | translate }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Social Links Card -->
+      <section *ngIf="hasSocialLinks()" class="info-card">
+        <div class="info-card__header">
+          <span class="info-card__icon"><mat-icon>share</mat-icon></span>
+          <h2>{{ "ABOUT.FOLLOW_US" | translate }}</h2>
+        </div>
+        <div class="info-card__body">
+          <div class="social-links">
+            <a
+              *ngFor="let link of config().socialMediaLinks"
+              [href]="getSafeUrl(link.url)"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-link"
+              [attr.aria-label]="link.platform"
+            >
+              <span class="social-link__icon">
+                <mat-icon>{{ link.icon }}</mat-icon>
+              </span>
+              <span class="social-link__name">{{ link.platform }}</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div
+    *ngIf="lightboxOpen"
+    class="lightbox-overlay"
+    (click)="closeLightbox()"
+    (keydown)="onLightboxKeydown($event)"
+    tabindex="0"
+  >
+    <button
+      class="lightbox-close"
+      (click)="closeLightbox()"
+      [attr.aria-label]="'COMMON.CLOSE' | translate"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    <button
+      *ngIf="galleryImages().length > 1"
+      class="lightbox-nav lightbox-nav--left"
+      [attr.aria-label]="'ARIA_LABELS.PREVIOUS_IMAGE' | translate"
+      (click)="$event.stopPropagation(); prevLightbox()"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+      <img
+        [src]="galleryImages()[lightboxIndex]"
+        [class.zoomed]="lightboxZoomed"
+        (click)="toggleZoom()"
+        [alt]="'ABOUT.GALLERY_IMAGE' | translate"
+      />
+    </div>
+    <button
+      *ngIf="galleryImages().length > 1"
+      class="lightbox-nav lightbox-nav--right"
+      [attr.aria-label]="'ARIA_LABELS.NEXT_IMAGE' | translate"
+      (click)="$event.stopPropagation(); nextLightbox()"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <div class="lightbox-counter">
+      {{ lightboxIndex + 1 }} / {{ galleryImages().length }}
+    </div>
+  </div>
+</div>

@@ -37,4 +37,16 @@ describe('Optional Noli branding', () => {
     expect(service.isNoli()).toBeFalse();
     expect(service.activeBrand()).toBe('default');
   });
+  it('enables Lumen with its own typography, metadata and isolated theme storage', () => {
+    const {doc, service} = create('lumen');
+    expect(service.isLumen()).toBeTrue();
+    expect(service.isNoli()).toBeFalse();
+    expect(service.usesStudioLayout()).toBeTrue();
+    expect(service.storageKey).toBe('lumen-theme-config');
+    expect(doc.title).toContain('LUMEN');
+    expect(doc.documentElement.hasAttribute('data-studio')).toBeTrue();
+    expect(doc.querySelector('link[rel="icon"]')?.getAttribute('href')).toBe('/brand/lumen/favicon.svg');
+    expect(doc.querySelector('link[rel="stylesheet"]')?.getAttribute('href')).toContain('Fraunces');
+    expect(doc.head.innerHTML).not.toContain('noli-mascot');
+  });
 });

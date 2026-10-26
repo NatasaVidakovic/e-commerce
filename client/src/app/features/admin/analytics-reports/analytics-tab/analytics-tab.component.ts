@@ -357,8 +357,20 @@ export class AnalyticsTabComponent implements OnInit {
     this.buildUserStatusChart();
     for (const chart of [this.revenueChartData, this.productStockChartData, this.customerOrderChartData]) { chart.datasets.forEach(d => { if(d.label) d.label = this.translate.instant(d.label); }); }
     this.orderStatusChartData.labels = this.orderStatusChartData.labels?.map(k => this.translate.instant('ORDER.STATUS.' + String(k).toUpperCase()));
-    this.categoryChartData.labels = this.categoryChartData.labels?.map(k => this.translate.instant(this.branding.isNoli() && k === 'Nakit' ? 'NOLI.JEWELRY' : this.branding.isNoli() && k === 'Mirisne svijeće' ? 'NOLI.CANDLES' : String(k)));
+    const categoryKeys: Record<string, string> = this.branding.isLumen()
+      ? {'Nakit': 'LUMEN.JEWELLERY', 'Mirisne svijeće': 'LUMEN.CANDLES'}
+      : this.branding.isNoli() ? {'Nakit': 'NOLI.JEWELRY', 'Mirisne svijeće': 'NOLI.CANDLES'} : {};
+    this.categoryChartData.labels = this.categoryChartData.labels?.map(k => this.translate.instant(categoryKeys[String(k)] || String(k)));
     this.revenueByPaymentChartData.labels = this.revenueByPaymentChartData.labels?.map(k => this.translate.instant('PAYMENT.' + String(k).toUpperCase()));
+  }
+
+  private readonly lumenChartPalette = ['#35573f', '#8da388', '#c9a96b', '#a0713d', '#687d4a', '#b7b1a3', '#526e5c', '#d9cdbc', '#173c29', '#b89a62', '#7e8c6d', '#96513b', '#e6dcc9'];
+
+  private chartColor(noli:string, base:string):string {
+    if (this.branding.isNoli()) return noli;
+    if (!this.branding.isLumen()) return base;
+    const palette:Record<string,string> = {'#b77a64':'#35573f','#8d9c7c':'#8da388','#d2aa74':'#c9a96b','#a4ac97':'#687d4a','#b6c0b2':'#b7b1a3','#9f6550':'#0f2e22','#6f805f':'#35573f','#838d74':'#506448'};
+    return palette[noli] || '#a0713d';
   }
 
   private buildKpiCards(): void {
@@ -375,28 +387,28 @@ export class AnalyticsTabComponent implements OnInit {
 
     const cards: Record<string, KpiCard[]> = {
       revenue: [
-        { title: 'ADMIN.TOTAL_REVENUE', value: this.currencyService.formatCurrency(totalRevenue), icon: 'payments', accent: this.branding.isNoli() ? '#8d9c7c' : '#10b981' },
-        { title: 'UI.AVG_ORDER_VALUE', value: this.currencyService.formatCurrency(avgOrder), icon: 'trending_up', accent: this.branding.isNoli() ? '#b77a64' : '#3b82f6' },
-        { title: 'ADMIN.TOTAL_ORDERS', value: orders.length, icon: 'receipt_long', accent: this.branding.isNoli() ? '#a4ac97' : '#8b5cf6' },
-        { title: 'UI.UNIQUE_CUSTOMERS', value: uniqueCustomers, icon: 'people', accent: this.branding.isNoli() ? '#d2aa74' : '#f59e0b' }
+        { title: 'ADMIN.TOTAL_REVENUE', value: this.currencyService.formatCurrency(totalRevenue), icon: 'payments', accent: this.chartColor('#8d9c7c', '#10b981') },
+        { title: 'UI.AVG_ORDER_VALUE', value: this.currencyService.formatCurrency(avgOrder), icon: 'trending_up', accent: this.chartColor('#b77a64', '#3b82f6') },
+        { title: 'ADMIN.TOTAL_ORDERS', value: orders.length, icon: 'receipt_long', accent: this.chartColor('#a4ac97', '#8b5cf6') },
+        { title: 'UI.UNIQUE_CUSTOMERS', value: uniqueCustomers, icon: 'people', accent: this.chartColor('#d2aa74', '#f59e0b') }
       ],
       orders: [
-        { title: 'ADMIN.TOTAL_ORDERS', value: orders.length, icon: 'shopping_cart', accent: this.branding.isNoli() ? '#b77a64' : '#3b82f6' },
-        { title: 'ADMIN.USER_STATUS_PENDING', value: pending, icon: 'schedule', accent: this.branding.isNoli() ? '#d2aa74' : '#f59e0b' },
-        { title: 'ADMIN.DELIVERED', value: delivered, icon: 'local_shipping', accent: this.branding.isNoli() ? '#8d9c7c' : '#10b981' },
-        { title: 'ADMIN.CANCELLED', value: cancelled, icon: 'cancel', accent: '#ef4444' }
+        { title: 'ADMIN.TOTAL_ORDERS', value: orders.length, icon: 'shopping_cart', accent: this.chartColor('#b77a64', '#3b82f6') },
+        { title: 'ADMIN.USER_STATUS_PENDING', value: pending, icon: 'schedule', accent: this.chartColor('#d2aa74', '#f59e0b') },
+        { title: 'ADMIN.DELIVERED', value: delivered, icon: 'local_shipping', accent: this.chartColor('#8d9c7c', '#10b981') },
+        { title: 'ADMIN.CANCELLED', value: cancelled, icon: 'cancel', accent: this.branding.isLumen() ? '#96513b' : '#ef4444' }
       ],
       products: [
-        { title: 'ADMIN.TOTAL_PRODUCTS', value: products.length, icon: 'inventory_2', accent: this.branding.isNoli() ? '#b77a64' : '#3b82f6' },
-        { title: 'ADMIN.LOW_STOCK', value: lowStock, subtitle: 'UI.10_UNITS', icon: 'warning', accent: this.branding.isNoli() ? '#d2aa74' : '#f59e0b' },
-        { title: 'FILTERS.OUT_OF_STOCK', value: outStock, icon: 'remove_shopping_cart', accent: '#ef4444' },
-        { title: 'FILTERS.IN_STOCK', value: products.length - outStock, icon: 'check_circle', accent: this.branding.isNoli() ? '#8d9c7c' : '#10b981' }
+        { title: 'ADMIN.TOTAL_PRODUCTS', value: products.length, icon: 'inventory_2', accent: this.chartColor('#b77a64', '#3b82f6') },
+        { title: 'ADMIN.LOW_STOCK', value: lowStock, subtitle: 'UI.10_UNITS', icon: 'warning', accent: this.chartColor('#d2aa74', '#f59e0b') },
+        { title: 'FILTERS.OUT_OF_STOCK', value: outStock, icon: 'remove_shopping_cart', accent: this.branding.isLumen() ? '#96513b' : '#ef4444' },
+        { title: 'FILTERS.IN_STOCK', value: products.length - outStock, icon: 'check_circle', accent: this.chartColor('#8d9c7c', '#10b981') }
       ],
       customers: [
-        { title: 'UI.TOTAL_CUSTOMERS', value: uniqueCustomers, icon: 'people', accent: this.branding.isNoli() ? '#b77a64' : '#3b82f6' },
-        { title: 'UI.ORDERS_PLACED', value: orders.length, icon: 'receipt_long', accent: this.branding.isNoli() ? '#8d9c7c' : '#10b981' },
-        { title: 'UI.AVG_ORDERS_CUSTOMER', value: uniqueCustomers ? (orders.length / uniqueCustomers).toFixed(1) : '0', icon: 'repeat', accent: this.branding.isNoli() ? '#a4ac97' : '#8b5cf6' },
-        { title: 'ADMIN.TOTAL_SPENT', value: this.currencyService.formatCurrency(totalRevenue), icon: 'payments', accent: this.branding.isNoli() ? '#d2aa74' : '#f59e0b' }
+        { title: 'UI.TOTAL_CUSTOMERS', value: uniqueCustomers, icon: 'people', accent: this.chartColor('#b77a64', '#3b82f6') },
+        { title: 'UI.ORDERS_PLACED', value: orders.length, icon: 'receipt_long', accent: this.chartColor('#8d9c7c', '#10b981') },
+        { title: 'UI.AVG_ORDERS_CUSTOMER', value: uniqueCustomers ? (orders.length / uniqueCustomers).toFixed(1) : '0', icon: 'repeat', accent: this.chartColor('#a4ac97', '#8b5cf6') },
+        { title: 'ADMIN.TOTAL_SPENT', value: this.currencyService.formatCurrency(totalRevenue), icon: 'payments', accent: this.chartColor('#d2aa74', '#f59e0b') }
       ]
     };
     this.kpiCards = cards[this.selectedStatistic!] || [];
@@ -427,11 +439,11 @@ export class AnalyticsTabComponent implements OnInit {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: this.branding.isNoli() ? '#b77a64' : '#3b82f6',
+        backgroundColor: this.chartColor('#b77a64', '#3b82f6'),
         borderRadius: 4,
         label: 'ANALYTICS.TABS.REVENUE',
         borderWidth: 1,
-        borderColor: this.branding.isNoli() ? '#9f6550' : '#1d4ed8'
+        borderColor: this.chartColor('#9f6550', '#1d4ed8')
       }]
     };
   }
@@ -455,7 +467,7 @@ export class AnalyticsTabComponent implements OnInit {
     });
 
     const entries = Array.from(statusMap.entries());
-    const palette = [this.branding.isNoli() ? '#b77a64' : '#3b82f6', this.branding.isNoli() ? '#8d9c7c' : '#10b981', this.branding.isNoli() ? '#d2aa74' : '#f59e0b', '#ef4444', this.branding.isNoli() ? '#a4ac97' : '#8b5cf6', this.branding.isNoli() ? '#b6c0b2' : '#06b6d4', '#f43f5e', '#84cc16', '#14b8a6', '#a855f7', '#ec4899', '#f97316', '#baa899'];
+    const palette = this.branding.isLumen() ? this.lumenChartPalette : [this.chartColor('#b77a64', '#3b82f6'), this.chartColor('#8d9c7c', '#10b981'), this.chartColor('#d2aa74', '#f59e0b'), '#ef4444', this.chartColor('#a4ac97', '#8b5cf6'), this.chartColor('#b6c0b2', '#06b6d4'), '#f43f5e', '#84cc16', '#14b8a6', '#a855f7', '#ec4899', '#f97316', '#baa899'];
     this.orderStatusChartData = {
       labels: entries.map(([k]) => k),
       datasets: [{ data: entries.map(([, v]) => v), backgroundColor: palette.slice(0, entries.length) }]
@@ -482,11 +494,11 @@ export class AnalyticsTabComponent implements OnInit {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: this.branding.isNoli() ? '#8d9c7c' : '#10b981',
+        backgroundColor: this.chartColor('#8d9c7c', '#10b981'),
         label: 'PRODUCT.STOCK',
         borderRadius: 4,
         borderWidth: 1,
-        borderColor: this.branding.isNoli() ? '#6f805f' : '#047857'
+        borderColor: this.chartColor('#6f805f', '#047857')
       }]
     };
   }
@@ -498,7 +510,7 @@ export class AnalyticsTabComponent implements OnInit {
       catMap.set(cat, (catMap.get(cat) || 0) + 1);
     });
     const entries = Array.from(catMap.entries());
-    const palette = [this.branding.isNoli() ? '#b77a64' : '#3b82f6', this.branding.isNoli() ? '#8d9c7c' : '#10b981', this.branding.isNoli() ? '#d2aa74' : '#f59e0b', '#ef4444', this.branding.isNoli() ? '#a4ac97' : '#8b5cf6', this.branding.isNoli() ? '#b6c0b2' : '#06b6d4', '#f43f5e', '#84cc16'];
+    const palette = this.branding.isLumen() ? this.lumenChartPalette : [this.chartColor('#b77a64', '#3b82f6'), this.chartColor('#8d9c7c', '#10b981'), this.chartColor('#d2aa74', '#f59e0b'), '#ef4444', this.chartColor('#a4ac97', '#8b5cf6'), this.chartColor('#b6c0b2', '#06b6d4'), '#f43f5e', '#84cc16'];
     this.categoryChartData = {
       labels: entries.map(([k]) => k),
       datasets: [{ data: entries.map(([, v]) => v), backgroundColor: palette.slice(0, entries.length) }]
@@ -529,11 +541,11 @@ export class AnalyticsTabComponent implements OnInit {
       labels: labels,
       datasets: [{
         data: data,
-        backgroundColor: this.branding.isNoli() ? '#a4ac97' : '#8b5cf6',
+        backgroundColor: this.chartColor('#a4ac97', '#8b5cf6'),
         label: 'NAVIGATION.ORDERS',
         borderRadius: 4,
         borderWidth: 1,
-        borderColor: this.branding.isNoli() ? '#838d74' : '#6d28d9'
+        borderColor: this.chartColor('#838d74', '#6d28d9')
       }]
     };
   }
@@ -545,7 +557,7 @@ export class AnalyticsTabComponent implements OnInit {
       pmMap.set(pm, (pmMap.get(pm) || 0) + (o.total || 0));
     });
     const entries = Array.from(pmMap.entries());
-    const palette = [this.branding.isNoli() ? '#b77a64' : '#3b82f6', this.branding.isNoli() ? '#8d9c7c' : '#10b981', this.branding.isNoli() ? '#d2aa74' : '#f59e0b', '#ef4444', this.branding.isNoli() ? '#a4ac97' : '#8b5cf6'];
+    const palette = this.branding.isLumen() ? this.lumenChartPalette : [this.chartColor('#b77a64', '#3b82f6'), this.chartColor('#8d9c7c', '#10b981'), this.chartColor('#d2aa74', '#f59e0b'), '#ef4444', this.chartColor('#a4ac97', '#8b5cf6')];
     this.revenueByPaymentChartData = {
       labels: entries.map(([k]) => k),
       datasets: [{ data: entries.map(([, v]) => v), backgroundColor: palette.slice(0, entries.length) }]
@@ -584,7 +596,7 @@ export class AnalyticsTabComponent implements OnInit {
       { label: 'UI.NEW_CUSTOMERS_1_ORDER', count: newCustomers }
     ];
 
-    const palette = [this.branding.isNoli() ? '#8d9c7c' : '#10b981', this.branding.isNoli() ? '#b77a64' : '#3b82f6', this.branding.isNoli() ? '#d2aa74' : '#f59e0b'];
+    const palette = this.branding.isLumen() ? this.lumenChartPalette : [this.chartColor('#8d9c7c', '#10b981'), this.chartColor('#b77a64', '#3b82f6'), this.chartColor('#d2aa74', '#f59e0b')];
     this.userStatusChartData = {
       labels: statusData.map(s => this.translate.instant(s.label)),
       datasets: [{ data: statusData.map(s => s.count), backgroundColor: palette }]

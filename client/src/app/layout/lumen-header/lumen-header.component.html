@@ -1,0 +1,170 @@
+<header class="lumen-header" [class.over-hero]="overHero()">
+  <button
+    class="mobile-menu icon-button"
+    (click)="toggleMobileMenu()"
+    [attr.aria-expanded]="mobileMenuOpen"
+    aria-controls="lumen-navigation"
+    [attr.aria-label]="'NOLI.MENU' | translate"
+  >
+    <mat-icon>{{ mobileMenuOpen ? "close" : "menu" }}</mat-icon>
+  </button>
+  <nav class="desktop-navigation" [attr.aria-label]="'NOLI.NAV' | translate">
+    <a
+      [routerLink]="isHomepage() ? '/' : '/shop'"
+      [fragment]="isHomepage() ? 'candles' : undefined"
+      [queryParams]="isHomepage() ? null : { type: 'Mirisne svijeće' }"
+      >{{ "LUMEN.CANDLES" | translate }}</a
+    >
+    <a
+      [routerLink]="isHomepage() ? '/' : '/shop'"
+      [fragment]="isHomepage() ? 'jewellery' : undefined"
+      [queryParams]="isHomepage() ? null : { type: 'Nakit' }"
+      >{{ "LUMEN.JEWELLERY" | translate }}</a
+    >
+    <a routerLink="/about" routerLinkActive="active">{{
+      "LUMEN.STORY" | translate
+    }}</a>
+  </nav>
+  <a
+    routerLink="/"
+    class="brand-home"
+    (click)="closeMobileMenu(); scrollToTop()"
+    [attr.aria-label]="'LUMEN.HOME' | translate"
+  >
+    @if (themeService.themeConfig().logoUrl) {
+      <img class="custom-logo" [src]="logoSrc()" alt="Lumen" />
+    } @else {
+      <app-lumen-logo />
+    }
+  </a>
+  <div class="header-actions">
+    <a
+      routerLink="/shop"
+      class="icon-button desktop-action"
+      [attr.aria-label]="'BUTTONS.SEARCH_PRODUCTS' | translate"
+      ><mat-icon>search</mat-icon></a
+    >
+    @if (!accountService.isAdmin()) {
+      <a
+        routerLink="/favourites"
+        class="icon-button desktop-action"
+        [attr.aria-label]="'NAVIGATION.FAVOURITES' | translate"
+        ><mat-icon>favorite_border</mat-icon></a
+      >
+    }
+    <button
+      class="icon-button"
+      [matMenuTriggerFor]="accountMenu"
+      [attr.aria-label]="'COMMON.USER_MENU' | translate"
+    >
+      <mat-icon>person_outline</mat-icon>
+    </button>
+    @if (!accountService.isAdmin()) {
+      <a
+        routerLink="/cart"
+        class="bag-link"
+        [matBadge]="cartService.itemCount()"
+        [matBadgeHidden]="cartService.itemCount() === 0"
+        matBadgeSize="small"
+        [attr.aria-label]="'NAVIGATION.CART' | translate"
+        ><span>{{ "LUMEN.BAG" | translate }}</span
+        ><mat-icon>shopping_bag</mat-icon></a
+      >
+    }
+  </div>
+  <mat-menu #accountMenu="matMenu">
+    @if (accountService.currentUser()) {
+      <span class="account-email">{{
+        accountService.currentUser()?.email
+      }}</span>
+      @if (accountService.isAdmin()) {
+        <button mat-menu-item routerLink="/admin">
+          <mat-icon>dashboard</mat-icon>{{ "NAVIGATION.ADMIN" | translate }}
+        </button>
+        <button mat-menu-item routerLink="/admin/statistics">
+          <mat-icon>bar_chart</mat-icon
+          >{{ "NAVIGATION.STATISTICS" | translate }}
+        </button>
+        <button mat-menu-item routerLink="/admin/reports">
+          <mat-icon>description</mat-icon>{{ "NAVIGATION.REPORTS" | translate }}
+        </button>
+      } @else {
+        <button mat-menu-item routerLink="/orders">
+          <mat-icon>receipt_long</mat-icon>{{ "NAVIGATION.ORDERS" | translate }}
+        </button>
+        <button mat-menu-item routerLink="/favourites">
+          <mat-icon>favorite_border</mat-icon
+          >{{ "NAVIGATION.FAVOURITES" | translate }}
+        </button>
+      }
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>{{ "NAVIGATION.LOG_OUT" | translate }}
+      </button>
+    } @else {
+      <button mat-menu-item routerLink="/account/login">
+        <mat-icon>login</mat-icon>{{ "NAVIGATION.LOG_IN" | translate }}
+      </button>
+      <button mat-menu-item routerLink="/account/register">
+        <mat-icon>person_add</mat-icon>{{ "NAVIGATION.REGISTER" | translate }}
+      </button>
+    }
+    <button
+      mat-menu-item
+      (click)="switchLanguage(currentLang === 'sr' ? 'en' : 'sr')"
+    >
+      <mat-icon>language</mat-icon
+      >{{ currentLang === "sr" ? "English" : "Srpski" }}
+    </button>
+  </mat-menu>
+</header>
+@if (scrolled()) {
+  <button
+    class="back-to-top"
+    (click)="scrollToTop()"
+    [attr.aria-label]="'LUMEN.BACK_TOP' | translate"
+  >
+    <mat-icon>arrow_upward</mat-icon>
+  </button>
+}
+@if (mobileMenuOpen) {
+  <div class="mobile-overlay">
+    <nav id="lumen-navigation" [attr.aria-label]="'NOLI.NAV' | translate">
+      <span class="menu-caption">LUMEN STUDIO</span>
+      <a
+        [routerLink]="isHomepage() ? '/' : '/shop'"
+        [fragment]="isHomepage() ? 'candles' : undefined"
+        [queryParams]="isHomepage() ? null : { type: 'Mirisne svijeće' }"
+        (click)="closeMobileMenu()"
+        >{{ "LUMEN.CANDLES" | translate }}</a
+      >
+      <a
+        [routerLink]="isHomepage() ? '/' : '/shop'"
+        [fragment]="isHomepage() ? 'jewellery' : undefined"
+        [queryParams]="isHomepage() ? null : { type: 'Nakit' }"
+        (click)="closeMobileMenu()"
+        >{{ "LUMEN.JEWELLERY" | translate }}</a
+      >
+      <a routerLink="/shop" (click)="closeMobileMenu()">{{
+        "LUMEN.ARCHIVE" | translate
+      }}</a>
+      <a routerLink="/about" (click)="closeMobileMenu()">{{
+        "LUMEN.STORY" | translate
+      }}</a>
+      @if (accountService.isAdmin()) {
+        <a routerLink="/admin" (click)="closeMobileMenu()">{{
+          "NAVIGATION.ADMIN" | translate
+        }}</a>
+      } @else {
+        <a routerLink="/favourites" (click)="closeMobileMenu()">{{
+          "NAVIGATION.FAVOURITES" | translate
+        }}</a
+        ><a routerLink="/orders" (click)="closeMobileMenu()">{{
+          "NAVIGATION.ORDERS" | translate
+        }}</a>
+      }
+      <button (click)="switchLanguage(currentLang === 'sr' ? 'en' : 'sr')">
+        {{ currentLang === "sr" ? "English" : "Srpski" }}
+      </button>
+    </nav>
+  </div>
+}

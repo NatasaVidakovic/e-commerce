@@ -1,5 +1,6 @@
 <div class="shop-container">
   @if (branding.isNoli()) {   <section class="noli-shop-intro"><img src="/brand/noli-mascot.png" alt="Noli" width="68" height="68"><span>{{ 'NOLI.LITTLE_WORLD' | translate }}</span><h1>{{ 'NOLI.SHOP_TITLE' | translate }}</h1><p>{{ 'NOLI.SHOP_TEXT' | translate }}</p></section> }
+  @if (branding.isLumen()) { <section class="lumen-shop-intro"><span class="lumen-eyebrow">LUMEN STUDIO</span><h1>{{ 'LUMEN.SHOP_TITLE' | translate }}</h1><p>{{ 'LUMEN.SHOP_NOTE' | translate }}</p></section> }
 
   <!-- Filter Bar - Full Width -->
   @if (filterDefinitions.length > 0) {

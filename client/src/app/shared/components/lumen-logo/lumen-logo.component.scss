@@ -1,0 +1,32 @@
+:host {
+  display: inline-block;
+  line-height: 1;
+  width: 150px;
+}
+.lumen-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.logo-type {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.08em;
+}
+.logo-emblem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--lumen-gold, #c9a96b);
+  margin-bottom: 2px;
+}
+.logo-emblem svg {
+  width: 12px;
+  height: 21px;
+}
+.logo-emblem i {
+  width: 24px;
+  height: 1px;
+  background: currentColor;
+}

@@ -7,15 +7,19 @@ describe('Bilingual Noli catalog labels', () => {
   let pipe: CatalogTextPipe;
   let lang: 'sr' | 'en';
   let noli: boolean;
+  let lumen: boolean;
   const labels: Record<string, {sr: string, en: string}> = {
     'NOLI.CANDLES': {sr:'Mirisne svijeće', en:'Scented candles'},
+    'LUMEN.CANDLES': {sr:'Svijeće', en:'Candles'},
+    'LUMEN.JEWELLERY': {sr:'Nakit', en:'Jewellery'},
     'FILTER_OPTIONS.CashOnDelivery': {sr:'Plaćanje pouzećem', en:'Cash on delivery'}
   };
   beforeEach(() => {
     lang = 'sr';
     noli = true;
+    lumen = false;
     TestBed.configureTestingModule({providers:[
-      {provide: BrandingService, useValue: {isNoli: () => noli}},
+      {provide: BrandingService, useValue: {isNoli: () => noli, isLumen: () => lumen}},
       {provide:TranslateService,useValue:{instant:(key: string)=>labels[key]?.[lang] || key}}
     ]});
     pipe = TestBed.runInInjectionContext(() => new CatalogTextPipe());
@@ -35,5 +39,15 @@ describe('Bilingual Noli catalog labels', () => {
     noli = false;
     lang = 'en';
     expect(pipe.transform('Mirisne svijeće')).toBe('Mirisne svijeće');
+  });
+  it('localizes Lumen categories while preserving merchant product names', () => {
+    noli = false;
+    lumen = true;
+    lang = 'en';
+    expect(pipe.transform('Mirisne svijeće')).toBe('Candles');
+    expect(pipe.transform('Nakit')).toBe('Jewellery');
+    expect(pipe.transform('Nježno jutro')).toBe('Nježno jutro');
+    lang = 'sr';
+    expect(pipe.transform('Mirisne svijeće')).toBe('Svijeće');
   });
 });

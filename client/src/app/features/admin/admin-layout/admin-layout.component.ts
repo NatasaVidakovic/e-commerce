@@ -72,9 +72,9 @@ export class AdminLayoutComponent {
   }
 
   private revealActiveItem(): void {
-    if (!this.branding.isNoli() || !this.isMobile()) return;
+    if (!this.branding.usesStudioLayout() || !this.isMobile()) return;
     requestAnimationFrame(() => {
-      if (this.destroyRef.destroyed || !this.branding.isNoli() || !this.isMobile()) return;
+      if (this.destroyRef.destroyed || !this.branding.usesStudioLayout() || !this.isMobile()) return;
       const nav = this.sidebarNav?.nativeElement;
       const item = this.activeNavItem;
       if (!nav || !item?.isConnected) return;

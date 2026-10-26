@@ -16,7 +16,7 @@ describe('Admin mobile navigation', () => {
       imports: [AdminLayoutComponent],
       providers: [
         {provide: BreakpointObserver, useValue: {observe: () => viewport}},
-        {provide: BrandingService, useValue: {isNoli: () => noli}}
+        {provide: BrandingService, useValue: {usesStudioLayout: () => noli}}
       ]
     }).overrideComponent(AdminLayoutComponent, {
       set: {

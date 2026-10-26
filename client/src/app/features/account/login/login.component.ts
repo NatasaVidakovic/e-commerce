@@ -11,9 +11,10 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AccountService } from '../../../core/services/account.service';
 import { TranslatePipe } from '@ngx-translate/core';
 import { switchMap } from 'rxjs';
+import { LumenLogoComponent } from '../../../shared/components/lumen-logo/lumen-logo.component';
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, MatCard, MatFormField, MatInput, MatButton, MatIconButton, MatLabel, MatSuffix, MatIcon, RouterLink, TranslatePipe],
+  imports: [LumenLogoComponent, CommonModule, ReactiveFormsModule, MatCard, MatFormField, MatInput, MatButton, MatIconButton, MatLabel, MatSuffix, MatIcon, RouterLink, TranslatePipe],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })

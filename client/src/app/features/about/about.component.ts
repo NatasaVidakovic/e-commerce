@@ -32,7 +32,8 @@ export class AboutComponent implements OnInit {
   });
 
   hasSocialLinks = computed(() => this.config().socialMediaLinks.length > 0);
-  hasGallery = computed(() => this.config().galleryImages.length > 0);
+  readonly galleryImages = computed(() => this.config().galleryImages);
+  hasGallery = computed(() => this.galleryImages().length > 0);
   hasCompanyInfo = computed(() => !!this.config().companyName || !!this.config().companyDescription);
   isAdmin = computed(() => this.accountService.isAdmin());
 
@@ -59,6 +60,7 @@ export class AboutComponent implements OnInit {
   };
 
   openLightbox(index: number): void {
+    if (index < 0 || index >= this.galleryImages().length) return;
     this.lightboxIndex = index;
     this.lightboxZoomed = false;
     this.lightboxOpen = true;
@@ -70,13 +72,15 @@ export class AboutComponent implements OnInit {
   }
 
   prevLightbox(): void {
-    const images = this.config().galleryImages;
+    const images = this.galleryImages();
+    if (!images.length) return;
     this.lightboxIndex = (this.lightboxIndex - 1 + images.length) % images.length;
     this.lightboxZoomed = false;
   }
 
   nextLightbox(): void {
-    const images = this.config().galleryImages;
+    const images = this.galleryImages();
+    if (!images.length) return;
     this.lightboxIndex = (this.lightboxIndex + 1) % images.length;
     this.lightboxZoomed = false;
   }

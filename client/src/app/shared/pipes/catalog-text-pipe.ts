@@ -17,6 +17,11 @@ export const NOLI_CATALOG_KEYS: Readonly<Record<string, string>> = {
   'Mirisne svijeće za nježne svakodnevne rituale.': 'CATALOG.CANDLES_DESCRIPTION'
 };
 
+const LUMEN_CATEGORY_KEYS: Readonly<Record<string, string>> = {
+  'Nakit': 'LUMEN.JEWELLERY',
+  'Mirisne svijeće': 'LUMEN.CANDLES'
+};
+
 @Pipe({
   name: 'catalogText', standalone: true, pure: false
 })
@@ -30,7 +35,8 @@ export class CatalogTextPipe implements PipeTransform {
       const label = this.translate.instant(key);
       if (label !== key) return label;
     }
-    return value ? this.translate.instant((this.branding.isNoli() && NOLI_CATALOG_KEYS[value]) || value) : '';
+    const labels: Readonly<Record<string, string>> = this.branding.isNoli() ? NOLI_CATALOG_KEYS : this.branding.isLumen() ? LUMEN_CATEGORY_KEYS : {};
+    return value ? this.translate.instant(labels[value] || value) : '';
   }
 
 }

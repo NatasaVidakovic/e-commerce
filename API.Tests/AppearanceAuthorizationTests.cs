@@ -62,6 +62,7 @@ public class AppearanceAuthorizationTests : IAsyncLifetime
     [Theory]
     [InlineData("default")]
     [InlineData("noli")]
+    [InlineData("lumen")]
     public async Task Update_AsAdmin_PersistsChoiceForAnonymousVisitors(string brand)
     {
         client.DefaultRequestHeaders.Add("X-Test-Role", "Admin");
@@ -80,6 +81,7 @@ public class AppearanceAuthorizationTests : IAsyncLifetime
     [InlineData("")]
     [InlineData("blue")]
     [InlineData("NOLI")]
+    [InlineData("LUMEN")]
     [InlineData(" noli ")]
     public async Task Update_WithInvalidBrand_RejectsRequestWithoutChangingSetting(string? brand)
     {

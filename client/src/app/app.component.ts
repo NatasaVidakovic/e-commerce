@@ -1,7 +1,8 @@
 import { BaseHeaderComponent } from './layout/header/base-header.component';
 import { BaseFooterComponent } from './layout/footer/base-footer.component';
 import { BrandingService } from './core/services/branding.service';
-import {Component, inject} from '@angular/core';
+import {afterNextRender, Component, inject} from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { TranslateService } from "@ngx-translate/core";
 import { HeaderComponent } from './layout/header/header.component';
 import { FooterComponent } from './layout/footer/footer.component';
@@ -11,10 +12,12 @@ import { SignalrService } from './core/services/signalr.service';
 import { Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { NoliToTopComponent } from './shared/components/noli-to-top/noli-to-top.component';
+import { LumenHeaderComponent } from './layout/lumen-header/lumen-header.component';
+import { LumenFooterComponent } from './layout/lumen-footer/lumen-footer.component';
 
 @Component({
   selector: 'app-root',
-  imports: [BaseHeaderComponent, BaseFooterComponent, HeaderComponent, FooterComponent, RouterOutlet, NoliToTopComponent],
+  imports: [BaseHeaderComponent, BaseFooterComponent, HeaderComponent, FooterComponent, LumenHeaderComponent, LumenFooterComponent, RouterOutlet, NoliToTopComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -24,9 +27,11 @@ export class AppComponent {
     private accountService = inject(AccountService);
     private signalrService = inject(SignalrService);
     private router = inject(Router);
+    private document = inject(DOCUMENT);
 
 
     constructor() {
+        afterNextRender(() => this.document.getElementById('initial-splash')?.remove());
         this.translate.addLangs(['sr', 'en']);
         this.translate.setFallbackLang('sr');
         this.translate.use('sr');

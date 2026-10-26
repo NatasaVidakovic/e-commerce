@@ -17,7 +17,7 @@ public class AppearanceController(ISiteSettingsService siteSettingsService) : Ba
     public async Task<ActionResult<StorefrontAppearanceDto>> Get()
     {
         var brand = await siteSettingsService.GetValueAsync(BrandSettingKey);
-        return Ok(new StorefrontAppearanceDto { Brand = brand == "noli" ? "noli" : "default" });
+        return Ok(new StorefrontAppearanceDto { Brand = brand is "noli" or "lumen" ? brand : "default" });
     }
 
     [Authorize(Roles = "Admin")]
@@ -33,6 +33,6 @@ public class AppearanceController(ISiteSettingsService siteSettingsService) : Ba
 public class StorefrontAppearanceDto
 {
     [Required]
-    [RegularExpression("^(default|noli)$")]
+    [RegularExpression("^(default|noli|lumen)$")]
     public string Brand { get; set; } = string.Empty;
 }
