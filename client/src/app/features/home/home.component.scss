@@ -31,7 +31,7 @@
 .loading-state p, .empty-state p { font-size: 13px; }
 .loading-spinner { height: 30px; width: 30px; margin: auto auto 15px; border: 2px solid var(--color-border-primary); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-@media (max-width:760px) { .home-content { padding-inline: 0; } .section-spacing, .product-carousel-section { padding-block: 30px; } }
+@media (max-width:767px) { .home-content { padding-inline: 0; } .section-spacing, .product-carousel-section { padding-block: 30px; } }
 /* Noli storefront. Shared commerce carousels above retain their behavior. */
 .noli-home { color: var(--color-text-primary); }
 .noli-container { width: min(1216px, calc(100% - 80px)); margin-inline: auto; }
@@ -60,11 +60,7 @@
 .hero-arch img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
 .hero-small-arch { position: absolute; width: 39%; height: 285px; right: -3%; bottom: 25px; border: 7px solid var(--noli-hero-bg); border-radius: 180px 180px 12px 12px; overflow: hidden; }
 .hero-small-arch img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; }
-.hero-sparkle { position: absolute; right: 3%; top: 73px; color: #d59377; font-family: Georgia, serif; font-size: 64px; }
-.hero-seal { position: absolute; left: -7%; bottom: 53px; width: 123px; height: 123px; border-radius: 50%; background: #fffcf6ef; border: 1px solid #ddc4b2; display: flex; align-items: center; justify-content: center; flex-direction: column; transform: rotate(-12deg); color: #a27359; box-shadow: 0 10px 35px #7954380b; }
-.hero-seal > span:first-child { font-size: 22px; margin-bottom: 6px; }
-.hero-seal > span:nth-child(2) { font-size: 8px; font-weight: 700; letter-spacing: .1em; }
-.hero-seal em { font-family: var(--font-display); font-size: 23px; margin-top: 2px; }
+
 .noli-promises { display: grid; grid-template-columns: repeat(3,1fr); padding-block: 26px; }
 .noli-promises > span { display: flex; align-items: center; justify-content: center; gap: 13px; font-size: 10px; letter-spacing: .07em; color: var(--color-text-secondary); }
 .noli-promises > span > span { color: #c88e74; font-size: 24px; line-height: 1; }
@@ -123,7 +119,23 @@
 .moments-grid img { width: 100%; height: auto; border-radius: 18px; }
 .moments-grid figcaption { text-align: center; font-size: 13px; line-height: 1.8; color: var(--color-text-secondary); padding: 18px 12px; }
 @media(max-width: 600px) { .moments-grid { grid-template-columns: 1fr; gap: 20px; max-width: 400px; margin: auto; } .moments-grid figcaption { font-size: 12px; } .moments-grid img { border-radius: 16px; } }
-@media (max-width: 1000px) { .noli-container { width: calc(100% - 48px); } .hero-layout { min-height: 590px; } .hero-copy { padding-left: 0; } .hero-art { height: 555px; } .hero-arch { height: 475px; width: 80%; } .hero-small-arch { height: 230px; } .hero-seal { width: 105px; height: 105px; left: -5%; } .noli-category { height: 330px; } .ritual-layout { gap: 40px; } .noli-story { gap: 50px; } .story-copy { padding-left: 0; } .story-photo { height: 450px; } }
-@media (max-width: 760px) { .noli-container { width: calc(100% - 40px); } .hero-layout { grid-template-columns: 1fr; gap: 0; } .hero-copy { padding: 48px 0 8px; } .hero-copy h1 { font-size: 61px; margin-top: 17px; } .hero-lead { font-size: 13px; margin-top: 19px; max-width: 350px; } .hero-buttons { gap: 9px; margin-top: 22px; } .noli-button { font-size: 10px; padding: 13px 20px; gap: 14px; } .hero-small { margin-top: 18px; } .hero-art { height: 470px; max-width: 450px; width: 100%; margin: auto; } .hero-arch { height: 420px; width: 73%; left: 8%; top: 19px; } .hero-small-arch { height: 220px; bottom: 7px; right: -2%; } .hero-sparkle { right: 0; top: 30px; font-size: 49px; } .hero-seal { width: 96px; height: 96px; left: -1%; bottom: 37px; } .hero-seal em { font-size: 20px; } .hero-seal > span:nth-child(2) { font-size: 7px; } .noli-promises { padding-block: 21px; } .noli-promises > span { flex-direction: column; gap: 8px; text-align: center; font-size: 8px; letter-spacing: 0; padding-inline: 4px; } .noli-promises > span > span { font-size: 22px; } .noli-collections { padding-block: 58px; } .noli-section-head { flex-wrap: wrap; align-items: start; gap: 18px; margin-bottom: 25px; } .noli-section-head h2 { font-size: 37px; } .noli-category-grid { grid-template-columns: 1fr; gap: 18px; } .noli-category { height: 310px; } .noli-category > div { left: 24px; bottom: 23px; } .noli-category h3 { font-size: 35px; } .noli-products { padding-block: 48px 54px; } .collection-filters { margin: 25px 0; gap: 6px; } .collection-filters button { font-size: 10px; padding: 9px 16px; } .noli-product-grid, .collection-skeleton { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px 12px; } .collection-skeleton span { height: 260px; } .ritual-layout { grid-template-columns: 1fr; gap: 30px; } .noli-ritual { padding-block: 38px 45px; } .ritual-photo { height: 350px; } .ritual-copy { padding-right: 0; } .ritual-copy h2, .story-copy h2 { font-size: 49px; } .noli-story { grid-template-columns: 1fr; padding-block: 64px 70px; gap: 37px; } .story-photo { width: 90%; height: 420px; max-width: 400px; margin-inline: auto; } .noli-last-note { padding-block: 50px; } .noli-last-note h2 { font-size: 37px; } }
-@media (max-width: 370px) { .hero-copy h1 { font-size: 54px; } .hero-art { height: 412px; } .hero-arch { height: 370px; } .hero-small-arch { height: 185px; } .collection-filters button { padding-inline: 12px; } }
+@media (max-width: 1000px) { .noli-container { width: calc(100% - 48px); } .hero-layout { min-height: 590px; } .hero-copy { padding-left: 0; } .hero-art { height: 555px; } .hero-arch { height: 475px; width: 80%; } .hero-small-arch { height: 230px; } .noli-category { height: 330px; } .ritual-layout { gap: 40px; } .noli-story { gap: 50px; } .story-copy { padding-left: 0; } .story-photo { height: 450px; } }
+@media (max-width: 767px) { .noli-container { width: calc(100% - 32px); } .hero-layout { grid-template-columns: 1fr; gap: 0; } .hero-copy { padding: 32px 0 8px; } .hero-copy h1 { font-size: clamp(40px, 8.8vw, 61px); margin-top: 17px; } .hero-lead { font-size: 14px; line-height: 1.8; margin-top: 19px; max-width: 350px; } .hero-buttons { gap: 9px; margin-top: 22px; } .noli-button { font-size: 12px; padding: 13px 16px; gap: 10px; } .hero-small { margin-top: 18px; } .hero-art { height: clamp(340px, 110vw, 470px); max-width: 450px; width: 100%; margin: auto; } .hero-arch { height: calc(100% - 44px); width: 73%; left: 8%; top: 19px; } .hero-small-arch { height: 47%; bottom: 7px; right: -2%; } .noli-promises { padding-block: 21px; } .noli-promises > span { flex-direction: column; gap: 8px; text-align: center; font-size: 8px; letter-spacing: 0; padding-inline: 4px; } .noli-promises > span > span { font-size: 22px; } .noli-collections { padding-block: 58px; } .noli-section-head { flex-wrap: wrap; align-items: start; gap: 18px; margin-bottom: 25px; } .noli-section-head h2 { font-size: clamp(30px, 6.5vw, 42px); } .noli-category-grid { grid-template-columns: 1fr; gap: 18px; } .noli-category { height: clamp(270px, 65vw, 378px); } .noli-category > div { left: 24px; bottom: 23px; } .noli-category h3 { font-size: 35px; } .noli-products { padding-block: 48px 54px; } .collection-filters { margin: 25px 0; gap: 6px; } .collection-filters button { font-size: 12px; padding: 9px 12px; } .noli-product-grid, .collection-skeleton { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px 12px; } .collection-skeleton span { height: 260px; } .ritual-layout { grid-template-columns: 1fr; gap: 30px; } .noli-ritual { padding-block: 38px 45px; } .ritual-photo { height: 350px; } .ritual-copy { padding-right: 0; } .ritual-copy h2, .story-copy h2 { font-size: clamp(36px, 8vw, 49px); } .noli-story { grid-template-columns: 1fr; padding-block: 64px 70px; gap: 37px; } .story-photo { width: 90%; height: 420px; max-width: 400px; margin-inline: auto; } .noli-last-note { padding-block: 50px; } .noli-last-note h2 { font-size: clamp(30px, 6.5vw, 42px); } }
+
+}
+
+// Responsive Noli layout. The base shop keeps its original styling.
+:host-context([data-brand='noli']) {
+
+  .hero-copy, .hero-art, .ritual-copy, .story-copy, .moments-grid figure { min-width: 0; }
+  .collection-filters { flex-wrap: wrap; }
+  .collection-filters button, .noli-button { min-height: 44px; }
+  @media (max-width: 1023px) and (min-width: 768px) {
+    .noli-product-grid, .collection-skeleton { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hero-copy h1 { font-size: clamp(44px, 6.1vw, 62px); }
+    .ritual-copy h2, .story-copy h2 { font-size: clamp(36px, 5.4vw, 52px); }
+  }
+  @media (max-width: 767px) {
+    .ritual-copy p, .story-copy p, .moments-grid figcaption { font-size: 14px; line-height: 1.8; }
+  }
 }

@@ -1,10 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { BrandingService } from '../../../core/services/branding.service';
 
 interface SidebarItem {
   key: string;
@@ -29,13 +31,18 @@ interface SidebarItem {
   styleUrl: './admin-layout.component.scss'
 })
 export class AdminLayoutComponent {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly branding = inject(BrandingService);
+  @ViewChild('sidebarNav') private sidebarNav?: ElementRef<HTMLElement>;
+  private activeNavItem?: HTMLElement;
   collapsed = signal(false);
   isMobile = signal(false);
 
   constructor(private breakpointObserver: BreakpointObserver) {
-    this.breakpointObserver.observe(['(max-width: 768px)'])
+    this.breakpointObserver.observe(['(max-width: 767px)']).pipe(takeUntilDestroyed())
       .subscribe(result => {
         this.isMobile.set(result.matches);
+        this.revealActiveItem();
       });
   }
 
@@ -56,5 +63,23 @@ export class AdminLayoutComponent {
 
   toggleCollapse() {
     this.collapsed.update(v => !v);
+  }
+
+  onActiveItemChange(active: boolean, item: HTMLElement): void {
+    if (!active) return;
+    this.activeNavItem = item;
+    this.revealActiveItem();
+  }
+
+  private revealActiveItem(): void {
+    if (!this.branding.isNoli() || !this.isMobile()) return;
+    requestAnimationFrame(() => {
+      if (this.destroyRef.destroyed || !this.branding.isNoli() || !this.isMobile()) return;
+      const nav = this.sidebarNav?.nativeElement;
+      const item = this.activeNavItem;
+      if (!nav || !item?.isConnected) return;
+      const left = item.getBoundingClientRect().left - nav.getBoundingClientRect().left + nav.scrollLeft;
+      nav.scrollTo({left: Math.max(0, left - (nav.clientWidth - item.clientWidth) / 2), behavior: 'instant'});
+    });
   }
 }

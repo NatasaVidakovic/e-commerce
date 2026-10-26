@@ -119,3 +119,19 @@
     color: var(--color-primary) !important;
   }
 }
+
+// Responsive Noli layout. The base shop keeps its original styling.
+:host-context([data-brand='noli']) {
+
+  .checkout-layout { display: grid; grid-template-columns: minmax(0, 1fr); padding-inline: 0; }
+  .checkout-steps, .checkout-summary { width: 100%; min-width: 0; }
+  @media (min-width: 1100px) { .checkout-layout { grid-template-columns: minmax(0, 1fr) 320px; } }
+  @media (max-width: 767px) {
+    ::ng-deep .mat-horizontal-content-container { padding: 16px; }
+    ::ng-deep .mat-horizontal-stepper-header-container { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    ::ng-deep .mat-stepper-horizontal-line { display: none; }
+    ::ng-deep .mat-step-header { min-height: 48px; padding: 12px 8px; }
+    button { min-height: 44px; white-space: normal; }
+  }
+
+}

@@ -20,14 +20,14 @@
 
 :host-context([data-brand="noli"]) {
 .main-content {
-  margin-top: 7rem;
+  margin-top: var(--noli-header-height);
   padding: $spacing-4;
-  min-height: calc(100vh - 7rem);
+  min-height: calc(100vh - var(--noli-header-height));
 
   @include md {
-    margin-top: 7.25rem;
+    margin-top: var(--noli-header-height);
     padding: $spacing-6;
-    min-height: calc(100vh - 7.25rem);
+    min-height: calc(100vh - var(--noli-header-height));
   }
 
   @include lg {

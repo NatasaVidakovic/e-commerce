@@ -355,3 +355,15 @@
   color: var(--color-text-primary);
   font-weight: 600;
 }
+
+// Responsive Noli layout. The base shop keeps its original styling.
+:host-context([data-brand='noli']) {
+
+  @media (max-width: 767px) {
+    .site-settings-container { padding: 0; }
+    mat-card-content { padding-inline: 0; }
+    .section-title { flex-wrap: wrap; }
+    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 120px), 1fr)); }
+  }
+
+}

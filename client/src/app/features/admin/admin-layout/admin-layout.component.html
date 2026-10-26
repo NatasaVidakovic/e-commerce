@@ -8,11 +8,13 @@
       </button>
     </div>
 
-    <nav class="sidebar-nav">
+    <nav #sidebarNav class="sidebar-nav" [attr.aria-label]="'NAVIGATION.ADMIN' | translate">
       <a
+        #navItem
         *ngFor="let item of navItems"
         [routerLink]="item.route"
         routerLinkActive="active"
+        (isActiveChange)="onActiveItemChange($event, navItem)"
         [routerLinkActiveOptions]="{ exact: true }"
         class="nav-item"
         [matTooltip]="(collapsed() || isMobile()) ? (item.labelKey | translate) : ''"

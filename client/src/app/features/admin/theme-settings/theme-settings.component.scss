@@ -535,3 +535,24 @@ mat-divider {
   flex-shrink: 0;
   margin-top: 0.125rem;
 }
+
+// Responsive Noli layout. The base shop keeps its original styling.
+:host-context([data-brand='noli']) {
+
+  .theme-settings-container, .theme-card, .color-input-group { min-width: 0; }
+  .preview-container { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+  .brand-option > span { min-width: 0; overflow-wrap: anywhere; }
+  @media (max-width: 767px) {
+    .theme-settings-container { padding: 0; }
+    .theme-card > mat-card-header, .theme-card > mat-card-content { padding-inline: 0; }
+    .brand-options { grid-template-columns: 1fr; }
+    .brand-option { padding: 16px; }
+    .card-title { font-size: clamp(22px, 4vw, 28px); line-height: 1.3; align-items: flex-start; }
+    .section-title { font-size: 18px; }
+    .settings-section { padding-block: 24px; }
+    .preview-container { padding: 16px; gap: 16px; }
+    .color-hint { padding-left: 0; }
+    .card-actions button { min-width: 0; flex-basis: 100%; min-height: 44px; }
+  }
+
+}

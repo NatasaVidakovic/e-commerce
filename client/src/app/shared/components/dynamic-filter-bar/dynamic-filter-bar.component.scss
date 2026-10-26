@@ -1054,3 +1054,11 @@ input[type="range"].range-slider {
     }
   }
 }
+
+:host-context([data-brand='noli']) {
+  @media (min-width: 768px) and (max-width: 1100px) {
+    .filter-main-row { flex-wrap: wrap; }
+    .filter-search-field { flex-basis: 100%; }
+    .filter-right-controls { width: 100%; flex-wrap: wrap; }
+  }
+}

@@ -1,5 +1,6 @@
 @use '../../../../styles/breakpoints' as *;
 @use '../../../../styles/spacing' as *;
+
 :host-context([data-brand="default"]) {
 $sidebar-width: 220px;
 $sidebar-collapsed-width: 60px;
@@ -491,4 +492,36 @@ $sidebar-collapsed-width: 60px;
     min-height: calc(100dvh - var(--noli-header-height) - 80px);
   }
 }
+}
+
+:host-context([data-brand='noli']) {
+  .admin-content > router-outlet + * { display: block; width: 100%; min-width: 0; }
+  @media (max-width: 767px) {
+    .sidebar { flex-shrink: 0; }
+    .sidebar-nav { flex: 1 1 auto; min-width: 0; gap: 6px; padding: 12px; scroll-padding-inline: 12px; }
+    .nav-item {
+      flex: 0 0 112px;
+      min-width: 0;
+      max-width: 112px;
+      min-height: 80px;
+      padding: 10px 8px;
+      gap: 7px;
+      border-bottom: 0;
+      white-space: normal;
+      .nav-label {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        max-width: 100%;
+        overflow: hidden;
+        white-space: normal;
+        line-height: 1.35;
+        font-size: 11px;
+        min-height: 30px;
+      }
+    }
+    .admin-content { padding: 20px 16px; overflow: visible; }
+    .admin-layout.collapsed .admin-content { margin-left: 0; }
+  }
 }

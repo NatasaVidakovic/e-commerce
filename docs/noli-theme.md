@@ -46,9 +46,15 @@ Find its hash with:
 git log --all --oneline --grep="feat(noli): add optional Noli theme"
 ```
 
-To keep the code and use the base shop, select **Original Web Shop** in the admin panel. The admin-only appearance change is in the follow-up commit **`feat(noli): restrict appearance changes to administrators`**. To remove Noli source changes entirely, revert that follow-up first, then revert `ac2781d`, starting with a clean working tree. Reverting source code does not undo database records or remove local demo containers.
+To keep the code and use the base shop, select **Original Web Shop** in the admin panel. The admin-only appearance change is in `072f833`, **`feat(noli): restrict appearance changes to administrators`**. Responsive refinements are grouped in **`fix(noli): adapt layouts for mobile tablet and desktop`**. To remove Noli source changes entirely, revert the responsive commit first, then `072f833`, then `ac2781d`, starting with a clean working tree. Reverting source code does not undo database records or remove local demo containers.
 
 The exact original source revision before Noli is `f083a1d` (`deploy dokument`). It can be inspected without changing the working tree with `git show f083a1d:<path>`.
+
+## Responsive Noli layouts
+
+The mobile header and admin navigation switch at 767px. Mobile admin links have fixed 112px widths, two-line labels and horizontal scrolling; opening a section brings its link into view. The breakpoint subscription ends when the layout is destroyed. The base shop does not use the automatic scrolling.
+
+Home typography and imagery scale down on phones, product grids use two to five columns, tablet filters wrap onto two rows, and narrow cart rows keep quantity controls below the product name. Checkout stacks its summary below the form under 1100px and uses a 320px summary column on larger screens. Noli checkout omits the base layout utility classes so percentage widths cannot shrink the summary inside its grid. Theme settings, login, registration and order pages use smaller mobile spacing. These layout rules are scoped to the Noli brand; original templates remain available.
 
 ## Validation
 
@@ -62,4 +68,6 @@ npm test -- --watch=false --browsers=ChromeHeadless
 
 Focused tests cover both branding selections, server startup loading, the fallback configuration, isolated theme storage, base payment configuration, Noli cash-only policy, disabled reactions/catalog remapping in base mode and rejected admin saves. HTTP integration tests use the real controllers and authorization middleware to verify 401/403 responses, administrator persistence, invalid input and public reads. Both frontend branches are compiled in the same production build.
 
-Verified on 2026-10-26: production frontend build, 35 frontend tests, 61 backend tests and 1,691 matching translation entries. Browser checks covered guest redirection, non-admin redirection, administrator saves in both directions, persistence after reload and mobile layout. A direct anonymous write against the running local API returned 401 and left the saved Noli choice unchanged.
+Verified on 2026-10-26: production frontend build, 38 frontend tests, 61 backend tests and 1,691 matching translation entries. Browser checks covered guest redirection, non-admin redirection, administrator saves in both directions, persistence after reload and mobile layout. A direct anonymous write against the running local API returned 401 and left the saved Noli choice unchanged.
+
+Responsive browser checks sampled 320, 360, 697, 768, 1024 and 1440px widths across the homepage, shop, product details, filters, admin catalog, theme/site settings, login, favourites, cart and checkout. The local buyer has no orders, so the orders check covers its empty state. Checkout was inspected without submitting an order. Three additional navigation tests verify that active links become visible on mobile, base/desktop navigation stays still, and breakpoint observation stops on destruction. Backend code was unchanged during the responsive refinements.
