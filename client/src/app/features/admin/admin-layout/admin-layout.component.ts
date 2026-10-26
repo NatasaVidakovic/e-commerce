@@ -48,10 +48,10 @@ export class AdminLayoutComponent {
     { key: 'suggested',     route: '/admin/suggested',      icon: 'lightbulb',           labelKey: 'ADMIN.SUGGESTED_PRODUCTS' },
     { key: 'discounts',     route: '/admin/discounts',      icon: 'local_offer',         labelKey: 'ADMIN.DISCOUNTS' },
     { key: 'vouchers',      route: '/admin/vouchers',       icon: 'confirmation_number', labelKey: 'ADMIN.VOUCHERS' },
-    { key: 'users',         route: '/admin/users',          icon: 'people',              labelKey: 'ADMIN.USERS' },
+    { key: 'users',         route: '/admin/users',          icon: 'people',              labelKey: 'ADMIN.USERS.TITLE' },
     { key: 'theme-settings',route: '/admin/theme-settings', icon: 'palette',             labelKey: 'ADMIN.THEME_SETTINGS' },
     { key: 'site-settings', route: '/admin/site-settings',  icon: 'settings',            labelKey: 'ADMIN.SITE_SETTINGS' },
-    { key: 'shop-location', route: '/admin/shop-location',  icon: 'location_on',         labelKey: 'ADMIN.SHOP_LOCATION' },
+    { key: 'shop-location', route: '/admin/shop-location',  icon: 'location_on',         labelKey: 'ADMIN.SHOP_LOCATION.TITLE' },
   ];
 
   toggleCollapse() {

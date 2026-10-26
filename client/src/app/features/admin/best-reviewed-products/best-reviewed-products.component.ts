@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
 import { Component, OnInit, OnDestroy, TrackByFunction } from '@angular/core';
 import { ShopService } from '../../../core/services/shop.service';
 import { BestReviewedService } from '../../../core/services/bestReviewed.service';
@@ -16,7 +17,7 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 
 @Component({
     selector: 'best-reviewed-products',
-    imports: [
+    imports: [CatalogTextPipe,
         ProductsTabComponent,
         TranslatePipe,
         DynamicFilterBarComponent,
@@ -42,10 +43,10 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 
     filterDefinitions: DynamicFilterDefinition[] = [];
     sortOptions: DynamicSortOption[] = [
-        { label: 'Alphabetical', column: 'Name', ascending: true, descending: false },
-        { label: 'Price: Low to High', column: 'Price', ascending: true, descending: false },
-        { label: 'Price: High to Low', column: 'Price', ascending: false, descending: true },
-        { label: 'Rating: High to Low', column: 'Rating', ascending: false, descending: true }
+        { label: 'SHOP.SORT_OPTIONS.name', column: 'Name', ascending: true, descending: false },
+        { label: 'SHOP.SORT_OPTIONS.priceAsc', column: 'Price', ascending: true, descending: false },
+        { label: 'SHOP.SORT_OPTIONS.priceDesc', column: 'Price', ascending: false, descending: true },
+        { label: 'SORTING.RATING_HIGH_LOW', column: 'Rating', ascending: false, descending: true }
     ];
     private lastFilters: FilterViewModel[][] = [];
     private lastSort: DynamicSortOption = this.sortOptions[3];
@@ -92,18 +93,18 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
                 this.loadProducts();
             }
         });
-        
+
         // Add window resize listener
         window.addEventListener('resize', this.onWindowResize.bind(this));
     }
 
     initializeFilterDefinitions() {
         this.filterDefinitions = [
-            { key: 'search', label: 'Search Products', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
-            { key: 'brand', label: 'Brand', controlType: 'select', multiple: true, options: this.brands, propertyName: 'Brand', operationType: 'Equal', dataType: 'String', allLabel: 'All Brands' },
-            { key: 'type', label: 'Type', controlType: 'select', multiple: true, options: this.types, propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String', allLabel: 'All Types' },
-            { key: 'minPrice', label: 'Min Price', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
-            { key: 'maxPrice', label: 'Max Price', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
+            { key: 'search', label: 'BUTTONS.SEARCH_PRODUCTS', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
+            { key: 'brand', label: 'COMMON.BRAND', controlType: 'select', multiple: true, options: this.brands, propertyName: 'Brand', operationType: 'Equal', dataType: 'String', allLabel: 'UI.ALL_BRANDS' },
+            { key: 'type', label: 'COMMON.TYPE', controlType: 'select', multiple: true, options: this.types, propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String', allLabel: 'UI.ALL_TYPES' },
+            { key: 'minPrice', label: 'FILTER.MIN_PRICE', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
+            { key: 'maxPrice', label: 'FILTER.MAX_PRICE', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
         ];
     }
 
@@ -132,7 +133,7 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
             },
             error: (error) => {
                 console.error('Error loading best reviewed products:', error);
-                this.snackbar.errorFrom(error, 'Error loading best reviewed products', { duration: 2000 });
+                this.snackbar.errorFrom(error, 'UI.ERROR_LOADING_BEST_REVIEWED_PRODUCTS', { duration: 2000 });
             }
         });
     }

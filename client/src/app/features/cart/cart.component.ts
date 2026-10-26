@@ -1,3 +1,4 @@
+import { BrandingService } from '../../core/services/branding.service';
 import { Component, inject } from '@angular/core';
 import { CartService } from '../../core/services/cart.service';
 import { CartItemComponent } from "./cart-item/cart-item.component";
@@ -13,9 +14,10 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './cart.component.scss'
 })
 export class CartComponent {
+  readonly branding = inject(BrandingService);
   private router = inject(Router);
   cartService = inject(CartService);
-  
+
   onAction() {
     this.router.navigateByUrl('/shop');
   }

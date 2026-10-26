@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../pipes/catalog-text-pipe';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -22,7 +23,7 @@ import {
 @Component({
   selector: 'app-dynamic-filter-bar',
   standalone: true,
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     ReactiveFormsModule,
     OverlayModule,
@@ -90,7 +91,7 @@ export class DynamicFilterBarComponent implements OnInit {
 
   @Input() viewLayout: 'grid' | 'list' = 'grid';
   @Input() showViewLayoutToggle: boolean = false;
-  
+
   @Output() changed = new EventEmitter<{ filters: FilterViewModel[][]; sort: DynamicSortOption }>();
   @Output() reset = new EventEmitter<void>();
   @Output() rawValuesChanged = new EventEmitter<Record<string, any>>();
@@ -158,7 +159,7 @@ export class DynamicFilterBarComponent implements OnInit {
   }
 
   hasPriceRange(): boolean {
-    return this.filterDefinitions.some(d => d.key === 'minPrice') && 
+    return this.filterDefinitions.some(d => d.key === 'minPrice') &&
            this.filterDefinitions.some(d => d.key === 'maxPrice');
   }
 
@@ -270,7 +271,7 @@ export class DynamicFilterBarComponent implements OnInit {
   onMinPriceSliderChange(event: Event) {
     const value = Number((event.target as HTMLInputElement).value);
     const currentMax = this.getPriceMaxValue();
-    
+
     if (value <= currentMax) {
       this.form.get('minPrice')?.setValue(value === this.minPriceRange ? '' : value);
     }
@@ -279,7 +280,7 @@ export class DynamicFilterBarComponent implements OnInit {
   onMaxPriceSliderChange(event: Event) {
     const value = Number((event.target as HTMLInputElement).value);
     const currentMin = this.getPriceMin();
-    
+
     if (value >= currentMin) {
       this.form.get('maxPrice')?.setValue(value === this.getPriceMax() ? '' : value);
     }

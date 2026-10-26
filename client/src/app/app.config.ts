@@ -1,7 +1,8 @@
 import { provideTranslateService, provideTranslateLoader } from "@ngx-translate/core";
 import { provideTranslateHttpLoader } from "@ngx-translate/http-loader";
 import { ApplicationConfig, ErrorHandler, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
-import { provideRouter, withPreloading, PreloadAllModules, withViewTransitions } from '@angular/router';
+import { provideRouter, withPreloading, PreloadAllModules, withViewTransitions, withInMemoryScrolling, withRouterConfig } from '@angular/router';
+import { ViewportScroller } from '@angular/common';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -31,9 +32,10 @@ export const appConfig: ApplicationConfig = {
       lang: 'sr'
     }),
     importProvidersFrom(MatSnackBarModule),
-    provideRouter(routes, withPreloading(PreloadAllModules), withViewTransitions()),
+    provideRouter(routes, withPreloading(PreloadAllModules), withViewTransitions(), withRouterConfig({ onSameUrlNavigation: 'reload' }), withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' })),
     provideHttpClient(withInterceptors([errorInterceptor, loadingInterceptor, authInterceptor])),
     provideAppInitializer(async () => {
+      inject(ViewportScroller).setOffset(() => [0, (document.querySelector('app-header header, app-base-header header')?.getBoundingClientRect().height || 72) + 16]);
       const initService = inject(InitService);
       return lastValueFrom(initService.init()).finally(() => {
         const splash = document.getElementById('initial-splash');

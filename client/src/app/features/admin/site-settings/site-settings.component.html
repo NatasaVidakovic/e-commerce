@@ -59,11 +59,11 @@
         <mat-form-field appearance="outline" class="w-full">
           <mat-select [(value)]="currentCurrency" (selectionChange)="onCurrencyChange()" class="currency-select">
             <mat-select-trigger>
-              {{ currentCurrency.name }} ({{ currentCurrency.code }}) - {{ currentCurrency.symbol }}
+              {{ currencyName(currentCurrency.code) }} ({{ currentCurrency.code }}) · {{ currentCurrency.symbol }}
             </mat-select-trigger>
             <mat-option *ngFor="let currency of availableCurrencies" [value]="currency">
               <div class="currency-option">
-                <span class="currency-name">{{ currency.name }} ({{ currency.code }}) - {{ currency.symbol }}</span>
+                <span class="currency-name">{{ currencyName(currency.code) }} ({{ currency.code }}) · {{ currency.symbol }}</span>
               </div>
             </mat-option>
           </mat-select>
@@ -150,7 +150,7 @@
 
       <div *ngIf="showWelcomeImage" class="form-group">
         <label class="field-label">
-          {{ 'ADMIN.SITE_SETTINGS_IMAGE_URL' | translate }} 
+          {{ 'ADMIN.SITE_SETTINGS_IMAGE_URL' | translate }}
           <span class="required-indicator">*</span>
         </label>
         <div class="input-with-action">
@@ -196,7 +196,7 @@
       <div *ngFor="let link of socialMediaLinks; let i = index; trackBy: trackByIndex" class="social-row">
         <select [(ngModel)]="link.platform" (ngModelChange)="onPlatformChange(i, $event)" class="field-select">
           <option value="" disabled>{{ 'ADMIN.SITE_SETTINGS_SELECT_PLATFORM' | translate }}</option>
-          <option *ngFor="let p of platforms; trackBy: trackByIndex" [value]="p.name">{{ p.name }}</option>
+          <option *ngFor="let p of platforms; trackBy: trackByIndex" [value]="p.name">{{ (p.name) | catalogText }}</option>
         </select>
         <input type="url" [(ngModel)]="link.url" placeholder="{{ 'ADMIN.SITE_SETTINGS_URL_PLACEHOLDER' | translate }}" class="field-input social-url-input">
         <button mat-icon-button color="warn" (click)="removeSocialLink(i)">

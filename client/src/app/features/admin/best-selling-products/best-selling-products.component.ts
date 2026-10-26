@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
 import { Component, OnInit, OnDestroy, ViewChild, TrackByFunction } from '@angular/core';
 import { ShopService } from '../../../core/services/shop.service';
 import { BestSellingService } from '../../../core/services/best-selling.service';
@@ -16,7 +17,7 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 
 @Component({
     selector: 'best-selling-products',
-    imports: [
+    imports: [CatalogTextPipe,
         ProductsTabComponent,
         TranslatePipe,
         DynamicFilterBarComponent,
@@ -46,9 +47,9 @@ export class BestSellingProductsComponent implements OnInit, OnDestroy {
 
     filterDefinitions: DynamicFilterDefinition[] = [];
     sortOptions: DynamicSortOption[] = [
-        { label: 'Alphabetical', column: 'Name', ascending: true, descending: false },
-        { label: 'Price: Low to High', column: 'Price', ascending: true, descending: false },
-        { label: 'Price: High to Low', column: 'Price', ascending: false, descending: true }
+        { label: 'SHOP.SORT_OPTIONS.name', column: 'Name', ascending: true, descending: false },
+        { label: 'SHOP.SORT_OPTIONS.priceAsc', column: 'Price', ascending: true, descending: false },
+        { label: 'SHOP.SORT_OPTIONS.priceDesc', column: 'Price', ascending: false, descending: true }
     ];
     private lastFilters: FilterViewModel[][] = [];
     private lastSort: DynamicSortOption = this.sortOptions[0];
@@ -102,11 +103,11 @@ export class BestSellingProductsComponent implements OnInit, OnDestroy {
 
     initializeFilterDefinitions() {
         this.filterDefinitions = [
-            { key: 'search', label: 'Search Products', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
-            { key: 'brand', label: 'Brand', controlType: 'select', multiple: true, options: this.brands, propertyName: 'Brand', operationType: 'Equal', dataType: 'String', allLabel: 'All Brands' },
-            { key: 'type', label: 'Type', controlType: 'select', multiple: true, options: this.types, propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String', allLabel: 'All Types' },
-            { key: 'minPrice', label: 'Min Price', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
-            { key: 'maxPrice', label: 'Max Price', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
+            { key: 'search', label: 'BUTTONS.SEARCH_PRODUCTS', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
+            { key: 'brand', label: 'COMMON.BRAND', controlType: 'select', multiple: true, options: this.brands, propertyName: 'Brand', operationType: 'Equal', dataType: 'String', allLabel: 'UI.ALL_BRANDS' },
+            { key: 'type', label: 'COMMON.TYPE', controlType: 'select', multiple: true, options: this.types, propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String', allLabel: 'UI.ALL_TYPES' },
+            { key: 'minPrice', label: 'FILTER.MIN_PRICE', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
+            { key: 'maxPrice', label: 'FILTER.MAX_PRICE', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
         ];
     }
 
@@ -133,7 +134,7 @@ export class BestSellingProductsComponent implements OnInit, OnDestroy {
                 this.updatePriceBounds(this.products);
             },
             error: (error) => {
-                this.snackbar.errorFrom(error, 'Error loading best selling products', { duration: 2000 });
+                this.snackbar.errorFrom(error, 'UI.ERROR_LOADING_BEST_SELLING_PRODUCTS', { duration: 2000 });
             }
         });
     }
@@ -160,18 +161,18 @@ export class BestSellingProductsComponent implements OnInit, OnDestroy {
 
     onProductUpdated() {
         this.loadProducts();
-        this.snackbar.success('Product saved', { duration: 2000 });
+        this.snackbar.success('UI.PRODUCT_SAVED', { duration: 2000 });
     }
 
     onProductDeleted(productId: number) {
         this.bestSellingService.deleteBestSellingProduct(productId).subscribe({
             next: () => {
                 this.loadProducts();
-                this.snackbar.success('Product removed from best selling', { duration: 2000 });
+                this.snackbar.success('UI.PRODUCT_REMOVED_FROM_BEST_SELLING', { duration: 2000 });
             },
             error: (error) => {
                 // Handle error removing from best selling
-                this.snackbar.errorFrom(error, 'Error removing from best selling', { duration: 2000 });
+                this.snackbar.errorFrom(error, 'UI.ERROR_REMOVING_FROM_BEST_SELLING', { duration: 2000 });
             }
         });
     }
@@ -180,11 +181,11 @@ export class BestSellingProductsComponent implements OnInit, OnDestroy {
         this.bestSellingService.addBestSellingProducts(productIds).subscribe({
             next: () => {
                 this.loadProducts();
-                this.snackbar.success('Products added to best selling', { duration: 2000 });
+                this.snackbar.success('UI.PRODUCTS_ADDED_TO_BEST_SELLING', { duration: 2000 });
             },
             error: (error) => {
                 // Handle error adding to best selling
-                this.snackbar.errorFrom(error, 'Error adding to best selling', { duration: 2000 });
+                this.snackbar.errorFrom(error, 'UI.ERROR_ADDING_TO_BEST_SELLING', { duration: 2000 });
             }
         });
     }

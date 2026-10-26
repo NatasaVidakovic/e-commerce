@@ -955,3 +955,15 @@
     border-color: #fff;
   }
 }
+
+:host-context([data-brand='noli']) {
+  .pd-top-grid, .pd-tabs-section { border: 0; box-shadow: none; }
+  .pd-tabs-header { border-bottom: 0; }
+  .pd-rating-row { gap: 10px 16px; flex-wrap: wrap; min-height: 32px; }
+  .pd-stars { flex: 0 0 auto; gap: 3px; }
+  .pd-star-icon { color: var(--color-star); flex: 0 0 18px; line-height: 18px; overflow: visible; }
+  .pd-in-stock, .pd-out-of-stock { gap: 6px; white-space: nowrap; line-height: 1.4; }
+  .pd-status-icon, .pd-feature-icon { line-height: 16px; overflow: visible; }
+  .pd-sug-star { color: var(--color-star); }
+  .pd-name { font-family: var(--font-display); font-weight: 400; font-size: clamp(36px, 4vw, 52px); text-transform: none; letter-spacing: -.025em; }
+}

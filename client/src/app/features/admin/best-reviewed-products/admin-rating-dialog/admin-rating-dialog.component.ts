@@ -31,10 +31,10 @@ export interface AdminRatingDialogResult {
     TranslateModule
   ],
   template: `
-    <h2 mat-dialog-title>{{ 'ADMIN.BEST_REVIEWED.RATING_DIALOG.TITLE' | translate }}</h2>
+    <h2 mat-dialog-title>{{ 'ADMIN.BEST_REVIEWED.TITLE' | translate }}</h2>
     <div mat-dialog-content>
-      <p class="mb-4">{{ 'ADMIN.BEST_REVIEWED.RATING_DIALOG.MESSAGE' | translate:{count: data.productIds.length} }}</p>
-      
+      <p class="mb-4">{{ 'ADMIN.BEST_REVIEWED.MESSAGE' | translate:{count: data.productIds.length} }}</p>
+
       <div class="flex items-center gap-2 mb-4">
         <div class="flex gap-1">
           <button *ngFor="let star of [1,2,3,4,5]"
@@ -48,9 +48,9 @@ export interface AdminRatingDialogResult {
       </div>
 
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>{{ 'ADMIN.BEST_REVIEWED.RATING_DIALOG.RATING_LABEL' | translate }}</mat-label>
+        <mat-label>{{ 'ADMIN.BEST_REVIEWED.RATING_LABEL' | translate }}</mat-label>
         <input matInput type="number" [(ngModel)]="rating" min="1" max="5" step="0.5">
-        <mat-hint>{{ 'ADMIN.BEST_REVIEWED.RATING_DIALOG.RATING_HINT' | translate }}</mat-hint>
+        <mat-hint>{{ 'ADMIN.BEST_REVIEWED.RATING_HINT' | translate }}</mat-hint>
       </mat-form-field>
     </div>
     <div mat-dialog-actions align="end">

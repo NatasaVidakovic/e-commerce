@@ -2,43 +2,26 @@
 
     <!-- Hero -->
     <section class="hero">
-        <div class="hero__inner">
-            <h1 class="hero__title">{{ config().companyName || ('ABOUT.DEFAULT_TITLE' | translate) }}</h1>
-            <p *ngIf="config().companyDescription" class="hero__description">{{ config().companyDescription }}</p>
-            <p *ngIf="!config().companyDescription" class="hero__description">{{ 'ABOUT.DEFAULT_DESCRIPTION' | translate }}</p>
+        <div class="hero__inner"><img class="about-noli" src="/brand/noli-mascot.png" alt="Noli" width="100" height="100">
+            <span class="story-eyebrow">{{ 'NOLI.OUR_STORY' | translate }}</span>
+            <h1 class="hero__title">{{ 'NOLI.ABOUT_TITLE' | translate }}</h1>
+            <p class="hero__description">{{ 'NOLI.ABOUT_INTRO' | translate }}</p>
+            <p *ngIf="customCompanyDescription()" class="hero__description">{{ customCompanyDescription() | catalogText }}</p>
         </div>
     </section>
 
-    <!-- Map Section -->
-    <section class="map-section">
-        <div class="map-section__inner">
-            <div class="section-header">
-                <span class="section-header__icon"><mat-icon>location_on</mat-icon></span>
-                <h2 class="section-header__title">{{ 'ABOUT.SHOP_LOCATION' | translate }}</h2>
-            </div>
-
-            <div *ngIf="mapLoading()" class="map-state">
-                <mat-icon class="map-state__icon map-state__icon--loading">hourglass_empty</mat-icon>
-                <p>{{ 'ABOUT.LOADING_MAP' | translate }}</p>
-            </div>
-
-            <div *ngIf="mapError()" class="map-state map-state--error">
-                <mat-icon class="map-state__icon">error_outline</mat-icon>
-                <p>{{ mapError() }}</p>
-            </div>
-
-            <div *ngIf="shopLocation() && !mapLoading() && !mapError()" class="map-wrap">
-                <div id="shop-map" class="shop-map"></div>
-                <div *ngIf="shopLocation()?.address" class="map-address-badge">
-                    <mat-icon>location_on</mat-icon>
-                    <span>{{ shopLocation()?.address }}</span>
-                </div>
-            </div>
-
-            <div *ngIf="!shopLocation() && !mapLoading() && !mapError()" class="map-state">
-                <mat-icon class="map-state__icon">location_off</mat-icon>
-                <p>{{ 'ABOUT.NO_LOCATION_CONFIGURED' | translate }}</p>
-            </div>
+    <section class="noli-life-story">
+        <div class="life-story-row">
+            <img src="/brand/noli-workshop.png" [alt]="'NOLI.WORKSHOP_ALT' | translate" width="1254" height="1254" loading="lazy">
+            <div><span class="story-eyebrow">{{ 'NOLI.STORY_EYEBROW' | translate }}</span><h2>{{ 'NOLI.ABOUT_CANDLE_TITLE' | translate }}</h2><p>{{ 'NOLI.STORY_TEXT' | translate }}</p><p>{{ 'NOLI.ABOUT_CANDLE_TEXT' | translate }}</p></div>
+        </div>
+        <div class="life-story-row life-story-row--reverse">
+            <img src="/brand/noli-jewelry.png" [alt]="'NOLI.JEWELRY_ALT' | translate" width="1254" height="1254" loading="lazy">
+            <div><h2>{{ 'NOLI.ABOUT_JEWELRY_TITLE' | translate }}</h2><p>{{ 'NOLI.ABOUT_JEWELRY_TEXT' | translate }}</p><p>{{ 'NOLI.STORY_TEXT_TWO' | translate }}</p></div>
+        </div>
+        <div class="life-story-row">
+            <img src="/brand/noli-mirror.png" [alt]="'NOLI.MIRROR_ALT' | translate" width="1254" height="1254" loading="lazy">
+            <div><h2>{{ 'NOLI.ABOUT_LIFE_TITLE' | translate }}</h2><p>{{ 'NOLI.ABOUT_LIFE_TEXT' | translate }}</p></div>
         </div>
     </section>
 
@@ -75,7 +58,7 @@
     </div>
 
     <!-- Contact + Social (bottom) -->
-    <div class="about-content">
+    <div class="about-content" id="kontakt">
 
         <!-- Fallback removed - show empty when no content is configured -->
 
@@ -153,11 +136,12 @@
          (click)="closeLightbox()"
          (keydown)="onLightboxKeydown($event)"
          tabindex="0">
-        <button class="lightbox-close" (click)="closeLightbox()">
+        <button class="lightbox-close" (click)="closeLightbox()" [attr.aria-label]="'COMMON.CLOSE' | translate">
             <mat-icon>close</mat-icon>
         </button>
         <button *ngIf="config().galleryImages.length > 1"
                 class="lightbox-nav lightbox-nav--left"
+                [attr.aria-label]="'ARIA_LABELS.PREVIOUS_IMAGE' | translate"
                 (click)="$event.stopPropagation(); prevLightbox()">
             <mat-icon>chevron_left</mat-icon>
         </button>
@@ -169,6 +153,7 @@
         </div>
         <button *ngIf="config().galleryImages.length > 1"
                 class="lightbox-nav lightbox-nav--right"
+                [attr.aria-label]="'ARIA_LABELS.NEXT_IMAGE' | translate"
                 (click)="$event.stopPropagation(); nextLightbox()">
             <mat-icon>chevron_right</mat-icon>
         </button>

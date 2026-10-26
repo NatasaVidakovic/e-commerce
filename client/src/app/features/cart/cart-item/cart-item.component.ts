@@ -1,4 +1,5 @@
 import { Component, inject, input } from '@angular/core';
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
 import { CartItem } from '../../../shared/models/cart';
 import { RouterLink } from '@angular/router';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
@@ -10,6 +11,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   selector: 'app-cart-item',
   imports: [
+    CatalogTextPipe,
     RouterLink,
     MatIcon,
     CurrencyPipe,

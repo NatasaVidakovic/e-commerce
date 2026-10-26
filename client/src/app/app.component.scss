@@ -1,6 +1,6 @@
 @use '../styles/breakpoints' as *;
 @use '../styles/spacing' as *;
-
+:host-context([data-brand="default"]) {
 .main-content {
   margin-top: 3.5rem;
   padding: $spacing-4;
@@ -15,4 +15,27 @@
   @include lg {
     padding: $spacing-8;
   }
+}
+}
+
+:host-context([data-brand="noli"]) {
+.main-content {
+  margin-top: 7rem;
+  padding: $spacing-4;
+  min-height: calc(100vh - 7rem);
+
+  @include md {
+    margin-top: 7.25rem;
+    padding: $spacing-6;
+    min-height: calc(100vh - 7.25rem);
+  }
+
+  @include lg {
+    padding: $spacing-8;
+  }
+
+  &:has(app-home) {
+    padding: 0;
+  }
+}
 }

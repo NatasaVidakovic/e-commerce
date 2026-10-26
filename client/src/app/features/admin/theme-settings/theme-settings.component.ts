@@ -34,136 +34,136 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 })
 export class ThemeSettingsComponent {
   private _isDarkMode: boolean = false;
-  
+
   primaryColor: string = '';
   secondaryColor: string = '';
   accentColor: string = '';
-  
+
   textPrimaryColor: string = '';
   textSecondaryColor: string = '';
   textTertiaryColor: string = '';
-  
+
   bgPrimaryColor: string = '';
   bgSecondaryColor: string = '';
   surfaceColor: string = '';
-  
+
   borderColor: string = '';
   inputBgColor: string = '';
   buttonTextColor: string = '';
-  
-  
+
+
   constructor(
     private themeService: ThemeService,
     private snackbar: SnackbarService
   ) {
     const config = this.themeService.themeConfig();
     this._isDarkMode = config.mode === 'dark';
-    
+
     this.primaryColor = config.primaryColor || '';
     this.secondaryColor = config.secondaryColor || '';
     this.accentColor = config.accentColor || '';
-    
+
     this.textPrimaryColor = config.textPrimaryColor || '';
     this.textSecondaryColor = config.textSecondaryColor || '';
     this.textTertiaryColor = config.textTertiaryColor || '';
-    
+
     this.bgPrimaryColor = config.bgPrimaryColor || '';
     this.bgSecondaryColor = config.bgSecondaryColor || '';
     this.surfaceColor = config.surfaceColor || '';
-    
+
     this.borderColor = config.borderColor || '';
     this.inputBgColor = config.inputBgColor || '';
     this.buttonTextColor = config.buttonTextColor || '';
-    
+
   }
-  
+
   isDarkMode(): boolean {
     return this._isDarkMode;
   }
-  
+
   onThemeModeChange(isDark: boolean): void {
     const mode: ThemeMode = isDark ? 'dark' : 'light';
     this.themeService.setThemeMode(mode);
     this._isDarkMode = isDark;
     this.snackbar.success(`${isDark ? 'Dark' : 'Light'} mode enabled`);
   }
-  
+
   applyCustomColors(): void {
     const colors: any = {};
-    
+
     if (this.primaryColor) colors.primaryColor = this.primaryColor;
     if (this.secondaryColor) colors.secondaryColor = this.secondaryColor;
     if (this.accentColor) colors.accentColor = this.accentColor;
-    
+
     if (this.textPrimaryColor) colors.textPrimaryColor = this.textPrimaryColor;
     if (this.textSecondaryColor) colors.textSecondaryColor = this.textSecondaryColor;
     if (this.textTertiaryColor) colors.textTertiaryColor = this.textTertiaryColor;
-    
+
     if (this.bgPrimaryColor) colors.bgPrimaryColor = this.bgPrimaryColor;
     if (this.bgSecondaryColor) colors.bgSecondaryColor = this.bgSecondaryColor;
     if (this.surfaceColor) colors.surfaceColor = this.surfaceColor;
-    
+
     if (this.borderColor) colors.borderColor = this.borderColor;
     if (this.inputBgColor) colors.inputBgColor = this.inputBgColor;
     if (this.buttonTextColor) colors.buttonTextColor = this.buttonTextColor;
-    
+
     if (Object.keys(colors).length > 0) {
       this.themeService.setCustomColors(colors);
-      this.snackbar.success('Theme customization applied successfully');
+      this.snackbar.success('UI.THEME_CUSTOMIZATION_APPLIED_SUCCESSFULLY');
     } else {
-      this.snackbar.error('Please customize at least one option');
+      this.snackbar.error('UI.PLEASE_CUSTOMIZE_AT_LEAST_ONE_OPTION');
     }
   }
-  
+
   resetToDefaults(): void {
     this.themeService.resetToDefaults();
     this._isDarkMode = false;
-    
+
     this.primaryColor = '';
     this.secondaryColor = '';
     this.accentColor = '';
-    
+
     this.textPrimaryColor = '';
     this.textSecondaryColor = '';
     this.textTertiaryColor = '';
-    
+
     this.bgPrimaryColor = '';
     this.bgSecondaryColor = '';
     this.surfaceColor = '';
-    
+
     this.borderColor = '';
     this.inputBgColor = '';
     this.buttonTextColor = '';
-    
-    this.snackbar.success('Theme reset to defaults');
+
+    this.snackbar.success('UI.THEME_RESET_TO_DEFAULTS');
   }
-  
+
   previewTheme(): void {
     this.applyCustomColors();
   }
-  
+
   onColorChange(): void {
     const colors: any = {};
-    
+
     if (this.primaryColor) colors.primaryColor = this.primaryColor;
     if (this.secondaryColor) colors.secondaryColor = this.secondaryColor;
     if (this.accentColor) colors.accentColor = this.accentColor;
-    
+
     if (this.textPrimaryColor) colors.textPrimaryColor = this.textPrimaryColor;
     if (this.textSecondaryColor) colors.textSecondaryColor = this.textSecondaryColor;
     if (this.textTertiaryColor) colors.textTertiaryColor = this.textTertiaryColor;
-    
+
     if (this.bgPrimaryColor) colors.bgPrimaryColor = this.bgPrimaryColor;
     if (this.bgSecondaryColor) colors.bgSecondaryColor = this.bgSecondaryColor;
     if (this.surfaceColor) colors.surfaceColor = this.surfaceColor;
-    
+
     if (this.borderColor) colors.borderColor = this.borderColor;
     if (this.inputBgColor) colors.inputBgColor = this.inputBgColor;
     if (this.buttonTextColor) colors.buttonTextColor = this.buttonTextColor;
-    
+
     if (Object.keys(colors).length > 0) {
       this.themeService.setCustomColors(colors);
     }
   }
-  
+
 }

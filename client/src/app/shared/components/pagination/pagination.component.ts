@@ -33,11 +33,11 @@ export class PaginationComponent {
   @Input() pageSizeOptions: number[] = [10, 25, 50, 100];
   @Input() showFirstLastButtons: boolean = true;
   @Input() disabled: boolean = false;
-  
+
   @Output() page = new EventEmitter<PaginationEvent>();
 
   get totalPages(): number {
-    return Math.ceil(this.length / this.pageSize);
+    return Math.max(1, Math.ceil(this.length / this.pageSize));
   }
 
   get currentPage(): number {
@@ -83,13 +83,13 @@ export class PaginationComponent {
 
   changePageSize(newSize: number): void {
     if (this.disabled) return;
-    
+
     const previousPageIndex = this.pageIndex;
     const newPageIndex = Math.floor((this.pageIndex * this.pageSize) / newSize);
-    
+
     this.pageSize = newSize;
     this.pageIndex = newPageIndex;
-    
+
     this.page.emit({
       pageIndex: this.pageIndex,
       pageSize: this.pageSize,
@@ -100,7 +100,7 @@ export class PaginationComponent {
   private changePage(newIndex: number): void {
     const previousPageIndex = this.pageIndex;
     this.pageIndex = newIndex;
-    
+
     this.page.emit({
       pageIndex: this.pageIndex,
       pageSize: this.pageSize,

@@ -4,7 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, map } from 'rxjs';
 import { Cart } from '../../shared/models/cart';
 import { CartService } from './cart.service';
-import { ConfirmationToken, Stripe, StripeAddressElement, StripeAddressElementOptions, StripeElements, StripePaymentElement, loadStripe } from '@stripe/stripe-js';
+import type { ConfirmationToken, Stripe, StripeAddressElement, StripeAddressElementOptions, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js/pure';
 import { AccountService } from './account.service';
 
 @Injectable({

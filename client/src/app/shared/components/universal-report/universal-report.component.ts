@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { CatalogTextPipe } from '../../pipes/catalog-text-pipe';
 
 export interface ReportColumn {
   key: string;
@@ -27,6 +28,7 @@ export interface SummaryMetric {
   selector: 'app-universal-report',
   standalone: true,
   imports: [
+    CatalogTextPipe,
     CommonModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -52,7 +54,7 @@ export class UniversalReportComponent {
 
   getDisplayValue(value: any, column: ReportColumn): string {
     if (value === null || value === undefined) return '';
-    
+
     switch (column.type) {
       case 'currency':
         return typeof value === 'number' ? this.currencyService.formatCurrency(value) : value;

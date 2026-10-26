@@ -51,7 +51,7 @@
       <div class="space-y-4">
         <div>
           <label class="font-medium" style="color: var(--color-text-secondary);">{{ 'PRODUCT.NAME' | translate }}:</label>
-          <p class="text-lg">{{ product.name }}</p>
+          <p class="text-lg">{{ (product.name) | catalogText }}</p>
         </div>
 
         <div>
@@ -61,7 +61,7 @@
 
         <div>
           <label class="font-medium" style="color: var(--color-text-secondary);">{{ 'PRODUCT.TYPE' | translate }}:</label>
-          <p class="text-lg">{{ product.productType?.name || product.type }}</p>
+          <p class="text-lg">{{ (product.productType?.name || product.type) | catalogText }}</p>
         </div>
 
         <div>
@@ -88,7 +88,7 @@
 
   <mat-card class="p-6 mt-6" *ngIf="product?.description">
     <h2 class="text-xl font-semibold mb-4">{{ 'PRODUCT.DESCRIPTION' | translate }}</h2>
-    <p class="whitespace-pre-wrap" style="color: var(--color-text-secondary);">{{ product?.description }}</p>
+    <p class="whitespace-pre-wrap" style="color: var(--color-text-secondary);">{{ (product?.description) | catalogText }}</p>
   </mat-card>
 
   <ng-template #loadingTemplate>

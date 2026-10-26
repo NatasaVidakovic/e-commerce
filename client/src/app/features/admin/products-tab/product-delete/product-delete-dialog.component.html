@@ -3,8 +3,8 @@
 <mat-dialog-content>
   <p class="text-sm mb-3">{{ 'MESSAGES.CANT_UNDONE' | translate }}</p>
 
-  <div class="flex items-center gap-4 mb-4 p-3 bg-red-50 rounded-lg">
-    <img [src]="data.pictureUrl || '/assets/default-product.png'" 
+  <div class="flex items-center gap-4 mb-4 p-3 noli-bg-error-soft rounded-lg">
+    <img [src]="data.pictureUrl || '/assets/default-product.png'"
          alt="{{ 'PRODUCT.IMAGE_ALT' | translate:{name: data.name} }}"
          class="w-12 h-12 object-cover rounded border">
     <div class="flex-1 min-w-0">

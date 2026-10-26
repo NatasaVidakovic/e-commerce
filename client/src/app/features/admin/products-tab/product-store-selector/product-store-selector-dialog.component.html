@@ -1,7 +1,7 @@
 <!-- Fixed header: title + search (mat-dialog-title keeps Material flex layout correct) -->
 <div mat-dialog-title class="dialog-sticky-header">
   <div class="title-row">
-    <h2 class="dialog-title">{{ data.title }}</h2>
+    <h2 class="dialog-title">{{ data.title | translate }}</h2>
     <span *ngIf="selection.selected.length > 0" class="selection-badge">
       {{ 'PRODUCT.SELECTED_COUNT' | translate: { count: selection.selected.length } }}
     </span>
@@ -40,7 +40,7 @@
   <div class="rows-scroll">
     <div *ngIf="loading" class="loading-state">
       <mat-icon class="spin-icon">sync</mat-icon>
-      Loading products…
+      {{ 'COMMON.LOADING' | translate }}
     </div>
 
     <div *ngIf="!loading && dataSource.filteredData.length === 0" class="empty-state">
@@ -67,9 +67,9 @@
       <div class="col-img">
         <img [src]="p.pictureUrl" [alt]="p.name" class="product-image" />
       </div>
-      <div class="col-name">{{ p.name }}</div>
+      <div class="col-name">{{ (p.name) | catalogText }}</div>
       <div class="col-brand">{{ p.brand }}</div>
-      <div class="col-type">{{ p.type }}</div>
+      <div class="col-type">{{ (p.type) | catalogText }}</div>
     </div>
   </div>
 

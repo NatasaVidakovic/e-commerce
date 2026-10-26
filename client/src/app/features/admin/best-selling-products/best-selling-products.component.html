@@ -70,11 +70,11 @@
                  (error)="$any($event.target).src = 'images/placeholder.png'; $any($event.target).onerror = null">
           </div>
           <div class="card-content">
-            <h3 class="product-name">{{ product.name }}</h3>
+            <h3 class="product-name">{{ (product.name) | catalogText }}</h3>
             <p class="product-brand" *ngIf="product.brand">{{ product.brand }}</p>
             <div class="card-price">{{ product.price | appCurrency }}</div>
             <div class="card-type" *ngIf="product.productType?.name || product.type">
-              {{ product.productType?.name || product.type }}
+              {{ (product.productType?.name || product.type) | catalogText }}
             </div>
           </div>
         </div>

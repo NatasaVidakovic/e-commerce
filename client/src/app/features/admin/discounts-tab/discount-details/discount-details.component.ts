@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../../shared/pipes/catalog-text-pipe';
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -18,7 +19,7 @@ import { DeleteDiscountDialogComponent } from '../discount-delete/discount-delet
 @Component({
   selector: 'app-discount-details',
   standalone: true,
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     MatButtonModule,
     MatIconModule,
@@ -58,38 +59,38 @@ export class DiscountDetailsComponent implements OnInit {
 
   getEditRestrictionReason(): string {
     if (!this.discount) return '';
-    
+
     if (this.discount.hasBeenUsed) {
-      return 'Cannot edit: Used in customer orders';
+      return 'UI.CANNOT_EDIT_USED_IN_CUSTOMER_ORDERS';
     }
     if (this.discount.state === 'Active') {
-      return 'Cannot edit: Discount has already started';
+      return 'UI.CANNOT_EDIT_DISCOUNT_HAS_ALREADY_STARTED';
     }
     if (this.discount.state === 'Expired') {
-      return 'Cannot edit: Discount has expired';
+      return 'UI.CANNOT_EDIT_DISCOUNT_HAS_EXPIRED';
     }
     if (this.discount.state === 'Disabled') {
-      return 'Cannot edit: Discount is disabled';
+      return 'UI.CANNOT_EDIT_DISCOUNT_IS_DISABLED';
     }
-    return 'Cannot edit this discount';
+    return 'UI.CANNOT_EDIT_THIS_DISCOUNT';
   }
 
   getDeleteRestrictionReason(): string {
     if (!this.discount) return '';
-    
+
     if (this.discount.hasBeenUsed) {
-      return 'Cannot delete: Used in orders (accounting requirement)';
+      return 'UI.CANNOT_DELETE_USED_IN_ORDERS_ACCOUNTING_REQUIREMENT';
     }
     if (this.discount.state === 'Active') {
-      return 'Cannot delete: Only draft discounts can be deleted';
+      return 'UI.CANNOT_DELETE_ONLY_DRAFT_DISCOUNTS_CAN_BE_DELETED';
     }
     if (this.discount.state === 'Expired') {
-      return 'Cannot delete: Expired discounts must be retained';
+      return 'UI.CANNOT_DELETE_EXPIRED_DISCOUNTS_MUST_BE_RETAINED';
     }
     if (this.discount.state === 'Disabled') {
-      return 'Cannot delete: Disabled discounts must be retained';
+      return 'UI.CANNOT_DELETE_DISABLED_DISCOUNTS_MUST_BE_RETAINED';
     }
-    return 'Cannot delete this discount';
+    return 'UI.CANNOT_DELETE_THIS_DISCOUNT';
   }
 
   disableDiscount() {
@@ -98,8 +99,8 @@ export class DiscountDetailsComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '380px',
       data: {
-        title: 'Disable Discount',
-        message: 'Are you sure you want to disable this discount? It will no longer apply to new orders.'
+        title: 'UI.DISABLE_DISCOUNT',
+        message: 'UI.ARE_YOU_SURE_YOU_WANT_TO_DISABLE_THIS_DISCOUNT_IT_WILL_NO_LONGER_APPLY_TO_NEW_ORDERS'
       }
     });
 
@@ -107,11 +108,11 @@ export class DiscountDetailsComponent implements OnInit {
       if (!confirmed) return;
       this.discountService.disableDiscount(this.discount!.id).subscribe({
         next: () => {
-          this.snackbar.success('Discount disabled successfully', { duration: 3000, panelClass: ['success-snackbar'] });
+          this.snackbar.success('UI.DISCOUNT_DISABLED_SUCCESSFULLY', { duration: 3000, panelClass: ['success-snackbar'] });
           this.loadDiscount(this.discount!.id);
         },
         error: (error: any) => {
-          this.snackbar.errorFrom(error, 'Error disabling discount', { duration: 8000, panelClass: ['error-snackbar'] });
+          this.snackbar.errorFrom(error, 'UI.ERROR_DISABLING_DISCOUNT', { duration: 8000, panelClass: ['error-snackbar'] });
         }
       });
     });
@@ -135,7 +136,7 @@ export class DiscountDetailsComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Error loading discount:', error);
-        this.snackbar.errorFrom(error, 'Error loading discount', { duration: 8000, panelClass: ['error-snackbar'] });
+        this.snackbar.errorFrom(error, 'UI.ERROR_LOADING_DISCOUNT', { duration: 8000, panelClass: ['error-snackbar'] });
         this.loading = false;
       }
     });
@@ -148,11 +149,11 @@ export class DiscountDetailsComponent implements OnInit {
   goToEdit() {
     if (this.discount) {
       if (!this.discount.canEdit) {
-        let message = 'This discount cannot be edited.';
+        let message = 'UI.THIS_DISCOUNT_CANNOT_BE_EDITED';
         if (this.discount.hasBeenUsed) {
-          message = 'This discount has been used in orders and cannot be edited.';
+          message = 'UI.THIS_DISCOUNT_HAS_BEEN_USED_IN_ORDERS_AND_CANNOT_BE_EDITED';
         } else if (this.discount.state === 'Active' || this.discount.state === 'Expired') {
-          message = `This discount is ${this.discount.state.toLowerCase()} and cannot be edited.`;
+          message = 'UI.THIS_DISCOUNT_CANNOT_BE_EDITED';
         }
         this.snackbar.error(message);
         return;

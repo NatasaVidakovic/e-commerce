@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../../shared/pipes/catalog-text-pipe';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -18,7 +19,7 @@ import { SnackbarService } from '../../../../core/services/snackbar.service';
 @Component({
   selector: 'app-admin-product-add',
   standalone: true,
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
@@ -87,7 +88,7 @@ export class AdminProductAddComponent implements OnInit {
 
     this.loading = true;
     const formData = this.productForm.value;
-    
+
     const productData = {
       name: formData.name,
       brand: formData.brand,
@@ -113,7 +114,7 @@ export class AdminProductAddComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error creating product:', error);
-        this.snackbar.errorFrom(error, 'Error creating product');
+        this.snackbar.errorFrom(error, 'UI.ERROR_CREATING_PRODUCT');
         this.loading = false;
       }
     });

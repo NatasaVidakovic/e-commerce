@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
 import { Component, effect, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
@@ -26,7 +27,7 @@ import { Currency } from '../../../shared/models/currency';
 
 @Component({
   selector: 'app-order-detailed',
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     MatCardModule,
     DatePipe,
@@ -63,7 +64,7 @@ export class OrderDetailedComponent implements OnInit, OnDestroy {
     return this.currencyService.getCurrencyByCode(code);
   }
   refund: any = null;
-  buttonText = this.accountService.isAdmin() ? 'Return to admin' : 'Return to orders';
+  buttonText = this.accountService.isAdmin() ? 'NOLI.RETURN_ADMIN' : 'NOLI.RETURN_ORDERS';
 
   showRefundForm = false;
   refundType: 'full' | 'partial' = 'full';
@@ -73,15 +74,15 @@ export class OrderDetailedComponent implements OnInit, OnDestroy {
   selectedItems: { [productId: number]: number } = {}; // productId -> quantity to return
 
   refundReasons = [
-    { value: 'CustomerRequested', label: 'Customer requested' },
-    { value: 'ProductDefective', label: 'Product defective' },
-    { value: 'WrongItemShipped', label: 'Wrong item shipped' },
-    { value: 'DamagedInTransit', label: 'Damaged in transit' },
-    { value: 'LateDelivery', label: 'Late delivery' },
-    { value: 'NotAsDescribed', label: 'Not as described' },
-    { value: 'QualityIssue', label: 'Quality issue' },
-    { value: 'ChangedMind', label: 'Changed mind' },
-    { value: 'Other', label: 'Other' }
+    { value: 'CustomerRequested', label: 'UI.CUSTOMER_REQUESTED' },
+    { value: 'ProductDefective', label: 'UI.PRODUCT_DEFECTIVE' },
+    { value: 'WrongItemShipped', label: 'UI.WRONG_ITEM_SHIPPED' },
+    { value: 'DamagedInTransit', label: 'UI.DAMAGED_IN_TRANSIT' },
+    { value: 'LateDelivery', label: 'UI.LATE_DELIVERY' },
+    { value: 'NotAsDescribed', label: 'UI.NOT_AS_DESCRIBED' },
+    { value: 'QualityIssue', label: 'UI.QUALITY_ISSUE' },
+    { value: 'ChangedMind', label: 'UI.CHANGED_MIND' },
+    { value: 'Other', label: 'UI.OTHER' }
   ];
 
   constructor() {

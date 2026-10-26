@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../../shared/pipes/catalog-text-pipe';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
@@ -19,7 +20,7 @@ export type ProductStoreSelectorDialogData = {
 @Component({
   selector: 'product-store-selector-dialog',
   standalone: true,
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     MatDialogModule,
     MatButtonModule,

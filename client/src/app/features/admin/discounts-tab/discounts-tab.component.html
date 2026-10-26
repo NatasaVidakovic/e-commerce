@@ -83,7 +83,7 @@
                   {{ discount.state }}
                 </span>
                 <ng-container *ngIf="discount.hasBeenUsed">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800"
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium noli-bg-primary-soft noli-text-primary"
                         matTooltip="{{ 'DISCOUNT.USED_IN_ORDERS' | translate }}">
                     <mat-icon style="font-size: 12px; width: 12px; height: 12px;">receipt</mat-icon>
                   </span>
@@ -114,7 +114,7 @@
     <!-- Mobile Card View -->
     <div class="mobile-view">
       <div class="discounts-grid">
-        <div class="discount-card" 
+        <div class="discount-card"
              *ngFor="let discount of discounts; trackBy: trackByDiscountId"
              (click)="onRowClick(discount)"
              [class.selected]="selectedDiscount?.id === discount.id">
@@ -136,7 +136,7 @@
               </ng-container>
             </div>
           </div>
-          
+
           <div class="card-second-line">
             <p class="discount-description" *ngIf="discount.description">
               {{ discount.description }}

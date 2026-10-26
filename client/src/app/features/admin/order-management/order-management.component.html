@@ -5,18 +5,18 @@
     <h2 class="text-2xl font-semibold">{{ 'ADMIN.ORDERS' | translate }}</h2>
     <div class="header-actions">
       <button mat-raised-button (click)="loadOrders()" [disabled]="loading"
-        class="bg-blue-600 text-white hover:bg-blue-700">
+        class="noli-bg-primary text-white noli-hover-bg-primary">
         <mat-icon class="mr-2">refresh</mat-icon>
         {{ 'ADMIN.ORDER_MANAGEMENT.REFRESH_ORDERS' | translate }}
       </button>
       @if (selectedOrder) {
         <button mat-raised-button (click)="downloadInvoice(selectedOrder)"
-          class="bg-purple-600 text-white hover:bg-purple-700">
+          class="noli-bg-primary text-white noli-hover-bg-primary">
           <mat-icon class="mr-2">receipt_long</mat-icon>
           {{ 'ORDER_DETAILS.DOWNLOAD_INVOICE' | translate }} #{{selectedOrder.id}}
         </button>
         <button mat-raised-button (click)="downloadOrderSummary(selectedOrder)"
-          class="bg-indigo-600 text-white hover:bg-indigo-700">
+          class="noli-bg-primary text-white noli-hover-bg-primary">
           <mat-icon class="mr-2">summarize</mat-icon>
           {{ 'ORDER_DETAILS.DOWNLOAD_ORDER_SUMMARY' | translate }} #{{selectedOrder.id}}
         </button>
@@ -62,7 +62,7 @@
 
           <ng-container matColumnDef="buyerEmail">
             <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.COLUMNS.CUSTOMER' | translate }}</th>
-            <td mat-cell *matCellDef="let order" class="truncate max-w-[180px]" [matTooltip]="order.isGuestOrder ? 'Guest: ' + (order.guestName || '') + ' | ' + order.buyerEmail + ' | ' + (order.guestPhone || '') : order.buyerEmail">
+            <td mat-cell *matCellDef="let order" class="truncate max-w-[180px]" [matTooltip]="order.isGuestOrder ? ('ADMIN.ORDER_DETAILS.GUEST' | translate) + ': ' + (order.guestName || '') + ' | ' + order.buyerEmail + ' | ' + (order.guestPhone || '') : order.buyerEmail">
               @if (order.isGuestOrder) {
                 <span class="badge compact-badge" style="background-color: #f59e0b; color: white; font-size: 10px; padding: 1px 6px; margin-right: 4px;">{{ 'ADMIN.ORDER_DETAILS.GUEST' | translate }}</span>
               }
@@ -99,7 +99,7 @@
               <select class="inline-status-select compact-select"
                 [ngClass]="'ps-' + order.paymentStatus.toLowerCase()" [ngModel]="order.paymentStatus"
                 [disabled]="updatingOrder[order.id] || isOrderRefunded(order)"
-                [matTooltip]="isOrderRefunded(order) ? getRefundStatusMessage(order) : ''"
+                [matTooltip]="(isOrderRefunded(order) ? getRefundStatusMessage(order) : '') | translate"
                 (change)="onPaymentStatusChange(order, $event)">
                 <option *ngFor="let s of paymentStatusOptions" [value]="s">{{s}}</option>
               </select>
@@ -112,7 +112,7 @@
             <td mat-cell *matCellDef="let order">
               <select class="inline-status-select compact-select" [ngClass]="'os-' + order.status.toLowerCase()"
                 [ngModel]="order.status" [disabled]="updatingOrder[order.id] || isOrderRefunded(order)"
-                [matTooltip]="isOrderRefunded(order) ? getRefundStatusMessage(order) : ''"
+                [matTooltip]="(isOrderRefunded(order) ? getRefundStatusMessage(order) : '') | translate"
                 (change)="onOrderStatusChange(order, $event)">
                 <option *ngFor="let s of orderStatusOptions" [value]="s">{{s}}</option>
               </select>
@@ -126,7 +126,7 @@
               <select class="inline-status-select compact-select"
                 [ngClass]="'ds-' + order.deliveryStatus.toLowerCase()" [ngModel]="order.deliveryStatus"
                 [disabled]="updatingOrder[order.id] || isOrderRefunded(order)"
-                [matTooltip]="isOrderRefunded(order) ? getRefundStatusMessage(order) : ''"
+                [matTooltip]="(isOrderRefunded(order) ? getRefundStatusMessage(order) : '') | translate"
                 (change)="onDeliveryStatusChange(order, $event)">
                 <option *ngFor="let s of deliveryStatusOptions" [value]="s">{{s}}</option>
               </select>
@@ -139,7 +139,7 @@
               <div class="flex items-center gap-0 whitespace-nowrap">
                 <button mat-icon-button (click)="openEmailDialog(order)" (dblclick)="$event.stopPropagation()"
                   matTooltip="{{ 'TOOLTIPS.SEND_EMAIL' | translate }}">
-                  <mat-icon class="text-green-600" style="font-size: 20px;">email</mat-icon>
+                  <mat-icon class="noli-text-success" style="font-size: 20px;">email</mat-icon>
                 </button>
                 <button mat-icon-button [disabled]="updatingOrder[order.id] || !hasRefundRequest(order.id)"
                   (click)="quickRefund(order)"
@@ -151,7 +151,7 @@
                 </button>
                 <button mat-icon-button (click)="openOrderDetails(order)" (dblclick)="$event.stopPropagation()"
                   matTooltip="{{ 'TOOLTIPS.VIEW_DETAILS' | translate }}">
-                  <mat-icon class="text-blue-600" style="font-size: 20px;">visibility</mat-icon>
+                  <mat-icon class="noli-text-primary" style="font-size: 20px;">visibility</mat-icon>
                 </button>
               </div>
             </td>
@@ -168,7 +168,7 @@
     <!-- Mobile Card View -->
     <div class="mobile-view">
       <div class="orders-grid">
-        <div class="order-card" 
+        <div class="order-card"
              *ngFor="let order of dataSource.data; trackBy: trackByOrderId"
              [class.selected-row]="selectedOrder?.id === order.id"
              (click)="selectOrder(order)" (dblclick)="openOrderDetails(order)">
@@ -184,7 +184,7 @@
             </div>
             <div class="order-total">{{ order.total | appCurrency: getOrderCurrency(order.currency) }}</div>
           </div>
-          
+
           <div class="card-content">
             <div class="order-meta">
               <div class="meta-item">
@@ -200,45 +200,45 @@
                 </span>
               </div>
             </div>
-            
+
             <div class="order-statuses">
               <div class="status-group">
                 <label class="status-label">{{ 'CHECKOUT.PAYMENT' | translate }}:</label>
                 <select class="inline-status-select compact-select mobile-select"
                   [ngClass]="'ps-' + order.paymentStatus.toLowerCase()" [ngModel]="order.paymentStatus"
                   [disabled]="updatingOrder[order.id] || isOrderRefunded(order)"
-                  [matTooltip]="isOrderRefunded(order) ? getRefundStatusMessage(order) : ''"
+                  [matTooltip]="(isOrderRefunded(order) ? getRefundStatusMessage(order) : '') | translate"
                   (change)="onPaymentStatusChange(order, $event)">
                   <option *ngFor="let s of paymentStatusOptions" [value]="s">{{s}}</option>
                 </select>
               </div>
-              
+
               <div class="status-group">
                 <label class="status-label">{{ 'ORDERS.ORDER' | translate }}:</label>
                 <select class="inline-status-select compact-select mobile-select" [ngClass]="'os-' + order.status.toLowerCase()"
                   [ngModel]="order.status" [disabled]="updatingOrder[order.id] || isOrderRefunded(order)"
-                  [matTooltip]="isOrderRefunded(order) ? getRefundStatusMessage(order) : ''"
+                  [matTooltip]="(isOrderRefunded(order) ? getRefundStatusMessage(order) : '') | translate"
                   (change)="onOrderStatusChange(order, $event)">
                   <option *ngFor="let s of orderStatusOptions" [value]="s">{{s}}</option>
                 </select>
               </div>
-              
+
               <div class="status-group">
                 <label class="status-label">{{ 'CHECKOUT.SHIPPING' | translate }}:</label>
                 <select class="inline-status-select compact-select mobile-select"
                   [ngClass]="'ds-' + order.deliveryStatus.toLowerCase()" [ngModel]="order.deliveryStatus"
                   [disabled]="updatingOrder[order.id] || isOrderRefunded(order)"
-                  [matTooltip]="isOrderRefunded(order) ? getRefundStatusMessage(order) : ''"
+                  [matTooltip]="(isOrderRefunded(order) ? getRefundStatusMessage(order) : '') | translate"
                   (change)="onDeliveryStatusChange(order, $event)">
                   <option *ngFor="let s of deliveryStatusOptions" [value]="s">{{s}}</option>
                 </select>
               </div>
             </div>
-            
+
             <div class="card-actions">
               <button mat-icon-button (click)="openEmailDialog(order)" (dblclick)="$event.stopPropagation()"
                 matTooltip="{{ 'TOOLTIPS.SEND_EMAIL' | translate }}">
-                <mat-icon class="text-green-600" style="font-size: 20px;">email</mat-icon>
+                <mat-icon class="noli-text-success" style="font-size: 20px;">email</mat-icon>
               </button>
               <button mat-icon-button [disabled]="updatingOrder[order.id] || !hasRefundRequest(order.id)"
                 (click)="quickRefund(order)"
@@ -250,7 +250,7 @@
               </button>
               <button mat-icon-button (click)="openOrderDetails(order)" (dblclick)="$event.stopPropagation()"
                 matTooltip="{{ 'TOOLTIPS.VIEW_DETAILS' | translate }}">
-                <mat-icon class="text-blue-600" style="font-size: 20px;">visibility</mat-icon>
+                <mat-icon class="noli-text-primary" style="font-size: 20px;">visibility</mat-icon>
               </button>
             </div>
           </div>

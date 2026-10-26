@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
 import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Product } from './../../../shared/models/product';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +20,7 @@ import { ProductStoreSelectorDialogComponent, ProductStoreSelectorDialogData } f
 @Component({
   selector: 'products-tab',
   standalone: true,
-  imports: [
+  imports: [CatalogTextPipe,
     MatIconModule,
     TranslatePipe,
     CommonModule,
@@ -103,18 +104,18 @@ export class ProductsTabComponent implements OnChanges, AfterViewInit, OnInit, O
   private updateColumns() {
     // Responsive columns - always show core columns, hide others on small screens
     const base = ['pictureUrl', 'price', 'actions'];
-    
+
     // Add name on small screens and up
     if (this.screenWidth >= 640) { // sm breakpoint
       base.push('name');
     }
-    
+
     // Add type on medium screens and up
     if (this.screenWidth >= 768) { // md breakpoint
       base.push('quantityInStock');
       base.push('type');
     }
-    
+
     // Add brand and rating on large screens and up
     if (this.screenWidth >= 1024) { // lg breakpoint
       base.push('brand');
@@ -122,7 +123,7 @@ export class ProductsTabComponent implements OnChanges, AfterViewInit, OnInit, O
         base.push('rating');
       }
     }
-    
+
     this.displayedColumns = base;
   }
 
@@ -158,7 +159,7 @@ export class ProductsTabComponent implements OnChanges, AfterViewInit, OnInit, O
         width: '980px',
         maxHeight: '90vh',
         data: {
-          title: 'Products in Store',
+          title: 'UI.PRODUCTS_IN_STORE',
           preselectedIds: this.products.map(p => p.id)
         }
       }

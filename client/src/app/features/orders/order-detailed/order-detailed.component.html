@@ -166,7 +166,7 @@
                                     <img [src]="item.pictureUrl"
                                         [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: item.productName }"
                                         class="w-10 h-10 object-cover rounded flex-shrink-0">
-                                    <span class="text-left" style="color: var(--color-text-primary);">{{ item.productName }}</span>
+                                    <span class="text-left" style="color: var(--color-text-primary);">{{ (item.productName) | catalogText }}</span>
                                 </div>
                             </td>
                             <td class="p-4" style="color: var(--color-text-secondary);">x{{ item.quantity }}</td>
@@ -186,7 +186,7 @@
                             [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: item.productName }"
                             class="w-12 h-12 object-cover rounded flex-shrink-0">
                         <div class="flex-1">
-                            <h4 class="font-medium text-sm" style="color: var(--color-text-primary);">{{ item.productName }}</h4>
+                            <h4 class="font-medium text-sm" style="color: var(--color-text-primary);">{{ (item.productName) | catalogText }}</h4>
                             <p class="text-xs" style="color: var(--color-text-secondary);">{{ 'CART.QUANTITY' | translate }}: x{{ item.quantity }}</p>
                         </div>
                     </div>
@@ -273,7 +273,7 @@
                         <div class="md:col-span-2 mt-2">
                             <p class="font-medium mb-1">{{ 'REFUND.RETURNED_PRODUCTS' | translate }}:</p>
                             @for (item of refund.items; track item.productId) {
-                                <p class="ml-2">• {{ item.productName }} x{{ item.quantity }} — {{ item.price * item.quantity | appCurrency: getOrderCurrency(order.currency) }}</p>
+                                <p class="ml-2">• {{ (item.productName) | catalogText }} x{{ item.quantity }} — {{ item.price * item.quantity | appCurrency: getOrderCurrency(order.currency) }}</p>
                             }
                         </div>
                     }
@@ -337,7 +337,7 @@
                                                     <div class="flex items-center gap-2">
                                                         <img [src]="item.pictureUrl" [alt]="item.productName"
                                                              class="w-8 h-8 object-cover rounded flex-shrink-0">
-                                                        <span style="color: var(--color-text-primary);">{{ item.productName }}</span>
+                                                        <span style="color: var(--color-text-primary);">{{ (item.productName) | catalogText }}</span>
                                                     </div>
                                                 </td>
                                                 <td class="px-3 py-2 text-center">
@@ -384,7 +384,7 @@
                             <mat-label>{{ 'ADMIN.REFUND_DIALOG.REASON' | translate }}</mat-label>
                             <mat-select [(ngModel)]="refundReason">
                                 @for (reason of refundReasons; track reason.value) {
-                                    <mat-option [value]="reason.value">{{ reason.label }}</mat-option>
+                                    <mat-option [value]="reason.value">{{ reason.label | translate }}</mat-option>
                                 }
                             </mat-select>
                         </mat-form-field>

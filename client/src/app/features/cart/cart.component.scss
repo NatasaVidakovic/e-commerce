@@ -1,6 +1,5 @@
 @use '../../../styles/breakpoints' as *;
 @use '../../../styles/spacing' as *;
-
 .cart-section {
   width: 100%;
   max-width: 1440px;
@@ -66,3 +65,5 @@
     max-width: 24rem;
   }
 }
+
+.cart-noli { margin: 40px auto -20px; mix-blend-mode: multiply; }

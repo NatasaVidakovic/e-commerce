@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,36 +10,14 @@ namespace Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductDiscounts_DiscountsId",
-                table: "ProductDiscounts",
-                column: "DiscountsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Discounts_IsActive",
-                table: "Discounts",
-                column: "IsActive");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Discounts_IsActive_DateFrom_DateTo",
-                table: "Discounts",
-                columns: new[] { "IsActive", "DateFrom", "DateTo" });
+            // 20260605195710_Manjaro already creates these three indexes.
+            // Retain this migration identity for databases that recorded it.
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_ProductDiscounts_DiscountsId",
-                table: "ProductDiscounts");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Discounts_IsActive",
-                table: "Discounts");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Discounts_IsActive_DateFrom_DateTo",
-                table: "Discounts");
+            // The preceding migration owns the indexes and removes them on rollback.
         }
     }
 }

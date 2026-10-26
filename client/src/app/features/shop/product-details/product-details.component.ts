@@ -1,4 +1,6 @@
-import { Component, inject, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { BrandingService } from '../../../core/services/branding.service';
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
+import { Component, inject, OnInit, OnDestroy, HostListener, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -13,10 +15,13 @@ import { TranslateModule } from '@ngx-translate/core';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 import { FavouritesService } from '../../../core/services/favourites.service';
 import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
+import { NoliIconComponent } from '../../../shared/components/noli-icon/noli-icon.component';
+import { NoliReactionService } from '../../../core/services/noli-reaction.service';
 
 @Component({
   selector: 'app-product-details',
-  imports: [
+  imports: [CatalogTextPipe,
+    NoliIconComponent,
     MatIcon,
     CurrencyPipe,
     CommonModule,
@@ -28,6 +33,7 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
   styleUrl: './product-details.component.scss'
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
+  readonly branding = inject(BrandingService);
   private destroy$ = new Subject<void>();
   private shopService = inject(ShopService);
   private cartService = inject(CartService);
@@ -35,6 +41,9 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private snackbar = inject(SnackbarService);
   private favouritesService = inject(FavouritesService);
+  private reaction = inject(NoliReactionService);
+  readonly savingCart = signal(false);
+  readonly savingFavourite = signal(false);
   product?: Product & { reviews?: any[] };
   quantityInCart = 0;
   quantity = 1;
@@ -172,23 +181,35 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateCart() {
-    if (!this.product) return;
+  async updateCart(event: MouseEvent): Promise<void> {
+    if (!this.product || this.savingCart()) return;
+    const button = event.currentTarget as HTMLElement;
+    this.savingCart.set(true);
     if (this.quantity > this.quantityInCart) {
       const itemsToAdd = this.quantity - this.quantityInCart;
-      this.quantityInCart += itemsToAdd;
-      this.cartService.addItemToCart(this.product, itemsToAdd);
+      const added = await this.cartService.addItemToCart(this.product, itemsToAdd);
+      if (added) {
+        this.quantityInCart = this.quantity;
+        this.reaction.burst(button, 'stars');
+        this.snackbar.success(this.branding.isNoli() ? 'NOLI.ADDED' : 'MESSAGES.ITEM_ADDED_CART', { duration: 2200 });
+      } else this.snackbar.error(this.branding.isNoli() ? 'NOLI.CART_ERROR' : 'UI.CART_ERROR');
     } else {
       const itemsToRemove = this.quantityInCart - this.quantity;
-      this.quantityInCart -= itemsToRemove;
-      this.cartService.removeItemFromCart(this.product.id, itemsToRemove);
+      try {
+        await this.cartService.removeItemFromCart(this.product.id, itemsToRemove);
+        this.quantityInCart = this.quantity;
+      } catch { this.snackbar.error(this.branding.isNoli() ? 'NOLI.CART_ERROR' : 'UI.CART_ERROR'); }
     }
+    this.savingCart.set(false);
   }
 
-  buyNow() {
-    if (!this.product) return;
-    this.cartService.addItemToCart(this.product, this.quantity);
-    this.router.navigate(['/cart']);
+  async buyNow(): Promise<void> {
+    if (!this.product || this.savingCart()) return;
+    this.savingCart.set(true);
+    const added = await this.cartService.addItemToCart(this.product, this.quantity);
+    this.savingCart.set(false);
+    if (added) this.router.navigate(['/cart']);
+    else this.snackbar.error(this.branding.isNoli() ? 'NOLI.CART_ERROR' : 'UI.CART_ERROR');
   }
 
   updateQuantityInBasket() {
@@ -223,8 +244,10 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleFavorite(): void {
-    if (!this.product) return;
+  toggleFavorite(event: MouseEvent): void {
+    if (!this.product || this.savingFavourite()) return;
+    const button = event.currentTarget as HTMLElement;
+    this.savingFavourite.set(true);
 
     const productId = this.product.id;
 
@@ -232,9 +255,12 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       this.favouritesService.addToFavourites(productId).subscribe({
         next: () => {
           this.isFavourite = true;
+          this.savingFavourite.set(false);
+          this.reaction.burst(button, 'hearts');
           this.snackbar.success('MESSAGES.ITEM_ADDED_FAVOURITES');
         },
         error: (error) => {
+          this.savingFavourite.set(false);
           this.snackbar.errorFrom(error, 'ERROR_MESSAGES.FAILED_ADD_FAVORITES');
         }
       });
@@ -242,9 +268,11 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       this.favouritesService.removeFromFavourites(productId).subscribe({
         next: () => {
           this.isFavourite = false;
+          this.savingFavourite.set(false);
           this.snackbar.success('MESSAGES.ITEM_REMOVED_FAVOURITES');
         },
         error: (error) => {
+          this.savingFavourite.set(false);
           this.snackbar.errorFrom(error, 'ERROR_MESSAGES.FAILED_REMOVE_FAVORITES');
         }
       });

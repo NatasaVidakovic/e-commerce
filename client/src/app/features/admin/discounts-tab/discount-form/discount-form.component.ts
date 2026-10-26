@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../../shared/pipes/catalog-text-pipe';
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -21,7 +22,7 @@ import { SnackbarService } from '../../../../core/services/snackbar.service';
 @Component({
   selector: 'app-discount-form',
   standalone: true,
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
@@ -104,7 +105,7 @@ export class DiscountFormComponent implements OnInit {
 
   ngOnInit() {
     this.loadProducts();
-    
+
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.isEditMode = true;
@@ -124,23 +125,23 @@ export class DiscountFormComponent implements OnInit {
       descending: false,
       filters: []
     };
-    
+
     this.shopService.filterProducts(model).subscribe({
       next: (response) => {
         this.availableProducts = response.data || [];
       },
-      error: (error: any) => { console.error('Error loading products:', error); this.snackbar.errorFrom(error, 'Error loading products'); }
+      error: (error: any) => { console.error('Error loading products:', error); this.snackbar.errorFrom(error, 'UI.ERROR_LOADING_PRODUCTS'); }
     });
   }
 
   loadDiscount(id: number) {
     this.loadingDiscount = true;
-    
+
     this.discountService.getDiscountById(id).subscribe({
       next: (discount: Discount) => {
         this.currentDiscount = discount;
         this.selectedProductIds = discount.products?.map((p: any) => p.id) || [];
-        
+
         const formData = {
           name: discount.name || '',
           description: discount.description || '',
@@ -152,20 +153,20 @@ export class DiscountFormComponent implements OnInit {
           productIds: this.selectedProductIds,
           types: []
         };
-        
+
         this.discountForm.patchValue(formData);
-        
+
         // Check if discount can be edited based on backend rules
         if (!discount.canEdit) {
           this.canEditDiscount = false;
           this.discountForm.disable();
-          
+
           if (discount.hasBeenUsed) {
-            this.editRestrictionMessage = 'This discount has been used in orders and cannot be modified due to financial reporting requirements.';
+            this.editRestrictionMessage = 'UI.THIS_DISCOUNT_HAS_BEEN_USED_IN_ORDERS_AND_CANNOT_BE_MODIFIED_DUE_TO_FINANCIAL_REPORTING_REQUIREMENTS';
           } else if (discount.state === 'Active' || discount.state === 'Expired') {
-            this.editRestrictionMessage = `This discount is ${discount.state.toLowerCase()} and cannot be edited. You can disable it instead.`;
+            this.editRestrictionMessage = 'UI.THIS_DISCOUNT_CANNOT_BE_EDITED';
           } else {
-            this.editRestrictionMessage = 'This discount cannot be edited.';
+            this.editRestrictionMessage = 'UI.THIS_DISCOUNT_CANNOT_BE_EDITED';
           }
 
           this.snackbar.show(this.editRestrictionMessage, { duration: 10000, panelClass: ['error-snackbar'] });
@@ -175,17 +176,17 @@ export class DiscountFormComponent implements OnInit {
           const today = new Date();
           today.setHours(0, 0, 0, 0);
           startDate.setHours(0, 0, 0, 0);
-          
+
           if (startDate < today) {
             this.discountAlreadyStarted = true;
           }
         }
-        
+
         this.loadingDiscount = false;
       },
       error: (error: any) => {
         console.error('Error loading discount:', error);
-        this.snackbar.errorFrom(error, 'Error loading discount', { duration: 8000, panelClass: ['error-snackbar'] });
+        this.snackbar.errorFrom(error, 'UI.ERROR_LOADING_DISCOUNT', { duration: 8000, panelClass: ['error-snackbar'] });
         this.loadingDiscount = false;
       }
     });
@@ -210,7 +211,7 @@ export class DiscountFormComponent implements OnInit {
 
     this.loading = true;
     const formValue = this.discountForm.value;
-    
+
     // Format dates as YYYY-MM-DD to avoid timezone conversion issues
     const formatDate = (date: Date): string => {
       const year = date.getFullYear();
@@ -218,10 +219,10 @@ export class DiscountFormComponent implements OnInit {
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}T00:00:00`;
     };
-    
+
     const dateFrom = new Date(formValue.dateFrom);
     const dateTo = new Date(formValue.dateTo);
-    
+
     const discountData = {
       name: formValue.name,
       description: formValue.description,
@@ -252,7 +253,7 @@ export class DiscountFormComponent implements OnInit {
 
         this.snackbar.errorFrom(
           error,
-          'Error saving discount',
+          'UI.ERROR_SAVING_DISCOUNT',
           { duration: 12000, panelClass: ['error-snackbar'] },
           (msg) => msg.includes('already have an active discount') ? ('⚠️ OVERLAP CONFLICT: ' + msg) : msg
         );
@@ -277,12 +278,12 @@ export class DiscountFormComponent implements OnInit {
   dateNotInPastValidator() {
     return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value) return null;
-      
+
       const selectedDate = new Date(control.value);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       selectedDate.setHours(0, 0, 0, 0);
-      
+
       return selectedDate < today ? { pastDate: true } : null;
     };
   }
@@ -291,19 +292,19 @@ export class DiscountFormComponent implements OnInit {
     return (group: AbstractControl): ValidationErrors | null => {
       const startDate = group.get('dateFrom')?.value;
       const endDate = group.get('dateTo')?.value;
-      
+
       if (!startDate || !endDate) return null;
-      
+
       const start = new Date(startDate);
       const end = new Date(endDate);
       start.setHours(0, 0, 0, 0);
       end.setHours(0, 0, 0, 0);
-      
+
       // End date must be after start date
       if (end <= start) {
         return { invalidDateRange: true };
       }
-      
+
       return null;
     };
   }
@@ -311,16 +312,16 @@ export class DiscountFormComponent implements OnInit {
   validateActivation(): void {
     const endDate = this.discountForm.get('dateTo')?.value;
     const isActive = this.discountForm.get('isActive')?.value;
-    
+
     if (isActive && endDate) {
       const end = new Date(endDate);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       end.setHours(0, 0, 0, 0);
-      
+
       if (end < today) {
         this.snackbar.show(
-          'Cannot activate an expired discount. Please update the end date first.',
+          'UI.CANNOT_ACTIVATE_AN_EXPIRED_DISCOUNT_PLEASE_UPDATE_THE_END_DATE_FIRST',
           { duration: 5000, panelClass: ['error-snackbar'] }
         );
         this.discountForm.patchValue({ isActive: false }, { emitEvent: false });
@@ -330,7 +331,7 @@ export class DiscountFormComponent implements OnInit {
 
   getFormValidationErrors(): string[] {
     const errors: string[] = [];
-    
+
     Object.keys(this.discountForm.controls).forEach(key => {
       const control = this.discountForm.get(key);
       if (control && control.errors) {
@@ -349,11 +350,11 @@ export class DiscountFormComponent implements OnInit {
         });
       }
     });
-    
+
     if (this.discountForm.hasError('invalidDateRange')) {
       errors.push('End date must be after start date');
     }
-    
+
     return errors;
   }
 

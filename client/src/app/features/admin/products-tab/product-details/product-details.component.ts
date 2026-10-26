@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../../shared/pipes/catalog-text-pipe';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -17,7 +18,7 @@ import { DeleteProductDialogComponent } from '../product-delete/product-delete-d
 @Component({
   selector: 'app-admin-product-details',
   standalone: true,
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     RouterModule,
     MatButtonModule,
@@ -65,7 +66,7 @@ export class AdminProductDetailsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading product:', error);
-        this.snackbar.errorFrom(error, 'Failed to load product');
+        this.snackbar.errorFrom(error, 'ERROR_MESSAGES.FAILED_LOAD_PRODUCT');
         this.loading = false;
       }
     });
@@ -107,7 +108,7 @@ export class AdminProductDetailsComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error deleting product:', error);
-          this.snackbar.errorFrom(error, 'Failed to delete product');
+          this.snackbar.errorFrom(error, 'UI.FAILED_TO_DELETE_PRODUCT');
         }
       });
     });

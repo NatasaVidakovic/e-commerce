@@ -1,3 +1,4 @@
+
 .refund-status-card {
   border: 1px solid;
 
@@ -8,9 +9,9 @@
 
   &.refund-requested {
     background: var(--color-warning-dark, #fffbeb);
-    border-color: var(--color-warning, #fbbf24);
+    border-color: var(--color-warning, var(--color-star));
     color: var(--color-warning-light, #78350f);
-    mat-icon { color: var(--color-warning-hover, #f59e0b); }
+    mat-icon { color: var(--color-warning-hover, var(--color-star)); }
   }
 
   &.refund-approved {
@@ -22,16 +23,16 @@
 
   &.refund-completed {
     background: var(--color-success-dark, #f0fdf4);
-    border-color: var(--color-success, #22c55e);
+    border-color: var(--color-success, var(--color-success));
     color: var(--color-success-light, #14532d);
-    mat-icon { color: var(--color-success-hover, #16a34a); }
+    mat-icon { color: var(--color-success-hover, var(--color-success)); }
   }
 
   &.refund-rejected {
     background: var(--color-error-dark, #fef2f2);
-    border-color: var(--color-error, #ef4444);
+    border-color: var(--color-error, var(--color-error));
     color: var(--color-error-light, #7f1d1d);
-    mat-icon { color: var(--color-error-hover, #dc2626); }
+    mat-icon { color: var(--color-error-hover, var(--color-error)); }
   }
 }
 

@@ -1,3 +1,4 @@
+import { BrandingService } from '../../core/services/branding.service';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { OrderSummaryComponent } from "../../shared/components/order-summary/order-summary.component";
 import { MatStepper, MatStepperModule } from "@angular/material/stepper";
@@ -49,6 +50,7 @@ import { MatSelectModule } from '@angular/material/select';
   styleUrl: './checkout.component.scss'
 })
 export class CheckoutComponent implements OnInit, OnDestroy {
+  readonly branding = inject(BrandingService);
   private stripeService = inject(StripeService);
   accountService = inject(AccountService);
   private snackbar = inject(SnackbarService);
@@ -60,7 +62,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   addressElement?: StripeAddressElement;
   paymentElement?: StripePaymentElement;
   saveAddress = false;
-  enabledPaymentMethods: PaymentMethodOption = 'both';
+  enabledPaymentMethods: PaymentMethodOption = 'cash';
   paymentMethod: 'stripe' | 'cash' = 'cash';
   addressForm = {
     name: '',
@@ -87,14 +89,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     const config = this.siteConfigService.siteConfig();
     this.allowedCountries = config.allowedCountries || [];
-    this.enabledPaymentMethods = config.paymentMethods || 'both';
-
-    // Auto-select payment method based on admin settings
-    if (this.enabledPaymentMethods === 'stripe') {
-      this.paymentMethod = 'stripe';
-    } else if (this.enabledPaymentMethods === 'cash') {
-      this.paymentMethod = 'cash';
-    }
+    this.enabledPaymentMethods = this.branding.isNoli() ? 'cash' : config.paymentMethods || 'both';
+    this.paymentMethod = this.enabledPaymentMethods === 'stripe' ? 'stripe' : 'cash';
+    this.completionStatus.update(state => ({ ...state, card: this.paymentMethod === 'cash' }));
 
     // Guest users can only use cash on delivery (Stripe requires authentication)
     if (this.isGuest) {
@@ -131,7 +128,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
        this.addressForm.city &&
        this.addressForm.postalCode &&
        this.addressForm.country);
-    
+
     this.completionStatus.update(state => {
       state.address = isComplete;
       return state;
@@ -323,8 +320,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   private getAddressFromForm() {
-    if (this.addressForm.name && this.addressForm.line1 && 
-        this.addressForm.city && this.addressForm.postalCode && 
+    if (this.addressForm.name && this.addressForm.line1 &&
+        this.addressForm.city && this.addressForm.postalCode &&
         this.addressForm.country) {
       return {
         name: this.addressForm.name,
@@ -343,19 +340,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   onPaymentMethodChange(method: 'stripe' | 'cash') {
+    if ((this.branding.isNoli() || this.isGuest) && method !== 'cash') return;
+    if (!this.isGuest && this.enabledPaymentMethods !== 'both' && method !== this.enabledPaymentMethods) return;
     this.paymentMethod = method;
-    
+
     this.completionStatus.update(state => {
       state.card = method === 'cash';
       return state;
     });
-    
-    if (method === 'stripe') {
-      if (!this.paymentElement) {
-        this.initializeStripePayment();
-      }
-    }
-    
+
+    if (method === 'stripe' && !this.paymentElement) this.initializeStripePayment();
     if (method === 'cash' && this.paymentElement) {
       this.stripeService.disposeElements();
       this.paymentElement = undefined;

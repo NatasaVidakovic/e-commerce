@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
 import { Component, inject, Input } from '@angular/core';
 import { CartService } from '../../../core/services/cart.service';
 import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
@@ -8,7 +9,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-checkout-review',
-  imports: [CurrencyPipe, AddressPipe, PaymentCardPipe, TranslatePipe],
+  imports: [CatalogTextPipe, CurrencyPipe, AddressPipe, PaymentCardPipe, TranslatePipe],
   templateUrl: './checkout-review.component.html',
   styleUrl: './checkout-review.component.scss'
 })

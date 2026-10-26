@@ -15,41 +15,41 @@
         </div>
         <div class="flex flex-col items-end gap-2">
           <div class="flex gap-2">
-            <button 
+            <button
               *ngIf="discount?.state === 'Active' && discount?.isActive"
-              mat-stroked-button 
+              mat-stroked-button
               color="warn"
               (click)="disableDiscount()">
               <mat-icon>block</mat-icon>
               {{ 'COMMON.DISABLE' | translate }}
             </button>
-            <button 
+            <button
               *ngIf="discount?.canEdit"
-              mat-flat-button 
-              color="primary" 
+              mat-flat-button
+              color="primary"
               (click)="goToEdit()">
               <mat-icon>edit</mat-icon>
               {{ 'COMMON.EDIT' | translate }}
             </button>
-            <button 
+            <button
               *ngIf="discount?.canDelete"
-              mat-stroked-button 
+              mat-stroked-button
               color="warn"
               (click)="deleteDiscount()">
               <mat-icon>delete</mat-icon>
               {{ 'COMMON.DELETE' | translate }}
             </button>
           </div>
-          
+
           <!-- Restriction explanations -->
           <div *ngIf="discount && (!discount.canEdit || !discount.canDelete)" class="text-right">
             <p *ngIf="!discount.canEdit" class="text-xs italic">
               <mat-icon class="text-xs align-middle">info</mat-icon>
-              {{ getEditRestrictionReason() }}
+              {{ getEditRestrictionReason() | translate }}
             </p>
             <p *ngIf="!discount.canDelete" class="text-xs italic mt-1">
               <mat-icon class="text-xs align-middle">info</mat-icon>
-              {{ getDeleteRestrictionReason() }}
+              {{ getDeleteRestrictionReason() | translate }}
             </p>
           </div>
         </div>
@@ -78,7 +78,7 @@
             <div class="flex items-center gap-2">
               <span [class]="'inline-badge ' + getStateBadgeClass(discount.state)">{{ discount.state }}</span>
               <span *ngIf="!discount.isActive" class="inline-badge badge-disabled text-xs">{{ 'COMMON.DISABLED' | translate }}</span>
-              <span *ngIf="discount.hasBeenUsed" class="inline-badge bg-purple-100 text-purple-800 text-xs">
+              <span *ngIf="discount.hasBeenUsed" class="inline-badge noli-bg-primary-soft noli-text-primary text-xs">
                 <mat-icon class="text-xs align-middle">receipt</mat-icon> {{ 'DISCOUNT.USED_IN_ORDERS_SHORT' | translate }}
               </span>
             </div>
@@ -101,21 +101,21 @@
 
           <!-- Restriction Information Banners -->
           <div *ngIf="discount.hasBeenUsed" class="md:col-span-2">
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
-              <mat-icon class="text-blue-600 mt-0.5">receipt_long</mat-icon>
+            <div class="noli-bg-primary-soft border noli-border-primary-soft rounded-lg p-3 flex items-start gap-2">
+              <mat-icon class="noli-text-primary mt-0.5">receipt_long</mat-icon>
               <div>
-                <p class="text-sm font-semibold text-blue-900 mb-1">{{ 'DISCOUNT.USED_IN_ORDERS' | translate }}</p>
-                <p class="text-xs text-blue-700">{{ 'DISCOUNT.USED_IN_ORDERS_DESC' | translate }}</p>
+                <p class="text-sm font-semibold noli-text-primary mb-1">{{ 'DISCOUNT.USED_IN_ORDERS' | translate }}</p>
+                <p class="text-xs noli-text-primary">{{ 'DISCOUNT.USED_IN_ORDERS_DESC' | translate }}</p>
               </div>
             </div>
           </div>
 
           <div *ngIf="!discount.canEdit && !discount.hasBeenUsed && discount.state === 'Active'" class="md:col-span-2">
-            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
-              <mat-icon class="text-amber-600 mt-0.5">schedule</mat-icon>
+            <div class="noli-bg-warning-soft border noli-border-warning-soft rounded-lg p-3 flex items-start gap-2">
+              <mat-icon class="noli-text-warning mt-0.5">schedule</mat-icon>
               <div>
-                <p class="text-sm font-semibold text-amber-900 mb-1">{{ 'DISCOUNT.ACTIVE_EDITING_RESTRICTED' | translate }}</p>
-                <p class="text-xs text-amber-700">{{ 'DISCOUNT.ACTIVE_EDITING_RESTRICTED_DESC' | translate }}</p>
+                <p class="text-sm font-semibold noli-text-warning mb-1">{{ 'DISCOUNT.ACTIVE_EDITING_RESTRICTED' | translate }}</p>
+                <p class="text-xs noli-text-warning">{{ 'DISCOUNT.ACTIVE_EDITING_RESTRICTED_DESC' | translate }}</p>
               </div>
             </div>
           </div>
@@ -131,21 +131,21 @@
           </div>
 
           <div *ngIf="discount.state === 'Disabled'" class="md:col-span-2">
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-2">
-              <mat-icon class="text-yellow-600 mt-0.5">block</mat-icon>
+            <div class="noli-bg-warning-soft border noli-border-warning-soft rounded-lg p-3 flex items-start gap-2">
+              <mat-icon class="noli-text-warning mt-0.5">block</mat-icon>
               <div>
-                <p class="text-sm font-semibold text-yellow-900 mb-1">{{ 'DISCOUNT.DISABLED_READ_ONLY' | translate }}</p>
-                <p class="text-xs text-yellow-700">{{ 'DISCOUNT.DISABLED_READ_ONLY_DESC' | translate }}</p>
+                <p class="text-sm font-semibold noli-text-warning mb-1">{{ 'DISCOUNT.DISABLED_READ_ONLY' | translate }}</p>
+                <p class="text-xs noli-text-warning">{{ 'DISCOUNT.DISABLED_READ_ONLY_DESC' | translate }}</p>
               </div>
             </div>
           </div>
 
           <div *ngIf="discount.state === 'Draft'" class="md:col-span-2">
-            <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-3 flex items-start gap-2">
-              <mat-icon class="text-indigo-600 mt-0.5">edit_note</mat-icon>
+            <div class="noli-bg-primary-soft border noli-border-primary-soft rounded-lg p-3 flex items-start gap-2">
+              <mat-icon class="noli-text-primary mt-0.5">edit_note</mat-icon>
               <div>
-                <p class="text-sm font-semibold text-indigo-900 mb-1">{{ 'DISCOUNT.DRAFT_FULLY_EDITABLE' | translate }}</p>
-                <p class="text-xs text-indigo-700">{{ 'DISCOUNT.DRAFT_FULLY_EDITABLE_DESC' | translate:{ date: (discount.dateFrom | date:'short') } }}</p>
+                <p class="text-sm font-semibold noli-text-primary mb-1">{{ 'DISCOUNT.DRAFT_FULLY_EDITABLE' | translate }}</p>
+                <p class="text-xs noli-text-primary">{{ 'DISCOUNT.DRAFT_FULLY_EDITABLE_DESC' | translate:{ date: (discount.dateFrom | date:'short') } }}</p>
               </div>
             </div>
           </div>
@@ -168,7 +168,7 @@
 
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'PRODUCT.NAME' | translate }}</th>
-              <td mat-cell *matCellDef="let product" class="px-4 py-2">{{ product.name }}</td>
+              <td mat-cell *matCellDef="let product" class="px-4 py-2">{{ (product.name) | catalogText }}</td>
             </ng-container>
 
             <ng-container matColumnDef="brand">
@@ -178,7 +178,7 @@
 
             <ng-container matColumnDef="type">
               <th mat-header-cell *matHeaderCellDef class="px-4 py-2">{{ 'COMMON.TYPE' | translate }}</th>
-              <td mat-cell *matCellDef="let product" class="px-4 py-2">{{ product.type }}</td>
+              <td mat-cell *matCellDef="let product" class="px-4 py-2">{{ (product.type) | catalogText }}</td>
             </ng-container>
 
             <ng-container matColumnDef="price">

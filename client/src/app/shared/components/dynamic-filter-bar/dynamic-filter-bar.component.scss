@@ -1,6 +1,11 @@
 @use '../../../../styles/breakpoints' as *;
 @use '../../../../styles/spacing' as *;
 
+:host-context([data-brand='default']) .filter-main-row {
+  border: 1px solid var(--color-border-primary);
+  padding: $spacing-3 $spacing-4;
+  box-shadow: var(--shadow-sm);
+}
 // ==========================================
 // MOBILE FILTER TOGGLE BUTTON
 // ==========================================
@@ -65,10 +70,10 @@
   align-items: center;
   gap: $spacing-3;
   background-color: var(--color-bg-primary);
-  border: 1px solid var(--color-border-primary);
+  border: 0;
   border-radius: 0.5rem;
-  padding: $spacing-3 $spacing-4;
-  box-shadow: var(--shadow-sm);
+  padding: 0;
+  box-shadow: none;
 
   @include max-sm {
     flex-wrap: wrap;

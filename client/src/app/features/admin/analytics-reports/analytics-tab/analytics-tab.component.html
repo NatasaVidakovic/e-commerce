@@ -45,8 +45,8 @@
         </div>
         <div class="kpi-body">
           <div class="kpi-value">{{ kpi.value }}</div>
-          <div class="kpi-title">{{ kpi.title }}</div>
-          <div class="kpi-subtitle" *ngIf="kpi.subtitle">{{ kpi.subtitle }}</div>
+          <div class="kpi-title">{{ kpi.title | translate }}</div>
+          <div class="kpi-subtitle" *ngIf="kpi.subtitle">{{ kpi.subtitle | translate }}</div>
         </div>
       </div>
     </div>

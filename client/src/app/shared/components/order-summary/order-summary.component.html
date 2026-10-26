@@ -62,12 +62,12 @@
 
       @if (voucherError) {
         <div class="flex items-center gap-1 mt-1 ml-2">
-          <mat-icon class="text-red-500" style="color: var(--color-error, #ef4444); font-size: 14px; height: 14px; width: 14px;">error_outline</mat-icon>
-          <span class="text-red-600 text-xs" style="color: var(--color-error, #dc2626);">{{ voucherError }}</span>
+          <mat-icon class="noli-text-error" style="color: var(--color-error, #ef4444); font-size: 14px; height: 14px; width: 14px;">error_outline</mat-icon>
+          <span class="noli-text-error text-xs" style="color: var(--color-error, #dc2626);">{{ voucherError | translate }}</span>
         </div>
       }
 
-      <button 
+      <button
         [disabled]="!!cartService.cart()?.voucher"
         type="submit"
         mat-flat-button>{{"DISCOUNT.APPLY_CODE" | translate}}</button>

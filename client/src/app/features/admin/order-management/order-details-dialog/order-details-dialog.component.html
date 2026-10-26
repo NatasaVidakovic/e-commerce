@@ -21,7 +21,7 @@
   <!-- Error State -->
   <div *ngIf="!loading && error" class="error-state">
     <mat-icon>error_outline</mat-icon>
-    <span>{{ error }}</span>
+    <span>{{ error | translate }}</span>
   </div>
 
   <ng-container *ngIf="!loading && order">
@@ -192,7 +192,7 @@
                           <div *ngIf="!item.pictureUrl" class="product-thumb-placeholder">
                             <mat-icon>image</mat-icon>
                           </div>
-                          <span class="product-name">{{ item.productName }}</span>
+                          <span class="product-name">{{ (item.productName) | catalogText }}</span>
                         </div>
                       </td>
                       <td class="col-qty">{{ item.quantity }}</td>

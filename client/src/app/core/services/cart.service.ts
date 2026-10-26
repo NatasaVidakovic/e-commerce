@@ -174,7 +174,7 @@ export class CartService {
       quantity: 0,
       pictureUrl: product.pictureUrl,
       brand: product.brand,
-      type: product.type
+      type: product.productType?.name || product.type
     };
   }
 

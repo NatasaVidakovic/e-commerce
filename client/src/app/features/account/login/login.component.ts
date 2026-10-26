@@ -1,3 +1,4 @@
+import { BrandingService } from '../../../core/services/branding.service';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
@@ -16,6 +17,7 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+  readonly branding = inject(BrandingService);
   private fb = inject(FormBuilder);
   private accountService = inject(AccountService);
   private router = inject(Router);
@@ -27,14 +29,14 @@ export class LoginComponent {
   constructor() {
     const url = this.activatedRoute.snapshot.queryParams['returnUrl'];
     if (url) this.returnUrl = url;
-    
+
     // Check for stored Google login return URL
     const googleReturnUrl = sessionStorage.getItem('googleLoginReturnUrl');
     if (googleReturnUrl) {
       this.returnUrl = googleReturnUrl;
       sessionStorage.removeItem('googleLoginReturnUrl'); // Clean up
     }
-    
+
     // Check if user is already authenticated (from Google OAuth callback)
     this.checkAuthStatus();
   }
@@ -70,7 +72,7 @@ export class LoginComponent {
         this.router.navigateByUrl(this.returnUrl);
       },
       error: (err: any) => {
-        this.errorMessage = err.error?.message || 'ERRORS.LOGIN_FAILED';
+        this.errorMessage = err?.message?.startsWith('UI.') ? err.message : 'ERRORS.LOGIN_FAILED';
       }
     });
   }

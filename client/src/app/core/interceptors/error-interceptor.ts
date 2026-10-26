@@ -18,7 +18,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       if (err.status === 0) {
-        return throwError(() => ({ message: 'Network error - please check your connection' }));
+        return throwError(() => ({ message: 'UI.NETWORK_ERROR_PLEASE_CHECK_YOUR_CONNECTION' }));
       }
       if (err.status === 400) {
         const payload = tryParseJson(err.error);
@@ -49,7 +49,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         router.navigateByUrl('/not-found');
       }
       if (err.status === 500) {
-        const navigationExtras: NavigationExtras = {state: {error: { message: 'A server error occurred. Please try again later.' }}};
+        const navigationExtras: NavigationExtras = {state: {error: { message: 'UI.A_SERVER_ERROR_OCCURRED_PLEASE_TRY_AGAIN_LATER' }}};
         router.navigateByUrl('/server-error', navigationExtras);
       }
       return throwError(() => err)

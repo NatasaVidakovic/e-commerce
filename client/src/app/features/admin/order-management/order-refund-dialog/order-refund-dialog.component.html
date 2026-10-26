@@ -101,7 +101,7 @@
         <h4>{{ 'REFUND.RETURNED_PRODUCTS' | translate }}</h4>
         <div class="items-grid">
           <div class="item-row" *ngFor="let item of existingRefund.items">
-            <span class="item-name">{{ item.productName }}</span>
+            <span class="item-name">{{ (item.productName) | catalogText }}</span>
             <span class="item-qty">x{{ item.quantity }}</span>
             <span class="item-price">{{ item.price * item.quantity | appCurrency: getOrderCurrency(data.order.currency) }}</span>
           </div>

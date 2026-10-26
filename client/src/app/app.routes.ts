@@ -1,3 +1,5 @@
+import { inject } from '@angular/core';
+import { BrandingService } from './core/services/branding.service';
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { adminGuard } from './core/guards/admin-guard';
@@ -6,11 +8,15 @@ import { notAdminGuard } from './core/guards/not-admin.guard';
 export const routes: Routes = [
     {
         path: '',
-        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+        loadComponent: () => inject(BrandingService).isNoli()
+          ? import('./features/home/home.component').then(m => m.HomeComponent)
+          : import('./features/home/base-home.component').then(m => m.BaseHomeComponent)
     },
     {
         path: 'about',
-        loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent)
+        loadComponent: () => inject(BrandingService).isNoli()
+          ? import('./features/about/about.component').then(m => m.AboutComponent)
+          : import('./features/about/base-about.component').then(m => m.BaseAboutComponent)
     },
     {
         path: 'shop',

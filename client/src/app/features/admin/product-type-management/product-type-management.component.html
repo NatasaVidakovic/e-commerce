@@ -24,7 +24,7 @@
       <!-- Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.PRODUCT_TYPE.NAME' | translate }}</th>
-        <td mat-cell *matCellDef="let productType">{{ productType.name }}</td>
+        <td mat-cell *matCellDef="let productType">{{ (productType.name) | catalogText }}</td>
       </ng-container>
 
       <!-- Description Column -->
@@ -43,8 +43,8 @@
       <ng-container matColumnDef="isActive">
         <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.PRODUCT_TYPE.ACTIVE' | translate }}</th>
         <td mat-cell *matCellDef="let productType">
-          <mat-slide-toggle 
-            [checked]="productType.isActive" 
+          <mat-slide-toggle
+            [checked]="productType.isActive"
             (change)="toggleActive(productType)"
             color="primary">
           </mat-slide-toggle>
@@ -55,9 +55,9 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>{{ 'ADMIN.PRODUCT_TYPE.ACTIONS' | translate }}</th>
         <td mat-cell *matCellDef="let productType">
-          <button 
-            mat-icon-button 
-            color="warn" 
+          <button
+            mat-icon-button
+            color="warn"
             (click)="openDeleteDialog(productType)"
             [disabled]="productType.productCount > 0">
             <mat-icon>delete</mat-icon>

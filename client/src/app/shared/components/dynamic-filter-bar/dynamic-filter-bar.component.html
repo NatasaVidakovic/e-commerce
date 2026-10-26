@@ -91,9 +91,9 @@
             <div *ngIf="d.controlType === 'select' && !d.multiple" class="filter-dropdown-group">
               <label class="filter-col-label">{{ (d.label | translate) | uppercase }}</label>
               <div class="select-wrapper">
-                <select [formControlName]="d.key" class="filter-native-select">
+                <select [formControlName]="d.key" class="filter-native-select" [attr.aria-label]="d.label | translate">
                   <option value="">{{ d.allLabel ? (d.allLabel | translate) : ('COMMON.ALL' | translate) }}</option>
-                  <option *ngFor="let o of (d.options || [])" [value]="o">{{ o }}</option>
+                  <option *ngFor="let o of (d.options || [])" [value]="o">{{ o | catalogText: 'option' }}</option>
                 </select>
                 <mat-icon class="select-arrow-icon">expand_more</mat-icon>
               </div>
@@ -103,8 +103,8 @@
             <div *ngIf="d.controlType === 'select' && d.multiple" class="filter-dropdown-group">
               <label class="filter-col-label">{{ (d.label | translate) | uppercase }}</label>
               <mat-form-field appearance="outline" class="filter-mat-field">
-                <mat-select [formControlName]="d.key" multiple [placeholder]="d.allLabel ? (d.allLabel | translate) : ('COMMON.ALL' | translate)">
-                  <mat-option *ngFor="let o of (d.options || [])" [value]="o">{{ o }}</mat-option>
+                <mat-select [formControlName]="d.key" multiple [placeholder]="d.allLabel ? (d.allLabel | translate) : ('COMMON.ALL' | translate)" [attr.aria-label]="d.label | translate">
+                  <mat-option *ngFor="let o of (d.options || [])" [value]="o">{{ o | catalogText: 'option' }}</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -199,7 +199,7 @@
 
   <!-- Mobile Filter Drawer -->
   <div class="mobile-drawer-overlay" [class.open]="mobileDrawerOpen" (click)="closeMobileDrawer()"></div>
-  
+
   <div class="mobile-drawer" [class.open]="mobileDrawerOpen">
     <div class="mobile-drawer-header">
       <h2>{{ 'FILTER.FILTERS' | translate }}</h2>
@@ -207,7 +207,7 @@
         <mat-icon>close</mat-icon>
       </button>
     </div>
-    
+
     <div class="mobile-drawer-content">
       <!-- Search field -->
       <div *ngIf="searchDefinition && form.contains(searchDefinition.key)" class="mb-4">
@@ -240,7 +240,7 @@
                 <div class="flex items-center gap-2">
                   <span class="text-sm font-medium">{{ d.label | translate }}</span>
                   <span *ngIf="hasValue(d.key)"
-                    class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
+                    class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold noli-bg-primary-soft noli-text-primary rounded-full">
                     ✓
                   </span>
                 </div>
@@ -256,8 +256,8 @@
                       class="filter-option-row flex items-center gap-2 p-2 rounded cursor-pointer">
                       <input type="checkbox" [value]="o" [checked]="isOptionSelected(d.key, o)"
                         (change)="toggleOption(d.key, o)"
-                        class="filter-checkbox w-4 h-4 text-blue-600 rounded">
-                      <span class="text-sm">{{ o }}</span>
+                        class="filter-checkbox w-4 h-4 noli-text-primary rounded">
+                      <span class="text-sm">{{ o | catalogText: 'option' }}</span>
                     </label>
                   </div>
                   <div *ngIf="!d.multiple" class="max-h-48 overflow-y-auto space-y-1">
@@ -269,7 +269,7 @@
                         [checked]="form.get(d.key)?.value === o"
                         (change)="form.get(d.key)?.setValue(o)"
                         class="filter-radio w-4 h-4">
-                      <span class="text-sm">{{ o }}</span>
+                      <span class="text-sm">{{ o | catalogText: 'option' }}</span>
                     </label>
                   </div>
                 </div>
@@ -325,7 +325,7 @@
                 </div>
 
                 <button *ngIf="d.controlType === 'dateRange' ? hasDateRangeValue(d.key) : hasValue(d.key)" type="button"
-                  class="w-full mt-2 flex items-center justify-center gap-1 px-3 py-1.5 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                  class="w-full mt-2 flex items-center justify-center gap-1 px-3 py-1.5 text-xs noli-text-primary noli-hover-text-primary noli-hover-bg-primary-soft rounded transition-colors"
                   (click)="d.controlType === 'dateRange' ? clearDateRange(d.key) : clearFilter(d.key)">
                   <mat-icon class="text-sm">close</mat-icon>
                   <span>{{ 'FILTER.CLEAR' | translate }} {{ d.label | translate }}</span>
@@ -341,7 +341,7 @@
                 <div class="flex items-center gap-2">
                   <span class="text-sm font-medium">{{ 'FILTER.PRICE_RANGE' | translate }}</span>
                   <span *ngIf="hasValue('minPrice') || hasValue('maxPrice')"
-                    class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
+                    class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold noli-bg-primary-soft noli-text-primary rounded-full">
                     ✓
                   </span>
                 </div>
@@ -373,7 +373,7 @@
                 </div>
 
                 <button *ngIf="hasValue('minPrice') || hasValue('maxPrice')" type="button"
-                  class="w-full mt-2 flex items-center justify-center gap-1 px-3 py-1.5 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
+                  class="w-full mt-2 flex items-center justify-center gap-1 px-3 py-1.5 text-xs noli-text-primary noli-hover-text-primary noli-hover-bg-primary-soft rounded transition-colors"
                   (click)="clearPriceRange()">
                   <mat-icon class="text-sm">close</mat-icon>
                   <span>{{ 'FILTER.CLEAR' | translate }} {{ 'FILTER.PRICE_RANGE' | translate }}</span>
@@ -384,7 +384,7 @@
         </ng-container>
       </div>
     </div>
-    
+
     <div class="mobile-drawer-footer">
       <button mat-stroked-button type="button" class="flex-1" (click)="onReset()">
         {{ 'FILTER.CLEAR_ALL' | translate }}

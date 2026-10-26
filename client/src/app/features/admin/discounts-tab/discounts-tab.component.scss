@@ -1,6 +1,5 @@
 @use '../../../../styles/breakpoints' as *;
 @use '../../../../styles/spacing' as *;
-
 /* Page header row: title left, actions right */
 .page-header-row {
   display: flex;
@@ -67,7 +66,7 @@
       }
 
       &.selected {
-        background-color: var(--color-bg-active, rgba(99, 102, 241, 0.08));
+        background-color: var(--color-bg-active, rgba(173, 102, 82, 0.08));
         border-color: var(--color-primary);
       }
 
@@ -116,7 +115,7 @@
             width: 18px;
             height: 18px;
             background: rgba(147, 51, 234, 0.1);
-            color: #9333ea;
+            color: var(--color-secondary);
             border-radius: 50%;
 
             mat-icon {
@@ -211,7 +210,7 @@
 
 /* Selected row highlight */
 :host ::ng-deep .mat-mdc-row.selected {
-  background-color: var(--color-bg-active, rgba(99, 102, 241, 0.08)) !important;
+  background-color: var(--color-bg-active, rgba(173, 102, 82, 0.08)) !important;
 }
 
 /* State badges */
@@ -229,7 +228,7 @@
   }
 
   &.state-draft {
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(173, 102, 82, 0.1);
     color: #4338ca;
   }
 
@@ -240,7 +239,7 @@
 
   &.state-expired {
     background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
+    color: var(--color-error);
   }
 
   &.state-disabled {

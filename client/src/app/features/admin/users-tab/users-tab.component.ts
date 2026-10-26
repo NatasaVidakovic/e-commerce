@@ -117,7 +117,7 @@ export class UsersTabComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading users:', err);
-        this.snackbar.errorFrom(err, 'Failed to load users');
+        this.snackbar.errorFrom(err, 'UI.FAILED_TO_LOAD_USERS');
         this.loading = false;
       }
     });

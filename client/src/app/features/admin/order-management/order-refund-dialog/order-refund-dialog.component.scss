@@ -1,3 +1,4 @@
+
 // Dialog layout - Compact version
 .dialog-title {
   display: flex;
@@ -15,7 +16,7 @@
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: var(--color-primary, #3b82f6);
+    color: var(--color-primary);
   }
 }
 
@@ -100,13 +101,13 @@
 
     // Primary button styling (Approve/Confirm)
     &[mat-flat-button][color="primary"] {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      border: 2px solid #2563eb;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary));
+      border: 2px solid var(--color-primary);
       color: white;
       box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
 
       &:hover {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        background: linear-gradient(135deg, var(--color-primary), #1d4ed8);
         border-color: #1d4ed8;
         box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
         transform: translateY(-1px);
@@ -134,20 +135,20 @@
 
     // Warning button styling (Reject)
     &[mat-flat-button][color="warn"] {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      border: 2px solid #dc2626;
+      background: linear-gradient(135deg, var(--color-error), var(--color-error));
+      border: 2px solid var(--color-error);
       color: white;
       box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
 
       &:hover {
-        background: linear-gradient(135deg, #dc2626, #b91c1c);
-        border-color: #b91c1c;
+        background: linear-gradient(135deg, var(--color-error), var(--color-error));
+        border-color: var(--color-error);
         box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
         transform: translateY(-1px);
       }
 
       &:active {
-        background: linear-gradient(135deg, #b91c1c, #991b1b);
+        background: linear-gradient(135deg, var(--color-error), #991b1b);
         transform: translateY(0);
         box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
       }
@@ -293,22 +294,22 @@
   &.badge-full {
     background: linear-gradient(135deg, #dbeafe, #bfdbfe);
     color: #1e40af;
-    border-color: #3b82f6;
+    border-color: var(--color-primary);
 
     .refund-icon {
-      color: #2563eb;
+      color: var(--color-primary);
     }
 
     &:hover {
       background: linear-gradient(135deg, #bfdbfe, #93c5fd);
-      border-color: #2563eb;
+      border-color: var(--color-primary);
     }
   }
 
   &.badge-partial {
     background: linear-gradient(135deg, #fef3c7, #fde68a);
     color: #78350f;
-    border-color: #fbbf24;
+    border-color: var(--color-star);
 
     .refund-icon {
       color: #d97706;
@@ -349,21 +350,21 @@
   .amount-value {
     font-size: 1.125rem;
     font-weight: 800;
-    color: var(--color-primary, #3b82f6);
+    color: var(--color-primary);
     background: linear-gradient(135deg, #dbeafe, #bfdbfe);
     padding: 4px 8px;
     border-radius: 6px;
-    border: 1px solid #3b82f6;
+    border: 1px solid var(--color-primary);
   }
 
   .amount-percentage {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--color-warning, #f59e0b);
+    color: var(--color-warning, var(--color-star));
     background: var(--color-warning-dark, #fef3c7);
     padding: 2px 6px;
     border-radius: 4px;
-    border: 1px solid var(--color-warning, #fbbf24);
+    border: 1px solid var(--color-warning, var(--color-star));
   }
 }
 }
@@ -392,20 +393,20 @@
 }
 
 // Status colors - Compact
-.status-requested { 
-  color: var(--color-warning-hover, #d97706); 
+.status-requested {
+  color: var(--color-warning-hover, #d97706);
   background: var(--color-warning-dark, #fef3c7);
 }
-.status-approved { 
-  color: var(--color-info-hover, #2563eb); 
+.status-approved {
+  color: var(--color-info-hover, var(--color-primary));
   background: var(--color-info-dark, #dbeafe);
 }
-.status-completed { 
-  color: var(--color-success-hover, #16a34a); 
+.status-completed {
+  color: var(--color-success-hover, var(--color-success));
   background: var(--color-success-dark, #f0fdf4);
 }
-.status-rejected { 
-  color: var(--color-error-hover, #dc2626); 
+.status-rejected {
+  color: var(--color-error-hover, var(--color-error));
   background: var(--color-error-dark, #fef2f2);
 }
 
@@ -485,16 +486,16 @@
   .mat-mdc-text-field-wrapper {
     padding: 0 !important;
   }
-  
+
   .mat-mdc-form-field-flex {
     margin-top: 0 !important;
   }
-  
+
   .mat-mdc-form-field-infix {
     padding: 6px 0 !important;
     min-height: auto !important;
   }
-  
+
   textarea {
     font-size: 0.75rem !important;
     line-height: 1.2 !important;

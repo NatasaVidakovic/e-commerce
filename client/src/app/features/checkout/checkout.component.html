@@ -17,28 +17,28 @@
                         <mat-label>{{ 'FORM.FULL_NAME' | translate }}</mat-label>
                         <input matInput [(ngModel)]="addressForm.name" (ngModelChange)="validateAddress()" required>
                     </mat-form-field>
-                    
+
                     <mat-form-field appearance="fill" class="w-full">
                         <mat-label>{{ 'FORM.ADDRESS_LINE1' | translate }}</mat-label>
                         <input matInput [(ngModel)]="addressForm.line1" (ngModelChange)="validateAddress()" required>
                     </mat-form-field>
-                    
+
                     <mat-form-field appearance="fill" class="w-full">
                         <mat-label>{{ 'FORM.ADDRESS_LINE2' | translate }}</mat-label>
                         <input matInput [(ngModel)]="addressForm.line2">
                     </mat-form-field>
-                    
+
                     <div class="flex flex-col sm:flex-row gap-4">
                         <mat-form-field appearance="fill" class="flex-1">
                             <mat-label>{{ 'FORM.CITY' | translate }}</mat-label>
                             <input matInput [(ngModel)]="addressForm.city" (ngModelChange)="validateAddress()" required>
                         </mat-form-field>
-                        
+
                         <mat-form-field appearance="fill" class="flex-1">
                             <mat-label>{{ 'FORM.POSTAL_CODE' | translate }}</mat-label>
                             <input matInput [(ngModel)]="addressForm.postalCode" (ngModelChange)="validateAddress()" required>
                         </mat-form-field>
-                        
+
                         <mat-form-field appearance="fill" class="flex-1">
                             <mat-label>{{ 'FORM.COUNTRY' | translate }}</mat-label>
                             @if (allowedCountries.length > 0) {
@@ -72,7 +72,7 @@
                     </div>
                 </div>
                 }
-                
+
                 @if (!isGuest) {
                 <div class="flex justify-end mt-4">
                     <mat-checkbox [checked]="saveAddress"
@@ -96,7 +96,7 @@
                 [completed]="completionStatus().delivery">
                 <app-checkout-delivery
                     (deliveryComplete)="handleDeliveryChange($event)"></app-checkout-delivery>
-                
+
                 <!-- Payment Method Selection -->
                 <div class="mt-6 p-4 rounded-lg" style="background-color: var(--color-surface); border: 1px solid var(--color-border-primary);">
                     <div class="flex justify-between items-center mb-4">
@@ -107,8 +107,8 @@
                         <label class="flex items-center gap-3 p-3 rounded cursor-pointer transition-all"
                                [style.background-color]="paymentMethod === 'cash' ? 'var(--color-primary-light)' : 'transparent'"
                                [style.border]="paymentMethod === 'cash' ? '2px solid var(--color-primary)' : '2px solid var(--color-border-primary)'">
-                            <input type="radio" name="paymentMethod" value="cash" 
-                                   [(ngModel)]="paymentMethod" 
+                            <input type="radio" name="paymentMethod" value="cash"
+                                   [(ngModel)]="paymentMethod"
                                    (change)="onPaymentMethodChange('cash')"
                                    class="w-4 h-4">
                             <div class="flex-1">
@@ -121,7 +121,7 @@
                         <label class="flex items-center gap-3 p-3 rounded cursor-pointer transition-all"
                                [style.background-color]="paymentMethod === 'stripe' ? 'var(--color-primary-light)' : 'transparent'"
                                [style.border]="paymentMethod === 'stripe' ? '2px solid var(--color-primary)' : '2px solid var(--color-border-primary)'">
-                            <input type="radio" name="paymentMethod" value="stripe" 
+                            <input type="radio" name="paymentMethod" value="stripe"
                                    [(ngModel)]="paymentMethod"
                                    (change)="onPaymentMethodChange('stripe')"
                                    class="w-4 h-4">
@@ -133,7 +133,7 @@
                         }
                     </div>
                 </div>
-                
+
                 <div class="flex justify-between mt-6">
                     <button matStepperPrevious mat-stroked-button>
                         {{ 'COMMON.BACK' | translate }}
@@ -174,8 +174,8 @@
                         mat-stroked-button>
                         {{ 'COMMON.BACK' | translate }}
                     </button>
-                    <button [disabled]="(paymentMethod === 'stripe' && !confirmationToken) || loading" 
-                            (click)="confirmPayment(stepper)" 
+                    <button [disabled]="(paymentMethod === 'stripe' && !confirmationToken) || loading"
+                            (click)="confirmPayment(stepper)"
                             class="z-0"
                             mat-flat-button>
                         @if (loading) {

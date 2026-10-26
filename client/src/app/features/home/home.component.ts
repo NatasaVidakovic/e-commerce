@@ -1,3 +1,4 @@
+import { BrandingService } from '../../core/services/branding.service';
 import { Component, ViewChild, ElementRef, AfterViewInit, OnInit, OnDestroy } from '@angular/core';
 import { Product } from '../../shared/models/product';
 import { Discount, DiscountSummary } from '../../shared/models/discount';
@@ -19,6 +20,8 @@ import { forkJoin } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { FavouritesService } from '../../core/services/favourites.service';
 import { AccountService } from '../../core/services/account.service';
+import { ShopService } from '../../core/services/shop.service';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -34,19 +37,47 @@ import { AccountService } from '../../core/services/account.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
+  readonly branding = inject(BrandingService);
   private countdownInterval: any;
 
   @ViewChild('bestReviewedRef') bestReviewedRef!: ElementRef<HTMLDivElement>;
   @ViewChild('favouriteRef') favouriteRef!: ElementRef<HTMLDivElement>;
   @ViewChild('suggestedRef') suggestedRef!: ElementRef<HTMLDivElement>;
   @ViewChild('discountRef') discountRef!: ElementRef<HTMLDivElement>;
-  
+
   private themeService = inject(ThemeService);
   private siteConfigService = inject(SiteConfigService);
   private currencyService = inject(CurrencyService);
   private favouritesService = inject(FavouritesService);
   private accountService = inject(AccountService);
-  
+  private shopService = inject(ShopService);
+
+  collectionProducts: Product[] = [];
+  collectionFilter = 'all';
+  collectionLoading = true;
+  collectionError = false;
+
+  get visibleCollection(): Product[] {
+    return this.collectionProducts.filter(product =>
+      this.collectionFilter === 'all' || (product.productType?.name || product.type) === this.collectionFilter
+    ).slice(0, 4);
+  }
+
+  loadCollection(): void {
+    this.collectionLoading = true;
+    this.collectionError = false;
+    this.shopService.filterProducts({
+      currentPage: 1, pageSize: 100, column: 'Id', accessor: '',
+      ascending: true, descending: false, filters: []
+    }).subscribe({
+      next: response => {
+        this.collectionProducts = this.setFavoriteStatus(response.data);
+        this.collectionLoading = false;
+      },
+      error: () => { this.collectionError = true; this.collectionLoading = false; }
+    });
+  }
+
   loggedIn = true;
   bestReviewedProducts: Product[] = [];
   favouriteProducts: Product[] = [];
@@ -54,20 +85,20 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
   discounts: DiscountSummary[] = [];
   showDiscountNavigation = false;
   userFavorites: number[] = [];
-  
+
   // Interactive discount section
   selectedDiscount: DiscountSummary | null = null;
   discountProducts: Product[] = [];
   isLoadingDiscountProducts = false;
-  
+
   welcomeImageSrc = computed(() => {
     const config = this.themeService.themeConfig();
-    return config.welcomeImageUrl || '';
+    return config.welcomeImageUrl || (this.branding.isNoli() ? '/brand/noli-jewelry.png' : '');
   });
 
   showWelcomeImage = computed(() => {
     const config = this.themeService.themeConfig();
-    return config.showWelcomeImage !== false && !!config.welcomeImageUrl;
+    return config.showWelcomeImage !== false && (this.branding.isNoli() || !!config.welcomeImageUrl);
   });
 
   heroTitle = computed(() => this.siteConfigService.siteConfig().heroTitle || '');
@@ -87,16 +118,18 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
     private bestSellingService: BestSellingService,
     private router: Router
   ) {}
-  
+
   ngAfterViewInit(): void {
     // Simple initialization without complex overflow detection
   }
 
   ngOnInit(): void {
+    if (this.branding.isNoli()) this.loadCollection();
     // Load user favorites first
     if (this.accountService.isLoggedIn()) {
-      this.favouritesService.getFavouriteProducts().subscribe(favorites => {
+      this.favouritesService.getFavouriteProducts().pipe(catchError(() => of([]))).subscribe(favorites => {
         this.userFavorites = favorites.map(f => f.productId);
+        this.collectionProducts = this.setFavoriteStatus(this.collectionProducts);
         this.loadProductLists();
       });
     } else {
@@ -106,7 +139,7 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private loadProductLists(): void {
     forkJoin({
-      bestReviewed: this.bestReviewedService.getBestReviewedProducts(),
+      bestReviewed: this.bestReviewedService.getBestReviewedProducts().pipe(catchError(() => of([]))),
       discounts: this.discountService.getActiveDiscountsSummary().pipe(
         catchError(() => this.discountService.getDiscounts().pipe(
           map(ds => ds.map(d => ({
@@ -115,10 +148,11 @@ export class HomeComponent implements AfterViewInit, OnInit, OnDestroy {
             dateFrom: d.dateFrom, dateTo: d.dateTo,
             productCount: d.products?.length ?? 0, state: d.state
           } as DiscountSummary)))
-        ))
+        )),
+        catchError(() => of([]))
       ),
-      suggested: this.suggestedProductsService.getSuggestedProducts(),
-      bestSelling: this.bestSellingService.getBestSellingProducts()
+      suggested: this.suggestedProductsService.getSuggestedProducts().pipe(catchError(() => of([]))),
+      bestSelling: this.bestSellingService.getBestSellingProducts().pipe(catchError(() => of([])))
     }).subscribe({
       next: ({ bestReviewed, discounts, suggested, bestSelling }) => {
         this.bestReviewedProducts = this.setFavoriteStatus(bestReviewed);

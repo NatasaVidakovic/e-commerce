@@ -1,3 +1,5 @@
+import { inject } from '@angular/core';
+import { BrandingService } from '../../core/services/branding.service';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShopService } from '../../core/services/shop.service';
@@ -7,15 +9,17 @@ import { Product } from '../../shared/models/product';
 import { ProductItemComponent } from "./product-item/product-item.component";
 import { PaginationComponent, PaginationEvent } from '../../shared/components/pagination/pagination.component';
 import { Pagination } from '../../shared/models/pagination';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DynamicFilterBarComponent } from '../../shared/components/dynamic-filter-bar/dynamic-filter-bar.component';
 import { DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../shared/models/dynamic-filtering';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { forkJoin, of, Subscription } from 'rxjs';
+import { catchError, skip } from 'rxjs/operators';
 import { SnackbarService } from '../../core/services/snackbar.service';
 import { DiscountService } from '../../core/services/discount.service';
+import { CurrencyService } from '../../core/services/currency.service';
+import { NOLI_CATALOG_KEYS } from '../../shared/pipes/catalog-text-pipe';
 
 export interface ActiveFilterChip {
   keys: string[];
@@ -36,7 +40,10 @@ export interface ActiveFilterChip {
   styleUrls: ['./shop.component.scss']
 })
 export class ShopComponent implements OnInit, OnDestroy {
+  readonly branding = inject(BrandingService);
   @ViewChild(DynamicFilterBarComponent) filterBar?: DynamicFilterBarComponent;
+  private routeSubscription?: Subscription;
+  private updatingUrl = false;
 
   lastViewedProductId: number | null = null;
   private readonly SCROLL_KEY = 'shop_scroll_position';
@@ -50,7 +57,9 @@ export class ShopComponent implements OnInit, OnDestroy {
     private discountService: DiscountService,
     private route: ActivatedRoute,
     private router: Router,
-    private snackbar: SnackbarService
+    private snackbar: SnackbarService,
+    private translate: TranslateService,
+    private currencyService: CurrencyService
   ) {
     if (!this.accountService.isLoggedIn()) {
       this.favouriteIds = new Set();
@@ -108,10 +117,11 @@ export class ShopComponent implements OnInit, OnDestroy {
     const hasMin = minVal !== '' && minVal !== null && minVal !== undefined;
     const hasMax = maxVal !== '' && maxVal !== null && maxVal !== undefined;
     if (hasMin || hasMax) {
-      let label = 'Price: ';
-      if (hasMin && hasMax) label += `$${minVal} \u2013 $${maxVal}`;
-      else if (hasMin) label += `from $${minVal}`;
-      else label += `up to $${maxVal}`;
+      let label = this.translate.instant('COMMON.PRICE') + ': ';
+      const format = (value: unknown) => this.currencyService.formatCurrency(Number(value));
+      if (hasMin && hasMax) label += `${format(minVal)} ${this.translate.instant('NOLI.UNTIL')} ${format(maxVal)}`;
+      else if (hasMin) label += `${this.translate.instant('NOLI.FROM')} ${format(minVal)}`;
+      else label += `${this.translate.instant('NOLI.UNTIL')} ${format(maxVal)}`;
       chips.push({ keys: ['minPrice', 'maxPrice'], label });
       skipKeys.add('minPrice');
       skipKeys.add('maxPrice');
@@ -123,15 +133,16 @@ export class ShopComponent implements OnInit, OnDestroy {
       const isEmpty = raw === '' || raw === null || raw === undefined ||
         (Array.isArray(raw) && raw.length === 0);
       if (isEmpty) continue;
-      const displayVal = Array.isArray(raw) ? raw.join(', ') : String(raw);
-      chips.push({ keys: [def.key], label: `${def.label}: ${displayVal}` });
+      const localize = (value: unknown) => this.translate.instant(NOLI_CATALOG_KEYS[String(value)] || String(value));
+      const displayVal = Array.isArray(raw) ? raw.map(localize).join(', ') : localize(raw);
+      chips.push({ keys: [def.key], label: `${this.translate.instant(def.label)}: ${displayVal}` });
     }
 
     if (this.discountId) {
-      chips.push({ keys: ['__discountId'], label: `Popust: ${this.discountName || 'ID ' + this.discountId}` });
+      chips.push({ keys: ['__discountId'], label: `${this.translate.instant('COMMON.DISCOUNT')}: ${this.discountName || 'ID ' + this.discountId}` });
     }
     if (this.discountedOnly) {
-      chips.push({ keys: ['__discountedOnly'], label: 'Promotivna cijena' });
+      chips.push({ keys: ['__discountedOnly'], label: this.translate.instant('NOLI.PROMO_PRICE') });
     }
 
     return chips;
@@ -150,6 +161,22 @@ export class ShopComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.routeSubscription = this.route.queryParams.pipe(skip(1)).subscribe(params => {
+      if (this.updatingUrl) return;
+      this.initialFilterValues = this.urlParamsToFormValues(params);
+      this.currentFilterValues = { ...this.initialFilterValues };
+      this.lastFilters = this.urlParamsToFilters(params);
+      this.discountId = Number(params['discountId']) || null;
+      this.discountedOnly = params['discountedOnly'] === 'true';
+      this.discountName = params['discountName'] || null;
+      this.pageNumber = Math.max(1, Number(params['page']) || 1);
+      this.pageSize = Number(params['pageSize']) || 20;
+      const sortIndex = Number(params['sort']) || 0;
+      this.lastSort = this.sortOptions[sortIndex] || this.sortOptions[0];
+      this.filterBar?.form.reset({ search: '', brand: [], type: [], minPrice: '', maxPrice: '',
+        ...this.initialFilterValues, sort: this.sortOptions.indexOf(this.lastSort) }, { emitEvent: false });
+      this.loadProducts();
+    });
     // Load last viewed product ID for highlighting
     const lastProductId = sessionStorage.getItem(this.LAST_PRODUCT_KEY);
     if (lastProductId) {
@@ -333,7 +360,7 @@ export class ShopComponent implements OnInit, OnDestroy {
       this.filterBar.closeFilters();
       this.filterBar.closeMobileDrawer();
     }
-    
+
     // Update parent component state
     this.lastFilters = [];
     this.lastSort = this.sortOptions[0];
@@ -343,7 +370,7 @@ export class ShopComponent implements OnInit, OnDestroy {
     this.discountName = null;
     this.pageNumber = 1;
     this.loadProducts();
-    this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
+    this.updateUrl();
   }
 
   clearChip(chip: ActiveFilterChip) {
@@ -380,6 +407,7 @@ export class ShopComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.routeSubscription?.unsubscribe();
     // Save scroll position when leaving the component
     this.saveScrollPosition();
   }
@@ -467,7 +495,9 @@ export class ShopComponent implements OnInit, OnDestroy {
     if (this.pageNumber > 1) queryParams['page'] = this.pageNumber;
     if (this.pageSize !== 20) queryParams['pageSize'] = this.pageSize;
 
-    this.router.navigate([], { relativeTo: this.route, queryParams, replaceUrl: true });
+    this.updatingUrl = true;
+    this.router.navigate([], { relativeTo: this.route, queryParams, replaceUrl: true })
+      .finally(() => this.updatingUrl = false);
   }
 
   private urlParamsToFormValues(params: Record<string, string>): Record<string, any> {

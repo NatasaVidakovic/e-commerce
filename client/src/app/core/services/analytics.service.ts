@@ -53,7 +53,7 @@ export class AnalyticsService {
     // Mock data - will be replaced with actual API call
     const mockData: AnalyticsKpi[] = [
       {
-        title: 'Total Revenue',
+        title: 'ADMIN.TOTAL_REVENUE',
         value: '$124,563',
         change: 12.5,
         changeType: 'increase',
@@ -61,7 +61,7 @@ export class AnalyticsService {
         color: 'primary'
       },
       {
-        title: 'Total Orders',
+        title: 'ADMIN.TOTAL_ORDERS',
         value: '1,234',
         change: 8.3,
         changeType: 'increase',
@@ -69,7 +69,7 @@ export class AnalyticsService {
         color: 'accent'
       },
       {
-        title: 'Average Order Value',
+        title: 'ADMIN.AVERAGE_ORDER_VALUE',
         value: '$101.00',
         change: -2.1,
         changeType: 'decrease',
@@ -85,7 +85,7 @@ export class AnalyticsService {
         color: 'primary'
       },
       {
-        title: 'New Customers',
+        title: 'ADMIN.NEW_CUSTOMERS',
         value: '456',
         change: 15.7,
         changeType: 'increase',
@@ -93,7 +93,7 @@ export class AnalyticsService {
         color: 'accent'
       },
       {
-        title: 'Total Customers',
+        title: 'UI.TOTAL_CUSTOMERS',
         value: '8,901',
         change: 5.2,
         changeType: 'increase',

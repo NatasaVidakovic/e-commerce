@@ -13,7 +13,8 @@
   </div>
 
   } @else {
-  <app-empty-state 
+  @if (branding.isNoli()) { <img class="cart-noli" src="/brand/noli-mascot.png" alt="Noli" width="100" height="100"> }
+  <app-empty-state
     [message]="'CART.EMPTY' | translate"
     icon="remove_shopping_cart"
     [actionText]="'BUTTONS.GO_TO_SHOP' | translate"

@@ -1,3 +1,4 @@
+import { BrandingService } from './branding.service';
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -56,10 +57,15 @@ const KEY_MAP: Record<keyof SiteConfig, string> = {
   providedIn: 'root'
 })
 export class SiteConfigService {
+  readonly branding = inject(BrandingService);
   private http = inject(HttpClient);
   private baseUrl = environment.baseUrl;
+  private readonly defaults: SiteConfig = this.branding.isNoli() ? {
+    ...DEFAULT_CONFIG, companyName: 'noli',
+    companyDescription: 'Male stvari, veliki osjećaj. Ručno rađeni nakit i mirisne svijeće za tvoje male rituale.'
+  } : DEFAULT_CONFIG;
 
-  siteConfig = signal<SiteConfig>({ ...DEFAULT_CONFIG });
+  siteConfig = signal<SiteConfig>({ ...this.defaults });
   loaded = signal(false);
 
   constructor() {
@@ -71,8 +77,8 @@ export class SiteConfigService {
       next: (settings) => {
         const map = new Map(settings.map(s => [s.key, s.value]));
         this.siteConfig.set({
-          companyName: map.get('CompanyName') ?? '',
-          companyDescription: map.get('CompanyDescription') ?? '',
+          companyName: map.get('CompanyName') || this.defaults.companyName,
+          companyDescription: map.get('CompanyDescription') || this.defaults.companyDescription,
           contactEmail: map.get('ContactEmail') ?? '',
           heroTitle: map.get('HeroTitle') ?? '',
           heroSubtitle: map.get('HeroSubtitle') ?? '',
@@ -108,7 +114,7 @@ export class SiteConfigService {
   }
 
   resetConfig(): void {
-    const empty = { ...DEFAULT_CONFIG };
+    const empty = { ...this.defaults };
     this.updateConfig(empty);
   }
 

@@ -1,0 +1,208 @@
+// This stylesheet has no effect unless Noli is enabled in brand-config.js.
+html[data-brand='noli'] {
+& {
+  --noli-peach: #e8a08b;
+  --noli-sand: #edd3c6;
+  --noli-sage: #b5bdaa;
+  --noli-hero-bg: #faf0e8;
+  --noli-ritual-bg: #e9e9df;
+  --noli-note-bg: #f3e0d4;
+  --font-body: 'Nunito Sans', 'Trebuchet MS', sans-serif;
+  --font-display: 'Quicksand', 'Nunito Sans', sans-serif;
+  --noli-header-height: 115px;
+  --color-primary: #a35f4c;
+  --color-primary-hover: #94533f;
+  --color-primary-active: #804532;
+  --color-primary-light: #f3ded3;
+  --color-primary-lighter: #fcf1eb;
+  --color-secondary: #7b866e;
+  --color-secondary-hover: #626d56;
+  --color-secondary-active: #515b47;
+  --color-secondary-light: #e9ebdf;
+  --color-accent: #c78772;
+  --color-accent-hover: #ad6b56;
+  --color-text-primary: #534b45;
+  --color-text-secondary: #796b62;
+  --color-text-tertiary: #7d6e64;
+  --color-text-disabled: #b7a79c;
+  --color-bg-primary: #fffcf9;
+  --color-bg-secondary: #faf5ef;
+  --color-bg-tertiary: #f3e7dd;
+  --color-bg-hover: #f8ece4;
+  --color-bg-active: #efdbcd;
+  --color-bg-disabled: #f1e9e2;
+  --color-surface: #fffcf9;
+  --color-surface-hover: #faf5ef;
+  --color-surface-raised: #fffdfb;
+  --color-border-primary: #eaddd2;
+  --color-border-secondary: #d4c3b5;
+  --color-border-focus: #a35f4c;
+  --color-input-bg: #fffcf9;
+  --color-input-border: #d4c3b5;
+  --color-input-text: #534b45;
+  --color-input-placeholder: #99887b;
+  --color-btn-primary-text: #fffaf6;
+  --color-product-card: #fffcf9;
+  --color-filter-active-bg: #f3ded3;
+  --color-filter-active-text: #814936;
+  --color-filter-inactive-chip: #f7eee6;
+  --color-info: #68755d;
+  --color-info-light: #eef0e8;
+  --color-info-dark: #48543e;
+  --color-success: #627352;
+  --color-success-light: #edf0e6;
+  --color-success-dark: #485b3d;
+  --color-success-hover: #485b3d;
+  --color-error: #a35f56;
+  --color-error-light: #faeee8;
+  --color-error-dark: #864e45;
+  --color-error-hover: #864e45;
+  --color-border-error: #a35f56;
+  --color-warning: #87663f;
+  --color-warning-light: #f5eddd;
+  --color-warning-dark: #78562d;
+  --color-warning-hover: #78562d;
+  --color-star: #b4805e;
+  --color-favorite: #b97670;
+  --color-snackbar-error-bg: #faeee8;
+  --color-snackbar-error-text: #864e45;
+  --color-snackbar-success-bg: #edf0e6;
+  --color-snackbar-success-text: #485b3d;
+  --color-snackbar-warning-bg: #f5eddd;
+  --color-snackbar-warning-text: #78562d;
+  --color-snackbar-info-bg: #f3e7dd;
+  --color-snackbar-info-text: #674a3d;
+  --color-badge-draft-bg: #f3e7dd;
+  --color-badge-draft-text: #795f4f;
+  --color-badge-active-bg: #edf0e6;
+  --color-badge-active-text: #485b3d;
+  --color-badge-expired-bg: #faeee8;
+  --color-badge-expired-text: #864e45;
+  --color-badge-disabled-bg: #f5eddd;
+  --color-badge-disabled-text: #78562d;
+  --md-sys-primary: var(--color-primary);
+  --md-sys-primary-container: var(--color-primary-light);
+  --md-sys-success: var(--color-success);
+  --md-sys-success-container: var(--color-success-light);
+  --md-sys-error: var(--color-error);
+  --md-sys-error-container: var(--color-error-light);
+  --md-sys-warning: var(--color-warning);
+  --md-sys-warning-container: var(--color-warning-light);
+  --md-sys-info: var(--color-info);
+  --md-sys-info-container: var(--color-info-light);
+  --color-discount-text: #674a3d;
+  --color-discount-count-bg: #f3ded3;
+  --color-discount-count-text: #814936;
+  --gradient-primary: linear-gradient(135deg, #c78772, #ad6652);
+  --gradient-secondary: linear-gradient(135deg, #a1aa93, #7b866e);
+  --gradient-accent: linear-gradient(135deg, #f3ded3, #e9ebdf);
+  --gradient-surface: linear-gradient(135deg, #fffcf9, #faf5ef);
+  --shadow-sm: 0 2px 8px #71503c06;
+  --shadow-md: 0 8px 25px #71503c0a;
+  --shadow-lg: 0 16px 48px #71503c10;
+  --mat-sys-primary: #a35f4c;
+  --mat-sys-error: #a35f56;
+  --mat-sys-on-error: #fffaf6;
+  --mat-sys-error-container: #faeee8;
+  --mat-sys-on-error-container: #864e45;
+  --mat-sys-on-primary: #fffaf6;
+  --mat-sys-primary-container: #f3ded3;
+  --mat-sys-on-primary-container: #674a3d;
+  --mat-sys-secondary: #7b866e;
+  --mat-sys-surface: #fffcf9;
+  --mat-sys-surface-container: #faf5ef;
+  --mat-sys-on-surface: #534b45;
+  --mat-sys-outline: #d4c3b5;
+  --mat-sys-body-large-font: var(--font-body);
+  --mat-sys-body-medium-font: var(--font-body);
+  --mat-sys-label-large-font: var(--font-body);
+}
+&[data-theme='dark'] {
+  --noli-sand: #49372e;
+  --noli-hero-bg: #302721; --noli-ritual-bg: #34372c; --noli-note-bg: #463128;
+  --color-primary: #e8a08b; --color-primary-hover: #efb6a3; --color-primary-active: #f5c7b8;
+  --color-primary-light: #51392f; --color-primary-lighter: #382a24;
+  --color-secondary: #b5bdaa; --color-secondary-hover: #c7cfbd; --color-secondary-light: #363d30;
+  --color-accent: #dfa58e; --color-text-primary: #f4e8de; --color-text-secondary: #cfbfb2; --color-text-tertiary: #b3a091;
+  --color-bg-primary: #261f1b; --color-bg-secondary: #302721; --color-bg-tertiary: #3d3129; --color-bg-hover: #49382e; --color-bg-active: #574235;
+  --color-surface: #302721; --color-surface-raised: #382d26; --color-surface-hover: #49382e;
+  --color-border-primary: #504036; --color-border-secondary: #6a5445;
+  --color-input-bg: #302721; --color-input-text: #f4e8de; --color-input-border: #6a5445; --color-product-card: #302721;
+  --color-btn-primary-text: #35251e; --color-filter-active-bg: #51392f; --color-filter-active-text: #f4c2ad;
+  --mat-sys-primary: #e8a08b; --mat-sys-on-primary: #35251e; --mat-sys-surface: #302721; --mat-sys-on-surface: #f4e8de;
+  --color-success: #b5c1a3; --color-success-hover: #c6cfba; --color-success-light: #35402e; --color-success-dark: #c6cfba;
+  --color-error: #e7ab99; --color-error-hover: #f0bdad; --color-error-light: #4b322b; --color-error-dark: #f0bdad;
+  --color-warning: #d7be91; --color-warning-light: #443a2a; --color-warning-dark: #e4cdac;
+  --color-star: #deb59b; --color-favorite: #e2a79b;
+  --color-snackbar-error-bg: #4b322b; --color-snackbar-error-text: #f0bdad;
+  --color-snackbar-success-bg: #35402e; --color-snackbar-success-text: #c6cfba;
+  --mat-sys-error: #e7ab99; --mat-sys-error-container: #4b322b; --mat-sys-on-error-container: #f0bdad;
+}
+body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font-family: var(--font-body); }
+input[type='checkbox'], input[type='radio'] { accent-color: var(--color-primary); }
+input, textarea { caret-color: var(--color-primary); }
+::selection { background: var(--color-primary-light); color: var(--color-text-primary); }
+h1, h2, h3 { font-family: var(--font-display); }
+& { scroll-behavior: smooth; scroll-padding-top: 132px; }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 4px; }
+.noli-brand { display: inline-flex; align-items: center; color: var(--color-text-primary); line-height: 1; }
+.noli-brand:hover { text-decoration: none; }
+.noli-wordmark { font-family: 'Quicksand', var(--font-body); font-weight: 400; font-size: 50px; letter-spacing: -.065em; line-height: 1; }
+.noli-letter-i { position: relative; }
+.noli-letter-i::after { content: ''; position: absolute; width: 6px; height: 6px; border-radius: 50%; top: 10px; left: 50%; transform: translateX(-40%); background: var(--noli-peach); }
+.mat-mdc-button, .mat-mdc-outlined-button, .mat-mdc-unelevated-button { --mdc-text-button-label-text-font: var(--font-body); --mdc-outlined-button-label-text-font: var(--font-body); --mdc-filled-button-label-text-font: var(--font-body); }
+.mat-mdc-progress-spinner { --mdc-circular-progress-active-indicator-color: var(--color-primary); }
+.mat-mdc-tooltip { --mdc-plain-tooltip-container-color: var(--color-text-primary); --mdc-plain-tooltip-supporting-text-color: var(--color-bg-primary); --mdc-plain-tooltip-supporting-text-font: var(--font-body); }
+.mat-badge-content { background: var(--color-primary) !important; color: var(--color-btn-primary-text) !important; }
+.main-content:has(app-home) { padding-top: 0; padding-bottom: 0; }
+.main-content:has(app-home) .home-page { margin-top: 0; }
+#initial-splash { position: fixed; inset: 0; background: #fffcf9; z-index: 1000; display: grid; place-items: center; }
+#initial-splash img { width: 100px; mix-blend-mode: multiply; }
+@media (max-width: 760px) { & { --noli-header-height: 110px; } .noli-wordmark { font-size: 42px; } .noli-letter-i::after { top: 8px; width: 5px; height: 5px; } }
+@media (prefers-reduced-motion: reduce) { & { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+
+.noli-reaction { position: fixed; width: 0; height: 0; z-index: 1500; pointer-events: none; }
+.noli-particle { position: absolute; top: 0; left: 0; line-height: 1; color: #d9967d; font-family: Georgia, serif; font-size: 15px; will-change: transform, opacity; }
+.noli-particle--hearts { font-size: 19px; color: #cf8e83; }
+
+.mat-icon.material-icons { font-family: 'Material Icons Round'; }
+body .mat-mdc-card { border-radius: 22px; box-shadow: var(--shadow-sm); }
+body .mat-mdc-unelevated-button, body .mat-mdc-outlined-button, body .mat-mdc-raised-button { border-radius: 28px; }
+button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button:active:not(:disabled), a.noli-button:active { transform: scale(.97); }
+body .mat-icon { flex-shrink: 0; line-height: 1; }
+body .mdc-button__label { display: inline-flex; align-items: center; justify-content: center; gap: 8px; line-height: 1.25; }
+body .mat-mdc-menu-item-text { display: flex; align-items: center; gap: 12px; }
+.snack-success .mdc-snackbar__surface { background: var(--color-snackbar-success-bg) !important; color: var(--color-snackbar-success-text) !important; }
+.snack-error .mdc-snackbar__surface { background: var(--color-snackbar-error-bg) !important; color: var(--color-snackbar-error-text) !important; }
+.snack-success .mdc-snackbar__label, .snack-error .mdc-snackbar__label { color: inherit !important; }
+.mat-mdc-snack-bar-container .mdc-snackbar__surface { border-radius: 18px; box-shadow: var(--shadow-md); }
+body .mat-mdc-table { background: var(--color-surface); }
+body .mat-mdc-header-row { background: var(--color-bg-secondary); }
+body .mat-mdc-dialog-surface { border-radius: 24px; }
+.noli-home em { font-family: 'Cormorant Garamond', Georgia, serif; }
+@media(prefers-reduced-transparency: reduce) { .noli-header { backdrop-filter: none !important; background: var(--color-surface) !important; } }
+@media(prefers-contrast: more) { body .mat-mdc-card { outline: 1px solid var(--color-text-secondary); } }
+
+
+  body .mat-mdc-card { border: 0 !important; }
+}
+
+// Shared semantic aliases resolve to the active theme, including the original palette.
+/* Semantic colours replace framework utility colours across all shop screens. */
+body .noli-text-error { color: var(--color-error) !important; }
+body .noli-bg-error-soft { background-color: var(--color-error-light) !important; }
+body .noli-border-error-soft { border-color: var(--color-error-light) !important; }
+body .noli-bg-primary-soft { background-color: var(--color-primary-light) !important; }
+body .noli-text-primary { color: var(--color-primary) !important; }
+body .noli-border-primary-soft { border-color: var(--color-primary-light) !important; }
+body .noli-bg-warning-soft { background-color: var(--color-warning-light) !important; }
+body .noli-border-warning-soft { border-color: var(--color-warning-light) !important; }
+body .noli-text-warning { color: var(--color-warning) !important; }
+body .noli-bg-success-soft { background-color: var(--color-success-light) !important; }
+body .noli-text-success { color: var(--color-success) !important; }
+body .noli-bg-primary { background-color: var(--color-primary) !important; }
+body .noli-hover-bg-primary:hover { background-color: var(--color-primary-hover) !important; }
+body .noli-hover-bg-primary-soft:hover { background-color: var(--color-primary-light) !important; }
+body .noli-hover-text-primary:hover { color: var(--color-primary) !important; }

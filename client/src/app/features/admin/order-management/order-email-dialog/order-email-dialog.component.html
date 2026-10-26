@@ -29,7 +29,7 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'ADMIN.EMAIL.ADMIN_NOTES' | translate }}</mat-label>
-      <textarea matInput formControlName="adminNotes" 
+      <textarea matInput formControlName="adminNotes"
                 rows="3"
                 placeholder="{{ 'ADMIN.EMAIL.ADMIN_NOTES_PLACEHOLDER' | translate }}"></textarea>
       <mat-hint>{{ 'ADMIN.EMAIL.ADMIN_NOTES_HINT' | translate }}</mat-hint>
@@ -40,8 +40,8 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()" [disabled]="sending">{{ 'COMMON.CANCEL' | translate }}</button>
-  <button mat-flat-button color="primary" (click)="onSend()" 
+  <button mat-flat-button color="primary" (click)="onSend()"
           [disabled]="!emailForm.valid || sending">
-    {{ sending ? 'Sending...' : ('ADMIN.EMAIL.SEND_EMAIL' | translate) }}
+    {{ (sending ? 'FOOTER.SENDING' : 'ADMIN.EMAIL.SEND_EMAIL') | translate }}
   </button>
 </mat-dialog-actions>

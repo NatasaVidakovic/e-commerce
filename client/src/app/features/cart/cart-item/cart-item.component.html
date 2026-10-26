@@ -1,26 +1,26 @@
 <div class="cart-list-row">
     <a routerLink="/shop/{{item().productId}}" class="cart-thumb">
-        <img [src]="item().pictureUrl" alt="{{ 'PRODUCT.IMAGE_ALT' | translate:{name: item().productName} }}">
+        <img [src]="item().pictureUrl" alt="{{ 'PRODUCT.IMAGE_ALT' | translate:{name: (item().productName | catalogText)} }}">
     </a>
 
     <div class="cart-info">
-        <a routerLink="/shop/{{item().productId}}" class="cart-name">{{item().productName}}</a>
+        <a routerLink="/shop/{{item().productId}}" class="cart-name">{{item().productName | catalogText}}</a>
         <span class="cart-price">{{item().price | appCurrency}}</span>
     </div>
 
     <div class="cart-qty">
-        <button mat-icon-button (click)="decrementQuantity()" class="qty-btn">
+        <button mat-icon-button (click)="decrementQuantity()" class="qty-btn" [attr.aria-label]="'ARIA_LABELS.DECREASE_QUANTITY' | translate">
             <mat-icon>remove</mat-icon>
         </button>
         <span class="qty-value">{{item().quantity}}</span>
-        <button mat-icon-button (click)="incrementQuantity()" class="qty-btn">
+        <button mat-icon-button (click)="incrementQuantity()" class="qty-btn" [attr.aria-label]="'ARIA_LABELS.INCREASE_QUANTITY' | translate">
             <mat-icon>add</mat-icon>
         </button>
     </div>
 
     <span class="cart-subtotal">{{(item().price * item().quantity) | appCurrency}}</span>
 
-    <button mat-icon-button (click)="removeItemFromCart()" class="cart-delete">
+    <button mat-icon-button (click)="removeItemFromCart()" class="cart-delete" [attr.aria-label]="'PRODUCT.REMOVE_FROM_CART' | translate">
         <mat-icon>delete_outline</mat-icon>
     </button>
 </div>

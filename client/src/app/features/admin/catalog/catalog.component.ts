@@ -31,9 +31,9 @@ import { forkJoin } from 'rxjs';
     filterDefinitions: DynamicFilterDefinition[] = [];
 
     sortOptions: DynamicSortOption[] = [
-        { label: 'Name (A-Z)', column: 'Name', ascending: true, descending: false },
-        { label: 'Price (Low-High)', column: 'Price', ascending: true, descending: false },
-        { label: 'Price (High-Low)', column: 'Price', ascending: false, descending: true }
+        { label: 'UI.NAME_A_Z', column: 'Name', ascending: true, descending: false },
+        { label: 'UI.PRICE_LOW_HIGH', column: 'Price', ascending: true, descending: false },
+        { label: 'UI.PRICE_HIGH_LOW', column: 'Price', ascending: false, descending: true }
     ];
 
     private lastFilters: FilterViewModel[][] = [];
@@ -81,18 +81,18 @@ import { forkJoin } from 'rxjs';
                 this.loadProducts();
             }
         });
-        
+
         // Add window resize listener
         window.addEventListener('resize', this.onWindowResize.bind(this));
     }
 
     initializeFilterDefinitions() {
         this.filterDefinitions = [
-            { key: 'search', label: 'Search', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
-            { key: 'brand', label: 'Brand', controlType: 'select', propertyName: 'Brand', operationType: 'Equal', dataType: 'String', options: this.brands, multiple: true, allLabel: 'All Brands' },
-            { key: 'type', label: 'Type', controlType: 'select', propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String', options: this.types, multiple: true, allLabel: 'All Types' },
-            { key: 'minPrice', label: 'Min price', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
-            { key: 'maxPrice', label: 'Max price', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
+            { key: 'search', label: 'BUTTONS.SEARCH', controlType: 'text', propertyName: 'Name', operationType: 'Contains', dataType: 'String' },
+            { key: 'brand', label: 'COMMON.BRAND', controlType: 'select', propertyName: 'Brand', operationType: 'Equal', dataType: 'String', options: this.brands, multiple: true, allLabel: 'UI.ALL_BRANDS' },
+            { key: 'type', label: 'COMMON.TYPE', controlType: 'select', propertyName: 'ProductType', firstLevel: 'Name', operationType: 'Equal', dataType: 'String', options: this.types, multiple: true, allLabel: 'UI.ALL_TYPES' },
+            { key: 'minPrice', label: 'UI.MIN_PRICE', controlType: 'number', propertyName: 'Price', operationType: 'GreaterThanOrEqual', dataType: 'Decimal' },
+            { key: 'maxPrice', label: 'UI.MAX_PRICE', controlType: 'number', propertyName: 'Price', operationType: 'LessThanOrEqual', dataType: 'Decimal' }
         ];
     }
 
@@ -120,7 +120,7 @@ import { forkJoin } from 'rxjs';
             },
             error: (error) => {
                 console.error('Error loading products:', error);
-                this.snackbar.errorFrom(error, 'Error loading products', { duration: 2000 });
+                this.snackbar.errorFrom(error, 'UI.ERROR_LOADING_PRODUCTS', { duration: 2000 });
             }
         });
     }
@@ -147,23 +147,23 @@ import { forkJoin } from 'rxjs';
 
     onProductUpdated() {
         this.loadProducts();
-        this.snackbar.success('Product saved', { duration: 2000 });
+        this.snackbar.success('UI.PRODUCT_SAVED', { duration: 2000 });
     }
 
     onProductCreated() {
         this.loadProducts();
-        this.snackbar.success('Product created successfully', { duration: 2000 });
+        this.snackbar.success('UI.PRODUCT_CREATED_SUCCESSFULLY', { duration: 2000 });
     }
 
     onProductDeleted(productId: number) {
         this.shopService.deleteProduct(productId).subscribe({
             next: () => {
                 this.loadProducts();
-                this.snackbar.success('Product deleted successfully', { duration: 2000 });
+                this.snackbar.success('UI.PRODUCT_DELETED_SUCCESSFULLY', { duration: 2000 });
             },
             error: (error) => {
                 console.error('Error deleting product:', error);
-                this.snackbar.errorFrom(error, 'Error deleting product', { duration: 2000 });
+                this.snackbar.errorFrom(error, 'UI.ERROR_DELETING_PRODUCT', { duration: 2000 });
             }
         });
     }

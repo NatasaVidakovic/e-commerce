@@ -1,3 +1,4 @@
+
 /* ===== Dialog Container ===== */
 ::ng-deep .mat-mdc-dialog-surface {
   border-radius: 12px !important;
@@ -31,8 +32,8 @@
 .order-number {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--color-primary, #3b82f6);
-  background: rgba(59, 130, 246, 0.08);
+  color: var(--color-primary);
+  background: rgba(173, 102, 82, 0.08);
   padding: 2px 10px;
   border-radius: 6px;
 }
@@ -59,7 +60,7 @@
   justify-content: center;
   gap: 8px;
   padding: 32px 0;
-  color: var(--color-error, #ef4444);
+  color: var(--color-error, var(--color-error));
   font-size: 0.9rem;
 
   mat-icon {
@@ -99,9 +100,9 @@
   width: 20px;
   height: 20px;
 
-  &.summary-icon { color: #3b82f6; }
-  &.customer-icon { color: #8b5cf6; }
-  &.delivery-icon { color: #f59e0b; }
+  &.summary-icon { color: var(--color-primary); }
+  &.customer-icon { color: var(--color-secondary); }
+  &.delivery-icon { color: var(--color-star); }
   &.items-icon { color: #10b981; }
   &.pricing-icon { color: #ec4899; }
   &.history-icon { color: #6b7280; }
@@ -138,7 +139,7 @@
 .total-value {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--color-primary, #3b82f6);
+  color: var(--color-primary);
 }
 
 .notes-value {
@@ -157,8 +158,8 @@
 }
 
 .os-badge {
-  background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
+  background: rgba(173, 102, 82, 0.1);
+  color: var(--color-primary);
 }
 
 .ps-badge {
@@ -172,7 +173,7 @@
 }
 
 .badge-stripe {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(173, 102, 82, 0.1);
   color: #4f46e5;
 }
 
@@ -348,11 +349,11 @@
 }
 
 .discount-label, .refund-label {
-  color: #dc2626;
+  color: var(--color-error);
 }
 
 .discount-value, .refund-value {
-  color: #dc2626 !important;
+  color: var(--color-error) !important;
 }
 
 .pricing-divider {
@@ -371,7 +372,7 @@
   .pricing-value {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--color-primary, #3b82f6);
+    color: var(--color-primary);
   }
 }
 
@@ -397,7 +398,7 @@
     }
 
     &.mdc-tab--active .mdc-tab__text-label {
-      color: var(--color-primary, #3b82f6);
+      color: var(--color-primary);
     }
   }
 }
@@ -475,7 +476,7 @@
   }
 
   &.order-status-card .status-card-icon {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary));
   }
 
   &.payment-status-card .status-card-icon {
@@ -483,7 +484,7 @@
   }
 
   &.delivery-status-card .status-card-icon {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
+    background: linear-gradient(135deg, var(--color-star), #d97706);
   }
 }
 
@@ -586,7 +587,7 @@
     border-color: rgba(245, 158, 11, 0.2);
 
     .status-change.delivery-change .new-status {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
+      background: linear-gradient(135deg, var(--color-star), #d97706);
     }
   }
 
@@ -662,7 +663,7 @@
 
       .new-status {
         padding: 2px 6px;
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        background: linear-gradient(135deg, var(--color-primary), var(--color-primary));
         color: white;
         border-radius: 3px;
         font-size: 0.7rem;
@@ -688,7 +689,7 @@
       background: var(--color-bg-secondary, #f8fafc);
       padding: 3px 6px;
       border-radius: 3px;
-      border-left: 2px solid var(--color-primary, #3b82f6);
+      border-left: 2px solid var(--color-primary);
       margin-top: 4px;
     }
 

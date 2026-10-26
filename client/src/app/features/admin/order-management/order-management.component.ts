@@ -54,7 +54,7 @@ export class OrderManagementComponent implements OnInit {
   getOrderCurrency(code: string): Currency {
     return this.currencyService.getCurrencyByCode(code);
   }
-  
+
   displayedColumns: string[] = ['id', 'buyerEmail', 'orderDate', 'total', 'paymentType', 'paymentStatus', 'status', 'deliveryStatus', 'action'];
 
   orderStatusOptions = ['New', 'Confirmed', 'Preparing', 'ReadyToShip', 'Shipped', 'OutForDelivery', 'Delivered', 'Returned', 'Cancelled', 'OnHold', 'FraudReview', 'PaymentFailed', 'PaymentMismatch'];
@@ -80,7 +80,7 @@ export class OrderManagementComponent implements OnInit {
   orderFilterDefinitions: DynamicFilterDefinition[] = [
     {
       key: 'search',
-      label: 'Search (Email/Order#)',
+      label: 'UI.SEARCH_EMAIL_ORDER',
       controlType: 'text',
       propertyName: 'BuyerEmail,OrderNumber',
       operationType: 'Contains',
@@ -88,55 +88,55 @@ export class OrderManagementComponent implements OnInit {
     },
     {
       key: 'status',
-      label: 'Order Status',
+      label: 'ADMIN.COLUMNS.ORDER_STATUS',
       controlType: 'select',
       propertyName: 'Status',
       operationType: 'Equal',
       dataType: 'String',
       options: ['New', 'Confirmed', 'Preparing', 'ReadyToShip', 'Shipped', 'OutForDelivery', 'Delivered', 'Returned', 'Cancelled', 'OnHold', 'FraudReview', 'PaymentFailed', 'PaymentMismatch'],
       multiple: false,
-      allLabel: 'All Statuses'
+      allLabel: 'UI.ALL_STATUSES'
     },
     {
       key: 'paymentStatus',
-      label: 'Payment Status',
+      label: 'ADMIN.COLUMNS.PAYMENT_STATUS',
       controlType: 'select',
       propertyName: 'PaymentStatus',
       operationType: 'Equal',
       dataType: 'String',
       options: ['Pending', 'Authorized', 'Paid', 'Failed', 'Refunded', 'PartiallyRefunded', 'Chargeback', 'Cancelled'],
       multiple: false,
-      allLabel: 'All Statuses'
+      allLabel: 'UI.ALL_STATUSES'
     },
     {
       key: 'paymentType',
-      label: 'Payment Type',
+      label: 'UI.PAYMENT_TYPE',
       controlType: 'select',
       propertyName: 'PaymentType',
       operationType: 'Equal',
       dataType: 'String',
       options: ['Stripe', 'CashOnDelivery', 'PayPal', 'BankTransfer', 'Crypto'],
       multiple: false,
-      allLabel: 'All Types'
+      allLabel: 'UI.ALL_TYPES'
     },
     {
       key: 'deliveryStatus',
-      label: 'Delivery Status',
+      label: 'ADMIN.COLUMNS.DELIVERY_STATUS',
       controlType: 'select',
       propertyName: 'DeliveryStatus',
       operationType: 'Equal',
       dataType: 'String',
       options: ['Pending', 'AssignedToCourier', 'InTransit', 'OutForDelivery', 'Delivered', 'FailedDelivery', 'ReturnedToSender'],
       multiple: false,
-      allLabel: 'All Statuses'
+      allLabel: 'UI.ALL_STATUSES'
     }
   ];
 
   orderSortOptions: DynamicSortOption[] = [
-    { label: 'Newest First', column: 'OrderDate', ascending: false, descending: true },
-    { label: 'Oldest First', column: 'OrderDate', ascending: true, descending: false },
-    { label: 'Total: High to Low', column: 'Subtotal', ascending: false, descending: true },
-    { label: 'Total: Low to High', column: 'Subtotal', ascending: true, descending: false }
+    { label: 'COMMON.NEWEST_FIRST', column: 'OrderDate', ascending: false, descending: true },
+    { label: 'COMMON.OLDEST_FIRST', column: 'OrderDate', ascending: true, descending: false },
+    { label: 'UI.TOTAL_HIGH_TO_LOW', column: 'Subtotal', ascending: false, descending: true },
+    { label: 'UI.TOTAL_LOW_TO_HIGH', column: 'Subtotal', ascending: true, descending: false }
   ];
 
   private currentFilters: FilterViewModel[][] = [];
@@ -205,7 +205,7 @@ export class OrderManagementComponent implements OnInit {
     this.ordersWithRefunds.clear();
     this.refundStatuses.clear();
     const orders = this.dataSource.data;
-    
+
     // Check each order for refund status
     orders.forEach(order => {
       this.adminService.getRefundByOrder(order.id).subscribe({
@@ -227,19 +227,19 @@ export class OrderManagementComponent implements OnInit {
       case 'pending':
         return 'text-orange-600 font-bold'; // #F9A825 - Waiting for approval
       case 'approved':
-        return 'text-blue-500'; // Approved, waiting completion
+        return 'noli-text-primary'; // Approved, waiting completion
       case 'rejected':
-        return 'text-red-600'; // #C62828 - Rejected
+        return 'noli-text-error'; // #C62828 - Rejected
       case 'completed':
-        return 'text-green-600'; // #2E7D32 - Completed
+        return 'noli-text-success'; // #2E7D32 - Completed
       case 'requested':
         return 'text-orange-600 font-bold'; // #F9A825 - Alternative pending status
       case 'processing':
-        return 'text-blue-500'; // Approved, waiting completion
+        return 'noli-text-primary'; // Approved, waiting completion
       case 'cancelled':
-        return 'text-red-600'; // #C62828 - Rejected/Cancelled
+        return 'noli-text-error'; // #C62828 - Rejected/Cancelled
       case 'refunded':
-        return 'text-green-600'; // #2E7D32 - Completed/Refunded
+        return 'noli-text-success'; // #2E7D32 - Completed/Refunded
       default:
         return 'text-gray-500'; // #757575 - No refund requested
     }
@@ -256,23 +256,23 @@ export class OrderManagementComponent implements OnInit {
   getRefundStatusTooltip(status: string): string {
     switch (status?.toLowerCase()) {
       case 'pending':
-        return 'Waiting for admin approval';
+        return 'UI.WAITING_FOR_ADMIN_APPROVAL';
       case 'approved':
-        return 'Refund approved - waiting completion';
+        return 'UI.REFUND_APPROVED_WAITING_COMPLETION';
       case 'rejected':
-        return 'Refund request rejected';
+        return 'UI.REFUND_REQUEST_REJECTED';
       case 'completed':
-        return 'Refund completed';
+        return 'UI.REFUND_COMPLETED';
       case 'requested':
-        return 'Refund requested - waiting approval';
+        return 'UI.REFUND_REQUESTED_WAITING_APPROVAL';
       case 'processing':
-        return 'Refund approved - processing payment';
+        return 'UI.REFUND_APPROVED_PROCESSING_PAYMENT';
       case 'cancelled':
-        return 'Refund cancelled';
+        return 'UI.REFUND_CANCELLED';
       case 'refunded':
-        return 'Refund completed';
+        return 'UI.REFUND_COMPLETED';
       default:
-        return 'No refund requested';
+        return 'UI.NO_REFUND_REQUESTED';
     }
   }
 
@@ -282,12 +282,12 @@ export class OrderManagementComponent implements OnInit {
 
   getRefundStatusMessage(order: Order): string {
     if (this.isOrderRefunded(order)) {
-      return 'Order is refunded - no further status changes allowed';
+      return 'UI.ORDER_IS_REFUNDED_NO_FURTHER_STATUS_CHANGES_ALLOWED';
     }
     return '';
   }
 
-  
+
   onPageChange(event: PaginationEvent): void {
     this.currentPage = event.pageIndex + 1;
     this.pageNumber = event.pageIndex + 1;
@@ -324,7 +324,7 @@ export class OrderManagementComponent implements OnInit {
     const oldStatus = order.status;
     this.updatingOrder[order.id] = true;
 
-    const dto: UpdateOrderStatusDto = { 
+    const dto: UpdateOrderStatusDto = {
       orderStatus: newStatus,
       sendEmailNotification: this.sendEmailNotifications
     };
@@ -365,7 +365,7 @@ export class OrderManagementComponent implements OnInit {
     const oldStatus = order.paymentStatus;
     this.updatingOrder[order.id] = true;
 
-    const dto: UpdateOrderStatusDto = { 
+    const dto: UpdateOrderStatusDto = {
       paymentStatus: newStatus,
       sendEmailNotification: this.sendEmailNotifications
     };
@@ -402,7 +402,7 @@ export class OrderManagementComponent implements OnInit {
     const oldStatus = order.deliveryStatus;
     this.updatingOrder[order.id] = true;
 
-    const dto: UpdateOrderStatusDto = { 
+    const dto: UpdateOrderStatusDto = {
       deliveryStatus: newStatus,
       sendEmailNotification: this.sendEmailNotifications
     };

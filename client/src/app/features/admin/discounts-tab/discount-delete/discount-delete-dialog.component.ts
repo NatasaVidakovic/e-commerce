@@ -34,18 +34,18 @@ export class DeleteDiscountDialogComponent {
     if (!this.data) return '';
 
     if (this.data.hasBeenUsed) {
-      return 'This discount has been used in customer orders and must be retained for accounting and audit purposes.';
+      return 'UI.THIS_DISCOUNT_HAS_BEEN_USED_IN_CUSTOMER_ORDERS_AND_MUST_BE_RETAINED_FOR_ACCOUNTING_AND_AUDIT_PURPOSES';
     }
     if (this.data.state === 'Active') {
-      return 'This discount has already started. Only Draft discounts can be deleted.';
+      return 'UI.THIS_DISCOUNT_HAS_ALREADY_STARTED_ONLY_DRAFT_DISCOUNTS_CAN_BE_DELETED';
     }
     if (this.data.state === 'Expired') {
-      return 'This discount has expired and must be retained for historical reporting.';
+      return 'UI.THIS_DISCOUNT_HAS_EXPIRED_AND_MUST_BE_RETAINED_FOR_HISTORICAL_REPORTING';
     }
     if (this.data.state === 'Disabled') {
-      return 'This discount has been disabled and must be retained for historical records.';
+      return 'UI.THIS_DISCOUNT_HAS_BEEN_DISABLED_AND_MUST_BE_RETAINED_FOR_HISTORICAL_RECORDS';
     }
-    return 'This discount cannot be deleted.';
+    return 'UI.THIS_DISCOUNT_CANNOT_BE_DELETED';
   }
 
   onConfirm(): void {
@@ -62,7 +62,7 @@ export class DeleteDiscountDialogComponent {
       },
       error: (error: any) => {
         console.error('Error deleting discount:', error);
-        this.errorMessage = this.snackbar.extractMessage(error, 'Error deleting discount');
+        this.errorMessage = this.snackbar.extractMessage(error, 'UI.ERROR_DELETING_DISCOUNT');
         this.loading = false;
       }
     });

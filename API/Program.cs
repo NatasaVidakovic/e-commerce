@@ -502,6 +502,10 @@ try
         {
             await ApplyMigrationsWithRetryAsync(context, logger);
             await context.SeedDataAsync(services);
+            if (builder.Configuration.GetValue<bool>("NoliDemo:SeedCatalog"))
+            {
+                await NoliCatalogSeed.SeedAsync(context);
+            }
             logger.LogInformation("Database setup completed successfully.");
         }
         catch (SqlException ex) when (ex.Number == 1801) // Database already exists

@@ -1,3 +1,4 @@
+
 .admin-dashboard {
   .location-form {
     display: flex;
@@ -40,7 +41,7 @@
 }
 
 .error-state mat-icon {
-  color: var(--color-error, #ef4444);
+  color: var(--color-error, var(--color-error));
 }
 
 @keyframes spin {

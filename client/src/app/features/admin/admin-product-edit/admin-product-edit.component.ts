@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -18,7 +19,7 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
 @Component({
   selector: 'app-admin-product-edit',
   standalone: true,
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
@@ -70,7 +71,7 @@ export class AdminProductEditComponent implements OnInit {
 
   ngOnInit() {
     this.loadProductTypes();
-    
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.productId = +id;
@@ -101,7 +102,7 @@ export class AdminProductEditComponent implements OnInit {
           description: product.description,
           quantityInStock: product.quantityInStock
         };
-        
+
         this.productForm.patchValue(formData);
         this.productImages = (product.images || []).sort((a, b) => a.displayOrder - b.displayOrder);
         this.loading = false;
@@ -118,7 +119,7 @@ export class AdminProductEditComponent implements OnInit {
 
     this.saving = true;
     const formData = this.productForm.value;
-    
+
     const primary = this.productImages.find(i => i.isPrimary);
     const pictureUrl = primary?.url || (this.productImages.length > 0 ? this.productImages[0].url : '');
     const productData = {
@@ -137,7 +138,7 @@ export class AdminProductEditComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error updating product:', error);
-        this.snackbar.errorFrom(error, 'Error updating product');
+        this.snackbar.errorFrom(error, 'UI.ERROR_UPDATING_PRODUCT');
         this.saving = false;
       }
     });
@@ -158,7 +159,7 @@ export class AdminProductEditComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to upload images:', err);
-        this.snackbar.errorFrom(err, 'Failed to upload images');
+        this.snackbar.errorFrom(err, 'UI.FAILED_TO_UPLOAD_IMAGES');
         this.uploadingImage = false;
       }
     });
@@ -169,7 +170,7 @@ export class AdminProductEditComponent implements OnInit {
     if (!img?.id) return;
     this.shopService.deleteProductImage(this.productId, img.id).subscribe({
       next: () => this.productImages.splice(index, 1),
-      error: (err) => { console.error('Failed to delete image:', err); this.snackbar.errorFrom(err, 'Failed to delete image'); }
+      error: (err) => { console.error('Failed to delete image:', err); this.snackbar.errorFrom(err, 'UI.FAILED_TO_DELETE_IMAGE'); }
     });
   }
 
@@ -180,7 +181,7 @@ export class AdminProductEditComponent implements OnInit {
       next: () => {
         this.productImages.forEach((i, idx) => i.isPrimary = idx === index);
       },
-      error: (err) => { console.error('Failed to set primary:', err); this.snackbar.errorFrom(err, 'Failed to set primary image'); }
+      error: (err) => { console.error('Failed to set primary:', err); this.snackbar.errorFrom(err, 'UI.FAILED_TO_SET_PRIMARY_IMAGE'); }
     });
   }
 
@@ -194,7 +195,7 @@ export class AdminProductEditComponent implements OnInit {
     this.productImages = arr;
     const orderedIds = this.productImages.map(i => i.id);
     this.shopService.reorderProductImages(this.productId, orderedIds).subscribe({
-      error: (err) => { console.error('Failed to reorder:', err); this.snackbar.errorFrom(err, 'Failed to reorder images'); }
+      error: (err) => { console.error('Failed to reorder:', err); this.snackbar.errorFrom(err, 'UI.FAILED_TO_REORDER_IMAGES'); }
     });
   }
 

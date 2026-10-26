@@ -84,7 +84,7 @@
           <ng-container matColumnDef="address">
             <th mat-header-cell *matHeaderCellDef>{{ 'FORM.ADDRESS' | translate }}</th>
             <td mat-cell *matCellDef="let user">
-              <span class="address-text" [matTooltip]="getAddressString(user)" matTooltipPosition="above">
+              <span class="address-text" [matTooltip]="(getAddressString(user)) | translate" matTooltipPosition="above">
                 {{ getAddressString(user) }}
               </span>
             </td>
@@ -116,7 +116,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="card-content">
             <div class="user-details">
               <div class="detail-item" *ngIf="user.phoneNumber">
@@ -128,7 +128,7 @@
                 <span class="detail-text">{{ getAddressString(user) }}</span>
               </div>
             </div>
-            
+
             <div class="user-roles">
               <span *ngFor="let role of user.roles"
                 class="role-chip"

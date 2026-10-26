@@ -1,6 +1,5 @@
 @use '../../../styles/breakpoints' as *;
 @use '../../../styles/spacing' as *;
-
 /* ── Page wrapper ── */
 .home-page {
     width: 100vw;
@@ -633,7 +632,7 @@
     .swiper-button-prev {
         width: 44px;
         height: 44px;
-        background: var(--color-primary, #3b82f6);
+        background: var(--color-primary);
         border-radius: 50%;
         color: #fff;
         margin-top: -22px;
@@ -650,7 +649,7 @@
 
         &:hover:not(.swiper-button-disabled) {
             opacity: 1;
-            background: var(--color-primary-dark, #2563eb);
+            background: var(--color-primary-dark, var(--color-primary));
             transform: scale(1.1);
         }
 
@@ -677,7 +676,7 @@
     .swiper-button-prev {
         width: 44px;
         height: 44px;
-        background: var(--color-primary, #3b82f6);
+        background: var(--color-primary);
         border-radius: 50%;
         color: #fff;
         margin-top: -22px;
@@ -694,7 +693,7 @@
 
         &:hover:not(.swiper-button-disabled) {
             opacity: 1;
-            background: var(--color-primary-dark, #2563eb);
+            background: var(--color-primary-dark, var(--color-primary));
             transform: scale(1.1);
         }
 

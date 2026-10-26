@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
 import { Component, effect, inject, OnInit } from '@angular/core';
 import { CommonModule, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +22,7 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
 @Component({
   selector: 'app-site-settings',
   standalone: true,
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     NgIf,
     FormsModule,
@@ -40,6 +41,9 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
   styleUrl: './site-settings.component.scss'
 })
 export class SiteSettingsComponent implements OnInit {
+  currencyName(code: string): string {
+    return new Intl.DisplayNames([this.translate.currentLang === 'sr' ? 'sr-Latn' : 'en'], {type: 'currency'}).of(code) || code;
+  }
   private siteConfigService = inject(SiteConfigService);
   private themeService = inject(ThemeService);
   private snackbar = inject(SnackbarService);
@@ -161,7 +165,7 @@ export class SiteSettingsComponent implements OnInit {
       this.showWelcomeImage = false;
       return;
     }
-    
+
     this.themeService.setCustomColors({
       welcomeImageUrl: this.welcomeImageUrl,
       showWelcomeImage: this.showWelcomeImage
@@ -215,7 +219,7 @@ export class SiteSettingsComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files) {
       const files = Array.from(input.files);
-      
+
       // Upload files to server instead of converting to base64
       this.adminService.uploadGalleryImages(files).subscribe({
         next: (uploadedImages) => {
@@ -242,7 +246,7 @@ export class SiteSettingsComponent implements OnInit {
 
   removeGalleryImage(index: number): void {
     const imageUrl = this.galleryImages[index];
-    
+
     // Delete from Supabase if it's a Supabase URL
     if (imageUrl.includes('/storage/v1/object/public/')) {
       this.adminService.deleteGalleryImage(imageUrl).subscribe({
@@ -252,7 +256,7 @@ export class SiteSettingsComponent implements OnInit {
         }
       });
     }
-    
+
     this.galleryImages.splice(index, 1);
     this.saveGallery();
   }

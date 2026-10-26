@@ -1,6 +1,7 @@
+import { BrandingService } from '../../core/services/branding.service';
 import { Component, inject, OnInit } from '@angular/core';
 import { MatIcon } from "@angular/material/icon";
-import { MatButton } from "@angular/material/button";
+import { MatButtonModule } from "@angular/material/button";
 import { MatBadge } from "@angular/material/badge";
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
@@ -11,12 +12,14 @@ import { IsAdmin } from '../../shared/directives/is-admin';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../core/services/theme.service';
 import { computed } from '@angular/core';
+import { NoliIconComponent } from '../../shared/components/noli-icon/noli-icon.component';
 
 @Component({
   selector: 'app-header',
   imports: [
+    NoliIconComponent,
     MatIcon,
-    MatButton,
+    MatButtonModule,
     MatBadge,
     RouterLink,
     RouterLinkActive,
@@ -31,32 +34,32 @@ import { computed } from '@angular/core';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit {
+  readonly branding = inject(BrandingService);
   cartService = inject(CartService);
   accountService = inject(AccountService);
   themeService = inject(ThemeService);
-  currentLang: string = 'en';
+  currentLang: string = 'sr';
   mobileMenuOpen = false;
-  
+
   logoSrc = computed(() => {
     const config = this.themeService.themeConfig();
-    return config.logoUrl || '/images/logo.png';
+    return config.logoUrl || (this.branding.isNoli() ? '/brand/noli-mascot.png' : '/images/logo.png');
   });
-  
+
   private router = inject(Router);
   private translate = inject(TranslateService);
 
   ngOnInit() {
-    // Set default language
-    this.translate.setDefaultLang('en');
-    // Get browser language or use 'en' as fallback
-    const browserLang = this.translate.getBrowserLang();
-    this.currentLang = browserLang?.match(/en|sr/) ? browserLang : 'en';
-    this.translate.use(this.currentLang);
+    const savedLanguage = localStorage.getItem('userLanguage');
+    this.currentLang = savedLanguage === 'en' ? 'en' : 'sr';
+    this.translate.use(this.currentLang).subscribe(() => { if (this.branding.isNoli()) document.title = this.translate.instant('NOLI.PAGE_TITLE'); });
+    document.documentElement.lang = this.currentLang;
   }
 
   switchLanguage(lang: string) {
     this.currentLang = lang;
-    this.translate.use(lang);
+    this.translate.use(lang).subscribe(() => { if (this.branding.isNoli()) document.title = this.translate.instant('NOLI.PAGE_TITLE'); });
+    document.documentElement.lang = lang;
     // Save language preference to localStorage
     localStorage.setItem('userLanguage', lang);
   }

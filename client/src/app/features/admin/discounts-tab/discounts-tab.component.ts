@@ -56,7 +56,7 @@ export class DiscountsTabComponent implements OnInit {
   filterDefinitions: DynamicFilterDefinition[] = [
     {
       key: 'search',
-      label: 'Search by name or description',
+      label: 'UI.SEARCH_BY_NAME_OR_DESCRIPTION',
       controlType: 'text',
       propertyName: 'Name',
       operationType: 'Contains',
@@ -64,29 +64,29 @@ export class DiscountsTabComponent implements OnInit {
     },
     {
       key: 'state',
-      label: 'Status',
+      label: 'COMMON.STATUS',
       controlType: 'select',
       propertyName: 'State',
       operationType: 'Equal',
       dataType: 'String',
       options: ['Draft', 'Active', 'Expired', 'Disabled'],
       multiple: false,
-      allLabel: 'All Statuses'
+      allLabel: 'UI.ALL_STATUSES'
     },
     {
       key: 'isPercentage',
-      label: 'Discount Type',
+      label: 'UI.DISCOUNT_TYPE',
       controlType: 'select',
       propertyName: 'IsPercentage',
       operationType: 'Equal',
       dataType: 'String',
       options: ['Percentage', 'Fixed Amount'],
       multiple: false,
-      allLabel: 'All Types'
+      allLabel: 'UI.ALL_TYPES'
     },
     {
       key: 'hasBeenUsed',
-      label: 'Usage',
+      label: 'UI.USAGE',
       controlType: 'select',
       propertyName: 'HasBeenUsed',
       operationType: 'Equal',
@@ -97,7 +97,7 @@ export class DiscountsTabComponent implements OnInit {
     },
     {
       key: 'dateFrom',
-      label: 'Start Date Range',
+      label: 'UI.START_DATE_RANGE',
       controlType: 'dateRange',
       propertyName: 'DateFrom',
       operationType: 'GreaterThanOrEqual',
@@ -106,12 +106,12 @@ export class DiscountsTabComponent implements OnInit {
   ];
 
   sortOptions: DynamicSortOption[] = [
-    { label: 'Name (A-Z)', column: 'Name', ascending: true, descending: false },
-    { label: 'Name (Z-A)', column: 'Name', ascending: false, descending: true },
-    { label: 'Value (Low–High)', column: 'Value', ascending: true, descending: false },
-    { label: 'Value (High–Low)', column: 'Value', ascending: false, descending: true },
-    { label: 'Start Date (Earliest)', column: 'DateFrom', ascending: true, descending: false },
-    { label: 'Start Date (Latest)', column: 'DateFrom', ascending: false, descending: true }
+    { label: 'UI.NAME_A_Z', column: 'Name', ascending: true, descending: false },
+    { label: 'UI.NAME_Z_A', column: 'Name', ascending: false, descending: true },
+    { label: 'UI.VALUE_LOW_HIGH', column: 'Value', ascending: true, descending: false },
+    { label: 'UI.VALUE_HIGH_LOW', column: 'Value', ascending: false, descending: true },
+    { label: 'UI.START_DATE_EARLIEST', column: 'DateFrom', ascending: true, descending: false },
+    { label: 'UI.START_DATE_LATEST', column: 'DateFrom', ascending: false, descending: true }
   ];
 
   ngOnInit(): void {
@@ -240,36 +240,36 @@ export class DiscountsTabComponent implements OnInit {
     if (!this.selectedDiscount) return '';
 
     if (this.selectedDiscount.hasBeenUsed) {
-      return 'Cannot edit: Used in customer orders';
+      return 'UI.CANNOT_EDIT_USED_IN_CUSTOMER_ORDERS';
     }
     if (this.selectedDiscount.state === 'Active') {
-      return 'Cannot edit: Discount has already started';
+      return 'UI.CANNOT_EDIT_DISCOUNT_HAS_ALREADY_STARTED';
     }
     if (this.selectedDiscount.state === 'Expired') {
-      return 'Cannot edit: Discount has expired';
+      return 'UI.CANNOT_EDIT_DISCOUNT_HAS_EXPIRED';
     }
     if (this.selectedDiscount.state === 'Disabled') {
-      return 'Cannot edit: Discount is disabled';
+      return 'UI.CANNOT_EDIT_DISCOUNT_IS_DISABLED';
     }
-    return 'Cannot edit this discount';
+    return 'UI.CANNOT_EDIT_THIS_DISCOUNT';
   }
 
   getDeleteRestrictionTooltip(): string {
     if (!this.selectedDiscount) return '';
 
     if (this.selectedDiscount.hasBeenUsed) {
-      return 'Cannot delete: Used in orders (accounting requirement)';
+      return 'UI.CANNOT_DELETE_USED_IN_ORDERS_ACCOUNTING_REQUIREMENT';
     }
     if (this.selectedDiscount.state === 'Active') {
-      return 'Cannot delete: Only draft discounts can be deleted';
+      return 'UI.CANNOT_DELETE_ONLY_DRAFT_DISCOUNTS_CAN_BE_DELETED';
     }
     if (this.selectedDiscount.state === 'Expired') {
-      return 'Cannot delete: Expired discounts must be retained';
+      return 'UI.CANNOT_DELETE_EXPIRED_DISCOUNTS_MUST_BE_RETAINED';
     }
     if (this.selectedDiscount.state === 'Disabled') {
-      return 'Cannot delete: Disabled discounts must be retained';
+      return 'UI.CANNOT_DELETE_DISABLED_DISCOUNTS_MUST_BE_RETAINED';
     }
-    return 'Cannot delete this discount';
+    return 'UI.CANNOT_DELETE_THIS_DISCOUNT';
   }
 
   trackByDiscountId: TrackByFunction<Discount> = (index: number, discount: Discount): number => {

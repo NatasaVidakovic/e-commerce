@@ -1,12 +1,168 @@
+@if (branding.isNoli()) {
 @if (product) {
-<mat-card 
-  appearance="raised" 
-  routerLink="/shop/{{product.id}}" 
-  class="product-card" 
+<mat-card
+  appearance="raised"
+  routerLink="/shop/{{product.id}}"
+  class="product-card"
   [class.list-mode]="viewMode === 'list'"
   [class.product-highlighted]="isHighlighted"
   [attr.data-product-id]="product.id"
-  [attr.aria-label]="'View details for ' + product.name"
+  [attr.aria-label]="'NOLI.VIEW_PRODUCT' | translate: {name: (product.name | catalogText)}"
+  (click)="onProductClick()"
+  role="article">
+
+  <!-- Image -->
+  <div class="relative">
+    @if (product.hasActiveDiscount && product.discountPercentage) {
+      <div class="product-badges">
+        <span class="product-badge product-badge--discount">
+          {{product.discountPercentage | number:'1.0-0'}}
+        </span>
+      </div>
+    }
+    <img src="{{currentImage}}" class="rounded-t-lg" [alt]="'PRODUCT.IMAGE_ALT' | translate: { name: (product.name | catalogText) }" loading="lazy">
+  </div>
+
+  <!-- Content (center in list mode, full in grid mode) -->
+  <mat-card-content class="mt-2">
+    <div class="product-header">
+      <div class="flex-1">
+
+        <!-- Brand / Type tags -->
+        <div class="product-meta">
+          @if (product.brand) {
+            <span class="product-brand">{{product.brand}}</span>
+          }
+          @if (product.productType?.name || product.type) {
+            <span class="product-type">{{ (product.productType?.name || product.type) | catalogText }}</span>
+          }
+        </div>
+
+        <!-- Name -->
+        <h2 class="product-name">{{ (product.name) | catalogText }}</h2>
+
+        <!-- Description — both modes -->
+        @if (viewMode == 'list') {
+        @if (product.description) {
+          <p class="product-description">{{ (product.description) | catalogText }}</p>
+        }
+      }
+
+        <!-- Price block — grid mode only -->
+        @if (viewMode !== 'list') {
+          @if (product.hasActiveDiscount && product.originalPrice) {
+            <div class="product-price grid-mode">
+              <span class="product-price__current">{{product.price | appCurrency}}</span>
+              <span class="product-price__original">{{product.originalPrice | appCurrency}}</span>
+           </div>
+          } @else {
+            <div class="product-price grid-mode">
+              <span class="product-price__regular">{{product.price | appCurrency}}</span>
+            </div>
+          }
+        }
+
+        <!-- Rating row — list mode only (in content column) -->
+        @if (viewMode === 'list') {
+          <div class="product-rating-row">
+            <div class="product-rating-stars">
+              @for (s of [1,2,3,4,5]; track s) {
+                <mat-icon class="product-rating-star">
+                  {{ (product.rating || 0) >= s ? 'star' : (product.rating || 0) >= s - 0.5 ? 'star_half' : 'star_border' }}
+                </mat-icon>
+              }
+            </div>
+            <span class="product-review-count">
+              ({{product.reviewsCount || 0}} {{ ((product.reviewsCount || 0) === 1 ? 'NOLI.REVIEW_ONE' : 'NOLI.REVIEW_MANY') | translate }})
+            </span>
+          </div>
+        }
+
+      </div>
+
+      <!-- Favourite button -->
+      <button
+        mat-icon-button
+        *ngIf="loggedIn && !accountService.isAdmin()"
+        [class.text-favorite]="isFavourite"
+        [class.text-gray-400]="!isFavourite"
+        [attr.aria-label]="(isFavourite ? 'NOLI.REMOVE_FAVOURITE' : 'NOLI.ADD_FAVOURITE') | translate: {name: (product.name | catalogText)}"
+        [disabled]="savingFavourite()"
+        [attr.aria-pressed]="isFavourite"
+        (click)="toggleFavorite($event)">
+        <app-noli-icon name="heart" [filled]="isFavourite"></app-noli-icon>
+      </button>
+    </div>
+  </mat-card-content>
+
+  <!-- Actions -->
+  <mat-card-actions (click)="$event.stopPropagation()">
+
+    <!-- Grid mode: just the button -->
+    @if (viewMode !== 'list') {
+      <button
+        *ngIf="!accountService.isAdmin()"
+        mat-stroked-button
+        class="w-full add-to-cart-btn"
+        [attr.aria-label]="'NOLI.ADD_PRODUCT' | translate: {name: (product.name | catalogText)}"
+        (click)="addToCart($event)" [disabled]="addingToCart() || product.quantityInStock === 0" [attr.aria-busy]="addingToCart()">
+        <app-noli-icon name="bag"></app-noli-icon>
+        {{ 'BUTTONS.ADD_TO_CART' | translate }}
+      </button>
+    }
+
+    <!-- List mode: right panel with price + stock + button -->
+    @if (viewMode === 'list') {
+      <div class="list-actions-panel">
+
+        <!-- Price section -->
+        @if (product.hasActiveDiscount && product.originalPrice) {
+          <span class="list-price-original">{{product.originalPrice | appCurrency}}</span>
+          <span class="list-price-current">{{product.price | appCurrency}}</span>
+        } @else {
+          <span class="list-price-regular">{{product.price | appCurrency}}</span>
+        }
+
+        <!-- Stock status -->
+        @if (product.quantityInStock > 0) {
+          <span class="list-stock-in">
+            <mat-icon>check_circle</mat-icon>
+            {{ 'NOLI.IN_STOCK' | translate }}
+          </span>
+        } @else {
+          <span class="list-stock-out">
+            <mat-icon>cancel</mat-icon>
+            {{ 'NOLI.OUT_OF_STOCK' | translate }}
+          </span>
+        }
+
+        <!-- Add to Cart -->
+        <button
+          *ngIf="!accountService.isAdmin()"
+          class="list-cart-btn"
+          [attr.aria-label]="'NOLI.ADD_PRODUCT' | translate: {name: (product.name | catalogText)}"
+          (click)="addToCart($event)" [disabled]="addingToCart() || product.quantityInStock === 0" [attr.aria-busy]="addingToCart()">
+          <app-noli-icon name="bag"></app-noli-icon>
+          {{ 'BUTTONS.ADD_TO_CART' | translate }}
+        </button>
+
+      </div>
+    }
+
+  </mat-card-actions>
+</mat-card>
+}
+
+} @else {
+@if (product) {
+<mat-card
+  appearance="raised"
+  routerLink="/shop/{{product.id}}"
+  class="product-card"
+  [class.list-mode]="viewMode === 'list'"
+  [class.product-highlighted]="isHighlighted"
+  [attr.data-product-id]="product.id"
+  [attr.aria-label]="'ARIA_LABELS.VIEW_PRODUCT' | translate: {name: product.name}"
   (click)="onProductClick()"
   role="article">
 
@@ -50,30 +206,30 @@
         <!-- Price block — grid mode only -->
         @if (viewMode !== 'list') {
           @if (product.hasActiveDiscount && product.originalPrice) {
-            <div class="product-price grid-mode" 
-                 [style.display]="'flex !important'" 
-                 [style.align-items]="'center !important'" 
+            <div class="product-price grid-mode"
+                 [style.display]="'flex !important'"
+                 [style.align-items]="'center !important'"
                  [style.justify-content]="'center !important'"
-                 [style.gap]="'0.25rem !important'" 
+                 [style.gap]="'0.25rem !important'"
                  [style.flex-wrap]="'nowrap !important'"
                  [style.flex-direction]="'row !important'"
                  [style.white-space]="'nowrap !important'">
-              <span class="product-price__current" 
-                    [style.display]="'inline !important'" 
+              <span class="product-price__current"
+                    [style.display]="'inline !important'"
                     [style.margin]="'0 !important'"
                     [style.padding]="'0 !important'">{{product.price | appCurrency}}</span>
-              <span class="product-price__original" 
-                    [style.display]="'inline !important'" 
+              <span class="product-price__original"
+                    [style.display]="'inline !important'"
                     [style.margin]="'0 !important'"
                     [style.padding]="'0 !important'">{{product.originalPrice | appCurrency}}</span>
            </div>
           } @else {
-            <div class="product-price grid-mode" 
-                 [style.display]="'flex !important'" 
+            <div class="product-price grid-mode"
+                 [style.display]="'flex !important'"
                  [style.align-items]="'center !important'"
                  [style.justify-content]="'center !important'">
-              <span class="product-price__regular" 
-                    [style.display]="'inline !important'" 
+              <span class="product-price__regular"
+                    [style.display]="'inline !important'"
                     [style.margin]="'0 !important'"
                     [style.padding]="'0 !important'">{{product.price | appCurrency}}</span>
             </div>
@@ -99,13 +255,13 @@
       </div>
 
       <!-- Favourite button -->
-      <button 
-        mat-icon-button 
-        *ngIf="loggedIn && !accountService.isAdmin()" 
-        [class.text-favorite]="isFavourite" 
+      <button
+        mat-icon-button
+        *ngIf="loggedIn && !accountService.isAdmin()"
+        [class.text-favorite]="isFavourite"
         [class.text-gray-400]="!isFavourite"
-        [attr.aria-label]="isFavourite ? 'Remove from favorites' : 'Add to favorites'"
-        (click)="$event.stopPropagation(); toggleFavorite()">
+        [attr.aria-label]="(isFavourite ? 'PRODUCT.REMOVE_FROM_FAVORITES' : 'PRODUCT.ADD_TO_FAVORITES') | translate"
+        (click)="$event.stopPropagation(); toggleFavorite($event)">
         <mat-icon>{{isFavourite ? 'favorite' : 'favorite_border'}}</mat-icon>
       </button>
     </div>
@@ -116,11 +272,11 @@
 
     <!-- Grid mode: just the button -->
     @if (viewMode !== 'list') {
-      <button 
-        *ngIf="!accountService.isAdmin()" 
-        mat-stroked-button 
-        class="w-full add-to-cart-btn" 
-        [attr.aria-label]="'Add ' + product.name + ' to cart'"
+      <button
+        *ngIf="!accountService.isAdmin()"
+        mat-stroked-button
+        class="w-full add-to-cart-btn"
+        [attr.aria-label]="'ARIA_LABELS.ADD_PRODUCT' | translate: {name: product.name}"
         (click)="cartService.addItemToCart(product)">
         <mat-icon>add_shopping_cart</mat-icon>
         {{ 'BUTTONS.ADD_TO_CART' | translate }}
@@ -153,10 +309,10 @@
         }
 
         <!-- Add to Cart -->
-        <button 
-          *ngIf="!accountService.isAdmin()" 
+        <button
+          *ngIf="!accountService.isAdmin()"
           class="list-cart-btn"
-          [attr.aria-label]="'Add ' + product.name + ' to cart'"
+          [attr.aria-label]="'ARIA_LABELS.ADD_PRODUCT' | translate: {name: product.name}"
           (click)="cartService.addItemToCart(product)">
           <mat-icon>add_shopping_cart</mat-icon>
           {{ 'BUTTONS.ADD_TO_CART' | translate }}
@@ -167,4 +323,5 @@
 
   </mat-card-actions>
 </mat-card>
+}
 }

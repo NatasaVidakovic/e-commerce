@@ -1,6 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { BrandingService } from '../../../../core/services/branding.service';
+import { Component, inject, OnInit, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError } from 'rxjs/operators';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { AdminService } from '../../../../core/services/admin.service';
 import { ShopService } from '../../../../core/services/shop.service';
@@ -50,6 +52,9 @@ export interface KpiCard {
   styleUrl: './analytics-tab.component.scss'
 })
 export class AnalyticsTabComponent implements OnInit {
+  readonly branding = inject(BrandingService);
+  private translate = inject(TranslateService);
+  private destroyRef = inject(DestroyRef);
   private adminService = inject(AdminService);
   private shopService = inject(ShopService);
   private currencyService = inject(CurrencyService);
@@ -74,7 +79,7 @@ export class AnalyticsTabComponent implements OnInit {
   filterDefinitions: DynamicFilterDefinition[] = [
     {
       key: 'orderDate',
-      label: 'Date Range',
+      label: 'ADMIN.DATE_RANGE',
       controlType: 'dateRange',
       propertyName: 'orderDate',
       operationType: 'Equal',
@@ -91,32 +96,32 @@ export class AnalyticsTabComponent implements OnInit {
   revenueChartOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { 
+    plugins: {
       legend: { display: false },
       tooltip: {
         callbacks: {
           label: (context) => {
             const value = context.parsed.y;
-            return `Revenue: ${this.currencyService.formatCurrency(value || 0)}`;
+            return `${this.translate.instant('NOLI.REVENUE')}: ${this.currencyService.formatCurrency(value || 0)}`;
           }
         }
       }
     },
-    scales: { 
-      y: { 
+    scales: {
+      y: {
         beginAtZero: true,
-        ticks: { 
-          callback: (v: number | string) => this.currencyService.formatCurrency(Number(v)) 
+        ticks: {
+          callback: (v: number | string) => this.currencyService.formatCurrency(Number(v))
         },
         title: {
           display: true,
-          text: 'Revenue'
+          text: this.translate.instant('ANALYTICS.TABS.REVENUE')
         }
       },
       x: {
         title: {
           display: true,
-          text: 'Month'
+          text: this.translate.instant('UI.MONTH')
         }
       }
     }
@@ -126,15 +131,15 @@ export class AnalyticsTabComponent implements OnInit {
   orderStatusChartOptions: ChartOptions<'doughnut'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { 
-      legend: { 
+    plugins: {
+      legend: {
         position: 'bottom',
         labels: {
           boxWidth: 12,
           padding: 10,
           font: { size: 11 }
         }
-      } 
+      }
     }
   };
 
@@ -143,32 +148,32 @@ export class AnalyticsTabComponent implements OnInit {
     responsive: true,
     maintainAspectRatio: false,
     indexAxis: 'y' as const,
-    plugins: { 
+    plugins: {
       legend: { display: false },
       tooltip: {
         callbacks: {
           label: (context) => {
             const value = context.parsed.x;
-            return `Stock: ${Math.round(value || 0)} units`;
+            return this.translate.instant('NOLI.STOCK_TOOLTIP',{count:Math.round(value || 0)});
           }
         }
       }
     },
-    scales: { 
-      x: { 
+    scales: {
+      x: {
         beginAtZero: true,
         ticks: {
           callback: (v: number | string) => Math.round(Number(v)).toString()
         },
         title: {
           display: true,
-          text: 'Stock Quantity'
+          text: this.translate.instant('UI.STOCK_QUANTITY')
         }
       },
       y: {
         title: {
           display: true,
-          text: 'Products'
+          text: this.translate.instant('DISCOUNT.PRODUCTS')
         }
       }
     }
@@ -178,15 +183,15 @@ export class AnalyticsTabComponent implements OnInit {
   categoryChartOptions: ChartOptions<'pie'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { 
-      legend: { 
+    plugins: {
+      legend: {
         position: 'bottom',
         labels: {
           boxWidth: 12,
           padding: 10,
           font: { size: 11 }
         }
-      } 
+      }
     }
   };
 
@@ -194,19 +199,19 @@ export class AnalyticsTabComponent implements OnInit {
   customerOrderChartOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { 
+    plugins: {
       legend: { display: false },
       tooltip: {
         callbacks: {
           label: (context) => {
             const value = context.parsed.y;
-            return `Orders: ${Math.round(value || 0)}`;
+            return `${this.translate.instant('NOLI.ORDERS')}: ${Math.round(value || 0)}`;
           }
         }
       }
     },
-    scales: { 
-      y: { 
+    scales: {
+      y: {
         beginAtZero: true,
         ticks: {
           stepSize: 1,
@@ -214,13 +219,13 @@ export class AnalyticsTabComponent implements OnInit {
         },
         title: {
           display: true,
-          text: 'Number of Orders'
+          text: this.translate.instant('UI.NUMBER_OF_ORDERS')
         }
       },
       x: {
         title: {
           display: true,
-          text: 'Customers'
+          text: this.translate.instant('ANALYTICS.TABS.CUSTOMERS')
         }
       }
     }
@@ -230,15 +235,15 @@ export class AnalyticsTabComponent implements OnInit {
   revenueByPaymentChartOptions: ChartOptions<'pie'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { 
-      legend: { 
+    plugins: {
+      legend: {
         position: 'bottom',
         labels: {
           boxWidth: 12,
           padding: 10,
           font: { size: 11 }
         }
-      } 
+      }
     }
   };
 
@@ -246,20 +251,41 @@ export class AnalyticsTabComponent implements OnInit {
   userStatusChartOptions: ChartOptions<'doughnut'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { 
-      legend: { 
+    plugins: {
+      legend: {
         position: 'bottom',
         labels: {
           boxWidth: 12,
           padding: 10,
           font: { size: 11 }
         }
-      } 
+      }
     }
   };
 
   ngOnInit(): void {
     this.loadAllData();
+    this.localizeChartAxes();
+    this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.localizeChartAxes();
+      this.updateCharts();
+    });
+  }
+
+  private localizeChartAxes(): void {
+    const axes = [
+      [this.revenueChartOptions, 'UI.MONTH', 'ANALYTICS.TABS.REVENUE'],
+      [this.productStockChartOptions, 'UI.STOCK_QUANTITY', 'DISCOUNT.PRODUCTS'],
+      [this.customerOrderChartOptions, 'ANALYTICS.TABS.CUSTOMERS', 'UI.NUMBER_OF_ORDERS']
+    ] as const;
+    for (const [options, x, y] of axes) {
+      const scales = options.scales as Record<string, any>;
+      scales['x'].title.text = this.translate.instant(x);
+      scales['y'].title.text = this.translate.instant(y);
+    }
+    this.revenueChartOptions = { ...this.revenueChartOptions };
+    this.productStockChartOptions = { ...this.productStockChartOptions };
+    this.customerOrderChartOptions = { ...this.customerOrderChartOptions };
   }
 
   selectStatistic(type: string): void {
@@ -329,6 +355,10 @@ export class AnalyticsTabComponent implements OnInit {
     this.buildCustomerOrderChart();
     this.buildRevenueByPaymentChart();
     this.buildUserStatusChart();
+    for (const chart of [this.revenueChartData, this.productStockChartData, this.customerOrderChartData]) { chart.datasets.forEach(d => { if(d.label) d.label = this.translate.instant(d.label); }); }
+    this.orderStatusChartData.labels = this.orderStatusChartData.labels?.map(k => this.translate.instant('ORDER.STATUS.' + String(k).toUpperCase()));
+    this.categoryChartData.labels = this.categoryChartData.labels?.map(k => this.translate.instant(this.branding.isNoli() && k === 'Nakit' ? 'NOLI.JEWELRY' : this.branding.isNoli() && k === 'Mirisne svijeće' ? 'NOLI.CANDLES' : String(k)));
+    this.revenueByPaymentChartData.labels = this.revenueByPaymentChartData.labels?.map(k => this.translate.instant('PAYMENT.' + String(k).toUpperCase()));
   }
 
   private buildKpiCards(): void {
@@ -345,28 +375,28 @@ export class AnalyticsTabComponent implements OnInit {
 
     const cards: Record<string, KpiCard[]> = {
       revenue: [
-        { title: 'Total Revenue', value: this.currencyService.formatCurrency(totalRevenue), icon: 'payments', accent: '#10b981' },
-        { title: 'Avg Order Value', value: this.currencyService.formatCurrency(avgOrder), icon: 'trending_up', accent: '#3b82f6' },
-        { title: 'Total Orders', value: orders.length, icon: 'receipt_long', accent: '#8b5cf6' },
-        { title: 'Unique Customers', value: uniqueCustomers, icon: 'people', accent: '#f59e0b' }
+        { title: 'ADMIN.TOTAL_REVENUE', value: this.currencyService.formatCurrency(totalRevenue), icon: 'payments', accent: this.branding.isNoli() ? '#8d9c7c' : '#10b981' },
+        { title: 'UI.AVG_ORDER_VALUE', value: this.currencyService.formatCurrency(avgOrder), icon: 'trending_up', accent: this.branding.isNoli() ? '#b77a64' : '#3b82f6' },
+        { title: 'ADMIN.TOTAL_ORDERS', value: orders.length, icon: 'receipt_long', accent: this.branding.isNoli() ? '#a4ac97' : '#8b5cf6' },
+        { title: 'UI.UNIQUE_CUSTOMERS', value: uniqueCustomers, icon: 'people', accent: this.branding.isNoli() ? '#d2aa74' : '#f59e0b' }
       ],
       orders: [
-        { title: 'Total Orders', value: orders.length, icon: 'shopping_cart', accent: '#3b82f6' },
-        { title: 'Pending', value: pending, icon: 'schedule', accent: '#f59e0b' },
-        { title: 'Delivered', value: delivered, icon: 'local_shipping', accent: '#10b981' },
-        { title: 'Cancelled', value: cancelled, icon: 'cancel', accent: '#ef4444' }
+        { title: 'ADMIN.TOTAL_ORDERS', value: orders.length, icon: 'shopping_cart', accent: this.branding.isNoli() ? '#b77a64' : '#3b82f6' },
+        { title: 'ADMIN.USER_STATUS_PENDING', value: pending, icon: 'schedule', accent: this.branding.isNoli() ? '#d2aa74' : '#f59e0b' },
+        { title: 'ADMIN.DELIVERED', value: delivered, icon: 'local_shipping', accent: this.branding.isNoli() ? '#8d9c7c' : '#10b981' },
+        { title: 'ADMIN.CANCELLED', value: cancelled, icon: 'cancel', accent: '#ef4444' }
       ],
       products: [
-        { title: 'Total Products', value: products.length, icon: 'inventory_2', accent: '#3b82f6' },
-        { title: 'Low Stock', value: lowStock, subtitle: '< 10 units', icon: 'warning', accent: '#f59e0b' },
-        { title: 'Out of Stock', value: outStock, icon: 'remove_shopping_cart', accent: '#ef4444' },
-        { title: 'In Stock', value: products.length - outStock, icon: 'check_circle', accent: '#10b981' }
+        { title: 'ADMIN.TOTAL_PRODUCTS', value: products.length, icon: 'inventory_2', accent: this.branding.isNoli() ? '#b77a64' : '#3b82f6' },
+        { title: 'ADMIN.LOW_STOCK', value: lowStock, subtitle: 'UI.10_UNITS', icon: 'warning', accent: this.branding.isNoli() ? '#d2aa74' : '#f59e0b' },
+        { title: 'FILTERS.OUT_OF_STOCK', value: outStock, icon: 'remove_shopping_cart', accent: '#ef4444' },
+        { title: 'FILTERS.IN_STOCK', value: products.length - outStock, icon: 'check_circle', accent: this.branding.isNoli() ? '#8d9c7c' : '#10b981' }
       ],
       customers: [
-        { title: 'Total Customers', value: uniqueCustomers, icon: 'people', accent: '#3b82f6' },
-        { title: 'Orders Placed', value: orders.length, icon: 'receipt_long', accent: '#10b981' },
-        { title: 'Avg Orders/Customer', value: uniqueCustomers ? (orders.length / uniqueCustomers).toFixed(1) : '0', icon: 'repeat', accent: '#8b5cf6' },
-        { title: 'Total Spent', value: this.currencyService.formatCurrency(totalRevenue), icon: 'payments', accent: '#f59e0b' }
+        { title: 'UI.TOTAL_CUSTOMERS', value: uniqueCustomers, icon: 'people', accent: this.branding.isNoli() ? '#b77a64' : '#3b82f6' },
+        { title: 'UI.ORDERS_PLACED', value: orders.length, icon: 'receipt_long', accent: this.branding.isNoli() ? '#8d9c7c' : '#10b981' },
+        { title: 'UI.AVG_ORDERS_CUSTOMER', value: uniqueCustomers ? (orders.length / uniqueCustomers).toFixed(1) : '0', icon: 'repeat', accent: this.branding.isNoli() ? '#a4ac97' : '#8b5cf6' },
+        { title: 'ADMIN.TOTAL_SPENT', value: this.currencyService.formatCurrency(totalRevenue), icon: 'payments', accent: this.branding.isNoli() ? '#d2aa74' : '#f59e0b' }
       ]
     };
     this.kpiCards = cards[this.selectedStatistic!] || [];
@@ -379,29 +409,29 @@ export class AnalyticsTabComponent implements OnInit {
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       monthMap.set(key, (monthMap.get(key) || 0) + (order.total || 0));
     });
-    
+
     // Show last 18 months instead of 12 for more detail
     const sorted = Array.from(monthMap.entries()).sort(([a], [b]) => a.localeCompare(b)).slice(-18);
-    
+
     // Format month labels for better readability
     const labels = sorted.map(([key]) => {
       const [year, month] = key.split('-');
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      return `${monthNames[parseInt(month) - 1]} ${year.slice(2)}`;
+      return new Intl.DateTimeFormat(this.translate.currentLang === 'sr' ? 'sr-Latn' : 'en', {month:'short',year:'2-digit'}).format(new Date(Number(year),Number(month)-1));
     });
-    
+
     // Round revenue values to 2 decimal places
     const data = sorted.map(([, value]) => Math.round(value * 100) / 100);
-    
+
     this.revenueChartData = {
       labels: labels,
-      datasets: [{ 
-        data: data, 
-        backgroundColor: '#3b82f6', 
-        borderRadius: 4, 
-        label: 'Revenue',
+      datasets: [{
+        data: data,
+        backgroundColor: this.branding.isNoli() ? '#b77a64' : '#3b82f6',
+        borderRadius: 4,
+        label: 'ANALYTICS.TABS.REVENUE',
         borderWidth: 1,
-        borderColor: '#2563eb'
+        borderColor: this.branding.isNoli() ? '#9f6550' : '#1d4ed8'
       }]
     };
   }
@@ -409,23 +439,23 @@ export class AnalyticsTabComponent implements OnInit {
   private buildOrderStatusChart(): void {
     // Define all possible order statuses
     const allStatuses = [
-      'New', 'Confirmed', 'Preparing', 'ReadyToShip', 'Shipped', 
-      'OutForDelivery', 'Delivered', 'Returned', 'Cancelled', 
+      'New', 'Confirmed', 'Preparing', 'ReadyToShip', 'Shipped',
+      'OutForDelivery', 'Delivered', 'Returned', 'Cancelled',
       'OnHold', 'FraudReview', 'PaymentFailed', 'PaymentMismatch'
     ];
-    
+
     // Initialize map with all statuses set to 0
     const statusMap = new Map<string, number>();
     allStatuses.forEach(status => statusMap.set(status, 0));
-    
+
     // Count actual orders
     this.orders.forEach(o => {
       const s = o.status || 'Unknown';
       statusMap.set(s, (statusMap.get(s) || 0) + 1);
     });
-    
+
     const entries = Array.from(statusMap.entries());
-    const palette = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f43f5e', '#84cc16', '#14b8a6', '#a855f7', '#ec4899', '#f97316', '#6366f1'];
+    const palette = [this.branding.isNoli() ? '#b77a64' : '#3b82f6', this.branding.isNoli() ? '#8d9c7c' : '#10b981', this.branding.isNoli() ? '#d2aa74' : '#f59e0b', '#ef4444', this.branding.isNoli() ? '#a4ac97' : '#8b5cf6', this.branding.isNoli() ? '#b6c0b2' : '#06b6d4', '#f43f5e', '#84cc16', '#14b8a6', '#a855f7', '#ec4899', '#f97316', '#baa899'];
     this.orderStatusChartData = {
       labels: entries.map(([k]) => k),
       datasets: [{ data: entries.map(([, v]) => v), backgroundColor: palette.slice(0, entries.length) }]
@@ -437,26 +467,26 @@ export class AnalyticsTabComponent implements OnInit {
     const topProducts = [...this.allProducts]
       .sort((a, b) => (b.quantityInStock || 0) - (a.quantityInStock || 0))
       .slice(0, 15);
-    
+
     // Format product names for better readability
     const labels = topProducts.map(p => {
       const name = p.name || 'Unknown';
       // Truncate long product names
       return name.length > 20 ? name.substring(0, 17) + '...' : name;
     });
-    
+
     // Round the stock quantities to whole numbers
     const data = topProducts.map(p => Math.round(p.quantityInStock || 0));
-    
+
     this.productStockChartData = {
       labels: labels,
-      datasets: [{ 
-        data: data, 
-        backgroundColor: '#10b981', 
-        label: 'Stock',
+      datasets: [{
+        data: data,
+        backgroundColor: this.branding.isNoli() ? '#8d9c7c' : '#10b981',
+        label: 'PRODUCT.STOCK',
         borderRadius: 4,
         borderWidth: 1,
-        borderColor: '#059669'
+        borderColor: this.branding.isNoli() ? '#6f805f' : '#047857'
       }]
     };
   }
@@ -468,7 +498,7 @@ export class AnalyticsTabComponent implements OnInit {
       catMap.set(cat, (catMap.get(cat) || 0) + 1);
     });
     const entries = Array.from(catMap.entries());
-    const palette = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f43f5e', '#84cc16'];
+    const palette = [this.branding.isNoli() ? '#b77a64' : '#3b82f6', this.branding.isNoli() ? '#8d9c7c' : '#10b981', this.branding.isNoli() ? '#d2aa74' : '#f59e0b', '#ef4444', this.branding.isNoli() ? '#a4ac97' : '#8b5cf6', this.branding.isNoli() ? '#b6c0b2' : '#06b6d4', '#f43f5e', '#84cc16'];
     this.categoryChartData = {
       labels: entries.map(([k]) => k),
       datasets: [{ data: entries.map(([, v]) => v), backgroundColor: palette.slice(0, entries.length) }]
@@ -480,10 +510,10 @@ export class AnalyticsTabComponent implements OnInit {
     this.orders.forEach(o => {
       if (o.buyerEmail) custMap.set(o.buyerEmail, (custMap.get(o.buyerEmail) || 0) + 1);
     });
-    
+
     // Show top 15 customers instead of 10 for more detail
     const topCustomers = Array.from(custMap.entries()).sort(([, a], [, b]) => b - a).slice(0, 15);
-    
+
     // Format labels to show first part of email for better readability
     const labels = topCustomers.map(([email]) => {
       const emailParts = email.split('@');
@@ -491,19 +521,19 @@ export class AnalyticsTabComponent implements OnInit {
       // Truncate long usernames
       return username.length > 15 ? username.substring(0, 12) + '...' : username;
     });
-    
+
     // Round the order counts to whole numbers
     const data = topCustomers.map(([, count]) => Math.round(count));
-    
+
     this.customerOrderChartData = {
       labels: labels,
-      datasets: [{ 
-        data: data, 
-        backgroundColor: '#8b5cf6', 
-        label: 'Orders',
+      datasets: [{
+        data: data,
+        backgroundColor: this.branding.isNoli() ? '#a4ac97' : '#8b5cf6',
+        label: 'NAVIGATION.ORDERS',
         borderRadius: 4,
         borderWidth: 1,
-        borderColor: '#7c3aed'
+        borderColor: this.branding.isNoli() ? '#838d74' : '#6d28d9'
       }]
     };
   }
@@ -515,7 +545,7 @@ export class AnalyticsTabComponent implements OnInit {
       pmMap.set(pm, (pmMap.get(pm) || 0) + (o.total || 0));
     });
     const entries = Array.from(pmMap.entries());
-    const palette = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+    const palette = [this.branding.isNoli() ? '#b77a64' : '#3b82f6', this.branding.isNoli() ? '#8d9c7c' : '#10b981', this.branding.isNoli() ? '#d2aa74' : '#f59e0b', '#ef4444', this.branding.isNoli() ? '#a4ac97' : '#8b5cf6'];
     this.revenueByPaymentChartData = {
       labels: entries.map(([k]) => k),
       datasets: [{ data: entries.map(([, v]) => v), backgroundColor: palette.slice(0, entries.length) }]
@@ -526,7 +556,7 @@ export class AnalyticsTabComponent implements OnInit {
     // Get unique customers from orders
     const uniqueEmails = new Set(this.orders.map(o => o.buyerEmail).filter(e => e));
     const totalCustomers = uniqueEmails.size;
-    
+
     // For demo purposes, we'll categorize customers based on order behavior
     // Active: customers with 3+ orders
     // Regular: customers with 2 orders
@@ -537,26 +567,26 @@ export class AnalyticsTabComponent implements OnInit {
         customerOrderCount.set(o.buyerEmail, (customerOrderCount.get(o.buyerEmail) || 0) + 1);
       }
     });
-    
+
     let activeCustomers = 0;
     let regularCustomers = 0;
     let newCustomers = 0;
-    
+
     customerOrderCount.forEach((count) => {
       if (count >= 3) activeCustomers++;
       else if (count === 2) regularCustomers++;
       else newCustomers++;
     });
-    
+
     const statusData = [
-      { label: 'Active Customers (3+ orders)', count: activeCustomers },
-      { label: 'Regular Customers (2 orders)', count: regularCustomers },
-      { label: 'New Customers (1 order)', count: newCustomers }
+      { label: 'UI.ACTIVE_CUSTOMERS_3_ORDERS', count: activeCustomers },
+      { label: 'UI.REGULAR_CUSTOMERS_2_ORDERS', count: regularCustomers },
+      { label: 'UI.NEW_CUSTOMERS_1_ORDER', count: newCustomers }
     ];
-    
-    const palette = ['#10b981', '#3b82f6', '#f59e0b'];
+
+    const palette = [this.branding.isNoli() ? '#8d9c7c' : '#10b981', this.branding.isNoli() ? '#b77a64' : '#3b82f6', this.branding.isNoli() ? '#d2aa74' : '#f59e0b'];
     this.userStatusChartData = {
-      labels: statusData.map(s => s.label),
+      labels: statusData.map(s => this.translate.instant(s.label)),
       datasets: [{ data: statusData.map(s => s.count), backgroundColor: palette }]
     };
   }

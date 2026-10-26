@@ -19,7 +19,7 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
     MatLabel,
     MatButton,
     RouterLink,
-    MatInput, 
+    MatInput,
     CurrencyPipe,
     FormsModule,
     MatIcon,
@@ -41,7 +41,7 @@ export class OrderSummaryComponent {
     this.cartService.applyDiscount(this.code).subscribe({
       next: async voucher => {
         const cart = this.cartService.cart();
-        
+
         if (cart) {
           cart.voucher = voucher;
           await firstValueFrom(this.cartService.setCart(cart));
@@ -52,7 +52,7 @@ export class OrderSummaryComponent {
         }
       },
       error: (err) => {
-        this.voucherError = err.message || 'Invalid or inactive voucher code';
+        this.voucherError = err.message || 'UI.INVALID_OR_INACTIVE_VOUCHER_CODE';
       }
     });
   }

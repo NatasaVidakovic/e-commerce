@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
 import { Component, OnInit, ViewChild, TemplateRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -19,7 +20,7 @@ import { AdminService } from '../../../core/services/admin.service';
 @Component({
   selector: 'app-product-type-management',
   standalone: true,
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -41,16 +42,16 @@ export class ProductTypeManagementComponent implements OnInit {
   displayedColumns: string[] = ['id', 'name', 'description', 'productCount', 'isActive', 'actions'];
   productTypes: ProductTypeDto[] = [];
   isLoading = false;
-  
+
   addForm: FormGroup;
   selectedProductType: ProductTypeDto | null = null;
-  
+
   @ViewChild('addDialogTemplate') addDialogTemplate!: TemplateRef<any>;
   @ViewChild('deleteDialogTemplate') deleteDialogTemplate!: TemplateRef<any>;
-  
+
   private addDialogRef: MatDialogRef<any> | null = null;
   private deleteDialogRef: MatDialogRef<any> | null = null;
-  
+
   private adminService = inject(AdminService);
   private dialog = inject(MatDialog);
   private snackbar = inject(SnackbarService);
@@ -90,7 +91,7 @@ export class ProductTypeManagementComponent implements OnInit {
       description: '',
       isActive: true
     });
-    
+
     this.addDialogRef = this.dialog.open(this.addDialogTemplate, {
       width: '500px',
       disableClose: true
@@ -108,7 +109,7 @@ export class ProductTypeManagementComponent implements OnInit {
     if (this.addForm.invalid) return;
 
     const createDto: CreateProductTypeDto = this.addForm.value;
-    
+
     this.adminService.createProductType(createDto).subscribe({
       next: () => {
         this.snackbar.success(this.translate.instant('ADMIN.PRODUCT_TYPE.MESSAGES.CREATE_SUCCESS'));
@@ -124,7 +125,7 @@ export class ProductTypeManagementComponent implements OnInit {
 
   openDeleteDialog(productType: ProductTypeDto): void {
     this.selectedProductType = productType;
-    
+
     this.deleteDialogRef = this.dialog.open(this.deleteDialogTemplate, {
       width: '400px',
       disableClose: true

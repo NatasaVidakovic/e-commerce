@@ -1,3 +1,4 @@
+
 // Dialog container styling
 ::ng-deep .mat-mdc-dialog-container {
   background: var(--color-surface, #ffffff) !important;
@@ -31,7 +32,7 @@
     margin: 4px 0;
     font-size: 14px;
     color: var(--color-text-primary, #111827);
-    
+
     strong {
       color: var(--color-text-secondary, #6b7280);
       font-weight: 600;
@@ -56,38 +57,38 @@
     background-color: var(--color-surface, #ffffff) !important;
     border-color: var(--color-border-primary, #e0e0e0) !important;
   }
-  
+
   .mat-mdc-form-field-flex {
     .mat-mdc-floating-label {
       color: var(--color-text-secondary, #6b7280) !important;
       &.mdc-floating-label--float-above {
-        color: var(--color-primary, #3b82f6) !important;
+        color: var(--color-primary) !important;
       }
     }
-    
+
     .mat-mdc-input-element,
     .mat-mdc-textarea-autosize {
       color: var(--color-text-primary, #111827) !important;
     }
-    
+
     .mat-mdc-select-value {
       color: var(--color-text-primary, #111827) !important;
     }
   }
-  
+
   .mat-mdc-form-field-underline {
     border-color: var(--color-border-primary, #e0e0e0) !important;
   }
-  
+
   .mat-mdc-form-field-hint-wrapper {
     .mat-mdc-form-field-hint {
       color: var(--color-text-tertiary, #9ca3af) !important;
     }
   }
-  
+
   .mat-mdc-form-field-error-wrapper {
     .mat-mdc-form-field-error {
-      color: var(--color-error, #ef4444) !important;
+      color: var(--color-error, var(--color-error)) !important;
     }
   }
 }
@@ -97,7 +98,7 @@
   .mat-mdc-select-value {
     color: var(--color-text-primary, #111827) !important;
   }
-  
+
   .mat-mdc-select-arrow {
     color: var(--color-text-secondary, #6b7280) !important;
   }
@@ -106,12 +107,12 @@
 ::ng-deep .mat-mdc-option {
   color: var(--color-text-primary, #111827) !important;
   background: var(--color-surface, #ffffff) !important;
-  
+
   &.mdc-list-item--selected {
     background: var(--color-primary-light, #dbeafe) !important;
-    color: var(--color-primary, #3b82f6) !important;
+    color: var(--color-primary) !important;
   }
-  
+
   &:hover {
     background: var(--color-surface-hover, #f5f5f5) !important;
   }

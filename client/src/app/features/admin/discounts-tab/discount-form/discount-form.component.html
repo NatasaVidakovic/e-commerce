@@ -20,7 +20,7 @@
         <div *ngIf="!canEditDiscount" class="error-banner mb-6">
           <mat-icon>block</mat-icon>
           <div class="error-text">
-            <strong>{{ 'DISCOUNT.ERRORS.CANNOT_EDIT' | translate }}:</strong> {{ editRestrictionMessage }}
+            <strong>{{ 'DISCOUNT.ERRORS.CANNOT_EDIT' | translate }}:</strong> {{ editRestrictionMessage | translate }}
           </div>
         </div>
 
@@ -58,7 +58,7 @@
                   {{ 'DISCOUNT.IS_PERCENTAGE' | translate }}
                 </mat-checkbox>
               </div>
-              
+
               <div class="flex items-center">
                 <mat-checkbox formControlName="isActive">
                   {{ 'DISCOUNT.IS_ACTIVE' | translate }}
@@ -107,14 +107,14 @@
 
             <mat-form-field appearance="outline" class="w-full" style="background: transparent;">
               <mat-label>{{ 'DISCOUNT.SELECT_PRODUCTS' | translate }}</mat-label>
-              <mat-select 
-                formControlName="productIds" 
+              <mat-select
+                formControlName="productIds"
                 [value]="selectedProductIds"
                 multiple
                 panelClass="modern-select-panel"
                 (selectionChange)="onProductSelectionChange($event)">
                 <mat-option *ngFor="let product of availableProducts" [value]="product.id">
-                  {{ product.name }} ({{ product.brand }})
+                  {{ (product.name) | catalogText }} ({{ product.brand }})
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -124,11 +124,11 @@
                 {{ 'DISCOUNT.SELECTED_PRODUCTS' | translate }} ({{ selectedProductIds.length }})
               </div>
               <div class="max-h-32 overflow-y-auto rounded" style="border: 1px solid var(--color-border-secondary); background-color: var(--color-surface);">
-                <div *ngFor="let productId of selectedProductIds" 
+                <div *ngFor="let productId of selectedProductIds"
                      class="flex items-center justify-between px-3 py-2 themed-list-item">
                   <span class="text-sm" style="color: var(--color-text-secondary);">{{ getProductName(productId) }}</span>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     (click)="removeProduct(productId)"
                     class="themed-remove-btn rounded px-1 transition-colors"
                     [title]="'BUTTONS.REMOVE' | translate">
@@ -144,10 +144,10 @@
           <button mat-stroked-button type="button" (click)="goBack()">
             {{ 'COMMON.CANCEL' | translate }}
           </button>
-          <button 
-            mat-flat-button 
-            color="primary" 
-            type="submit" 
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
             [disabled]="discountForm.invalid || loading || !canEditDiscount">
             <mat-icon>save</mat-icon>
             {{ 'COMMON.SAVE' | translate }}

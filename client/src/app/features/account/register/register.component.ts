@@ -40,7 +40,7 @@ export class RegisterComponent {
   onSubmit() {
     this.accountService.register(this.registerForm.value).subscribe({
       next: () => {
-        this.snack.success('Registration successful - you can now login!');
+        this.snack.success('UI.REGISTRATION_SUCCESSFUL_YOU_CAN_NOW_LOGIN');
         this.router.navigateByUrl('/account/login');
       },
       error: err => this.validationErrors = err

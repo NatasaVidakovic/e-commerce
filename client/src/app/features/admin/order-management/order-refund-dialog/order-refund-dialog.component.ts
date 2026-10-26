@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../../shared/pipes/catalog-text-pipe';
 import { Component, Inject, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -20,7 +21,7 @@ export interface OrderRefundDialogData {
 
 @Component({
   selector: 'app-order-refund-dialog',
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     MatDialogModule,
     MatButtonModule,

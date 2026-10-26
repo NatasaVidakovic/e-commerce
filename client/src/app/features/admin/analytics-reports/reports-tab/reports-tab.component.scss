@@ -1,4 +1,5 @@
-﻿.reports-container {
+
+.reports-container {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -51,13 +52,13 @@
         gap: 4px;
         flex: 1 1 auto;
         min-width: 80px;
-        
-        mat-icon { 
-          font-size: 14px; 
-          width: 14px; 
-          height: 14px; 
+
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
         }
-        
+
         span {
           display: none;
         }
@@ -73,11 +74,11 @@
         padding: 12px 6px;
         min-width: 60px;
         flex: 1 1 auto;
-        
-        mat-icon { 
-          font-size: 12px; 
-          width: 12px; 
-          height: 12px; 
+
+        mat-icon {
+          font-size: 12px;
+          width: 12px;
+          height: 12px;
         }
       }
     }
@@ -88,7 +89,7 @@
   .reports-header {
     .report-tabs {
       gap: 2px;
-      
+
       .tab {
         padding: 10px 4px;
         min-width: 50px;
@@ -129,7 +130,7 @@
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  background-color: var(--color-primary-light, rgba(59, 130, 246, 0.12));
+  background-color: var(--color-primary-light, rgba(173, 102, 82, 0.12));
   border: 1px solid var(--color-primary);
   border-radius: 999px;
   cursor: pointer;
@@ -139,7 +140,7 @@
   transition: background-color 0.15s ease, opacity 0.15s ease;
 
   &:hover {
-    background-color: var(--color-primary-light, rgba(59, 130, 246, 0.22));
+    background-color: var(--color-primary-light, rgba(173, 102, 82, 0.22));
     opacity: 0.9;
   }
 
@@ -182,8 +183,8 @@
   }
 
   &:hover {
-    color: var(--color-error, #dc2626);
-    border-color: var(--color-error, #dc2626);
+    color: var(--color-error, var(--color-error));
+    border-color: var(--color-error, var(--color-error));
   }
 }
 
@@ -229,12 +230,12 @@
     .report-title-label {
       font-size: 14px;
     }
-    
+
     .export-controls {
       .export-label {
         display: none;
       }
-      
+
       .export-format-field {
         width: 80px;
         font-size: 12px;
@@ -249,24 +250,24 @@
     align-items: flex-start;
     gap: 8px;
     padding: 8px 0;
-    
+
     .report-title-label {
       font-size: 13px;
     }
-    
+
     .export-controls {
       width: 100%;
       justify-content: flex-end;
-      
+
       .export-format-field {
         width: 70px;
         font-size: 11px;
       }
-      
+
       button[mat-icon-button] {
         width: 32px;
         height: 32px;
-        
+
         mat-icon {
           font-size: 16px;
           width: 16px;
@@ -275,37 +276,37 @@
       }
     }
   }
-  
+
   .report-container {
     .universal-report-container {
       padding: 16px;
       border-radius: 8px;
-      
+
       .report-header {
         flex-direction: column;
         gap: 12px;
         align-items: flex-start;
-        
+
         .header-info h2 {
           font-size: 1.25rem;
         }
-        
+
         .header-actions {
           width: 100%;
           justify-content: flex-end;
         }
       }
-      
+
       .report-content {
         .table-container {
           .report-table {
             font-size: 0.8rem;
-            
+
             thead th {
               padding: 8px 12px;
               font-size: 0.75rem;
             }
-            
+
             tbody td {
               padding: 8px 12px;
               font-size: 0.8rem;
@@ -320,23 +321,23 @@
 @media (max-width: 480px) {
   .report-toolbar {
     padding: 6px 0;
-    
+
     .report-title-label {
       font-size: 12px;
     }
-    
+
     .export-controls {
       gap: 4px;
-      
+
       .export-format-field {
         width: 65px;
         font-size: 10px;
       }
-      
+
       button[mat-icon-button] {
         width: 28px;
         height: 28px;
-        
+
         mat-icon {
           font-size: 14px;
           width: 14px;
@@ -345,48 +346,48 @@
       }
     }
   }
-  
+
   .report-container {
     .universal-report-container {
       padding: 12px;
       border-radius: 6px;
-      
+
       .report-header {
         margin-bottom: 16px;
         padding-bottom: 12px;
-        
+
         .header-info h2 {
           font-size: 1.125rem;
         }
-        
+
         .header-info p {
           font-size: 0.8rem;
         }
-        
+
         .header-actions {
           .report-format {
             font-size: 0.65rem;
             padding: 3px 6px;
           }
-          
+
           .report-date {
             font-size: 0.65rem;
           }
         }
       }
-      
+
       .report-content {
         .table-container {
           .report-table {
             font-size: 0.75rem;
-            
+
             thead th {
               padding: 6px 8px;
               font-size: 0.7rem;
               white-space: normal;
               word-wrap: break-word;
             }
-            
+
             tbody td {
               padding: 6px 8px;
               font-size: 0.75rem;
@@ -394,49 +395,49 @@
             }
           }
         }
-        
+
         .empty-state {
           padding: 40px 16px;
-          
+
           mat-icon {
             font-size: 36px;
             width: 36px;
             height: 36px;
           }
-          
+
           h3 {
             font-size: 1rem;
           }
-          
+
           p {
             font-size: 0.8rem;
           }
         }
       }
-      
+
       .summary-section {
         margin-top: 24px;
         padding-top: 16px;
-        
+
         h3 {
           font-size: 1.125rem;
           margin-bottom: 12px;
         }
-        
+
         .summary-table-container {
           .summary-table {
             font-size: 0.8rem;
-            
+
             thead th {
               padding: 8px 12px;
               font-size: 0.75rem;
             }
-            
+
             tbody td {
               padding: 8px 12px;
               font-size: 0.8rem;
             }
-            
+
             .trend {
               font-size: 0.75rem;
               padding: 2px 6px;
@@ -456,23 +457,23 @@
       }
     }
   }
-  
+
   .report-container {
     .universal-report-container {
       padding: 8px;
-      
+
       .report-header {
         .header-info h2 {
           font-size: 1rem;
         }
-        
+
         .header-actions {
           gap: 4px;
-          
+
           button[mat-icon-button] {
             width: 24px;
             height: 24px;
-            
+
             mat-icon {
               font-size: 12px;
               width: 12px;
@@ -481,17 +482,17 @@
           }
         }
       }
-      
+
       .report-content {
         .table-container {
           .report-table {
             font-size: 0.7rem;
-            
+
             thead th {
               padding: 4px 6px;
               font-size: 0.65rem;
             }
-            
+
             tbody td {
               padding: 4px 6px;
               font-size: 0.7rem;
@@ -527,10 +528,10 @@
   100% { transform: rotate(360deg); }
 }
 
-.loading-state p { 
-  margin: 0; 
-  color: var(--color-text-secondary); 
-  font-size: 13px; 
+.loading-state p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
 }
 
 /* ── Report content ── */

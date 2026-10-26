@@ -500,3 +500,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Local Noli runtime logs and process metadata
+.local/

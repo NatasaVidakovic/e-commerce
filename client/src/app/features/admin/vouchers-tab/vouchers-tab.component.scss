@@ -1,6 +1,5 @@
 @use '../../../../styles/breakpoints' as *;
 @use '../../../../styles/spacing' as *;
-
 /* Page header row: title left, actions right */
 .page-header-row {
   display: flex;
@@ -54,7 +53,7 @@
 
   &:focus {
     border-color: var(--color-primary) !important;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 0 2px rgba(173, 102, 82, 0.15);
   }
 
   &::placeholder {
@@ -233,8 +232,7 @@
 
   &.badge-inactive {
     background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
+    color: var(--color-error);
     border: 1px solid rgba(239, 68, 68, 0.25);
   }
 }
-

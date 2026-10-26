@@ -1,5 +1,12 @@
 <footer class="site-footer">
   <div class="footer-inner">
-    <span>&copy; {{ currentYear }} {{ config().companyName || 'WebShop' }}. {{ 'FOOTER.ALL_RIGHTS' | translate }}</span>
+    <div class="footer-about">
+      <a routerLink="/" class="noli-brand" [attr.aria-label]="'NOLI.HOME' | translate"><img src="/brand/noli-mascot.png" alt="" width="58" height="58"><span class="noli-wordmark">nol<span class="noli-letter-i">ı</span></span></a>
+      <p>{{ 'NOLI.FOOTER_DESCRIPTION' | translate }}</p><span class="footer-signature">{{ 'NOLI.RIBBON' | translate }}</span>
+    </div>
+    <div class="footer-links"><h2>{{ 'NOLI.EXPLORE' | translate }}</h2><a routerLink="/shop" [queryParams]="{type: 'Nakit'}">{{ 'NOLI.JEWELRY' | translate }}</a><a routerLink="/shop" [queryParams]="{type: 'Mirisne svijeće'}">{{ 'NOLI.CANDLES' | translate }}</a><a routerLink="/shop">{{ 'NOLI.ALL_COLLECTION' | translate }}</a></div>
+    <div class="footer-links"><h2>{{ 'NOLI.LITTLE_WORLD' | translate }}</h2><a routerLink="/about">{{ 'NOLI.OUR_STORY' | translate }}</a><a routerLink="/about" fragment="kontakt">{{ 'FOOTER.CONTACT_US' | translate }}</a><a routerLink="/account/login">{{ 'NAVIGATION.LOG_IN' | translate }}</a></div>
+    <div class="footer-note"><span aria-hidden="true">✧</span><h2>{{ 'NOLI.FOOTER_HEADING' | translate }}</h2><p>{{ 'NOLI.FOOTER_NOTE' | translate }}</p></div>
   </div>
+  <div class="footer-bottom"><span>© {{ currentYear }} noli. {{ 'FOOTER.ALL_RIGHTS' | translate }}</span><span>{{ 'NOLI.MADE_WITH_CARE' | translate }} ♡</span></div>
 </footer>

@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { BrandingService } from '../../../../core/services/branding.service';
+import { Component, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,7 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 
 import { AdminService } from '../../../../core/services/admin.service';
@@ -21,6 +22,7 @@ import { DynamicFilterBarComponent } from '../../../../shared/components/dynamic
 import { BaseDataViewModelRequest, BaseDataViewModelResponse, DynamicFilterDefinition, DynamicSortOption, FilterViewModel } from '../../../../shared/models/dynamic-filtering';
 import { Order } from '../../../../shared/models/order';
 import { Product } from '../../../../shared/models/product';
+import { NOLI_CATALOG_KEYS } from '../../../../shared/pipes/catalog-text-pipe';
 import { forkJoin } from 'rxjs';
 
 export interface ActiveFilterChip {
@@ -47,6 +49,8 @@ export interface ActiveFilterChip {
   styleUrl: './reports-tab.component.scss'
 })
 export class ReportsTabComponent implements OnInit, OnDestroy {
+  readonly branding = inject(BrandingService);
+  private translate = inject(TranslateService);
   @ViewChild(DynamicFilterBarComponent) filterBar?: DynamicFilterBarComponent;
 
   selectedReportType: string = '';
@@ -70,7 +74,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
   // Lookup data for filter options
   productTypes: string[] = [];
   productBrands: string[] = [];
-  
+
   // Data storage
   orders: Order[] = [];
   products: Product[] = [];
@@ -93,13 +97,13 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
         spaceBetween: false
       };
     }
-    
+
     // For other payment types, use the order's currency if available, otherwise app currency
     if (order.currency) {
       const orderCurrency = this.currencyService.getCurrencyByCode(order.currency);
       return orderCurrency;
     }
-    
+
     // Default to app currency
     return this.currentCurrency || this.currencyService.getCurrentCurrency();
   }
@@ -108,7 +112,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
   private formatOrderCurrency(value: number, order: Order): string {
     const currency = this.getOrderCurrency(order);
     const formattedValue = value.toFixed(currency.decimalPlaces);
-    
+
     if (currency.symbolPosition === 'before') {
       return currency.spaceBetween ? `${currency.symbol} ${formattedValue}` : `${currency.symbol}${formattedValue}`;
     } else {
@@ -172,10 +176,10 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
             const d = v instanceof Date ? v : new Date(v);
             return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
           };
-          let label = def.label + ': ';
+          let label = this.translate.instant(def.label) + ': ';
           if (hasStart && hasEnd) label += `${fmtDate(startVal)} \u2013 ${fmtDate(endVal)}`;
-          else if (hasStart) label += `from ${fmtDate(startVal)}`;
-          else label += `until ${fmtDate(endVal)}`;
+          else if (hasStart) label += `${this.translate.instant('NOLI.FROM')} ${fmtDate(startVal)}`;
+          else label += `${this.translate.instant('NOLI.UNTIL')} ${fmtDate(endVal)}`;
           chips.push({ keys: [startKey, endKey], label });
         }
         skipKeys.add(startKey);
@@ -189,8 +193,8 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
       const isEmpty = raw === '' || raw === null || raw === undefined ||
         (Array.isArray(raw) && raw.length === 0);
       if (isEmpty) continue;
-      const displayVal = Array.isArray(raw) ? raw.join(', ') : String(raw);
-      chips.push({ keys: [def.key], label: `${def.label}: ${displayVal}` });
+      const displayVal = Array.isArray(raw) ? raw.map(v => this.localizeValue(v, def.propertyName)).join(', ') : String(this.localizeValue(raw, def.propertyName));
+      chips.push({ keys: [def.key], label: `${this.translate.instant(def.label)}: ${displayVal}` });
     }
 
     return chips;
@@ -213,7 +217,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
   private setupReportData(): void {
     // Setup dynamic filters FIRST (only when report type changes)
     this.setupDynamicFilters();
-    
+
     switch (this.selectedReportType) {
       case 'orders':
         this.setupOrdersReport();
@@ -244,7 +248,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
         this.filterDefinitions = [
           {
             key: 'orderDate',
-            label: 'Order Date',
+            label: 'ADMIN.ORDER_DETAILS.ORDER_DATE',
             controlType: 'dateRange',
             propertyName: 'OrderDate',
             operationType: 'Equal',
@@ -252,7 +256,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'status',
-            label: 'Order Status',
+            label: 'ADMIN.COLUMNS.ORDER_STATUS',
             controlType: 'select',
             propertyName: 'Status',
             operationType: 'Equal',
@@ -262,7 +266,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'customerEmail',
-            label: 'Customer Email',
+            label: 'UI.CUSTOMER_EMAIL',
             controlType: 'text',
             propertyName: 'BuyerEmail',
             operationType: 'Contains',
@@ -270,10 +274,10 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           }
         ];
         this.sortOptions = [
-          { label: 'Order Date (Newest)', column: 'OrderDate', ascending: false, descending: true },
-          { label: 'Order Date (Oldest)', column: 'OrderDate', ascending: true, descending: false },
-          { label: 'Total (High to Low)', column: 'Total', ascending: false, descending: true },
-          { label: 'Total (Low to High)', column: 'Total', ascending: true, descending: false }
+          { label: 'UI.ORDER_DATE_NEWEST', column: 'OrderDate', ascending: false, descending: true },
+          { label: 'UI.ORDER_DATE_OLDEST', column: 'OrderDate', ascending: true, descending: false },
+          { label: 'UI.TOTAL_HIGH_TO_LOW', column: 'Total', ascending: false, descending: true },
+          { label: 'UI.TOTAL_LOW_TO_HIGH', column: 'Total', ascending: true, descending: false }
         ];
         break;
 
@@ -281,7 +285,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
         this.filterDefinitions = [
           {
             key: 'category',
-            label: 'Category',
+            label: 'FILTERS.CATEGORY',
             controlType: 'select',
             propertyName: 'ProductType',
             firstLevel: 'Name',
@@ -292,7 +296,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'productName',
-            label: 'Product Name',
+            label: 'ADMIN.PRODUCT_NAME',
             controlType: 'text',
             propertyName: 'Name',
             operationType: 'Contains',
@@ -300,7 +304,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'brand',
-            label: 'Brand',
+            label: 'COMMON.BRAND',
             controlType: 'select',
             propertyName: 'Brand',
             operationType: 'Equal',
@@ -310,11 +314,11 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           }
         ];
         this.sortOptions = [
-          { label: 'Name (A-Z)', column: 'Name', ascending: true, descending: false },
-          { label: 'Name (Z-A)', column: 'Name', ascending: false, descending: true },
-          { label: 'Price (High to Low)', column: 'Price', ascending: false, descending: true },
-          { label: 'Price (Low to High)', column: 'Price', ascending: true, descending: false },
-          { label: 'Stock (Low to High)', column: 'QuantityInStock', ascending: true, descending: false }
+          { label: 'UI.NAME_A_Z', column: 'Name', ascending: true, descending: false },
+          { label: 'UI.NAME_Z_A', column: 'Name', ascending: false, descending: true },
+          { label: 'UI.PRICE_HIGH_TO_LOW', column: 'Price', ascending: false, descending: true },
+          { label: 'UI.PRICE_LOW_TO_HIGH', column: 'Price', ascending: true, descending: false },
+          { label: 'UI.STOCK_LOW_TO_HIGH', column: 'QuantityInStock', ascending: true, descending: false }
         ];
         break;
 
@@ -322,7 +326,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
         this.filterDefinitions = [
           {
             key: 'orderDate',
-            label: 'Order Date',
+            label: 'ADMIN.ORDER_DETAILS.ORDER_DATE',
             controlType: 'dateRange',
             propertyName: 'OrderDate',
             operationType: 'Equal',
@@ -330,7 +334,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'customerEmail',
-            label: 'Customer Email',
+            label: 'UI.CUSTOMER_EMAIL',
             controlType: 'text',
             propertyName: 'BuyerEmail',
             operationType: 'Contains',
@@ -338,10 +342,10 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           }
         ];
         this.sortOptions = [
-          { label: 'Order Date (Newest)', column: 'OrderDate', ascending: false, descending: true },
-          { label: 'Order Date (Oldest)', column: 'OrderDate', ascending: true, descending: false },
-          { label: 'Total (High to Low)', column: 'Total', ascending: false, descending: true },
-          { label: 'Total (Low to High)', column: 'Total', ascending: true, descending: false }
+          { label: 'UI.ORDER_DATE_NEWEST', column: 'OrderDate', ascending: false, descending: true },
+          { label: 'UI.ORDER_DATE_OLDEST', column: 'OrderDate', ascending: true, descending: false },
+          { label: 'UI.TOTAL_HIGH_TO_LOW', column: 'Total', ascending: false, descending: true },
+          { label: 'UI.TOTAL_LOW_TO_HIGH', column: 'Total', ascending: true, descending: false }
         ];
         break;
 
@@ -349,7 +353,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
         this.filterDefinitions = [
           {
             key: 'transactionDate',
-            label: 'Transaction Date',
+            label: 'UI.TRANSACTION_DATE',
             controlType: 'dateRange',
             propertyName: 'OrderDate',
             operationType: 'Equal',
@@ -357,7 +361,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'paymentMethod',
-            label: 'Payment Method',
+            label: 'CHECKOUT.PAYMENT_METHOD',
             controlType: 'select',
             propertyName: 'PaymentType',
             operationType: 'Equal',
@@ -367,7 +371,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'status',
-            label: 'Order Status',
+            label: 'ADMIN.COLUMNS.ORDER_STATUS',
             controlType: 'select',
             propertyName: 'Status',
             operationType: 'Equal',
@@ -377,10 +381,10 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           }
         ];
         this.sortOptions = [
-          { label: 'Date (Newest)', column: 'OrderDate', ascending: false, descending: true },
-          { label: 'Date (Oldest)', column: 'OrderDate', ascending: true, descending: false },
-          { label: 'Amount (High to Low)', column: 'Total', ascending: false, descending: true },
-          { label: 'Amount (Low to High)', column: 'Total', ascending: true, descending: false }
+          { label: 'UI.DATE_NEWEST', column: 'OrderDate', ascending: false, descending: true },
+          { label: 'UI.DATE_OLDEST', column: 'OrderDate', ascending: true, descending: false },
+          { label: 'UI.AMOUNT_HIGH_TO_LOW', column: 'Total', ascending: false, descending: true },
+          { label: 'UI.AMOUNT_LOW_TO_HIGH', column: 'Total', ascending: true, descending: false }
         ];
         break;
 
@@ -388,7 +392,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
         this.filterDefinitions = [
           {
             key: 'category',
-            label: 'Category',
+            label: 'FILTERS.CATEGORY',
             controlType: 'select',
             propertyName: 'ProductType',
             firstLevel: 'Name',
@@ -399,7 +403,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'productName',
-            label: 'Product Name',
+            label: 'ADMIN.PRODUCT_NAME',
             controlType: 'text',
             propertyName: 'Name',
             operationType: 'Contains',
@@ -407,7 +411,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'brand',
-            label: 'Brand',
+            label: 'COMMON.BRAND',
             controlType: 'select',
             propertyName: 'Brand',
             operationType: 'Equal',
@@ -417,7 +421,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'minStock',
-            label: 'Min Stock',
+            label: 'UI.MIN_STOCK',
             controlType: 'number',
             propertyName: 'QuantityInStock',
             operationType: 'GreaterThanOrEqual',
@@ -425,7 +429,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           },
           {
             key: 'maxStock',
-            label: 'Max Stock',
+            label: 'UI.MAX_STOCK',
             controlType: 'number',
             propertyName: 'QuantityInStock',
             operationType: 'LessThanOrEqual',
@@ -433,10 +437,10 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
           }
         ];
         this.sortOptions = [
-          { label: 'Name (A-Z)', column: 'Name', ascending: true, descending: false },
-          { label: 'Name (Z-A)', column: 'Name', ascending: false, descending: true },
-          { label: 'Stock (Low to High)', column: 'QuantityInStock', ascending: true, descending: false },
-          { label: 'Stock (High to Low)', column: 'QuantityInStock', ascending: false, descending: true }
+          { label: 'UI.NAME_A_Z', column: 'Name', ascending: true, descending: false },
+          { label: 'UI.NAME_Z_A', column: 'Name', ascending: false, descending: true },
+          { label: 'UI.STOCK_LOW_TO_HIGH', column: 'QuantityInStock', ascending: true, descending: false },
+          { label: 'UI.STOCK_HIGH_TO_LOW', column: 'QuantityInStock', ascending: false, descending: true }
         ];
         break;
     }
@@ -444,17 +448,17 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
   private setupOrdersReport(): void {
     this.reportColumns = [
-      { key: 'id', label: 'Order ID', type: 'text' },
-      { key: 'buyerEmail', label: 'Customer Email', type: 'text' },
-      { key: 'status', label: 'Status', type: 'text' },
-      { key: 'total', label: 'Total', type: 'currency' },
-      { key: 'orderDate', label: 'Date', type: 'date' }
+      { key: 'id', label: 'ADMIN.ORDER_ID', type: 'text' },
+      { key: 'buyerEmail', label: 'UI.CUSTOMER_EMAIL', type: 'text' },
+      { key: 'status', label: 'COMMON.STATUS', type: 'text' },
+      { key: 'total', label: 'COMMON.TOTAL', type: 'currency' },
+      { key: 'orderDate', label: 'COMMON.DATE', type: 'date' }
     ];
 
     this.reportSummaryMetrics = [
-      { key: 'totalOrders', label: 'Total Orders', value: '0', change: '+0%' },
-      { key: 'pendingOrders', label: 'Pending Orders', value: '0', change: '+0' },
-      { key: 'completedOrders', label: 'Completed Orders', value: '0', change: '+0%' }
+      { key: 'totalOrders', label: 'ADMIN.TOTAL_ORDERS', value: '0', change: '+0%' },
+      { key: 'pendingOrders', label: 'ADMIN.PENDING_ORDERS', value: '0', change: '+0' },
+      { key: 'completedOrders', label: 'ADMIN.COMPLETED_ORDERS', value: '0', change: '+0%' }
     ];
 
     // Fetch real orders data
@@ -463,18 +467,18 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
   private setupProductsReport(): void {
     this.reportColumns = [
-      { key: 'id', label: 'Product ID', type: 'text' },
-      { key: 'name', label: 'Product Name', type: 'text' },
-      { key: 'type', label: 'Category', type: 'text' },
-      { key: 'quantityInStock', label: 'Stock', type: 'number' },
-      { key: 'price', label: 'Price', type: 'currency' },
-      { key: 'brand', label: 'Brand', type: 'text' }
+      { key: 'id', label: 'PRODUCT.ID', type: 'text' },
+      { key: 'name', label: 'ADMIN.PRODUCT_NAME', type: 'text' },
+      { key: 'type', label: 'FILTERS.CATEGORY', type: 'text' },
+      { key: 'quantityInStock', label: 'PRODUCT.STOCK', type: 'number' },
+      { key: 'price', label: 'COMMON.PRICE', type: 'currency' },
+      { key: 'brand', label: 'COMMON.BRAND', type: 'text' }
     ];
 
     this.reportSummaryMetrics = [
-      { key: 'totalProducts', label: 'Total Products', value: '0', change: '+0' },
-      { key: 'lowStock', label: 'Low Stock', value: '0', change: '0' },
-      { key: 'totalValue', label: 'Total Value', value: this.currencyService.formatCurrency(0), change: '+0%' }
+      { key: 'totalProducts', label: 'ADMIN.TOTAL_PRODUCTS', value: '0', change: '+0' },
+      { key: 'lowStock', label: 'ADMIN.LOW_STOCK', value: '0', change: '0' },
+      { key: 'totalValue', label: 'ADMIN.TOTAL_VALUE', value: this.currencyService.formatCurrency(0), change: '+0%' }
     ];
 
     // Fetch real products data
@@ -483,17 +487,17 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
   private setupCustomersReport(): void {
     this.reportColumns = [
-      { key: 'name', label: 'Customer Name', type: 'text' },
-      { key: 'email', label: 'Email', type: 'text' },
-      { key: 'orders', label: 'Orders', type: 'number' },
-      { key: 'totalSpent', label: 'Total Spent', type: 'currency' },
-      { key: 'joinedDate', label: 'Joined Date', type: 'date' }
+      { key: 'name', label: 'ADMIN.CUSTOMER_NAME', type: 'text' },
+      { key: 'email', label: 'ADMIN.USER_COL_EMAIL', type: 'text' },
+      { key: 'orders', label: 'NAVIGATION.ORDERS', type: 'number' },
+      { key: 'totalSpent', label: 'ADMIN.TOTAL_SPENT', type: 'currency' },
+      { key: 'joinedDate', label: 'UI.JOINED_DATE', type: 'date' }
     ];
 
     this.reportSummaryMetrics = [
-      { key: 'totalCustomers', label: 'Total Customers', value: '0', change: '+0' },
-      { key: 'activeCustomers', label: 'Active Customers', value: '0', change: '+0' },
-      { key: 'newCustomers', label: 'New Customers', value: '0', change: '+0%' }
+      { key: 'totalCustomers', label: 'UI.TOTAL_CUSTOMERS', value: '0', change: '+0' },
+      { key: 'activeCustomers', label: 'ADMIN.ACTIVE_CUSTOMERS', value: '0', change: '+0' },
+      { key: 'newCustomers', label: 'ADMIN.NEW_CUSTOMERS', value: '0', change: '+0%' }
     ];
 
     // Fetch real customers data
@@ -502,17 +506,17 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
   private setupFinancialReport(): void {
     this.reportColumns = [
-      { key: 'id', label: 'Transaction ID', type: 'text' },
-      { key: 'type', label: 'Type', type: 'text' },
-      { key: 'paymentType', label: 'Payment Method', type: 'text' },
-      { key: 'total', label: 'Amount', type: 'currency' },
-      { key: 'orderDate', label: 'Date', type: 'date' }
+      { key: 'id', label: 'UI.TRANSACTION_ID', type: 'text' },
+      { key: 'type', label: 'COMMON.TYPE', type: 'text' },
+      { key: 'paymentType', label: 'CHECKOUT.PAYMENT_METHOD', type: 'text' },
+      { key: 'total', label: 'CHECKOUT.AMOUNT', type: 'currency' },
+      { key: 'orderDate', label: 'COMMON.DATE', type: 'date' }
     ];
 
     this.reportSummaryMetrics = [
-      { key: 'totalRevenue', label: 'Total Revenue', value: this.currencyService.formatCurrency(0), change: '+0%' },
-      { key: 'totalCosts', label: 'Total Costs', value: this.currencyService.formatCurrency(0), change: '+0%' },
-      { key: 'netProfit', label: 'Net Profit', value: this.currencyService.formatCurrency(0), change: '+0%' }
+      { key: 'totalRevenue', label: 'ADMIN.TOTAL_REVENUE', value: this.currencyService.formatCurrency(0), change: '+0%' },
+      { key: 'totalCosts', label: 'ADMIN.TOTAL_COSTS', value: this.currencyService.formatCurrency(0), change: '+0%' },
+      { key: 'netProfit', label: 'ADMIN.NET_PROFIT', value: this.currencyService.formatCurrency(0), change: '+0%' }
     ];
 
     // Fetch real financial data from orders
@@ -521,17 +525,17 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
   private setupInventoryReport(): void {
     this.reportColumns = [
-      { key: 'id', label: 'Product ID', type: 'text' },
-      { key: 'name', label: 'Product Name', type: 'text' },
-      { key: 'quantityInStock', label: 'Current Stock', type: 'number' },
-      { key: 'price', label: 'Unit Cost', type: 'currency' },
-      { key: 'brand', label: 'Brand', type: 'text' }
+      { key: 'id', label: 'PRODUCT.ID', type: 'text' },
+      { key: 'name', label: 'ADMIN.PRODUCT_NAME', type: 'text' },
+      { key: 'quantityInStock', label: 'ADMIN.CURRENT_STOCK', type: 'number' },
+      { key: 'price', label: 'ADMIN.UNIT_COST', type: 'currency' },
+      { key: 'brand', label: 'COMMON.BRAND', type: 'text' }
     ];
 
     this.reportSummaryMetrics = [
-      { key: 'totalItems', label: 'Total Items', value: '0', change: '+0' },
-      { key: 'totalValue', label: 'Total Value', value: this.currencyService.formatCurrency(0), change: '+0%' },
-      { key: 'turnoverRate', label: 'Turnover Rate', value: '0x', change: '+0x' }
+      { key: 'totalItems', label: 'ADMIN.TOTAL_ITEMS', value: '0', change: '+0' },
+      { key: 'totalValue', label: 'ADMIN.TOTAL_VALUE', value: this.currencyService.formatCurrency(0), change: '+0%' },
+      { key: 'turnoverRate', label: 'ADMIN.TURNOVER_RATE', value: '0x', change: '+0x' }
     ];
 
     // Fetch real inventory data from products
@@ -561,7 +565,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
   }
 
   private exportCsv(filename: string): void {
-    const headers = this.reportColumns.map(c => `"${c.label}"`).join(',');
+    const headers = this.reportColumns.map(c => `"${this.translate.instant(c.label)}"`).join(',');
     const rows = this.reportData.map(row =>
       this.reportColumns.map(col => {
         let val = row[col.key] ?? '';
@@ -569,7 +573,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
         if (col.type === 'currency') {
           const numericValue = String(val).replace(/[^\d.-]/g, '');
           const numValue = parseFloat(numericValue) || 0;
-          
+
           // For orders report, use order-specific currency
           if (this.selectedReportType === 'orders') {
             const order = this.orders.find((o: Order) => o.id === (row as any)['id']);
@@ -583,7 +587,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
             val = this.currencyService.formatCurrency(numValue);
           }
         }
-        return `"${String(val).replace(/"/g, '""')}"`;
+        return `"${String(this.localizeValue(val, col.key)).replace(/"/g, '""')}"`;
       }).join(',')
     );
     const csv = '\uFEFF' + [headers, ...rows].join('\r\n');
@@ -593,7 +597,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
     );
   }
 
-  
+
   printReport(): void {
     if (!this.reportData.length) return;
     const title = this.getReportTitle(this.selectedReportType);
@@ -623,10 +627,10 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
       reportType: this.selectedReportType,
       title,
       description: this.getReportDescription(this.selectedReportType),
-      columns: this.reportColumns.map(c => ({ key: c.key, label: c.label })),
-      data: this.reportData,
+      columns: this.reportColumns.map(c => ({ key: c.key, label: this.translate.instant(c.label) })),
+      data: this.reportData.map(row => Object.fromEntries(Object.entries(row).map(([key, value]) => [key, this.localizeValue(value, key)]))),
       metrics: this.reportSummaryMetrics.map(m => ({
-        label: m.label,
+        label: this.translate.instant(m.label),
         value: m.value,
         change: m.change ?? null
       }))
@@ -640,16 +644,26 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
     });
   }
 
+  private localizeValue(value: unknown, key: string): unknown {
+    if (typeof value !== 'string') return value;
+    if (['status', 'paymenttype', 'paymentstatus', 'deliverystatus'].includes(key.toLowerCase())) {
+      const optionKey = 'FILTER_OPTIONS.' + value;
+      const label = this.translate.instant(optionKey);
+      if (label !== optionKey) return label;
+    }
+    return this.translate.instant(NOLI_CATALOG_KEYS[value] || value);
+  }
+
   private buildReportHtml(title: string, description: string): string {
     const esc = (v: any) => String(v ?? '')
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    
-    const formatValue = (value: any, columnType: string, rowData?: any) => {
+
+    const formatValue = (value: any, columnType: string, rowData?: any, key = '') => {
       if (columnType === 'currency') {
         // Remove any existing currency symbols and convert to number
         const numericValue = String(value).replace(/[^\d.-]/g, '');
         const numValue = parseFloat(numericValue) || 0;
-        
+
         // For orders report, use order-specific currency
         if (this.selectedReportType === 'orders' && rowData) {
           const order = this.orders.find((o: Order) => o.id === (rowData as any)['id']);
@@ -657,25 +671,25 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
             return this.formatOrderCurrency(numValue, order);
           }
         }
-        
+
         // For other reports, use app currency
         return this.currencyService.formatCurrency(numValue);
       }
-      return esc(value);
+      return esc(this.localizeValue(value, key));
     };
 
     const now       = new Date();
-    const genDate   = now.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
-    const genTime   = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    const genDate   = now.toLocaleDateString(this.translate.currentLang === 'sr' ? 'sr-Latn' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+    const genTime   = now.toLocaleTimeString(this.translate.currentLang === 'sr' ? 'sr-Latn' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
     const recordCount = this.reportData.length;
     const currentCurrency = this.currencyService.getCurrentCurrency();
 
     const summaryRows = this.reportSummaryMetrics.map(m => {
       let formattedValue = esc(m.value);
       // Check if the metric label contains currency-related terms and format accordingly
-      if (m.label.toLowerCase().includes('revenue') || 
-          m.label.toLowerCase().includes('cost') || 
-          m.label.toLowerCase().includes('profit') || 
+      if (m.label.toLowerCase().includes('revenue') ||
+          m.label.toLowerCase().includes('cost') ||
+          m.label.toLowerCase().includes('profit') ||
           m.label.toLowerCase().includes('value') ||
           m.label.toLowerCase().includes('total')) {
         // Extract numeric value and format with currency
@@ -685,26 +699,26 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
       }
       return `
       <div class="metric-card">
-        <span class="metric-label">${esc(m.label)}</span>
+        <span class="metric-label">${esc(this.translate.instant(m.label))}</span>
         <span class="metric-value">${formattedValue}</span>
         ${m.change ? `<span class="metric-change ${m.change.startsWith('-') ? 'neg' : 'pos'}">${esc(m.change)}</span>` : ''}
       </div>`;
     }).join('');
 
     const headerCells = this.reportColumns
-      .map(c => `<th>${esc(c.label)}</th>`).join('');
+      .map(c => `<th>${esc(this.translate.instant(c.label))}</th>`).join('');
     const dataRows = this.reportData.map((row, i) => {
       const cells = this.reportColumns
-        .map(col => `<td>${formatValue(row[col.key], col.type || '', row)}</td>`).join('');
+        .map(col => `<td>${formatValue(row[col.key], col.type || '', row, col.key)}</td>`).join('');
       return `<tr class="${i % 2 === 1 ? 'alt' : ''}">${cells}</tr>`;
     }).join('');
 
     // Add currency info note for orders report
-    const currencyNote = this.selectedReportType === 'orders' ? 
-      '<p style="font-size: 10px; color: #666; margin-top: 10px;">* Currency shown based on payment method (PayPal/Card = USD, Others = App Currency)</p>' : '';
+    const currencyNote = this.selectedReportType === 'orders' ?
+      `<p style="font-size: 10px; color: #796b62; margin-top: 10px;">${esc(this.translate.instant('NOLI.CURRENCY_NOTE'))}</p>` : '';
 
     return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${this.translate.currentLang || 'sr'}">
 <head>
 <meta charset="utf-8">
 <title>${esc(title)}</title>
@@ -815,7 +829,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
     justify-content: space-between;
     page-break-inside: avoid;
   }
-  
+
   /* ── Currency formatting ── */
   .currency { font-weight: 600; color: #1e293b; }
 </style>
@@ -824,27 +838,27 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 <div class="doc">
   <div class="doc-header">
     <div class="brand">
-      <div class="brand-icon">&#x1F6D2;</div>
+      <div class="brand-icon">♡</div>
       <div>
-        <div class="brand-name">WebShop</div>
-        <div class="brand-sub">Admin &amp; Reports Portal (${currentCurrency.code})</div>
+        <div class="brand-name">${this.branding.isNoli() ? 'noli' : 'Web Shop'}</div>
+        <div class="brand-sub">${esc(this.translate.instant('NAVIGATION.REPORTS'))} (${currentCurrency.code})</div>
       </div>
     </div>
     <div class="report-info">
       <h2>${esc(title)}</h2>
       <div class="desc">${esc(description)}</div>
-      <div class="meta">Generated: ${genDate} at ${genTime} &nbsp;|&nbsp; ${recordCount} record${recordCount !== 1 ? 's' : ''}</div>
+      <div class="meta">${esc(this.translate.instant('NOLI.GENERATED', {date:genDate,time:genTime,count:recordCount}))}</div>
     </div>
   </div>
 
   ${summaryRows ? `
   <div class="summary-section">
-    <div class="summary-title">Summary</div>
+    <div class="summary-title">${esc(this.translate.instant('REPORTS.SUMMARY'))}</div>
     <div class="metrics-grid">${summaryRows}</div>
   </div>` : ''}
 
   <div class="table-section">
-    <div class="table-title">Report Data <span class="record-count">${recordCount} rows</span></div>
+    <div class="table-title">${esc(this.translate.instant('NOLI.REPORT_DATA'))} <span class="record-count">${esc(this.translate.instant('NOLI.ROWS',{count:recordCount}))}</span></div>
     <table>
       <thead><tr>${headerCells}</tr></thead>
       <tbody>${dataRows}</tbody>
@@ -854,7 +868,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
   <div class="print-footer">
     <span>${esc(title)} &mdash; ${genDate}</span>
-    <span>WebShop Admin &mdash; Confidential | Currency: ${currentCurrency.code} (${currentCurrency.symbol})</span>
+    <span>${esc(this.translate.instant(this.branding.isNoli() ? 'NOLI.REPORT_FOOTER' : 'UI.REPORT_FOOTER',{currency:currentCurrency.code+' ('+currentCurrency.symbol+')'}))}</span>
   </div>
 </div>
 
@@ -882,24 +896,24 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
   // Helper Methods
   getReportTitle(reportType: string): string {
     const titles: { [key: string]: string } = {
-      orders: 'Orders Report',
-      products: 'Products Report',
-      customers: 'Customers Report',
-      financial: 'Financial Report',
-      inventory: 'Inventory Report'
+      orders: 'ADMIN.ORDERS_REPORT',
+      products: 'ADMIN.PRODUCTS_REPORT',
+      customers: 'ADMIN.CUSTOMERS_REPORT',
+      financial: 'ADMIN.FINANCIAL_REPORT',
+      inventory: 'ADMIN.INVENTORY_REPORT'
     };
-    return titles[reportType] || 'Report';
+    return this.translate.instant(titles[reportType] || 'UI.REPORT');
   }
 
   getReportDescription(reportType: string): string {
     const descriptions: { [key: string]: string } = {
-      orders: 'Detailed order status and fulfillment metrics',
-      products: 'Product performance and inventory analysis',
-      customers: 'Customer demographics and behavior analysis',
-      financial: 'Financial performance and profitability analysis',
-      inventory: 'Inventory levels and stock analysis'
+      orders: 'ADMIN.ORDERS_REPORT_DESC',
+      products: 'ADMIN.PRODUCTS_REPORT_DESC',
+      customers: 'ADMIN.CUSTOMERS_REPORT_DESC',
+      financial: 'ADMIN.FINANCIAL_REPORT_DESC',
+      inventory: 'ADMIN.INVENTORY_REPORT_DESC'
     };
-    return descriptions[reportType] || 'Report analysis';
+    return this.translate.instant(descriptions[reportType] || 'UI.REPORT_ANALYSIS');
   }
 
   onRawValuesChanged(values: Record<string, any>): void {
@@ -996,7 +1010,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
       next: (response: BaseDataViewModelResponse<Product>) => {
         this.reportData = (response.data || []).map(product => ({
           id: product.id,
-          name: product.name || 'Unknown Product',
+          name: product.name || 'UI.UNKNOWN_PRODUCT',
           type: product.type || 'Uncategorized',
           quantityInStock: product.quantityInStock || 0,
           price: product.price || 0,
@@ -1006,7 +1020,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
         // Update summary metrics
         this.updateProductsSummaryMetrics(response.data || []);
-        
+
         this.loading = false;
       },
       error: () => this.fetchProductsFallback()
@@ -1028,7 +1042,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
         }
         this.reportData = products.map(product => ({
           id: product.id,
-          name: product.name || 'Unknown Product',
+          name: product.name || 'UI.UNKNOWN_PRODUCT',
           type: product.type || 'Uncategorized',
           quantityInStock: product.quantityInStock || 0,
           price: product.price || 0,
@@ -1038,7 +1052,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
         // Update summary metrics
         this.updateProductsSummaryMetrics(products);
-        
+
         this.loading = false;
       },
       error: () => { this.reportData = []; this.loading = false; }
@@ -1053,15 +1067,15 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
     if (this.selectedReportType === 'orders') {
       this.reportSummaryMetrics = [
-        { key: 'totalOrders', label: 'Total Orders', value: totalOrders.toString(), change: '+8.3%' },
-        { key: 'pendingOrders', label: 'Pending Orders', value: pendingOrders.toString(), change: `+${pendingOrders}` },
-        { key: 'completedOrders', label: 'Completed Orders', value: completedOrders.toString(), change: '+6.3%' }
+        { key: 'totalOrders', label: 'ADMIN.TOTAL_ORDERS', value: totalOrders.toString(), change: '+8.3%' },
+        { key: 'pendingOrders', label: 'ADMIN.PENDING_ORDERS', value: pendingOrders.toString(), change: `+${pendingOrders}` },
+        { key: 'completedOrders', label: 'ADMIN.COMPLETED_ORDERS', value: completedOrders.toString(), change: '+6.3%' }
       ];
     } else if (this.selectedReportType === 'financial') {
       this.reportSummaryMetrics = [
-        { key: 'totalRevenue', label: 'Total Revenue', value: this.currencyService.formatCurrency(totalRevenue), change: '+12.5%' },
-        { key: 'totalCosts', label: 'Total Costs', value: this.currencyService.formatCurrency(0), change: '+8.3%' },
-        { key: 'netProfit', label: 'Net Profit', value: this.currencyService.formatCurrency(totalRevenue), change: '+18.7%' }
+        { key: 'totalRevenue', label: 'ADMIN.TOTAL_REVENUE', value: this.currencyService.formatCurrency(totalRevenue), change: '+12.5%' },
+        { key: 'totalCosts', label: 'ADMIN.TOTAL_COSTS', value: this.currencyService.formatCurrency(0), change: '+8.3%' },
+        { key: 'netProfit', label: 'ADMIN.NET_PROFIT', value: this.currencyService.formatCurrency(totalRevenue), change: '+18.7%' }
       ];
     }
   }
@@ -1073,16 +1087,16 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
 
     if (this.selectedReportType === 'products') {
       this.reportSummaryMetrics = [
-        { key: 'totalProducts', label: 'Total Products', value: totalProducts.toString(), change: '+12' },
-        { key: 'lowStock', label: 'Low Stock', value: lowStockItems.toString(), change: `-${lowStockItems}` },
-        { key: 'totalValue', label: 'Total Value', value: this.currencyService.formatCurrency(totalValue), change: '+15.2%' }
+        { key: 'totalProducts', label: 'ADMIN.TOTAL_PRODUCTS', value: totalProducts.toString(), change: '+12' },
+        { key: 'lowStock', label: 'ADMIN.LOW_STOCK', value: lowStockItems.toString(), change: `-${lowStockItems}` },
+        { key: 'totalValue', label: 'ADMIN.TOTAL_VALUE', value: this.currencyService.formatCurrency(totalValue), change: '+15.2%' }
       ];
     } else if (this.selectedReportType === 'inventory') {
       const totalItems = products.reduce((sum, p) => sum + (p.quantityInStock || 0), 0);
       this.reportSummaryMetrics = [
-        { key: 'totalItems', label: 'Total Items', value: totalItems.toString(), change: '+12' },
-        { key: 'totalValue', label: 'Total Value', value: this.currencyService.formatCurrency(totalValue), change: '+15.3%' },
-        { key: 'lowStockItems', label: 'Low Stock Items', value: lowStockItems.toString(), change: '-3' }
+        { key: 'totalItems', label: 'ADMIN.TOTAL_ITEMS', value: totalItems.toString(), change: '+12' },
+        { key: 'totalValue', label: 'ADMIN.TOTAL_VALUE', value: this.currencyService.formatCurrency(totalValue), change: '+15.3%' },
+        { key: 'lowStockItems', label: 'UI.LOW_STOCK_ITEMS', value: lowStockItems.toString(), change: '-3' }
       ];
     }
   }
@@ -1103,7 +1117,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
       next: (response: BaseDataViewModelResponse<Order>) => {
         // Extract unique customers from orders
         const customerMap = new Map<string, any>();
-        
+
         (response.data || []).forEach(order => {
           const email = order.buyerEmail;
           if (email && !customerMap.has(email)) {
@@ -1184,7 +1198,7 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
       next: (response: BaseDataViewModelResponse<Product>) => {
         this.reportData = (response.data || []).map(product => ({
           id: product.id,
-          name: product.name || 'Unknown Product',
+          name: product.name || 'UI.UNKNOWN_PRODUCT',
           quantityInStock: product.quantityInStock || 0,
           price: product.price || 0,
           brand: product.brand || 'Unknown',
@@ -1210,9 +1224,9 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
     }).length;
 
     this.reportSummaryMetrics = [
-      { key: 'totalCustomers', label: 'Total Customers', value: totalCustomers.toString(), change: `+${totalCustomers}` },
-      { key: 'activeCustomers', label: 'Active Customers', value: activeCustomers.toString(), change: `+${activeCustomers}` },
-      { key: 'newCustomers', label: 'New Customers', value: newCustomers.toString(), change: `+${newCustomers}` }
+      { key: 'totalCustomers', label: 'UI.TOTAL_CUSTOMERS', value: totalCustomers.toString(), change: `+${totalCustomers}` },
+      { key: 'activeCustomers', label: 'ADMIN.ACTIVE_CUSTOMERS', value: activeCustomers.toString(), change: `+${activeCustomers}` },
+      { key: 'newCustomers', label: 'ADMIN.NEW_CUSTOMERS', value: newCustomers.toString(), change: `+${newCustomers}` }
     ];
   }
 
@@ -1220,9 +1234,9 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
     const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
 
     this.reportSummaryMetrics = [
-      { key: 'totalRevenue', label: 'Total Revenue', value: this.currencyService.formatCurrency(totalRevenue), change: '+12.5%' },
-      { key: 'totalCosts', label: 'Total Costs', value: this.currencyService.formatCurrency(0), change: '+8.3%' },
-      { key: 'netProfit', label: 'Net Profit', value: this.currencyService.formatCurrency(totalRevenue), change: '+18.7%' }
+      { key: 'totalRevenue', label: 'ADMIN.TOTAL_REVENUE', value: this.currencyService.formatCurrency(totalRevenue), change: '+12.5%' },
+      { key: 'totalCosts', label: 'ADMIN.TOTAL_COSTS', value: this.currencyService.formatCurrency(0), change: '+8.3%' },
+      { key: 'netProfit', label: 'ADMIN.NET_PROFIT', value: this.currencyService.formatCurrency(totalRevenue), change: '+18.7%' }
     ];
   }
 
@@ -1232,9 +1246,9 @@ export class ReportsTabComponent implements OnInit, OnDestroy {
     const lowStockItems = products.filter(p => (p.quantityInStock || 0) < 10).length;
 
     this.reportSummaryMetrics = [
-      { key: 'totalItems', label: 'Total Items', value: totalItems.toString(), change: `+${totalItems}` },
-      { key: 'totalValue', label: 'Total Value', value: this.currencyService.formatCurrency(totalValue), change: '+15.3%' },
-      { key: 'turnoverRate', label: 'Turnover Rate', value: '4.2x', change: '+0.3x' }
+      { key: 'totalItems', label: 'ADMIN.TOTAL_ITEMS', value: totalItems.toString(), change: `+${totalItems}` },
+      { key: 'totalValue', label: 'ADMIN.TOTAL_VALUE', value: this.currencyService.formatCurrency(totalValue), change: '+15.3%' },
+      { key: 'turnoverRate', label: 'ADMIN.TURNOVER_RATE', value: '4.2x', change: '+0.3x' }
     ];
   }
 

@@ -1,3 +1,4 @@
+import { BrandingService } from '../../../core/services/branding.service';
 import { Component, inject, OnInit } from '@angular/core';
 import { ProductItemComponent } from '../product-item/product-item.component';
 import { MatButton } from '@angular/material/button';
@@ -19,6 +20,7 @@ import { TranslatePipe } from '@ngx-translate/core';
     templateUrl: './favourites.component.html',
 })
 export class FavouritesComponent implements OnInit {
+  readonly branding = inject(BrandingService);
     private favouritesService = inject(FavouritesService);
 
     products: Product[] = [];

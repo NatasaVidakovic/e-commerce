@@ -2,8 +2,8 @@
   <!-- Report Header -->
   <div class="report-header">
     <div class="header-info">
-      <h2>{{ title }}</h2>
-      <p>{{ description }}</p>
+      <h2>{{ title | translate }}</h2>
+      <p>{{ description | translate }}</p>
     </div>
   </div>
 
@@ -20,16 +20,16 @@
       <table class="report-table">
         <thead>
           <tr>
-            <th *ngFor="let column of columns; trackBy: trackByFn" 
+            <th *ngFor="let column of columns; trackBy: trackByFn"
                 [style.width]="column.width">
-              {{ column.label }}
+              {{ column.label | translate }}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let row of data; trackBy: trackByFn">
             <td *ngFor="let column of columns; trackBy: trackByFn">
-              {{ getDisplayValue(row[column.key], column) }}
+              {{ getDisplayValue(row[column.key], column) | catalogText: ((column.key === 'status' || column.key === 'paymentType') ? 'option' : '') }}
             </td>
           </tr>
         </tbody>
@@ -57,7 +57,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let metric of summaryMetrics; trackBy: trackByFn">
-            <td>{{ metric.label }}</td>
+            <td>{{ metric.label | translate }}</td>
             <td>{{ metric.value }}</td>
           </tr>
         </tbody>

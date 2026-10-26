@@ -38,7 +38,7 @@ export class SnackbarService {
 
   errorFrom(
     error: any,
-    fallbackMessage: string = 'An error occurred',
+    fallbackMessage: string = 'UI.AN_ERROR_OCCURRED',
     options?: SnackbarOptions,
     transform?: (message: string) => string
   ) {
@@ -47,7 +47,7 @@ export class SnackbarService {
     this.open(finalMessage, { panelClass: ['snack-error'], ...options });
   }
 
-  extractMessage(error: any, fallbackMessage: string = 'An error occurred', transform?: (message: string) => string): string {
+  extractMessage(error: any, fallbackMessage: string = 'UI.AN_ERROR_OCCURRED', transform?: (message: string) => string): string {
     const extracted = ErrorHandler.extractErrorMessage(error, fallbackMessage);
     const finalMessage = transform ? transform(extracted) : extracted;
     return this.translateMessage(finalMessage);

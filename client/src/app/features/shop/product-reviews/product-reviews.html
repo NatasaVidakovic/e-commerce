@@ -1,5 +1,5 @@
 <div class="rv-error" *ngIf="error" role="alert">
-  <span>{{ error }}</span>
+  <span>{{ error | translate }}</span>
 </div>
 
 <div class="rv-layout" [class.rv-layout--full-width]="!loggedIn || accountService.isAdmin()">

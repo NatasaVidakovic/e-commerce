@@ -1,3 +1,4 @@
+
 /* Payment type badges */
 .badge {
   padding: 2px 8px;
@@ -8,7 +9,7 @@
 }
 
 .badge-payment-type-stripe {
-  background-color: #6366f1;
+  background-color: var(--color-primary);
   color: white;
 }
 
@@ -109,9 +110,9 @@
       }
 
       &.selected-row {
-        background-color: rgba(99, 102, 241, 0.12);
-        border-color: #6366f1;
-        outline: 2px solid rgba(99, 102, 241, 0.5);
+        background-color: rgba(173, 102, 82, 0.12);
+        border-color: var(--color-primary);
+        outline: 2px solid rgba(173, 102, 82, 0.5);
         outline-offset: -2px;
       }
 
@@ -128,7 +129,7 @@
           .order-id-link {
             font-size: 16px;
             font-weight: 600;
-            color: #3b82f6;
+            color: var(--color-primary);
             text-decoration: none;
             display: block;
             margin-bottom: 4px;
@@ -256,7 +257,7 @@
     transition: all 0.2s ease;
 
     &.icon-enabled {
-      color: #3b82f6;
+      color: var(--color-primary);
     }
 
     &.icon-disabled {
@@ -271,7 +272,7 @@
     white-space: nowrap;
 
     &.text-enabled {
-      color: #3b82f6;
+      color: var(--color-primary);
     }
 
     &.text-disabled {
@@ -299,13 +300,13 @@
 
         &.mdc-switch--selected {
           .mdc-switch__track {
-            background-color: #3b82f6 !important;
-            border-color: #3b82f6 !important;
+            background-color: var(--color-primary) !important;
+            border-color: var(--color-primary) !important;
           }
-          
+
           .mdc-switch__thumb {
             background-color: white !important;
-            border: 1px solid #3b82f6 !important;
+            border: 1px solid var(--color-primary) !important;
             transform: translateX(16px) !important;
           }
         }
@@ -315,7 +316,7 @@
             background-color: #e2e8f0 !important;
             border-color: #e2e8f0 !important;
           }
-          
+
           .mdc-switch__thumb {
             background-color: white !important;
             border: 1px solid #cbd5e1 !important;
@@ -372,7 +373,7 @@
               background-color: var(--color-primary) !important;
               border-color: var(--color-primary) !important;
             }
-            
+
             .mdc-switch__thumb {
               background-color: var(--color-text-primary) !important;
               border: 1px solid var(--color-primary) !important;
@@ -384,7 +385,7 @@
               background-color: var(--color-bg-tertiary) !important;
               border-color: var(--color-bg-tertiary) !important;
             }
-            
+
             .mdc-switch__thumb {
               background-color: var(--color-text-primary) !important;
               border: 1px solid var(--color-border-secondary) !important;
@@ -398,7 +399,7 @@
 
 /* Order ID link */
 .order-id-link {
-  color: #3b82f6;
+  color: var(--color-primary);
   font-weight: 600;
   text-decoration: none;
   &:hover {
@@ -423,8 +424,8 @@
     border-color: #94a3b8;
   }
   &:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(173, 102, 82, 0.2);
   }
   &:disabled {
     opacity: 0.5;
@@ -529,7 +530,7 @@
 .compact-table {
   table-layout: fixed;
   width: 100%;
-  
+
   // Column widths - optimized to fit screen
   ::ng-deep .mat-mdc-header-cell {
     padding: 6px 4px !important;
@@ -540,47 +541,47 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
   ::ng-deep .mat-mdc-cell {
     padding: 4px !important;
     font-size: 0.75rem;
     line-height: 1.2;
     vertical-align: middle;
   }
-  
+
   // Specific column widths
   ::ng-deep .mat-mdc-column-id {
     width: 50px;
   }
-  
+
   ::ng-deep .mat-mdc-column-buyerEmail {
     width: 110px;
   }
-  
+
   ::ng-deep .mat-mdc-column-orderDate {
     width: 75px;
   }
-  
+
   ::ng-deep .mat-mdc-column-total {
     width: 70px;
   }
-  
+
   ::ng-deep .mat-mdc-column-paymentType {
     width: 60px;
   }
-  
+
   ::ng-deep .mat-mdc-column-paymentStatus {
     width: 90px;
   }
-  
+
   ::ng-deep .mat-mdc-column-status {
     width: 95px;
   }
-  
+
   ::ng-deep .mat-mdc-column-deliveryStatus {
     width: 85px;
   }
-  
+
   ::ng-deep .mat-mdc-column-action {
     width: 70px;
     text-align: center;
@@ -605,7 +606,7 @@
   line-height: 1.1 !important;
   min-width: 50px;
   max-width: 100%;
-  
+
   option {
     font-size: 0.6875rem !important;
     padding: 1px !important;
@@ -613,16 +614,16 @@
 }
 
 tr.selected-row {
-  background-color: rgba(99, 102, 241, 0.12) !important;
-  outline: 2px solid rgba(99, 102, 241, 0.5);
+  background-color: rgba(173, 102, 82, 0.12) !important;
+  outline: 2px solid rgba(173, 102, 82, 0.5);
   outline-offset: -2px;
 
   td {
-    border-bottom-color: rgba(99, 102, 241, 0.3);
+    border-bottom-color: rgba(173, 102, 82, 0.3);
   }
 
   td:first-child {
-    border-left: 3px solid #6366f1;
+    border-left: 3px solid var(--color-primary);
   }
 }
 
@@ -630,6 +631,6 @@ tr.mat-mdc-row {
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(99, 102, 241, 0.04);
+    background-color: rgba(173, 102, 82, 0.04);
   }
 }

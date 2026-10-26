@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } from '@angular/core';
+import { BrandingService } from '../../../core/services/branding.service';
+import { CatalogTextPipe } from '../../../shared/pipes/catalog-text-pipe';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, signal } from '@angular/core';
 import { Product } from '../../../shared/models/product';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { MatButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../../core/services/cart.service';
 import { FavouritesService } from '../../../core/services/favourites.service';
@@ -11,18 +13,21 @@ import { Output, EventEmitter } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AccountService } from '../../../core/services/account.service';
 import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
+import { NoliIconComponent } from '../../../shared/components/noli-icon/noli-icon.component';
+import { NoliReactionService } from '../../../core/services/noli-reaction.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 
 
 @Component({
   selector: 'app-product-item',
-  imports: [
+  imports: [CatalogTextPipe,
     MatCard,
     MatCardContent,
     MatCardActions,
-    MatCardActions,
     MatIcon,
     CurrencyPipe,
-    MatButton,
+    MatButtonModule,
+    NoliIconComponent,
     RouterLink,
     TranslatePipe,
     CommonModule
@@ -32,6 +37,7 @@ import { CurrencyPipe } from '../../../shared/pipes/currency.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductItemComponent {
+  readonly branding = inject(BrandingService);
   @Input() product?: Product;
   @Input() isFavourite: boolean = false;
   @Input() viewMode: 'grid' | 'list' = 'grid';
@@ -41,6 +47,23 @@ export class ProductItemComponent {
   favouritesService = inject(FavouritesService);
   accountService = inject(AccountService);
   private cdr = inject(ChangeDetectorRef);
+  private reaction = inject(NoliReactionService);
+  private snackbar = inject(SnackbarService);
+  readonly addingToCart = signal(false);
+  readonly savingFavourite = signal(false);
+
+  async addToCart(event: MouseEvent): Promise<void> {
+    event.stopPropagation();
+    if (!this.product || this.addingToCart()) return;
+    const button = event.currentTarget as HTMLElement;
+    this.addingToCart.set(true);
+    const added = await this.cartService.addItemToCart(this.product);
+    this.addingToCart.set(false);
+    if (added) {
+      this.reaction.burst(button, 'stars');
+      this.snackbar.success(this.branding.isNoli() ? 'NOLI.ADDED' : 'MESSAGES.ITEM_ADDED_CART', { duration: 2200 });
+    } else this.snackbar.error(this.branding.isNoli() ? 'NOLI.CART_ERROR' : 'UI.CART_ERROR');
+  }
 
   get allImages(): string[] {
     if (!this.product) return [];
@@ -64,8 +87,11 @@ export class ProductItemComponent {
     }
   }
 
-  toggleFavorite(): void {
-    if (!this.product) return;
+  toggleFavorite(event: MouseEvent): void {
+    event.stopPropagation();
+    if (!this.product || this.savingFavourite()) return;
+    const button = event.currentTarget as HTMLElement;
+    this.savingFavourite.set(true);
 
     const productId = this.product.id;
 
@@ -73,16 +99,27 @@ export class ProductItemComponent {
       this.favouritesService.addToFavourites(productId).subscribe({
         next: () => {
           this.isFavourite = true;
+          this.savingFavourite.set(false);
+          this.reaction.burst(button, 'hearts');
           this.favoriteToggled.emit({ id: productId, isFavorite: true });
           this.cdr.markForCheck();
+        },
+        error: error => {
+          this.savingFavourite.set(false);
+          this.snackbar.errorFrom(error, 'ERROR_MESSAGES.FAILED_ADD_FAVORITES');
         }
       });
     } else {
       this.favouritesService.removeFromFavourites(productId).subscribe({
         next: () => {
           this.isFavourite = false;
+          this.savingFavourite.set(false);
           this.favoriteToggled.emit({ id: productId, isFavorite: false });
           this.cdr.markForCheck();
+        },
+        error: error => {
+          this.savingFavourite.set(false);
+          this.snackbar.errorFrom(error, 'ERROR_MESSAGES.FAILED_REMOVE_FAVORITES');
         }
       });
     }

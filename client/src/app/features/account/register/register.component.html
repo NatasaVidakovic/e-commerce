@@ -7,21 +7,21 @@
         <app-text-input [label]="'FORM.LAST_NAME' | translate" formControlName="lastName" />
         <app-text-input [label]="'FORM.EMAIL' | translate" formControlName="email" />
         <app-text-input [label]="'FORM.PASSWORD' | translate" formControlName="password" type="password" />
-        
+
         @if (validationErrors.length > 0) {
             <div class="mb-3 p-4 error-message">
               <ul class="list-disc px-3">
                 @for (error of validationErrors; track error) {
-                  <li>{{error}}</li>
+                  <li>{{ error | translate }}</li>
                 }
               </ul>
             </div>
           }
-        <button 
+        <button
             [disabled]="registerForm.invalid"
-            mat-flat-button 
+            mat-flat-button
             color="primary"
-            type="submit" 
+            type="submit"
             class="w-full py-2">{{ 'NAVIGATION.REGISTER' | translate }}</button>
     </form>
 </mat-card>

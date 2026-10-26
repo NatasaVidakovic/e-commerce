@@ -33,7 +33,7 @@
             <mat-label>{{ 'PRODUCT.TYPE' | translate }}</mat-label>
             <mat-select formControlName="productTypeId" required>
               <mat-option *ngFor="let productType of activeProductTypes" [value]="productType.id">
-                {{ productType.name }}
+                {{ (productType.name) | catalogText }}
               </mat-option>
             </mat-select>
             <mat-error *ngIf="productForm.get('productTypeId')?.hasError('required')">

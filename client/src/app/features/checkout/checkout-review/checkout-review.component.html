@@ -42,7 +42,7 @@
             <div class="flex items-center gap-4">
               <img src="{{item.pictureUrl}}" alt="{{ 'COMMON.PRODUCT_IMAGE' | translate }}"
                   class="w-10 h-10">
-              <span style="color: var(--color-text-primary);">{{ item.productName }}</span>
+              <span style="color: var(--color-text-primary);">{{ (item.productName) | catalogText }}</span>
             </div>
           </td>
           <td class="p-4" style="color: var(--color-text-secondary);">x{{ item.quantity }}</td>

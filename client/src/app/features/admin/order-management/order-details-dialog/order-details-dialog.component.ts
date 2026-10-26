@@ -1,3 +1,4 @@
+import { CatalogTextPipe } from '../../../../shared/pipes/catalog-text-pipe';
 import { Component, Inject, inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -19,7 +20,7 @@ export interface OrderDetailsDialogData {
 
 @Component({
   selector: 'app-order-details-dialog',
-  imports: [
+  imports: [CatalogTextPipe,
     CommonModule,
     NgIf,
     NgFor,
@@ -108,7 +109,7 @@ export class OrderDetailsDialogComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err?.error?.message || err?.error || 'Failed to load order details';
+        this.error = err?.error?.message || err?.error || 'UI.FAILED_TO_LOAD_ORDER_DETAILS';
       }
     });
   }
@@ -146,9 +147,9 @@ export class OrderDetailsDialogComponent implements OnInit {
   }
 
   getFieldLabel(fieldChanged: string): string {
-    if (fieldChanged === 'OrderStatus') return 'Order status';
-    if (fieldChanged === 'PaymentStatus') return 'Payment status';
-    if (fieldChanged === 'DeliveryStatus') return 'Delivery status';
+    if (fieldChanged === 'OrderStatus') return 'UI.ORDER_STATUS';
+    if (fieldChanged === 'PaymentStatus') return 'UI.PAYMENT_STATUS';
+    if (fieldChanged === 'DeliveryStatus') return 'UI.DELIVERY_STATUS';
     return fieldChanged;
   }
 

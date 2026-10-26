@@ -15,7 +15,7 @@ export class ErrorHandler {
    * Extracts error message from various error response formats
    * Handles ASP.NET Core validation errors, problem details, and custom error messages
    */
-  static extractErrorMessage(error: any, defaultMessage: string = 'An error occurred'): string {
+  static extractErrorMessage(error: any, defaultMessage: string = 'UI.AN_ERROR_OCCURRED'): string {
     if (!error) {
       return defaultMessage;
     }
@@ -101,7 +101,7 @@ export class ErrorHandler {
     if (typeof errors === 'object') {
       Object.keys(errors).forEach(fieldName => {
         const fieldErrors = errors[fieldName];
-        
+
         if (Array.isArray(fieldErrors)) {
           // Add each error message for this field
           fieldErrors.forEach((msg: string) => {
