@@ -4,16 +4,13 @@ Noli is an optional brand experience. The original Web Shop remains available in
 
 ## Turn Noli off or on
 
-Edit `client/public/brand-config.js`:
+Sign in as an administrator and open **Administration → Theme settings → Storefront appearance** (`/admin/theme-settings`). Choose **Original Web Shop** or **Noli**, then click **Save appearance**. The page reloads after a successful save.
 
-```js
-window.shopBrand = 'default'; // Original Web Shop
-// window.shopBrand = 'noli'; // Noli experience
-```
+The selection is stored in the database as `StorefrontBrand`. It applies to all visitors on their next page load, across browsers and devices. No source edit or frontend rebuild is needed. A missing or unknown setting uses `default`.
 
-Change only the assignment, keep the following `dataset.brand` statement, then reload the browser. No rebuild is needed when editing the deployed `brand-config.js` in the web root. For a source deployment, edit it before building or copying the public assets. Missing or unknown configuration falls back to `default`.
+Only administrators can see or save the appearance controls. Both the admin route and the control itself check the role. The server independently requires the `Admin` role for `PUT /api/appearance`; anonymous callers receive 401 and authenticated non-admin callers receive 403. The existing site-setting write endpoints also require `Admin`.
 
-The checked-in selection is `noli`, preserving the current preview. There is no browser preference that can silently override this deployment setting.
+`GET /api/appearance` is public because the storefront needs the selected design before rendering. It returns only the brand and disables response caching. Startup waits for this setting before creating components and theme-dependent services. Public configuration files, browser storage and HTML attributes cannot override the saved server setting. The previous `brand-config.js` has been removed.
 
 | Feature | `default` | `noli` |
 | --- | --- | --- |
@@ -27,9 +24,9 @@ The checked-in selection is `noli`, preserving the current preview. There is no 
 | Theme customisation storage | `app-theme-config` | `noli-theme-config` |
 | Metadata and favicon | Original Web Shop | Noli |
 
-`BrandingService` is the single frontend switch. Noli global styles are scoped to `html[data-brand='noli']`. Original page templates are in the `base-*.component.*` files and inherit shared behaviour. Shared semantic colour helpers resolve to the selected palette. Translation fixes and functional fixes remain useful in both modes.
+`StorefrontAppearanceService` loads the server choice and saves it through the protected API. `BrandingService` applies that choice to the document. Noli global styles are scoped to `html[data-brand='noli']`. Original page templates are in the `base-*.component.*` files and inherit shared behaviour. Shared semantic colour helpers resolve to the selected palette. Translation fixes and functional fixes remain useful in both modes.
 
-The selection is read at page startup. Reload after changing it. The theme editor's light/dark and custom colour settings continue to work independently in each mode.
+The selection is read at page startup; a failed load safely uses the base shop without HTTP error redirects. Saving reloads the administrator's page only after persistence succeeds. Rejected saves show an error and leave the current appearance unchanged. Login waits for the user profile and roles before navigating to a protected page. The theme editor's light/dark and custom colour settings continue to work independently in each mode.
 
 ## Theme versus data
 
@@ -39,7 +36,7 @@ The backend does not seed Noli products by default. The explicit development set
 
 ## Git rollback
 
-All Noli work and its optional switch are grouped in the commit named:
+The original Noli work and its optional switch are grouped in commit `ac2781d`:
 
 **`feat(noli): add optional Noli theme (revert to restore base shop)`**
 
@@ -49,7 +46,7 @@ Find its hash with:
 git log --all --oneline --grep="feat(noli): add optional Noli theme"
 ```
 
-To keep the code and use the base shop, set `window.shopBrand = 'default'`. To remove the entire Noli change from Git history's resulting tree, use `git revert <NOLI_COMMIT_HASH>` from a clean working tree. This adds a reversal commit and preserves history. Reverting source code does not undo database records or remove local demo containers.
+To keep the code and use the base shop, select **Original Web Shop** in the admin panel. The admin-only appearance change is in the follow-up commit **`feat(noli): restrict appearance changes to administrators`**. To remove Noli source changes entirely, revert that follow-up first, then revert `ac2781d`, starting with a clean working tree. Reverting source code does not undo database records or remove local demo containers.
 
 The exact original source revision before Noli is `f083a1d` (`deploy dokument`). It can be inspected without changing the working tree with `git show f083a1d:<path>`.
 
@@ -63,4 +60,6 @@ $env:CHROME_BIN = 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
 npm test -- --watch=false --browsers=ChromeHeadless
 ```
 
-Focused tests cover both branding selections, the fallback configuration, isolated theme storage, base payment configuration, Noli cash-only policy and disabled reactions/catalog remapping in base mode. Both frontend branches are compiled in the same production build.
+Focused tests cover both branding selections, server startup loading, the fallback configuration, isolated theme storage, base payment configuration, Noli cash-only policy, disabled reactions/catalog remapping in base mode and rejected admin saves. HTTP integration tests use the real controllers and authorization middleware to verify 401/403 responses, administrator persistence, invalid input and public reads. Both frontend branches are compiled in the same production build.
+
+Verified on 2026-10-26: production frontend build, 35 frontend tests, 61 backend tests and 1,691 matching translation entries. Browser checks covered guest redirection, non-admin redirection, administrator saves in both directions, persistence after reload and mobile layout. A direct anonymous write against the running local API returned 401 and left the saved Noli choice unchanged.

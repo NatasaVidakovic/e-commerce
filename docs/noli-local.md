@@ -55,4 +55,4 @@ No orders or live payments were submitted during validation.
 
 ## Optional branding
 
-Noli can be disabled in `client/public/brand-config.js` without removing the shop features. See [Optional Noli theme](noli-theme.md) for the base mode, payment policy, database distinction and Git rollback instructions.
+Administrators can switch between Noli and the original shop in **Administration → Theme settings → Storefront appearance**. This choice is saved on the server and applies to all visitors. See [Optional Noli theme](noli-theme.md) for access control, the base mode, payment policy, database distinction and Git rollback instructions.

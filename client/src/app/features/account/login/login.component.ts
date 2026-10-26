@@ -10,6 +10,7 @@ import { MatIcon } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AccountService } from '../../../core/services/account.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { switchMap } from 'rxjs';
 @Component({
   selector: 'app-login',
   imports: [CommonModule, ReactiveFormsModule, MatCard, MatFormField, MatInput, MatButton, MatIconButton, MatLabel, MatSuffix, MatIcon, RouterLink, TranslatePipe],
@@ -66,9 +67,10 @@ export class LoginComponent {
     const email = this.loginForm.value.email || '';
     const password = this.loginForm.value.password || '';
 
-    this.accountService.loginWithFeedback({ email, password }).subscribe({
+    this.accountService.loginWithFeedback({ email, password }).pipe(
+      switchMap(() => this.accountService.getUserInfo())
+    ).subscribe({
       next: () => {
-        this.accountService.getUserInfo().subscribe();
         this.router.navigateByUrl(this.returnUrl);
       },
       error: (err: any) => {

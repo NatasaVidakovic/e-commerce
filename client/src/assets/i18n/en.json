@@ -1335,6 +1335,16 @@
     "RETURNEDTOSENDER": "Returned to Sender"
   },
   "THEME_SETTINGS": {
+    "STOREFRONT_BRAND": "Storefront appearance",
+    "STOREFRONT_BRAND_DESC": "Choose the appearance used by all visitors. Only administrators can change this setting.",
+    "BASE_BRAND": "Original Web Shop",
+    "BASE_BRAND_DESC": "The original layout, colours and store settings.",
+    "NOLI_BRAND": "Noli",
+    "NOLI_BRAND_DESC": "Soft colours, the Noli world and subtle mascot animations.",
+    "BRAND_RELOAD_HINT": "Saving reloads this page and applies the choice to all visitors on their next page load. Products and orders stay unchanged.",
+    "BRAND_SAVE": "Save appearance",
+    "BRAND_SAVING": "Saving appearance…",
+    "BRAND_SAVE_ERROR": "Appearance could not be saved. Check that you are still signed in as an administrator and try again.",
     "TITLE": "Complete Theme Customization",
     "SUBTITLE": "Create your own custom theme by configuring all color aspects",
     "THEME_MODE": "Theme Mode",

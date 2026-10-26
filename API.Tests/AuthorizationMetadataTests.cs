@@ -7,6 +7,21 @@ namespace API.Tests;
 
 public class AuthorizationMetadataTests
 {
+    [Fact]
+    public void Storefront_appearance_changes_require_admin()
+    {
+        Assert.Equal("Admin", GetAuthorizeAttribute<AppearanceController>(nameof(AppearanceController.Update)).Roles);
+    }
+
+    [Theory]
+    [InlineData(nameof(SiteSettingsController.Set))]
+    [InlineData(nameof(SiteSettingsController.SetMany))]
+    [InlineData(nameof(SiteSettingsController.Delete))]
+    public void Alternative_site_setting_write_paths_require_admin(string methodName)
+    {
+        Assert.Equal("Admin", GetAuthorizeAttribute<SiteSettingsController>(methodName).Roles);
+    }
+
     [Theory]
     [InlineData(nameof(ProductsController.ApplyDiscount))]
     [InlineData(nameof(ProductsController.DeleteDiscount))]

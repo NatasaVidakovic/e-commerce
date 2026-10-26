@@ -16,6 +16,7 @@ import { authInterceptor } from './core/interceptors/auth-interceptor';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { GlobalErrorHandler } from './core/services/global-error-handler.service';
+import { StorefrontAppearanceService } from './core/services/storefront-appearance.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,6 +38,8 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(async () => {
       inject(ViewportScroller).setOffset(() => [0, (document.querySelector('app-header header, app-base-header header')?.getBoundingClientRect().height || 72) + 16]);
       const initService = inject(InitService);
+      const appearance = inject(StorefrontAppearanceService);
+      await appearance.load();
       return lastValueFrom(initService.init()).finally(() => {
         const splash = document.getElementById('initial-splash');
         if (splash) {

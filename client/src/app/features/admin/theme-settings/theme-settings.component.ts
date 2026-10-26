@@ -1,5 +1,6 @@
 ﻿import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +13,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ThemeService, ThemeMode } from '../../../core/services/theme.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
+import { AccountService } from '../../../core/services/account.service';
+import { BrandingService, StorefrontBrand } from '../../../core/services/branding.service';
+import { StorefrontAppearanceService } from '../../../core/services/storefront-appearance.service';
 
 @Component({
   selector: 'app-theme-settings',
@@ -33,6 +37,12 @@ import { SnackbarService } from '../../../core/services/snackbar.service';
   styleUrl: './theme-settings.component.scss'
 })
 export class ThemeSettingsComponent {
+  readonly accountService = inject(AccountService);
+  readonly branding = inject(BrandingService);
+  private readonly appearance = inject(StorefrontAppearanceService);
+  readonly selectedBrand = signal<StorefrontBrand>(this.branding.activeBrand());
+  readonly savingBrand = signal(false);
+  readonly brandError = signal('');
   private _isDarkMode: boolean = false;
 
   primaryColor: string = '';
@@ -79,6 +89,19 @@ export class ThemeSettingsComponent {
 
   isDarkMode(): boolean {
     return this._isDarkMode;
+  }
+
+  saveBrand(): void {
+    if (!this.accountService.isAdmin() || this.savingBrand() || this.selectedBrand() === this.branding.activeBrand()) return;
+    this.savingBrand.set(true);
+    this.brandError.set('');
+    this.appearance.save(this.selectedBrand()).subscribe({
+      next: () => this.appearance.reload(),
+      error: () => {
+        this.savingBrand.set(false);
+        this.brandError.set('THEME_SETTINGS.BRAND_SAVE_ERROR');
+      }
+    });
   }
 
   onThemeModeChange(isDark: boolean): void {

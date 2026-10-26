@@ -1,17 +1,29 @@
 import { DOCUMENT } from '@angular/common';
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+
+export type StorefrontBrand = 'default' | 'noli';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BrandingService {
   private readonly document = inject(DOCUMENT);
-  // A missing or unrecognised configuration always uses the base application.
-  readonly isNoli = () => this.document.documentElement.dataset['brand'] === 'noli';
-  readonly storageKey = this.isNoli() ? 'noli-theme-config' : 'app-theme-config';
+  private readonly brand = signal<StorefrontBrand>('default');
+  readonly activeBrand = this.brand.asReadonly();
+  readonly isNoli = computed(() => this.brand() === 'noli');
+
+  get storageKey(): string {
+    return this.isNoli() ? 'noli-theme-config' : 'app-theme-config';
+  }
 
   constructor() {
-    this.document.documentElement.dataset['brand'] = this.isNoli() ? 'noli' : 'default';
+    this.document.documentElement.dataset['brand'] = 'default';
+  }
+
+  // Loaded from the server before constructing theme-dependent services.
+  initialize(brand: unknown): void {
+    this.brand.set(brand === 'noli' ? 'noli' : 'default');
+    this.document.documentElement.dataset['brand'] = this.activeBrand();
     if (!this.isNoli()) return;
     this.document.title = 'noli | male stvari, veliki osjećaj';
     const icon = this.document.querySelector<HTMLLinkElement>('link[rel="icon"]');

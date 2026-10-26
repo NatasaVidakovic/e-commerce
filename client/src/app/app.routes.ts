@@ -132,6 +132,7 @@ export const routes: Routes = [
             },
             {
                 path: 'theme-settings',
+                canActivate: [adminGuard],
                 loadComponent: () => import('./features/admin/theme-settings/theme-settings.component').then(m => m.ThemeSettingsComponent)
             },
             {

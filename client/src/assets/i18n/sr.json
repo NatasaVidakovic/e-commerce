@@ -1335,6 +1335,16 @@
     "RETURNEDTOSENDER": "Vraćeno pošiljaocu"
   },
   "THEME_SETTINGS": {
+    "STOREFRONT_BRAND": "Izgled prodavnice",
+    "STOREFRONT_BRAND_DESC": "Izaberi izgled koji vide svi posjetioci. Ovu postavku može mijenjati samo administrator.",
+    "BASE_BRAND": "Osnovni Web Shop",
+    "BASE_BRAND_DESC": "Originalni raspored, boje i postavke prodavnice.",
+    "NOLI_BRAND": "Noli",
+    "NOLI_BRAND_DESC": "Nježne boje, mali Noli svijet i suptilne animacije maskote.",
+    "BRAND_RELOAD_HINT": "Čuvanje ponovo učitava ovu stranicu. Posjetioci će vidjeti izabrani izgled pri sljedećem učitavanju. Proizvodi i narudžbe ostaju sačuvani.",
+    "BRAND_SAVE": "Sačuvaj izgled",
+    "BRAND_SAVING": "Čuvanje izgleda…",
+    "BRAND_SAVE_ERROR": "Izgled nije sačuvan. Provjeri da li si i dalje prijavljen kao administrator i pokušaj ponovo.",
     "TITLE": "Potpuna prilagodba teme",
     "SUBTITLE": "Kreirajte svoju temu podešavanjem svih boja",
     "THEME_MODE": "Režim teme",

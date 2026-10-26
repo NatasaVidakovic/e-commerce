@@ -9,6 +9,36 @@
     </mat-card-header>
 
     <mat-card-content>
+      @if (accountService.isAdmin()) {
+      <section class="settings-section brand-section" aria-labelledby="storefront-brand-title">
+        <h3 class="section-title" id="storefront-brand-title">
+          <mat-icon>auto_awesome</mat-icon>
+          {{ 'THEME_SETTINGS.STOREFRONT_BRAND' | translate }}
+        </h3>
+        <p class="section-description">{{ 'THEME_SETTINGS.STOREFRONT_BRAND_DESC' | translate }}</p>
+        <fieldset class="brand-options" [disabled]="savingBrand()">
+          <legend class="sr-only">{{ 'THEME_SETTINGS.STOREFRONT_BRAND' | translate }}</legend>
+          <label class="brand-option" [class.selected]="selectedBrand() === 'default'">
+            <input type="radio" name="storefrontBrand" value="default" [ngModel]="selectedBrand()" (ngModelChange)="selectedBrand.set($event)">
+            <span><strong>{{ 'THEME_SETTINGS.BASE_BRAND' | translate }}</strong><small>{{ 'THEME_SETTINGS.BASE_BRAND_DESC' | translate }}</small></span>
+          </label>
+          <label class="brand-option" [class.selected]="selectedBrand() === 'noli'">
+            <input type="radio" name="storefrontBrand" value="noli" [ngModel]="selectedBrand()" (ngModelChange)="selectedBrand.set($event)">
+            <span><strong>{{ 'THEME_SETTINGS.NOLI_BRAND' | translate }}</strong><small>{{ 'THEME_SETTINGS.NOLI_BRAND_DESC' | translate }}</small></span>
+          </label>
+        </fieldset>
+        <p class="section-description brand-hint">{{ 'THEME_SETTINGS.BRAND_RELOAD_HINT' | translate }}</p>
+        @if (brandError()) {
+          <p role="alert" class="brand-error">{{ brandError() | translate }}</p>
+        }
+        <button mat-flat-button type="button" (click)="saveBrand()" [disabled]="savingBrand() || selectedBrand() === branding.activeBrand()">
+          <mat-icon>{{ savingBrand() ? 'hourglass_top' : 'save' }}</mat-icon>
+          {{ (savingBrand() ? 'THEME_SETTINGS.BRAND_SAVING' : 'THEME_SETTINGS.BRAND_SAVE') | translate }}
+        </button>
+      </section>
+      <mat-divider></mat-divider>
+      }
+
       <!-- Theme Mode Section -->
       <section class="settings-section">
         <h3 class="section-title">

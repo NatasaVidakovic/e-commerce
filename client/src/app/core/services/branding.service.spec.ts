@@ -8,7 +8,9 @@ describe('Optional Noli branding', () => {
     doc.head.insertAdjacentHTML('beforeend', '<link rel="icon" href="favicon.ico"><meta name="description" content="Online store">');
     if (brand) doc.documentElement.dataset['brand'] = brand;
     TestBed.configureTestingModule({providers: [{provide: DOCUMENT, useValue: doc}]});
-    return {doc, service: TestBed.inject(BrandingService)};
+    const service = TestBed.inject(BrandingService);
+    service.initialize(brand);
+    return {doc, service};
   }
 
   for (const brand of [undefined, 'default', 'unknown']) {
@@ -28,5 +30,11 @@ describe('Optional Noli branding', () => {
     expect(doc.title).toContain('noli');
     expect(doc.querySelector('link[rel="icon"]')?.getAttribute('href')).toBe('/brand/noli-mascot.png');
     expect(doc.querySelectorAll('link[rel="stylesheet"]').length).toBe(2);
+  });
+  it('does not trust a locally edited document attribute as the saved brand', () => {
+    const {doc, service} = create('default');
+    doc.documentElement.dataset['brand'] = 'noli';
+    expect(service.isNoli()).toBeFalse();
+    expect(service.activeBrand()).toBe('default');
   });
 });
